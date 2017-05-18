@@ -7,9 +7,10 @@ public class Interaction implements java.io.Serializable{
 	 */
 	private static final long serialVersionUID = -262768393273140446L;
 	
-	Agent agentFrom, agentTo;
+	Entity agentFrom, agentTo;
 	String type;	//Types are defined somewhere...
 	int occurrence = 0;
+	String agentFromAsString, agentToAsString;
 	
 	private static final String COMMA = ",";
 	
@@ -27,7 +28,21 @@ public class Interaction implements java.io.Serializable{
 		this.occurrence = occurrence;
 	}
 	
+	public Interaction(String agentFrom, String agentTo, String type){
+		agentFromAsString = agentFrom;
+		agentToAsString = agentTo;
+		this.type = type;
+		occurrence = 1;
+	}
 	
+	
+	public Interaction(Entity entityFrom, Entity entityTo, String interactionType) {
+		this.agentFrom = entityFrom;
+		this.agentTo = entityTo;
+		this.type = interactionType;
+		occurrence = 1;
+	}
+
 	@Override
 	public String toString(){
 		return agentFrom.getID() + COMMA + agentTo.getID() + COMMA + type + COMMA + occurrence;
@@ -37,7 +52,7 @@ public class Interaction implements java.io.Serializable{
 	/**
 	 * @return the agentFrom
 	 */
-	public Agent getAgentFrom() {
+	public Entity getAgentFrom() {
 		return agentFrom;
 	}
 
@@ -45,12 +60,12 @@ public class Interaction implements java.io.Serializable{
 	/**
 	 * @return the agentTo
 	 */
-	public Agent getAgentTo() {
+	public Entity getAgentTo() {
 		return agentTo;
 	}
 	
-	public boolean checkAgentPresence(Agent agent){
-		return (agentFrom.compareAgent(agent));
+	public boolean checkAgentPresence(Entity ent){
+		return (agentFrom.compareEntity(ent));
 	}
 
 

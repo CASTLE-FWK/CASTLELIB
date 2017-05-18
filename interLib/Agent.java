@@ -2,9 +2,11 @@ package interLib;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import casFeatures.CASStateOfInterest;
+import repastGroups.objects.Vector2;
 
 /**
  * This defines an agent.
@@ -76,6 +78,9 @@ public class Agent implements java.io.Serializable{
 	//A DebugLog
 	protected DebugLogger logger;
 	
+	//For the DB
+	protected HashMap<String,Parameter<?>> parameters;
+	
 	//Interactions are specified manually for now.
 	//The systemSpecifications model does also specifiy them
 	//but for time purposes, they will be hardcoded strings.
@@ -91,6 +96,7 @@ public class Agent implements java.io.Serializable{
 		if (position == null){
 			System.out.println("AOISDHASHD");
 		}
+		parameters = new HashMap<String,Parameter<?>>();
 		
 		velocity = new Vector2();
 			
@@ -432,6 +438,7 @@ public class Agent implements java.io.Serializable{
 		System.out.println(getID() + ": " + str);
 	}
 	
+
 	/*****Logging Methods*****/
 	public void disableLog(){
 		logger.mute();
@@ -440,6 +447,18 @@ public class Agent implements java.io.Serializable{
 	
 	public void muteLog(){
 		logger.mute();
+	}
+	
+	/*******Parameter Tracking*****/
+	public HashMap<String,Parameter<?>> getParameters(){
+		return parameters;
+	}
+	public <T> void addParameter(T o, String name){
+		parameters.put(name,new Parameter<T>(o, name));
+	}
+	public <T> void updateParameter(String paramName, T value){
+		addParameter(value, paramName);
+//		parameters.put(paramName, parameters.get(paramName).updateValue(value));
 	}
 	
 }

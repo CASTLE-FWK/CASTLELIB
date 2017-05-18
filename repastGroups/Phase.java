@@ -1,5 +1,5 @@
 package repastGroups;
 
 public enum Phase{
-	SETUP, ACTION, CLEANUP;
+	SETUP, ACTION, CLEANUP, END;
 }

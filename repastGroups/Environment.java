@@ -9,34 +9,41 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService; 
 import java.util.concurrent.Executors;
 
+import repastGroups.representations.Grid;
+
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonValue;
+
 public class Environment extends Entity {
 
-	protected ArrayList<Capsule> storedCapsules;
-	ArrayList<Environment> storedEnvironments;
-	MessageQueue messageQueue;
-	int numberOfCapsules = 1;
+	protected ArrayList<SemanticGroup> storedGroups;
+	protected ArrayList<Environment> storedEnvironments;
+	protected MessageQueue messageQueue;
+	protected int numberOfGroups = 1;
 
 
-	ExecutorService capExecutor;
+	protected ExecutorService capExecutor;
 
 	//CELL CAPSULE STUFF
 	int capsulesX = 10;
 	int capsulesY = 10;
 
 	//2D representation of capsules
-	protected CapsuleGrid theGrid;
+	protected Grid<SemanticGroup> theGrid;
 
-	public Environment(String envType, long uid, int numCaps){
-		super(envType,uid);
-		numberOfCapsules = numCaps;
-		capsulesX = numCaps;
-		capsulesY = numCaps;
+	public Environment(String envType, EntityID eid){
+		super(envType,eid);
+//		numberOfCapsules = numCaps;
+//		capsulesX = numCaps;
+//		capsulesY = numCaps;
 
 		//Init communications stuff
 		messageQueue = new MessageQueue();
 
 		//Init capsules to be contained
-		storedCapsules = new ArrayList<Capsule>(); //TODO: Switch to a HashMap or something
+		storedGroups = new ArrayList<SemanticGroup>(); //TODO: Switch to a HashMap or something
 
 		//Init sub-environments
 		storedEnvironments = new ArrayList<Environment>();
@@ -77,8 +84,8 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 
 			phase_Setup();
-			capExecutor = Executors.newFixedThreadPool(numberOfCapsules);
-			for (Capsule cap : storedCapsules){
+			capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			for (SemanticGroup cap : storedGroups){
 				capExecutor.execute(cap);
 			}
 			capExecutor.shutdown();
@@ -91,8 +98,8 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 			phase_Action();
 
-			capExecutor = Executors.newFixedThreadPool(numberOfCapsules);
-			for (Capsule cap : storedCapsules){
+			capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			for (SemanticGroup cap : storedGroups){
 				capExecutor.execute(cap);
 			}
 			capExecutor.shutdown();
@@ -108,8 +115,8 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 
 			phase_Cleanup();
-			ExecutorService capExecutor = Executors.newFixedThreadPool(numberOfCapsules);
-			for (Capsule cap : storedCapsules){
+			ExecutorService capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			for (SemanticGroup cap : storedGroups){
 				capExecutor.execute(cap);
 			}
 			capExecutor.shutdown();
@@ -121,7 +128,7 @@ public class Environment extends Entity {
 	}
  
 	@Override
-	public void initialize(){
+	public void initialise(){
 		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
 	}
 
@@ -141,6 +148,9 @@ public class Environment extends Entity {
 	}
 
 
+	public ArrayList<SemanticGroup> getContainedSemanticGroups(){
+		return storedGroups;
+	}
 
 
 	/**
@@ -149,7 +159,7 @@ public class Environment extends Entity {
 	 * @param  contents    [description]
 	 * @return             [description]
 	 */
-	<T> void broadcast(MessageType messageType, T contents){
+	protected <T> void broadcast(MessageType messageType, T contents){
 		Message<T> message = new Message<T>(messageType, contents, getCurrentStep());
 
 		//Really you want generate a bunch of messages and put them in the queue
@@ -158,12 +168,12 @@ public class Environment extends Entity {
 			env.receiveMessage(new Message<T>(messageType, contents, getCurrentStep(), env));
 		}
 
-		for (Capsule cap : storedCapsules){
+		for (SemanticGroup cap : storedGroups){
 			cap.receiveMessage(new Message<T>(messageType, contents, getCurrentStep(), cap));
 		}
 	}
 
-	<T> void addMessageToQueue(Message<?> msg){
+	protected <T> void addMessageToQueue(Message<?> msg){
 		messageQueue.addNewMessage(msg);
 	}
 
@@ -177,58 +187,59 @@ public class Environment extends Entity {
 
 
 	
-	public void dummyAdd(int c){
-		// for (int i = 0; i < c; i++){
-		// 	// Capsule tmpCapsule = new Capsule(getEntityID().toString()+"_capsule",i);
-		// 	// storedCapsules.add(tmpCapsule);
-		// 	Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this);
-		// 	storedCapsules.add(tmpCC);
-		// }
-
-		for (int i = 0; i < capsulesX; i++){
-			for (int j = 0; j < capsulesY; j++){
-//				Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this,i,j);
-				Capsule tmpC = new Capsule(getEntityID().toString()+"_Capsule",i);
-				storedCapsules.add(tmpC);
-				theGrid.addCell(tmpC, i, j);
-			}
-		}
-		for (Capsule cc : storedCapsules){
-			cc.initialize();
-		}
-	}
+//	public void dummyAdd(int c){
+//		// for (int i = 0; i < c; i++){
+//		// 	// Capsule tmpCapsule = new Capsule(getEntityID().toString()+"_capsule",i);
+//		// 	// storedCapsules.add(tmpCapsule);
+//		// 	Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this);
+//		// 	storedCapsules.add(tmpCC);
+//		// }
+//
+//		for (int i = 0; i < capsulesX; i++){
+//			for (int j = 0; j < capsulesY; j++){
+////				Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this,i,j);
+//				SemanticGroup tmpC = new SemanticGroup(getEntityID().toString()+"_Capsule",i);
+//				storedCapsules.add(tmpC);
+//				theGrid.addCell(tmpC, i, j);
+//			}
+//		}
+//		for (SemanticGroup cc : storedCapsules){
+//			cc.initialise();
+//		}
+//	}
 	
 
 	//CapsuleGrid stuff
-	public Capsule getNeighbour_U(int x, int y){
+	//TODO: Make this generate from generic representations
+	public SemanticGroup getNeighbour_U(int x, int y){
 		return theGrid.getNeighbour_U(x,y);
 	}
 
-	public Capsule getNeighbour_UR(int x, int y){
+	public SemanticGroup getNeighbour_UR(int x, int y){
 		return theGrid.getNeighbour_UR(x,y);
 	}
 
-	public Capsule getNeighbour_R(int x, int y){
+	public SemanticGroup getNeighbour_R(int x, int y){
 		return theGrid.getNeighbour_R(x,y);
 	}
 
-	public Capsule getNeighbour_DR(int x, int y){
+	public SemanticGroup getNeighbour_DR(int x, int y){
 		return theGrid.getNeighbour_DR(x,y);
 	}
 
-	public Capsule getNeighbour_D(int x, int y){
+	public SemanticGroup getNeighbour_D(int x, int y){
 		return theGrid.getNeighbour_D(x,y);
 	}
 
-	public Capsule getNeighbour_DL(int x, int y){
+	public SemanticGroup getNeighbour_DL(int x, int y){
 		return theGrid.getNeighbour_DL(x,y);
 	}
 
-	public Capsule getNeighbour_L(int x, int y){
+	public SemanticGroup getNeighbour_L(int x, int y){
 		return theGrid.getNeighbour_L(x,y);
 	}
 
-	public Capsule getNeighbour_UL(int x, int y){
+	public SemanticGroup getNeighbour_UL(int x, int y){
 		return theGrid.getNeighbour_UL(x,y);
 	}
 }

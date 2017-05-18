@@ -5,7 +5,7 @@ import interLib.Utilities;
 public class Logger{
 
 	private boolean logging;
-	private boolean muted;
+	private boolean muted = true;
 	
 	//Output paths
 	private String systemLogPath;

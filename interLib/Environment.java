@@ -1,5 +1,7 @@
 package interLib;
 
+import repastGroups.objects.Vector2;
+
 public class Environment extends Agent {
 
 	public Environment(String ID, Vector2 initialPosition) {

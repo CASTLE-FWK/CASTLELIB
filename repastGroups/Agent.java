@@ -7,32 +7,58 @@ package repastGroups;
 
 
 import repastGroups.Logger;
+import repastGroups.objects.Vector2;
 import repastGroups.Interaction;
+import interLib.DebugLogger;
 import interLib.State;
-import interLib.Vector2;
+import interLib.Utilities;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+
 import casFeatures.CASStateOfInterest;
 
-public class Agent {
-	protected String id = "";
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonValue;
+
+public class Agent extends Entity{
+	protected EntityID id;
+	private String type = "";
+	
 //	HashMap<String,Agent> localAgents;
 
 
-	public Agent(String id){
+	public Agent(String type, EntityID id){
+		super(type, id);
 		this.id = id;
+		this.type = type;
+		logger = new Logger();
 //		localAgents = new HashMap<String,Agent>();
 	}
 	
-	public void init(){}
+	@Override
+	public void initialise(){
 
-	public void pre(){}
+	}
+	@Override
+	public void phase_Setup(){
 
-	public void step(){}
+	}
+	@Override
+	public void phase_Action(){
 
-	public void post(){}
+	}
+	@Override
+	public void phase_Cleanup(){
+
+	}
+	@Override
+	public void final_call(){
+		
+	}
 	
 	
 	/******COPIED OVER FROM INTERLIB AGENT*******/
@@ -58,7 +84,7 @@ public class Agent {
 	 * Defines the String representation of an agent type.
 	 * This is not required but allows for multiple types of agents.
 	 */
-	private String type;
+//	private String type;
 	
 	//TODO: Hopefully do away with this pesky variable
 	private int snapshotInterval;
@@ -79,7 +105,7 @@ public class Agent {
 	
 	
 	/*The Interaction Stuff*/
-	ArrayList<Interaction> interactionsInLastInterval;
+//	ArrayList<Interaction> interactionsInLastInterval;
 	
 	/*The CAS Stuff*/
 //	CASStateOfInterest stateOfInterest;
@@ -97,24 +123,24 @@ public class Agent {
 	 * @param ID
 	 * @param position
 	 */
-	public Agent(String id, Vector2 initialPosition){
-		position = new Vector2(initialPosition);
-		if (position == null){
-			System.out.println("AOISDHASHD");
-		}
-		
-		velocity = new Vector2();
-			
-		this.id = id;
-		
-//		interactionsInLastInterval = new ArrayList<Interaction>();
-		allStates.add(lifeState);
-		
-//		stateOfInterest = new CASStateOfInterest();
-		
-		logger = new Logger();
-
-	}
+//	public Agent(String id, Vector2 initialPosition){
+//		position = new Vector2(initialPosition);
+//		if (position == null){
+//			System.out.println("AOISDHASHD");
+//		}
+//		
+//		velocity = new Vector2();
+//			
+//		this.id = id;
+//		
+////		interactionsInLastInterval = new ArrayList<Interaction>();
+//		allStates.add(lifeState);
+//		
+////		stateOfInterest = new CASStateOfInterest();
+//		
+//		logger = new Logger();
+//
+//	}
 	
 	
 	/**
@@ -177,7 +203,7 @@ public class Agent {
 	 * @return the iD
 	 */
 	public String getID() {
-		return id;
+		return ""+id;
 	}
 
 	/**
@@ -274,12 +300,12 @@ public class Agent {
 	 * Various initalising things can be placed in here
 	 * Called after instantiation in the Repast Context usually.
 	 */
-	public void initialise(){
-		if (DEBUG_MODE){
-			System.out.println("CREATED "+toString());
-		}	
-	}
-	
+//	public void initialise(){
+//		if (DEBUG_MODE){
+//			System.out.println("CREATED "+toString());
+//		}	
+//	}
+//	
 	public void initialiseSchedule(double startTime, double startDelay){}
 	
 	public boolean isAlive(){
@@ -336,33 +362,33 @@ public class Agent {
 	}
 	
 	
-	/*Interaction Methods*/
-	public void interactionTo(Agent agentTo, String interactionType){
-		Interaction checkingInteraction = checkForInteraction(agentTo, this, interactionType);
-		if (checkingInteraction == null) {
-			interactionsInLastInterval.add(new Interaction(this, agentTo, interactionType));
-		} else {
-			checkingInteraction.incrementOccurrence();
-		}
-	}
+//	/*Interaction Methods*/
+//	public void interactionTo(Agent agentTo, String interactionType){
+//		Interaction checkingInteraction = checkForInteraction(agentTo, this, interactionType);
+//		if (checkingInteraction == null) {
+//			interactionsInLastInterval.add(new Interaction(this, agentTo, interactionType));
+//		} else {
+//			checkingInteraction.incrementOccurrence();
+//		}
+//	}
+//	
+//	public Interaction checkForInteraction(Agent agentTo, Agent agentFrom, String interactionType){
+//		for (Interaction interaction : interactionsInLastInterval){
+//			if (interaction.checkForSimilarity(agentFrom.getID(), agentTo.getID(), interactionType)){
+//				return interaction;
+//			}
+//		}
+//		return null;
+//	}
 	
-	public Interaction checkForInteraction(Agent agentTo, Agent agentFrom, String interactionType){
-		for (Interaction interaction : interactionsInLastInterval){
-			if (interaction.checkForSimilarity(agentFrom.getID(), agentTo.getID(), interactionType)){
-				return interaction;
-			}
-		}
-		return null;
-	}
-	
-	public List<Interaction> publishInteractions(){
-		return interactionsInLastInterval;
-	}
-	
-	
-	public void clearInteractions(){
-		interactionsInLastInterval.clear();
-	}
+//	public List<Interaction> publishInteractions(){
+//		return interactionsInLastInterval;
+//	}
+//	
+//	
+//	public void clearInteractions(){
+//		interactionsInLastInterval.clear();
+//	}
 	
 	public String printStates(){
 		return "";
@@ -400,9 +426,9 @@ public class Agent {
 		return allStates;
 	}
 	
-	public boolean compareAgent(Agent agent){
-		return (id.equalsIgnoreCase(agent.getID()));
-	}
+//	public boolean compareAgent(Agent agent){
+//		return ((""+id).equalsIgnoreCase(agent.getID()));
+//	}
 		
 	/*****NEED SOME DEBUG METHODS HERE*****/
 	

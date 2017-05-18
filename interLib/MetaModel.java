@@ -2,6 +2,8 @@ package interLib;
 
 import java.util.ArrayList;
 
+import repastGroups.objects.Vector2;
+
 //TODO: This is used for parsing and creating MetaModels. Used in various things...
 public class MetaModel {
 	

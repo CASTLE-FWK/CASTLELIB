@@ -1,0 +1,27 @@
+{
+    "Experiment-id": "TestBlah",
+    "System-name": "Game Of Life",
+    "Configuration": "Random 25x25",
+    "System-db-id": "game_of_life_2016777777",
+    "Description: ": "",
+    "Metrics": [
+        {
+            "Metric-name": "Limited Bandwidth Recognition",
+            "Metric-parameters": "",
+            "Needs-training": "true",
+            "Training-sets": [
+                {
+                "System-name": "Game of Life",
+                "Variant": "ll",
+                "System-db-id": "game_of_life_2013"
+                }
+            ]
+        },
+        {
+            "Metric-name": "Oscillation Detection",
+            "Metric-parameters": "",
+            "Needs-training": "false",
+            "Training-sets": []
+        }
+    ]
+}

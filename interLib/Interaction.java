@@ -10,12 +10,13 @@ public class Interaction implements java.io.Serializable{
 	Agent agentFrom, agentTo;
 	String type;	//Types are defined somewhere...
 	int occurrence = 0;
+	String agentFromAsString, agentToAsString;
 	
 	private static final String COMMA = ",";
 	
-	public Interaction(Agent agentFrom, Agent agentTo, String type){
-		this.agentFrom = agentFrom;
-		this.agentTo = agentTo;
+	public Interaction(Agent agent, Agent agentTo2, String type){
+		this.agentFrom = agent;
+		this.agentTo = agentTo2;
 		this.type = type;
 		occurrence = 1;
 	}
@@ -27,10 +28,22 @@ public class Interaction implements java.io.Serializable{
 		this.occurrence = occurrence;
 	}
 	
+	public Interaction(String agentFrom, String agentTo, String type){
+		agentFromAsString = agentFrom;
+		agentToAsString = agentTo;
+		this.type = type;
+		occurrence = 1;
+	}
+	
+	
 	
 	@Override
 	public String toString(){
 		return agentFrom.getID() + COMMA + agentTo.getID() + COMMA + type + COMMA + occurrence;
+	}
+	
+	public String strToString(){
+		return agentFromAsString + COMMA + agentToAsString+ COMMA + type + COMMA + occurrence;
 	}
 
 
@@ -86,6 +99,14 @@ public class Interaction implements java.io.Serializable{
 	//TODO: There has to be a faster way to do this.
 	public boolean checkForSimilarity(String from, String to, String interactionType){
 		return ( (agentFrom.getID().compareToIgnoreCase(from) == 0) && (agentTo.getID().compareToIgnoreCase(to) == 0) && (type.compareToIgnoreCase(interactionType) == 0));  
+	}
+
+	public String getAgentFromAsString() {
+		return agentFromAsString;
+	}
+
+	public String getAgentToAsString() {
+		return agentToAsString;
 	}
 }
 
