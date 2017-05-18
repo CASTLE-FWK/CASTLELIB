@@ -13,3 +13,13 @@
 /Vector3.class
 /MaxMin.class
 /Parameter.class
+/CASObject.class
+/CASRandom.class
+/DebugLogger.class
+/Environment.class
+/Map.class
+/Map2D.class
+/PQueue.class
+/Queue.class
+/StochasticGenerators.class
+/XSRandom.class
