@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import castleComponents.objects.Vector2;
 import observationModule.MetricRunner_ED;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;
 import experiment.SystemInfo;
-import repastGroups.objects.Vector2;
 import interLib.Utilities;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;

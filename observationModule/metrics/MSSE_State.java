@@ -2,7 +2,7 @@ package observationModule.metrics;
 
 import java.util.Arrays;
 
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 
 public class MSSE_State {
 	int tupleSize;

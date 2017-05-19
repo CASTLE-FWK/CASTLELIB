@@ -1,4 +1,4 @@
-package repastGroups;
+package castleComponents;
 
 public class EntityID{
 	String entityType;

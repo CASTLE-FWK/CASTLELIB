@@ -1,4 +1,4 @@
-package repastGroups;
+package castleComponents;
 
 /**
  * What does this do?
@@ -8,33 +8,22 @@ package repastGroups;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonValue;
-
-public class SemanticGroup extends Entity {
-	protected HashMap<String,Agent> storedAgents;
-	ArrayList<SemanticGroup> storedCapsules;
+public class Capsule extends Entity {
+	HashMap<String,Agent> storedAgents;
+	ArrayList<Capsule> storedCapsules;
 	protected Collection<Agent> agentsAsSet;
-	
 	int dummyAgents = 2;
 	int dummySubCapsules = 0;
-	
-	//TODO: Need a way to store the lower and upper bounds of a group
-	//This also needs to be defined somewhere in CASL. 
-	//Possibly in the initialisation parameters section
-	//Should default to L: 0, U: INF
 	
 	//Need ways to add multiple agents of differnet types
 	//Have them interact correctly
 	//Blablah
-	public SemanticGroup(String capType, EntityID id){
-		super(capType, id);
+	public Capsule(String capType, long uid){
+		super(capType, uid);
 		storedAgents = new HashMap<String,Agent>();
-		storedCapsules = new ArrayList<SemanticGroup>();
+		storedCapsules = new ArrayList<Capsule>();
+
 
 
 		//TEsting
@@ -45,7 +34,7 @@ public class SemanticGroup extends Entity {
 
 	void dummy(int d){
 		for (int i = 0; i < d; i++){
-//			Agent tmpAgent = new Agent(getEntityID()+"agent_"+i);
+			Agent tmpAgent = new Agent(getEntityID().toString()+"agent_"+i);
 			// storedAgents.put(tmpAgent.getID(),tmpAgent); //Ooooooops
 		}
 		agentsAsSet = storedAgents.values(); //w/ever
@@ -56,9 +45,6 @@ public class SemanticGroup extends Entity {
 		
 	}
 
-	public ArrayList<Agent> getAgentsAsSet(){
-		return new ArrayList<Agent>(storedAgents.values());
-	}
 	@Override
 	public void run(){
 		simulate();
@@ -102,7 +88,7 @@ public class SemanticGroup extends Entity {
 	}
 
 	@Override
-	public void initialise(){
+	public void initialize(){
 		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
 	}
 
@@ -130,20 +116,15 @@ public class SemanticGroup extends Entity {
 	 * @param  contents    [description]
 	 * @return             [description]
 	 */
-	protected <T> void broadcast(MessageType messageType, T contents){
+	<T> void broadcast(MessageType messageType, T contents){
 		Message<T> message = new Message<T>(messageType, contents, getCurrentStep());
 
 		//Really you want generate a bunch of messages and put them in the queue
 
-		for (SemanticGroup cap : storedCapsules){
+		for (Capsule cap : storedCapsules){
 			cap.receiveMessage(new Message<T>(messageType, contents, getCurrentStep(), cap));
 		}
 	}
-	
-	
-	/**
-	 * Data output section
-	 */
 	
 	/****Repast Stuff****/
 //	public Context<Agent> void build(){

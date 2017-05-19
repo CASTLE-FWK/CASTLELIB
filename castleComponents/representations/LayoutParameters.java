@@ -1,8 +1,9 @@
-package repastGroups.representations;
+package castleComponents.representations;
 
 import java.util.ArrayList;
-import repastGroups.Enums;
-import repastGroups.Entity;
+
+import castleComponents.Entity;
+import castleComponents.Enums;
 
 public class LayoutParameters {
 	Enums.RepresentationTypes representationType;

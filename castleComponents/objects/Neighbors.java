@@ -1,4 +1,4 @@
-package repastGroups.objects;
+package castleComponents.objects;
 
 public class Neighbors<T> extends List<T>{
 	

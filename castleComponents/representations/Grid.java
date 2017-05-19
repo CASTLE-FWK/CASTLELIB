@@ -1,17 +1,18 @@
-package repastGroups.representations;
+package castleComponents.representations;
 
-import repastGroups.Entity;
-import repastGroups.Enums.GridPositions;
-import static repastGroups.Enums.getOpposite;
-import repastGroups.objects.GridLocation;
-import repastGroups.objects.Neighbors;
-import repastGroups.objects.Vector2;
+import static castleComponents.Enums.getOpposite;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import castleComponents.Entity;
+import castleComponents.Enums.GridPositions;
+import castleComponents.objects.GridLocation;
+import castleComponents.objects.Neighbors;
+import castleComponents.objects.Vector2;
 
 
 //TODO: How to get this to work with multiple Entity types

@@ -1,6 +1,6 @@
 package interLib;
 
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 
 public class Environment extends Agent {
 

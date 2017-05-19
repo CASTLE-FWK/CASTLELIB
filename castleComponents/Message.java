@@ -1,4 +1,4 @@
-package repastGroups;
+package castleComponents;
 
 /**
  * How can we use a message class to pass interactions?

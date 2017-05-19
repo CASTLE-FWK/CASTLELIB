@@ -5,8 +5,8 @@ import interLib.Parameter;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import repastGroups.Entity;
-import repastGroups.objects.Vector2;
+import castleComponents.Entity;
+import castleComponents.objects.Vector2;
 
 //This is a virtual Agent. Identical to an Agent it just allows the MetricRunner to process already stored information
 

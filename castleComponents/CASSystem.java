@@ -1,4 +1,4 @@
-package repastGroups;
+package castleComponents;
 
 /**
  * What does this do?

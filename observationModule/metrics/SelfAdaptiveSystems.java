@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import castleComponents.objects.Vector2;
+import castleComponents.representations.Grid;
 import observationModule.VEntity;
-import repastGroups.objects.Vector2;
-import repastGroups.representations.Grid;
 
 public class SelfAdaptiveSystems {
 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import casFeatures.CASStateOfInterest;
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 
 /**
  * This defines an agent.

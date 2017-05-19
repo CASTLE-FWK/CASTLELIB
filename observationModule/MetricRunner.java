@@ -30,12 +30,12 @@ import observationModule.results.MetricResult;
 
 import org.bson.Document;
 
+import castleComponents.objects.Vector2;
+import castleComponents.representations.Grid;
 import experiment.Experiment;
 import experiment.JsonParse;
 import experiment.MetricInfo;
 import experiment.SystemInfo;
-import repastGroups.objects.Vector2;
-import repastGroups.representations.Grid;
 
 public class MetricRunner {
 	

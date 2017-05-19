@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 
 /**
  * This is basically a 2D Array that takes type T

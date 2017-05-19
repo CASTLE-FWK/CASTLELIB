@@ -1,4 +1,4 @@
-package repastGroups.objects;
+package castleComponents.objects;
 
 public class UQueue<T> extends Queue<T>{
 

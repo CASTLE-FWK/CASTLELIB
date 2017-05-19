@@ -1,4 +1,4 @@
-package repastGroups;
+package castleComponents;
 
 /**
  * What does this do?
@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService; 
 import java.util.concurrent.Executors;
 
-import repastGroups.representations.Grid;
-
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
+
+import castleComponents.representations.Grid;
 
 public class Environment extends Entity {
 

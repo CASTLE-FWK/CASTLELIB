@@ -1,14 +1,5 @@
-package repastGroups;
+package castleComponents;
 
-/**
- * What does this do?
- * 
- */
-
-
-import repastGroups.Logger;
-import repastGroups.objects.Vector2;
-import repastGroups.Interaction;
 import interLib.DebugLogger;
 import interLib.State;
 import interLib.Utilities;
@@ -18,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import casFeatures.CASStateOfInterest;
+import castleComponents.Interaction;
+import castleComponents.Logger;
+import castleComponents.objects.Vector2;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.Json;

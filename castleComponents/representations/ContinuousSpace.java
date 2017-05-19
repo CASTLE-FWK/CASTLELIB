@@ -1,11 +1,11 @@
-package repastGroups.representations;
+package castleComponents.representations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 
 
 //THIS DOESNT WORK THIS WAY, NEED A BETTER WAY (grids with subgrids?)

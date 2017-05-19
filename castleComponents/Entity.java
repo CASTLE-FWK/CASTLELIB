@@ -1,11 +1,11 @@
-package repastGroups;
+package castleComponents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
-import repastGroups.objects.Vector2;
+import castleComponents.objects.Vector2;
 import interLib.Parameter;
 
 

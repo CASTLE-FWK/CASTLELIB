@@ -1,4 +1,4 @@
-package repastGroups.objects;
+package castleComponents.objects;
 
 import java.util.concurrent.ConcurrentHashMap;
 

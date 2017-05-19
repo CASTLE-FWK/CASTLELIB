@@ -3,10 +3,10 @@ package interactionGraph;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import castleComponents.objects.Vector2;
 import interLib.Agent;
 import interLib.Interaction;
 import interLib.Snapshot;
-import repastGroups.objects.Vector2;
 
 public class InteractionGraph {
 	ArrayList<Node> nodes;

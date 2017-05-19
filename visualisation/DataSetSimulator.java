@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import org.bson.Document;
 
+import castleComponents.objects.Vector2;
 import experiment.MetricInfo;
 import experiment.SystemInfo;
 import observationModule.DataCollector;
@@ -24,7 +25,6 @@ import phorcys.java.API;
 import phorcys.java.PNG;
 import phorcys.java.Mesh;
 import phorcys.java.Plot2D;
-import repastGroups.objects.Vector2;
 
 
 /**

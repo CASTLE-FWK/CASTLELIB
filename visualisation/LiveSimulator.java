@@ -1,6 +1,5 @@
 package visualisation;
 
-import repastGroups.Interaction;
 import interactionGraph.InteractionGraph;
 
 import java.awt.Color;
@@ -9,15 +8,16 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 
+import castleComponents.Agent;
+import castleComponents.Entity;
+import castleComponents.Interaction;
+import castleComponents.objects.Vector2;
 import observationModule.DataCollector;
 import observationModule.VEntity;
 import phorcys.java.API;
 import phorcys.java.Mesh;
 import phorcys.java.PNG;
 import phorcys.java.Plot2D;
-import repastGroups.Agent;
-import repastGroups.Entity;
-import repastGroups.objects.Vector2;
 
 public class LiveSimulator {
 	HashMap<String,VAgentSpec> specs; //<AgentName, VAgentSpec>

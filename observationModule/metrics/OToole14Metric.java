@@ -9,11 +9,11 @@ import java.util.Map.Entry;
 
 import org.apache.commons.math3.distribution.TDistribution;
 
+import castleComponents.objects.Vector2;
+import castleComponents.representations.Grid;
 import experiment.SystemInfo;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;
-import repastGroups.objects.Vector2;
-import repastGroups.representations.Grid;
 
 /**
  * DESCRIPTION:

@@ -1,7 +1,7 @@
 package interactionGraph;
 
+import castleComponents.objects.Vector2;
 import interLib.Agent;
-import repastGroups.objects.Vector2;
 
 
 public class Node {

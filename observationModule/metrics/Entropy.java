@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import castleComponents.objects.Vector2;
+import castleComponents.representations.Grid;
 import observationModule.VEntity;
-import repastGroups.objects.Vector2;
-import repastGroups.representations.Grid;
 
 public class Entropy {
 	
