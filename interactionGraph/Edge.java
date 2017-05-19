@@ -11,10 +11,19 @@ public class Edge implements Comparable<Edge>{
 		this.start = start;
 		this.end = end;
 		this.setWeight(weight);
-		this.type = type; 
+		this.type = type;
+		this.start.addIncomingEdge(this);
+		this.end.addOutgoingEdge(this);
+		this.start.incrementOutgoingInteractions();
+		this.end.incrementOutgoingInteractions();
+		this.start.addIncomingWeight(weight);
+		this.end.addOutgoingWeight(weight);
 	}
 	
 	public Edge(Interaction interaction){
+		if (interaction.getAgentFrom() == null){
+			System.out.println("INTERACTNULL");
+		}
 		start = new Node(interaction.getAgentFrom().getID(),interaction.getAgentFrom().getPosition());
 		end = new Node(interaction.getAgentTo().getID(), interaction.getAgentTo().getPosition());
 		weight = interaction.getOccurrence();

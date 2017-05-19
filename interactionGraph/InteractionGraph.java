@@ -2,14 +2,19 @@ package interactionGraph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import castleComponents.objects.Vector2;
 import interLib.Agent;
 import interLib.Interaction;
 import interLib.Snapshot;
+import castleComponents.Entity;
+import castleComponents.objects.Vector2;
 
 public class InteractionGraph {
-	ArrayList<Node> nodes;
+	HashSet<Node> nodes; //TODO: Replace with HashMap
+	HashMap<String,Node> nodesMap;
 	ArrayList<Edge> edges;
 	int numberOfNodes = 0;
 	int numberOfEdges = 0;
@@ -23,7 +28,7 @@ public class InteractionGraph {
 	public InteractionGraph(Snapshot snapshot){
 		ArrayList<Agent> agents = snapshot.getAgents();
 		ArrayList<Interaction> interactions = snapshot.getInteractions();
-		nodes = new ArrayList<Node>();
+		nodes = new HashSet<Node>();
 		edges = new ArrayList<Edge>();
 		
 		snapshotInterval = snapshot.getSnapshotInterval();
@@ -43,7 +48,23 @@ public class InteractionGraph {
 	}
 	
 	public InteractionGraph() {
-		// TODO Auto-generated constructor stub
+		nodes = new HashSet<Node>();
+		edges = new ArrayList<Edge>();
+		nodesMap = new HashMap<String,Node>();
+	}
+	
+	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions){
+		nodes = new HashSet<Node>();
+		for (Entity e : entities){
+			addNode(new Node(e));
+		}
+		for (Interaction inter : interactions){
+			Node start = findNode(inter.getAgentFromAsString());
+			Node end = findNode(inter.getAgentToAsString());
+			if (start != null && end != null){
+				edges.add(new Edge(start, end, inter.getType(), inter.getOccurrence()));
+			}
+		}
 	}
 	
 	/*Used for HDA*/
@@ -86,13 +107,30 @@ public class InteractionGraph {
 	public void sortEdges(){
 		Collections.sort(edges);
 	}
+	
+	public ArrayList<Node> sortNodesOnEdgeCount(){
+		ArrayList<Node> nodes = new ArrayList<Node>(this.nodes);
+		Collections.sort(nodes, new Comparator<Node>(){
+			@Override
+			public int compare(Node n1, Node n2){
+				if (n1.getTotalWeight() < n2.getTotalWeight()){
+					return -1;
+				} else if (n1.getTotalWeight() < n2.getTotalWeight()){
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		});
+		return nodes;
+	}
 
 
 	/**
 	 * @return the nodes
 	 */
 	public ArrayList<Node> getNodes() {
-		return nodes;
+		return new ArrayList<Node>(this.nodes);
 	}
 
 
@@ -100,7 +138,7 @@ public class InteractionGraph {
 	 * @param nodes the nodes to set
 	 */
 	public void setNodes(ArrayList<Node> nodes) {
-		this.nodes = nodes;
+		this.nodes = new HashSet<Node>(nodes);
 	}
 
 
@@ -191,5 +229,26 @@ public class InteractionGraph {
 	 */
 	public String getRunName() {
 		return runName;
+	}
+	
+	public void addNode(Node n){
+		nodes.add(n);
+		nodesMap.put(n.getName(), n);
+	}
+	
+	public Node findNode(String name){
+//		for (Node n : nodes){
+//			if (n.getName().compareToIgnoreCase(name) == 0){
+//				return n;
+//			}
+//		}
+//		return null;
+		return nodesMap.get(name);
+	}
+	
+	public void addEdge(Edge e){
+		edges.add(e);
+		e.getStart().addOutgoingEdge(e);
+		e.getEnd().addIncomingEdge(e);
 	}
 }

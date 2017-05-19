@@ -627,9 +627,10 @@ public class Grid<E> implements Representation{
 //		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Entity> getEntities() {
-		return allContainedEntities;
+		return (List<Entity>) allContainedEntities;
 	}
 	
 }
