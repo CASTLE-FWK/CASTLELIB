@@ -2,8 +2,8 @@ package observationModule.metrics;
 
 import java.util.ArrayList;
 
+import experimentExecution.SystemInfo;
 import observationModule.results.MetricResult;
-import experiment.SystemInfo;
 
 /**
  * DESCRIPTION:

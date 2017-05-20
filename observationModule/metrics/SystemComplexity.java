@@ -2,7 +2,7 @@ package observationModule.metrics;
 
 import java.util.ArrayList;
 
-import experiment.SystemInfo;
+import experimentExecution.SystemInfo;
 import observationModule.results.AccuracyResults;
 import observationModule.results.MetricResult;
 import stdSimLib.Interaction;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import experiment.SystemInfo;
+import experimentExecution.SystemInfo;
 import observationModule.MetricRunner_ED;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;

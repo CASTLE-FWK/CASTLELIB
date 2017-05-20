@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Map;
 
 import castleComponents.objects.Vector2;
+import experimentExecution.SystemInfo;
 import observationModule.MetricRunner_ED;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;
 import stdSimLib.Utilities;
-import experiment.SystemInfo;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
 

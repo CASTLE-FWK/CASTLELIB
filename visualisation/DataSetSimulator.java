@@ -11,8 +11,8 @@ import java.util.HashMap;
 import org.bson.Document;
 
 import castleComponents.objects.Vector2;
-import experiment.MetricInfo;
-import experiment.SystemInfo;
+import experimentExecution.MetricInfo;
+import experimentExecution.SystemInfo;
 import observationModule.DataCollector;
 import observationModule.VEntity;
 import observationModule.metrics.ClusterTrack;

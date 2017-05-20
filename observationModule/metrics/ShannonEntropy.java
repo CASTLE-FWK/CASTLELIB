@@ -1,7 +1,7 @@
 package observationModule.metrics;
 
+import experimentExecution.SystemInfo;
 import observationModule.results.MetricResult;
-import experiment.SystemInfo;
 
 public class ShannonEntropy extends MetricBase implements MetricInterface {
 

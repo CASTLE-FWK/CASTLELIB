@@ -1,4 +1,4 @@
-package experiment;
+package experimentExecution;
 
 public class SystemInfo{
 	String systemName;

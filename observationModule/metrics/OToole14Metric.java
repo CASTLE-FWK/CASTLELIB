@@ -11,7 +11,7 @@ import org.apache.commons.math3.distribution.TDistribution;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
-import experiment.SystemInfo;
+import experimentExecution.SystemInfo;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;
 
