@@ -3,9 +3,10 @@ package experimentExecution;
 import com.eclipsesource.json.*;
 import com.eclipsesource.json.JsonObject.Member;
 
+import observationTool.metrics.MetricParameters;
+
 import java.io.FileReader;
 import java.util.ArrayList;
-import observationModule.metrics.MetricParameters;
 
 public class JsonParse {
 

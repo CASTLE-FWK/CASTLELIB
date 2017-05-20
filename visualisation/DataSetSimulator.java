@@ -1,6 +1,13 @@
 package visualisation;
 
 import interactionGraph.InteractionGraph;
+import observationTool.DataCollector;
+import observationTool.VEntity;
+import observationTool.metrics.ClusterTrack;
+import observationTool.metrics.Entropy;
+import observationTool.metrics.SelfAdaptiveSystems;
+import observationTool.metrics.SystemComplexity;
+import observationTool.results.MetricResult;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -13,13 +20,6 @@ import org.bson.Document;
 import castleComponents.objects.Vector2;
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
-import observationModule.DataCollector;
-import observationModule.VEntity;
-import observationModule.metrics.ClusterTrack;
-import observationModule.metrics.Entropy;
-import observationModule.metrics.SelfAdaptiveSystems;
-import observationModule.metrics.SystemComplexity;
-import observationModule.results.MetricResult;
 import phorcys.java.API;
 import phorcys.java.PNG;
 import phorcys.java.Mesh;

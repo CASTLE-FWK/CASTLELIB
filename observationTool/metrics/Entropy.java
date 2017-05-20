@@ -1,4 +1,4 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
-import observationModule.VEntity;
+import observationTool.VEntity;
 
 public class Entropy {
 	

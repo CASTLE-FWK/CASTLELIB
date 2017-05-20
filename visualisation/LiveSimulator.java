@@ -1,6 +1,8 @@
 package visualisation;
 
 import interactionGraph.InteractionGraph;
+import observationTool.DataCollector;
+import observationTool.VEntity;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -12,8 +14,6 @@ import castleComponents.Agent;
 import castleComponents.Entity;
 import castleComponents.Interaction;
 import castleComponents.objects.Vector2;
-import observationModule.DataCollector;
-import observationModule.VEntity;
 import phorcys.java.API;
 import phorcys.java.Mesh;
 import phorcys.java.PNG;

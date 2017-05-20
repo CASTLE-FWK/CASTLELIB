@@ -1,7 +1,17 @@
-package observationModule;
+package observationTool;
 
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
+import observationTool.metrics.ChanGoLInterMetric;
+import observationTool.metrics.ClusterTrack;
+import observationTool.metrics.Entropy;
+import observationTool.metrics.MSSE_State;
+import observationTool.metrics.MetricParameters;
+import observationTool.metrics.OToole14Metric;
+import observationTool.metrics.SelfAdaptiveSystems;
+import observationTool.metrics.SystemComplexity;
+import observationTool.results.AccuracyResults;
+import observationTool.results.MetricResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,16 +25,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import observationModule.metrics.ChanGoLInterMetric;
-import observationModule.metrics.ClusterTrack;
-import observationModule.metrics.Entropy;
-import observationModule.metrics.MSSE_State;
-import observationModule.metrics.MetricParameters;
-import observationModule.metrics.OToole14Metric;
-import observationModule.metrics.SelfAdaptiveSystems;
-import observationModule.metrics.SystemComplexity;
-import observationModule.results.AccuracyResults;
-import observationModule.results.MetricResult;
 import stdSimLib.Interaction;
 import stdSimLib.Utilities;
 

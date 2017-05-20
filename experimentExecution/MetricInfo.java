@@ -2,9 +2,9 @@ package experimentExecution;
 
 import java.util.ArrayList;
 
-import observationModule.metrics.MetricParameters;
-
 import com.eclipsesource.json.JsonValue;
+
+import observationTool.metrics.MetricParameters;
 
 public class MetricInfo{
 	String metricName;

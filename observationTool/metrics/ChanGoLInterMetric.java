@@ -1,13 +1,13 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
 import experimentExecution.SystemInfo;
-import observationModule.MetricRunner_ED;
-import observationModule.VEntity;
-import observationModule.results.MetricResult;
+import observationTool.MetricRunner_ED;
+import observationTool.VEntity;
+import observationTool.results.MetricResult;
 
 /**
  * DESCRIPTION:

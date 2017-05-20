@@ -1,4 +1,4 @@
-package observationModule;
+package observationTool;
 
 import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;

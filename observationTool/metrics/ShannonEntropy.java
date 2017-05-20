@@ -1,28 +1,20 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import experimentExecution.SystemInfo;
-import observationModule.results.MetricResult;
+import observationTool.results.MetricResult;
 
-/**
- * REQUIREMENTS:
- * @author lachlan
- *
- */
+public class ShannonEntropy extends MetricBase implements MetricInterface {
 
-public class ActiveHausdorff implements MetricInterface{
-
-	public String metricName;
-	
-	public ActiveHausdorff() {
+	public ShannonEntropy() {
+		super("ShannonEntropy");
 		// TODO Auto-generated constructor stub
-		metricName = "ActiveHausdorff";
 	}
 
 
 	@Override
 	public void runMetric(Object... params) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

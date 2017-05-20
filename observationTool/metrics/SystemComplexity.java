@@ -1,10 +1,10 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 
 import experimentExecution.SystemInfo;
-import observationModule.results.AccuracyResults;
-import observationModule.results.MetricResult;
+import observationTool.results.AccuracyResults;
+import observationTool.results.MetricResult;
 import stdSimLib.Interaction;
 
 /**

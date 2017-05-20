@@ -1,4 +1,4 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import org.apache.commons.math3.distribution.TDistribution;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import experimentExecution.SystemInfo;
-import observationModule.VEntity;
-import observationModule.results.MetricResult;
+import observationTool.VEntity;
+import observationTool.results.MetricResult;
 
 /**
  * DESCRIPTION:

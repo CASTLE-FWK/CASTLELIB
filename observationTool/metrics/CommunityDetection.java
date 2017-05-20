@@ -1,19 +1,20 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 
 import experimentExecution.SystemInfo;
-import observationModule.results.MetricResult;
+import observationTool.results.MetricResult;
 
 /**
  * DESCRIPTION:
- * 	Detects communities based on the ...
- * 	
+ * 	Detects communities based on the concept of synchronization
+ * 	Probably could use some of this logic for other community methods, but not sure just yet
  * 
  * LOGIC:
- * 	1: Take list of Agents and Interactions, and build an AdjacencyMatrix
- *  2: 
- *  3: 
+ * 	1: Take list of Agents and build an Interaction graph
+ *  2: Detect hubs (Nodes with the greatest interaction count)
+ *  3: Build 2 Adjacency Lists: 1 with the Hubs, 1 as normal (Build this into the IG class)
+ *  4: 
  * 
  * REQUIREMENTS:
  *	• List of Agents
@@ -23,14 +24,15 @@ import observationModule.results.MetricResult;
  * @author lachlan
  *
  */
-public class CommunityDetectionInfoMod extends MetricBase implements MetricInterface {
+public class CommunityDetection extends MetricBase implements MetricInterface {
 
 	double finalResult;
 	
-	public CommunityDetectionInfoMod() {
+	public CommunityDetection() {
 		super("CommunityDetection");
 		// TODO Auto-generated constructor stub
 	}
+
 
 	public Object metricResults() {
 		// TODO Auto-generated method stub

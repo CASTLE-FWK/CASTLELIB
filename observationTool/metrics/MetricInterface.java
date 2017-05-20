@@ -1,8 +1,8 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
-import observationModule.results.MetricResult;
+import observationTool.results.MetricResult;
 
 public interface MetricInterface {
 	

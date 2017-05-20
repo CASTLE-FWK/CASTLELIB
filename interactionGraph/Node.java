@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import observationModule.VEntity;
 import stdSimLib.Agent;
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
+import observationTool.VEntity;
 
 
 public class Node {

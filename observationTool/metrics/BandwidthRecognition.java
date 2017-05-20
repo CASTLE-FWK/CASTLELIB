@@ -1,7 +1,7 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import experimentExecution.SystemInfo;
-import observationModule.results.MetricResult;
+import observationTool.results.MetricResult;
 
 /**
  * REQUIREMENTS:

@@ -1,4 +1,4 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
-import observationModule.VEntity;
+import observationTool.VEntity;
 import stdSimLib.Interaction;
 
 public class SelfAdaptiveSystems {

@@ -1,4 +1,4 @@
-package observationModule.metrics;
+package observationTool.metrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +8,12 @@ import java.util.Map;
 
 import castleComponents.objects.Vector2;
 import experimentExecution.SystemInfo;
-import observationModule.MetricRunner_ED;
-import observationModule.VEntity;
-import observationModule.results.MetricResult;
 import stdSimLib.Utilities;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
+import observationTool.MetricRunner_ED;
+import observationTool.VEntity;
+import observationTool.results.MetricResult;
 
 /**
  * DESCRIPTION:
