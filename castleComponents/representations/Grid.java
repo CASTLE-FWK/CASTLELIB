@@ -190,6 +190,10 @@ public class Grid<E> implements Representation{
 		return Y;
 	}
 
+	public List<E> getNeighboursFromVector(Vector2 v, int depth){
+		return getNeighbours((int)v.getX(), (int)v.getY(), depth);
+	}
+	
 	public List<E> getNeighbours(int x, int y, int depth){
 		ArrayList<E> neighbours = new ArrayList<E>();
 		neighbours.add(getNeighbour_U(x, y));

@@ -113,6 +113,11 @@ public class Vector2 implements java.io.Serializable {
 		return (int)(x * y);
 	}
 	
+	public void setPair(double X, double Y){
+		this.x = X;
+		this.y = Y;
+	}
+	
 	@Override
 	public String toString(){
 		String out = "";
