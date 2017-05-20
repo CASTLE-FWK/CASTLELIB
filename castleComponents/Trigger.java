@@ -63,6 +63,23 @@ public class Trigger {
 		this.triggerID = this.entity.getID()+Utilities.generateUID();
 	}
 	
+	public Trigger(Trigger t, boolean b){
+		this.startingLife = t.startingLife;
+		this.timeToLive = t.startingLife;
+		this.bi = t.bi;
+		if (!bi){
+			this.functionToTrigger = t.functionToTrigger;
+		} else {
+			this.bifunctionToTrigger = t.bifunctionToTrigger;
+		}				
+		this.repeatable = t.repeatable;
+		this.entity = t.entity;
+		this.triggerName = t.triggerName;
+		this.triggerID = this.entity.getID()+Utilities.generateUID();
+		
+		//
+	}
+	
 	public void trigger(){
 		if (bi){
 			timeToLive -= 1;

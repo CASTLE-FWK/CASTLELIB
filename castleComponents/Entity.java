@@ -15,14 +15,14 @@ public class Entity implements Runnable {
 	protected Logger logger;
 	protected HashMap<String,Parameter<?>> parameters;
 	
-	protected ArrayList<Trigger> triggers;
-	protected ArrayList<Trigger> triggersToAdd;
-	
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
 	
 	protected ArrayList<Trigger> cleanupTriggers;
 	protected ArrayList<Trigger> cleanupTriggersToAdd;
+	
+	protected ArrayList<Trigger> actionTriggers;
+	protected ArrayList<Trigger> actionTriggersToAdd;
 
 	boolean ready = false;
 	
@@ -61,12 +61,12 @@ public class Entity implements Runnable {
 	}
 	
 	public void initTriggerLists(){
-		triggers = new ArrayList<Trigger>();
-		triggersToAdd = new ArrayList<Trigger>();
 		setupTriggers = new ArrayList<Trigger>();
 		setupTriggersToAdd = new ArrayList<Trigger>();
 		cleanupTriggers = new ArrayList<Trigger>();
 		cleanupTriggersToAdd = new ArrayList<Trigger>();
+		actionTriggers = new ArrayList<Trigger>();
+		actionTriggersToAdd = new ArrayList<Trigger>();
 	}
 	
 
@@ -113,18 +113,18 @@ public class Entity implements Runnable {
 //					return;
 //				}
 //			}
-			for (Trigger t : triggersToAdd){
+			for (Trigger t : actionTriggersToAdd){
 				if (t.getTriggerName().compareToIgnoreCase(tr.getTriggerName()) == 0){
 					return;
 				}
 			}
 		}
-		triggersToAdd.add(tr);
+		actionTriggersToAdd.add(tr);
 	}
 	
 	public void addImmediateTrigger(Trigger tr, boolean unique){
 		if (unique){
-			for (Trigger t : triggers){
+			for (Trigger t : actionTriggers){
 				if (t.getTriggerID().compareToIgnoreCase(tr.getTriggerID()) == 0){
 					return;
 				}
@@ -135,7 +135,7 @@ public class Entity implements Runnable {
 //				}
 //			}
 		}
-		ListIterator<Trigger> i = triggers.listIterator();
+		ListIterator<Trigger> i = actionTriggers.listIterator();
 		i.add(tr);
 //		triggers.add(tr);
 	}
