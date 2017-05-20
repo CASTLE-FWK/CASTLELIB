@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 /**
  * Simple class to represent scores from a metric

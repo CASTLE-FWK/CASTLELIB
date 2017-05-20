@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import castleComponents.objects.Vector2;
-import interLib.Parameter;
+import stdSimLib.Parameter;
 
 
 public class Entity implements Runnable {

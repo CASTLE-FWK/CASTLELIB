@@ -14,9 +14,9 @@ import org.bson.Document;
 
 import castleComponents.Environment;
 import castleComponents.SemanticGroup;
+import stdSimLib.Parameter;
 import castleComponents.Agent;
 import castleComponents.Interaction;
-import interLib.Parameter;
 
 public class OutputToJSON_Mongo{
 

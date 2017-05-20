@@ -10,8 +10,8 @@ import castleComponents.objects.Vector2;
 import observationModule.MetricRunner_ED;
 import observationModule.VEntity;
 import observationModule.results.MetricResult;
+import stdSimLib.Utilities;
 import experiment.SystemInfo;
-import interLib.Utilities;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
 

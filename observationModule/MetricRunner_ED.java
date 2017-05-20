@@ -1,7 +1,5 @@
 package observationModule;
 
-import interLib.Interaction;
-import interLib.Utilities;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
 
@@ -25,6 +23,8 @@ import observationModule.metrics.SelfAdaptiveSystems;
 import observationModule.metrics.SystemComplexity;
 import observationModule.results.AccuracyResults;
 import observationModule.results.MetricResult;
+import stdSimLib.Interaction;
+import stdSimLib.Utilities;
 
 import org.bson.Document;
 

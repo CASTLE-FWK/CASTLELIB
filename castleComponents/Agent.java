@@ -1,9 +1,5 @@
 package castleComponents;
 
-import interLib.DebugLogger;
-import interLib.State;
-import interLib.Utilities;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +8,9 @@ import casFeatures.CASStateOfInterest;
 import castleComponents.Interaction;
 import castleComponents.Logger;
 import castleComponents.objects.Vector2;
+import stdSimLib.DebugLogger;
+import stdSimLib.State;
+import stdSimLib.Utilities;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.Json;

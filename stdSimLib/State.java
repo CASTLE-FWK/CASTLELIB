@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 public class State<T> implements java.io.Serializable{
 

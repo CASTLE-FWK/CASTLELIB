@@ -1,6 +1,6 @@
 package snapshotting;
 
-import interLib.SystemDescription;
+import stdSimLib.SystemDescription;
 
 /**
  * This creates a Snapshotter for a particular InteractionServer set up.

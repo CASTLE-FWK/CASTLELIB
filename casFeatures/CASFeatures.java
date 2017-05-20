@@ -1,8 +1,9 @@
 package casFeatures;
 
 import java.util.ArrayList;
-import interLib.Agent;
-import interLib.Environment;
+
+import stdSimLib.Agent;
+import stdSimLib.Environment;
 
 //This is the main CAS Class
 public class CASFeatures {

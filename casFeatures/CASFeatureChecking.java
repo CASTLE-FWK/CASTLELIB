@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import casFeatures.CASLib.CAS_Inspection_Level;
 import casFeatures.CASLib.CAS_Rule_Exception;
-import interLib.Agent;
-import interLib.Environment;
+import stdSimLib.Agent;
+import stdSimLib.Environment;
 
 /**
  * This class is to check CAS features

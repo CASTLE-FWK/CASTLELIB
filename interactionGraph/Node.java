@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 import observationModule.VEntity;
-import interLib.Agent;
+import stdSimLib.Agent;
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 

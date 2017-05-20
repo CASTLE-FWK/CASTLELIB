@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 public class DebugLogger {
 	

@@ -6,11 +6,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import interLib.Agent;
-import interLib.Interaction;
-import interLib.Snapshot;
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
+import stdSimLib.Agent;
+import stdSimLib.Interaction;
+import stdSimLib.Snapshot;
 
 public class InteractionGraph {
 	HashSet<Node> nodes; //TODO: Replace with HashMap

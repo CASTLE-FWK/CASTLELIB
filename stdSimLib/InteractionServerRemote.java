@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 
 public interface InteractionServerRemote extends java.rmi.Remote{

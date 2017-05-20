@@ -1,9 +1,9 @@
 package castleComponents;
 
-import interLib.Utilities;
-
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import stdSimLib.Utilities;
 
 public class Trigger {
 	

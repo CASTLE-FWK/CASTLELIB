@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 /**
  * A 3D Vector class.

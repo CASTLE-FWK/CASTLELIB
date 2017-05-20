@@ -1,12 +1,11 @@
 package observationModule.metrics;
 
-import interLib.Interaction;
-
 import java.util.ArrayList;
 
 import experiment.SystemInfo;
 import observationModule.results.AccuracyResults;
 import observationModule.results.MetricResult;
+import stdSimLib.Interaction;
 
 /**
  * DESCRIPTION:

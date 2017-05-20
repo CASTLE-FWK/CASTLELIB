@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 import java.awt.Color;
 import java.util.ArrayList;

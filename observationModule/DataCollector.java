@@ -1,10 +1,10 @@
 package observationModule;
 
-import interLib.Interaction;
-import interLib.Parameter;
 import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
+import stdSimLib.Interaction;
+import stdSimLib.Parameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

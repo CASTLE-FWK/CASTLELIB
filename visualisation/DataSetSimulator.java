@@ -1,6 +1,5 @@
 package visualisation;
 
-import interLib.Interaction;
 import interactionGraph.InteractionGraph;
 
 import java.awt.Color;
@@ -25,6 +24,7 @@ import phorcys.java.API;
 import phorcys.java.PNG;
 import phorcys.java.Mesh;
 import phorcys.java.Plot2D;
+import stdSimLib.Interaction;
 
 
 /**

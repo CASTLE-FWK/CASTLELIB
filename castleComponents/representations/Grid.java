@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import castleComponents.Entity;
+import castleComponents.EntityID;
 import castleComponents.Enums.GridPositions;
 import castleComponents.objects.GridLocation;
 import castleComponents.objects.Neighbors;
@@ -101,8 +102,25 @@ public class Grid<E> implements Representation{
 //		System.out.println("GRID INIT FUNCTION CALL");
 	}
 	
-	public void place(){
-		System.out.println("GRID PLACE FUNCTION CALL");
+	public void initCells(Object... objs){
+		
+	}
+	
+	public void place() {
+//		System.out.println("GRID PLACE FUNCTION CALL");
+		//Create the Cell with only Entity instantiation
+		//Figure out the class
+//		theClass = (Class<E>) this.layoutParameters.getEntityType();
+//		int count = 0;
+//		for (int i = 0; i < X; i++){
+//			for (int j = 0; j < Y; j++){
+//				//Create some EntityIDs
+//				EntityID eid = new EntityID(theClass.getCanonicalName()+"_"+i+"_"+j, count);
+//				E ent = (E) theClass.newInstance();
+//				
+//			}
+//		}
+		
 	}
 	
 	public void send(GridPositions location, Neighbors<E> neighbors, String function){

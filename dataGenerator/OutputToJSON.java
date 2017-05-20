@@ -17,8 +17,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 //import com.couchbase.client.java.CouchbaseCluster;
 //import com.couchbase.client.java.document.JsonDocument;
 
-import interLib.Agent;
-import interLib.Parameter;
+import stdSimLib.Agent;
+import stdSimLib.Parameter;
 
 public class OutputToJSON{
 

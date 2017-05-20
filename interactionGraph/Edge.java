@@ -1,6 +1,6 @@
 package interactionGraph;
 
-import interLib.Interaction;
+import stdSimLib.Interaction;
 
 public class Edge implements Comparable<Edge>{
 	Node start, end;

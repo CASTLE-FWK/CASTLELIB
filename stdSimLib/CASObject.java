@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 public class CASObject {
 	private String objectName = "";

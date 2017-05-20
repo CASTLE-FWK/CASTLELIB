@@ -1,4 +1,4 @@
-package interLib;
+package stdSimLib;
 
 import java.util.ArrayList;
 import java.util.Iterator;

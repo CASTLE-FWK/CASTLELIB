@@ -1,17 +1,17 @@
 package snapshotting;
 
-import interLib.Agent;
-import interLib.Interaction;
-import interLib.InteractionServerRemote;
-import interLib.MetaModel;
-import interLib.Snapshot;
-import interLib.SystemDescription;
-import interLib.Utilities;
-
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
+import stdSimLib.Agent;
+import stdSimLib.Interaction;
+import stdSimLib.InteractionServerRemote;
+import stdSimLib.MetaModel;
+import stdSimLib.Snapshot;
+import stdSimLib.SystemDescription;
+import stdSimLib.Utilities;
 
 public class SnapshotTaker {
 	

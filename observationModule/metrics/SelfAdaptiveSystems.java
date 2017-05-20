@@ -1,7 +1,5 @@
 package observationModule.metrics;
 
-import interLib.Interaction;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +9,7 @@ import java.util.Map.Entry;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import observationModule.VEntity;
+import stdSimLib.Interaction;
 
 public class SelfAdaptiveSystems {
 

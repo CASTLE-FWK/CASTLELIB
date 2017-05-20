@@ -1,7 +1,9 @@
 package casFeatures;
-import interLib.Agent;
-import interLib.Environment;
 import java.util.Set;
+
+import stdSimLib.Agent;
+import stdSimLib.Environment;
+
 import java.util.HashMap;
 import java.util.HashSet;
 /**

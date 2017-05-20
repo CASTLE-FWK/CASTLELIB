@@ -1,13 +1,12 @@
 package observationModule.results;
 
-import interLib.Utilities;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import experiment.SystemInfo;
+import stdSimLib.Utilities;
 
 
 //TODO: Need to do something about results stored as Strings...
