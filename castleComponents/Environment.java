@@ -24,36 +24,36 @@ public class Environment extends Entity {
 	protected int numberOfGroups = 1;
 
 
-	protected ExecutorService capExecutor;
+	protected ExecutorService groupExecutor;
 
 	//CELL CAPSULE STUFF
-	int capsulesX = 10;
-	int capsulesY = 10;
+	int groupsX = 10;
+	int groupsY = 10;
 
-	//2D representation of capsules
+	//2D representation of groups
 	protected Grid<SemanticGroup> theGrid;
 
 	public Environment(String envType, EntityID eid){
 		super(envType,eid);
 //		numberOfCapsules = numCaps;
-//		capsulesX = numCaps;
-//		capsulesY = numCaps;
+//		groupsX = numCaps;
+//		groupsY = numCaps;
 
 		//Init communications stuff
 		messageQueue = new MessageQueue();
 
-		//Init capsules to be contained
+		//Init groups to be contained
 		storedGroups = new ArrayList<SemanticGroup>(); //TODO: Switch to a HashMap or something
 
 		//Init sub-environments
 		storedEnvironments = new ArrayList<Environment>();
 
 		//Init 2D representation
-//		theGrid = new CapsuleGrid(capsulesX,capsulesY);
+//		theGrid = new CapsuleGrid(groupsX,groupsY);
 
 
 		//TESTING
-//		dummyAdd(capsulesX * capsulesY);
+//		dummyAdd(groupsX * groupsY);
 	}
 
 	@Override
@@ -84,12 +84,12 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 
 			phase_Setup();
-			capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			groupExecutor = Executors.newFixedThreadPool(numberOfGroups);
 			for (SemanticGroup cap : storedGroups){
-				capExecutor.execute(cap);
+				groupExecutor.execute(cap);
 			}
-			capExecutor.shutdown();
-			while (!capExecutor.isTerminated()){
+			groupExecutor.shutdown();
+			while (!groupExecutor.isTerminated()){
 			}
 
 			//Wait for storedCapsule ACKS
@@ -98,12 +98,12 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 			phase_Action();
 
-			capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			groupExecutor = Executors.newFixedThreadPool(numberOfGroups);
 			for (SemanticGroup cap : storedGroups){
-				capExecutor.execute(cap);
+				groupExecutor.execute(cap);
 			}
-			capExecutor.shutdown();
-			while (!capExecutor.isTerminated()){
+			groupExecutor.shutdown();
+			while (!groupExecutor.isTerminated()){
 			}
 
 			//Wait for storedCapsule ACKS
@@ -115,12 +115,12 @@ public class Environment extends Entity {
 			broadcast(MessageType.PHASE,getCurrentPhase());
 
 			phase_Cleanup();
-			ExecutorService capExecutor = Executors.newFixedThreadPool(numberOfGroups);
+			ExecutorService groupExecutor = Executors.newFixedThreadPool(numberOfGroups);
 			for (SemanticGroup cap : storedGroups){
-				capExecutor.execute(cap);
+				groupExecutor.execute(cap);
 			}
-			capExecutor.shutdown();
-			while (!capExecutor.isTerminated()){
+			groupExecutor.shutdown();
+			while (!groupExecutor.isTerminated()){
 			}
 			//Wait for storedCapsule ACKS
 
@@ -195,8 +195,8 @@ public class Environment extends Entity {
 //		// 	storedCapsules.add(tmpCC);
 //		// }
 //
-//		for (int i = 0; i < capsulesX; i++){
-//			for (int j = 0; j < capsulesY; j++){
+//		for (int i = 0; i < groupsX; i++){
+//			for (int j = 0; j < groupsY; j++){
 ////				Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this,i,j);
 //				SemanticGroup tmpC = new SemanticGroup(getEntityID().toString()+"_Capsule",i);
 //				storedCapsules.add(tmpC);
