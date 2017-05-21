@@ -26,6 +26,9 @@ public class Entity implements Runnable {
 
 	boolean ready = false;
 	
+	Vector2 position;
+	
+	
 	/*The Interaction Stuff*/
 	ArrayList<Interaction> interactionsInLastInterval;
 
@@ -38,6 +41,7 @@ public class Entity implements Runnable {
 		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new ArrayList<Interaction>();
+		position = new Vector2();
 	}
 	public Entity(String type, EntityID eid){
 		this.entityID = new EntityID(eid);
@@ -48,6 +52,7 @@ public class Entity implements Runnable {
 		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new ArrayList<Interaction>();
+		position = new Vector2();
 	}
 	public Entity(String type, String idAsString){
 		entityID = new EntityID(idAsString);
@@ -58,6 +63,7 @@ public class Entity implements Runnable {
 		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new ArrayList<Interaction>();
+		position = new Vector2();
 	}
 	
 	public void initTriggerLists(){
@@ -270,11 +276,9 @@ public class Entity implements Runnable {
 	public boolean compareEntity(Entity entity){
 		return ((""+getID()).equalsIgnoreCase(entity.getID()));
 	}
+	
 	public Vector2 getPosition() {
-		// TODO Auto-generated method stub
-		return null;
+		return position;
 	}
-	
-
-	
+		
 }

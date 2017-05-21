@@ -90,4 +90,11 @@ public class Continuous<Entity> implements Representation{
 	    }
 	    return (List<castleComponents.Entity>) out;
 	}
+	
+//	public void updatePositions(){
+//		ArrayList<Entity> list = (ArrayList<Entity>) getEntities();
+//		for (Entity e : list){
+//			entityLocationMap.put(e, e.getPosition());
+//		}
+//	}
 }
