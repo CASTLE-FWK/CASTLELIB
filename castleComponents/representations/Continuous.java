@@ -10,14 +10,27 @@ import stdSimLib.Utilities;
 
 
 //THIS DOESNT WORK THIS WAY, NEED A BETTER WAY (grids with subgrids?)
-public class ContinuousSpace<T> {
+public class Continuous<T> {
 	
 	HashMap<T, Vector2> entityLocationMap;
 	Vector2 dimensions;
 	
+	public Continuous(){
+		dimensions = new Vector2();
+		entityLocationMap = new HashMap<T, Vector2>();
+	}
 	
-	public ContinuousSpace(Vector2 dimensions){
+	public Continuous(Vector2 dimensions){
 		this.dimensions = dimensions;
+		entityLocationMap = new HashMap<T, Vector2>();
+	}
+	
+	public void setDimensions(Vector2 dims){
+		dimensions = new Vector2(dims);
+		entityLocationMap = new HashMap<T, Vector2>();
+	}
+	public void setDimensions(double x, double y){
+		dimensions = new Vector2(x,y);
 	}
 	
 	public void add(T obj, Vector2 pos){
@@ -36,7 +49,7 @@ public class ContinuousSpace<T> {
 		add(obj, entityLocationMap.get(obj).add(shiftPos));
 	}
 	
-	public List<T> itemsAroundPos(Vector2 pos, double dist){
+	public List<T> getNeighborsFromPosition(Vector2 pos, double dist){
 		ArrayList<T> items = new ArrayList<T>();
 		ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
 		for (Vector2 v : possiblePositions){
