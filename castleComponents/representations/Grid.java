@@ -629,6 +629,12 @@ public class Grid<E> implements Representation{
 		}
 	}
 	
+	public void addPhantomCells(GridPositions gp, List<E> list){
+		@SuppressWarnings("unchecked")
+		E[] arr = (E[]) Array.newInstance(theClass, list.size());
+		list.toArray(arr);
+	}
+	
 	public void phantomCheck(){
 		if (phantoms_L == null){
 			System.out.println("phantoms_L is null");
@@ -654,36 +660,6 @@ public class Grid<E> implements Representation{
 		if (phantoms_UR == null){
 			System.out.println("phantoms_UR is null");
 		}
-	}
-
-	public void _addPhantomCells(GridPositions gp, Neighbors<E> neighbors) {
-//		GridPositions oppo = getOpposite(gp);
-//		switch(oppo){
-//		case LEFT:
-//			phantoms_L = neighbors;
-//			break;
-//		case RIGHT:
-//			phantoms_R = neighbors;
-//			break;
-//		case DOWN:
-//			phantoms_D = neighbors;
-//			break;
-//		case UP:
-//			phantoms_U = neighbors;
-//			break;
-//		case UPLEFT:
-//			phantoms_UL = neighbors;
-//			break;
-//		case UPRIGHT:
-//			phantoms_UR = neighbors;
-//			break;
-//		case DOWNLEFT:
-//			phantoms_DL = neighbors;
-//			break;
-//		case DOWNRIGHT:
-//			phantoms_DR = neighbors;
-//			break;
-//		}
 	}
 
 	@SuppressWarnings("unchecked")
