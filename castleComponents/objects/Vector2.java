@@ -22,19 +22,24 @@ public class Vector2 implements java.io.Serializable {
 
 	private double x, y;
 	
+	private boolean nullPoint = true;
+	
 	public Vector2(){
 		this.x = 0;
 		this.y = 0;
+		nullPoint = false;
 	}
 	
 	public Vector2(double x, double y){
 		this.x = x;
 		this.y = y;
+		nullPoint = false;
 	}
 
 	public Vector2(Vector2 v){
 		this.x = v.x;
 		this.y = v.y;
+		nullPoint = false;
 	}
 	
 	public Vector2(String stringVector){
@@ -42,6 +47,17 @@ public class Vector2 implements java.io.Serializable {
 		String[] terms = stringVector.split(",");
 		this.x = Double.parseDouble(terms[0]);
 		this.y = Double.parseDouble(terms[1]);
+		nullPoint = false;
+	}
+	
+	public Vector2(boolean n){
+		if (n){
+			nullPoint = true;
+		} else {
+			nullPoint = false;
+		}
+		this.x = 0;
+		this.y = 0;
 	}
 	
 	public void reset(){
@@ -147,7 +163,7 @@ public class Vector2 implements java.io.Serializable {
 		return Math.sqrt((Math.pow(this.x - b.getX(), 2) + Math.pow(this.y - b.getY(), 2)));
 	}
 	
-	public ArrayList<Vector2> possibleOffsets(int offset){
+	public ArrayList<Vector2> possibleOffsets(double offset){
 		ArrayList<Vector2> offsets = new ArrayList<Vector2>();
 		offsets.add(new Vector2(x-offset,y+offset)); //-1,1
 		offsets.add(new Vector2(x,y+offset)); //0,1
@@ -190,5 +206,12 @@ public class Vector2 implements java.io.Serializable {
 				}
 			}
 		};
+	}
+	
+	public boolean isANullPoint(){
+		return nullPoint;
+	}
+	public void setNullPoint(boolean b){
+		nullPoint = b;
 	}
 }
