@@ -42,6 +42,12 @@ public class SemanticGroup extends Entity {
 		dummy(dummyAgents);
 
 	}
+	
+	public void addStoredAgents(ArrayList<Agent> ags){
+		for (Agent a : ags){
+			storedAgents.put(a.getID(), a);
+		}
+	}
 
 	void dummy(int d){
 		for (int i = 0; i < d; i++){
