@@ -127,8 +127,36 @@ public class Grid<E> implements Representation{
 		System.out.println("GRID SEND FUNCTION CALL");
 	}
 	
-	public Neighbors<E> getAll(GridPositions gp){
-		System.out.println("GRID _GETALL FUNCTION CALL");
+	public Neighbors<E> getAllNeighborsFromPosition(GridPositions gp){
+		Neighbors<E> neigh = new Neighbors<E>();
+//		neigh.setD(getNeighbour_D(x, y));
+		E[] tmpArray = getAllAsArray(gp);
+		switch(gp){
+		case LEFT:
+			neigh.setL(tmpArray);
+			return neigh;
+		case RIGHT:
+			neigh.setR(tmpArray);
+			return neigh;
+		case BOTTOM:
+			neigh.setD(tmpArray);
+			return neigh;
+		case TOP:
+			neigh.setU(tmpArray);
+			return neigh;
+		case TOPLEFT:
+			neigh.setUL(tmpArray);
+			return neigh;
+		case TOPRIGHT:
+			neigh.setUR(tmpArray);
+			return neigh;
+		case BOTTOMLEFT:
+			neigh.setDL(tmpArray);
+			return neigh;
+		case BOTTOMRIGHT:
+			neigh.setDR(tmpArray);
+			return neigh;		
+		}
 		return null;
 	}
 	
