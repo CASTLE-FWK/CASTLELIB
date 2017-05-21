@@ -1,6 +1,7 @@
 package castleComponents.representations;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import castleComponents.Entity;
 import castleComponents.Enums;
@@ -12,16 +13,19 @@ public class LayoutParameters {
 	private boolean allowPhantoms = false;
 	
 	public LayoutParameters(){
-		
+		containedEntities = new ArrayList<Entity>();
+	}
+	
+	public LayoutParameters(Enums.RepresentationTypes type){
+		this.representationType = type;
+		containedEntities = new ArrayList<Entity>();
 	}
 	
 	public void setRepresentationType(Enums.RepresentationTypes rt){
 		this.representationType = rt;
 	}
 	
-	public LayoutParameters(Enums.RepresentationTypes type){
-		this.representationType = type;
-	}
+	
 	
 	public void addEntityType(Class<?> clazz){
 		this.clazz = clazz;
@@ -40,7 +44,7 @@ public class LayoutParameters {
 	}
 
 	public void addContainedEntities(Representation r){
-		ArrayList<Entity> entities = (ArrayList<Entity>) r.getEntities();
+		List<Entity> entities = r.getEntities();
 		containedEntities.addAll(entities);		
 	}	
 	
