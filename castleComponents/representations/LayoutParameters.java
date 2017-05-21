@@ -39,7 +39,6 @@ public class LayoutParameters {
 		allowPhantoms = b;
 	}
 
-	//
 	public void addContainedEntities(Representation r){
 		ArrayList<Entity> entities = (ArrayList<Entity>) r.getEntities();
 		containedEntities.addAll(entities);		

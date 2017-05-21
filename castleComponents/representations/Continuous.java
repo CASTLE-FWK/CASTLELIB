@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 import castleComponents.objects.Vector2;
 import stdSimLib.Utilities;
 
-
-//THIS DOESNT WORK THIS WAY, NEED A BETTER WAY (grids with subgrids?)
 public class Continuous<T> {
 	
 	HashMap<T, Vector2> entityLocationMap;
@@ -63,11 +61,6 @@ public class Continuous<T> {
 		return Utilities.calculateDistance2D(entityLocationMap.get(obj1), entityLocationMap.get(obj2));
 	}
 	
-	public List<T> getNeighbors(Vector2 pos, Vector2 depth){
-		
-		return null;
-	}
-	
 	public List<T> getObjectsAtLocation(double x, double y){
 		ArrayList<T> objs = new ArrayList<T>();
 		Vector2 loc = new Vector2(x,y);
@@ -79,9 +72,6 @@ public class Continuous<T> {
 	    } 
 		return objs;
 	}
-	
-	
-	
 	
 	public Vector2 getDimensions(){
 		return dimensions;
