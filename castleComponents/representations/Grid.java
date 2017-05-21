@@ -160,6 +160,15 @@ public class Grid<E> implements Representation{
 		return null;
 	}
 	
+	public List<E> getAll(GridPositions gp){
+		E[] arr = getAllAsArray(gp);
+		ArrayList<E> list = new ArrayList<E>();
+		for (E e : arr){
+			list.add(e);
+		}
+		return list;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public E[] getAllAsArray(GridPositions gp){
 		switch(gp){
