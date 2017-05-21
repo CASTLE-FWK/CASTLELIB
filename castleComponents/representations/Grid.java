@@ -127,13 +127,13 @@ public class Grid<E> implements Representation{
 		System.out.println("GRID SEND FUNCTION CALL");
 	}
 	
-	public Neighbors<E> _getAll(GridPositions gp){
+	public Neighbors<E> getAll(GridPositions gp){
 		System.out.println("GRID _GETALL FUNCTION CALL");
 		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public E[] _getAllAsArray(GridPositions gp){
+	public E[] getAllAsArray(GridPositions gp){
 		switch(gp){
 		case LEFT:
 			//y is 0
