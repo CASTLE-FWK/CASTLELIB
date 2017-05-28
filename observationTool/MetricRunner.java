@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import stdSimLib.Interaction;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.RandomGen;
+import stdSimLib.utilities.Utilities;
 
 import org.bson.Document;
 
@@ -806,7 +807,7 @@ public class MetricRunner {
 					theGrid.addCell(agt, agt.getPosition());
 				}
 				for (int i = 0; i < sampleSize; i++){
-					VEntity tmpAgent = agents.get(Utilities.generateRandomRangeInteger(0, agents.size()-1));
+					VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size()-1));
 					//Get Feature 1: # of Live Neighbours
 					int aliveNeighbours = 0;
 					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid.getNeighbours((int)tmpAgent.getPosition().getX(), (int)tmpAgent.getPosition().getY(), 1);
@@ -911,7 +912,7 @@ public class MetricRunner {
 				}
 				double runningMultip = 1.0;
 				for (int i = 0; i < sampleSize; i++){
-					VEntity tmpAgent = agents.get(Utilities.generateRandomRangeInteger(0, agents.size()-1));
+					VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size()-1));
 					//Get Feature 1: # of Live Neighbours
 					int aliveNeighbours = 0;
 					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid.getNeighbours((int)tmpAgent.getPosition().getX(), (int)tmpAgent.getPosition().getY(), 1);

@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.Parameter;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 public class CASSystem{
 	int clock = 0;

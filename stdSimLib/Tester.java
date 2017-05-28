@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import stdSimLib.utilities.RandomGen;
+import stdSimLib.utilities.Utilities;
+
 public class Tester {
 
 	
@@ -48,7 +51,7 @@ public class Tester {
 		boolean[][] dummy = new boolean[dim][dim];
 		for (int i = 0; i < dim; i++){
 			for (int j = 0; j < dim; j++){
-				dummy[i][j] = Utilities.generateCoinFlip();
+				dummy[i][j] = RandomGen.generateCoinFlip();
 			}
 		}
 		

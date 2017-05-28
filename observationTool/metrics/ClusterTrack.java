@@ -8,12 +8,13 @@ import java.util.Map;
 
 import castleComponents.objects.Vector2;
 import experimentExecution.SystemInfo;
-import stdSimLib.Utilities;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
 import observationTool.MetricRunner_ED;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
+import stdSimLib.utilities.RandomGen;
+import stdSimLib.utilities.Utilities;
 
 /**
  * DESCRIPTION:
@@ -309,7 +310,8 @@ public class ClusterTrack implements MetricInterface{
 		clusters.clear();
 		for (int i = 0; i < numClusters; i++){
 			Cluster cluster = new Cluster(i);
-			Vector2 newVec = new Vector2(Utilities.generateRandomRangeDouble(0, totalSpace.getX()), Utilities.generateRandomRangeDouble(0, totalSpace.getY()));
+			Vector2 newVec = new Vector2(RandomGen.generateRandomRangeDouble(0, totalSpace.getX()), 
+					RandomGen.generateRandomRangeDouble(0, totalSpace.getY()));
 //			System.out.println("newVec: "+newVec);
 			cluster.setCentroid(new Vector2(newVec));
 			clusters.add(cluster);
@@ -431,7 +433,7 @@ public class ClusterTrack implements MetricInterface{
 		
 		
 		//Add a random Node to newIG
-		int randNodeIndex = Utilities.generateRandomRangeInteger(0, nodes.size());
+		int randNodeIndex = RandomGen.generateRandomRangeInteger(0, nodes.size());
 		newIG.addNode(nodes.get(randNodeIndex));	
 		
 		//Cut-of-the-phase: The cut-of-the-phase is the sum of the weight of all the edges connecting

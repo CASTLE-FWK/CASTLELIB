@@ -10,7 +10,7 @@ import castleComponents.Logger;
 import castleComponents.objects.Vector2;
 import stdSimLib.DebugLogger;
 import stdSimLib.State;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.Json;

@@ -1,6 +1,6 @@
 package castleComponents;
 
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 public class Logger{
 

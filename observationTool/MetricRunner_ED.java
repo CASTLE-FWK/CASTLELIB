@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import stdSimLib.Interaction;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 import org.bson.Document;
 

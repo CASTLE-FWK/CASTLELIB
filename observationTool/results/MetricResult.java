@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import experimentExecution.SystemInfo;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 
 //TODO: Need to do something about results stored as Strings...

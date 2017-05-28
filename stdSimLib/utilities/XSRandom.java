@@ -1,4 +1,4 @@
-package stdSimLib;
+package stdSimLib.utilities;
 
 import java.util.Random;
 

@@ -3,7 +3,7 @@ package castleComponents;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 public class Trigger {
 	

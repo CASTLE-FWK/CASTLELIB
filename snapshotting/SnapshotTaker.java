@@ -11,7 +11,7 @@ import stdSimLib.InteractionServerRemote;
 import stdSimLib.MetaModel;
 import stdSimLib.Snapshot;
 import stdSimLib.SystemDescription;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 public class SnapshotTaker {
 	

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
-import stdSimLib.Utilities;
+import stdSimLib.utilities.Utilities;
 
 public class Continuous<Entity> implements Representation{
 	
