@@ -80,7 +80,17 @@ public class Grid<E> implements Representation{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void init(Vector2 layoutXY, LayoutParameters layoutParameters){
+	@Override
+	public boolean initialize(Object...objects){
+		if (objects.length > 2){
+			return false; 
+		}
+		//First parameter is Vector2 layoutXY, 2nd parameter is LayoutParameters layoutParameters
+		Vector2 layoutXY = (Vector2)objects[0];
+		LayoutParameters layoutParameters = (LayoutParameters)objects[1]; 
+		
+		//Vector2 layoutXY, LayoutParameters layoutParameters
+		
 		this.X = (int)layoutXY.getX();
 		this.Y = (int)layoutXY.getY();
 		this.layoutParameters = layoutParameters;
@@ -98,8 +108,19 @@ public class Grid<E> implements Representation{
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
 		
+		return true;
 		
 //		System.out.println("GRID INIT FUNCTION CALL");
+	}
+	
+	@Override
+	public boolean initializeEntities(Object... objects) {
+		//TODO: Pull some form on input validation from the entity for this
+		
+		//
+		
+		
+		return false;
 	}
 	
 	public void initCells(Object... objs){
@@ -687,21 +708,11 @@ public class Grid<E> implements Representation{
 	}
 
 	@Override
-	public boolean initialize(Object... objects) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean initializeEntity(Object... objects) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
-	public boolean initializeEntities(Object... objects) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 	
 }
