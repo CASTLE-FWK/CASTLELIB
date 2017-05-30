@@ -90,6 +90,42 @@ public class Continuous<Entity> implements Representation{
 	    }
 	    return (List<castleComponents.Entity>) out;
 	}
+
+	@Override
+	public boolean addEntity(castleComponents.Entity e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeEntity(castleComponents.Entity e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeEntityByID(String id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean initialize(Object... objects) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean initializeEntity(Object... objects) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean initializeEntities(Object... objects) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 //	public void updatePositions(){
 //		ArrayList<Entity> list = (ArrayList<Entity>) getEntities();
