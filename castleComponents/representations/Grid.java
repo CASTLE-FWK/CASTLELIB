@@ -90,8 +90,6 @@ public class Grid implements Representation{
 		Vector2 layoutXY = (Vector2)objects[0];
 		LayoutParameters layoutParameters = (LayoutParameters)objects[1]; 
 		
-		//Vector2 layoutXY, LayoutParameters layoutParameters
-		
 		this.X = (int)layoutXY.getX();
 		this.Y = (int)layoutXY.getY();
 		this.layoutParameters = layoutParameters;
@@ -110,8 +108,6 @@ public class Grid implements Representation{
 		this.theGrid = grid;
 		
 		return true;
-		
-//		System.out.println("GRID INIT FUNCTION CALL");
 	}
 	
 	@Override
