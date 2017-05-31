@@ -8,6 +8,7 @@ public interface Representation {
 	
 	public List<Entity> getEntities();
 	public boolean addEntity(Entity e);
+	public boolean addEntities(List<Entity> es);
 	public boolean removeEntity(Entity e);
 	public boolean removeEntityByID(String id);
 	public boolean initialize(Object...objects);

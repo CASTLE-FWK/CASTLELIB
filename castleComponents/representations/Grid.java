@@ -115,6 +115,26 @@ public class Grid implements Representation{
 	}
 	
 	@Override
+	public boolean addEntities(List<Entity> es){
+		if (es == null){
+			return false;
+		}
+		if (es.size() == 0){
+			return false;
+		}
+		
+		for (Entity e : es){
+			Vector2 pos = e.getPosition();
+			if (pos == null){
+				return false;
+			}
+			theGrid[(int)pos.getX()][(int)pos.getY()] = e;
+		}
+		
+		return true;
+	}
+	
+	@Override
 	public boolean initializeEntities(Object... objects) {
 		//First object should be a counter, in this case a Vector2
 		if (objects.length > 4){
