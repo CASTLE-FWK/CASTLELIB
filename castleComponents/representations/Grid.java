@@ -15,37 +15,36 @@ import castleComponents.objects.GridLocation;
 import castleComponents.objects.Neighbors;
 import castleComponents.objects.Vector2;
 
-
 //TODO: How to get this to work with multiple Entity types
-public class Grid<E> implements Representation{
+public class Grid<Entity> implements Representation{
 	int X;
 	int Y;
-	E[][] grid;
+	castleComponents.Entity[][] grid;
 	LayoutParameters layoutParameters;
 	
 	boolean allowPhantoms = false;
-	E[] phantoms_U;
-	E[] phantoms_UR;
-	E[] phantoms_R;
-	E[] phantoms_DR;
-	E[] phantoms_D;
-	E[] phantoms_DL;
-	E[] phantoms_L;
-	E[] phantoms_UL;
+	Entity[] phantoms_U;
+	Entity[] phantoms_UR;
+	Entity[] phantoms_R;
+	Entity[] phantoms_DR;
+	Entity[] phantoms_D;
+	Entity[] phantoms_DL;
+	Entity[] phantoms_L;
+	Entity[] phantoms_UL;
 	
-	List<E> allContainedEntities;
+	List<Entity> allContainedEntities;
 	
-//	Neighbors<E> phantoms_U;
-//	Neighbors<E> phantoms_UR;
-//	Neighbors<E> phantoms_R;
-//	Neighbors<E> phantoms_DR;
-//	Neighbors<E> phantoms_D;
-//	Neighbors<E> phantoms_DL;
-//	Neighbors<E> phantoms_L;
-//	Neighbors<E> phantoms_UL;	
+//	Neighbors<Entity> phantoms_U;
+//	Neighbors<Entity> phantoms_UR;
+//	Neighbors<Entity> phantoms_R;
+//	Neighbors<Entity> phantoms_DR;
+//	Neighbors<Entity> phantoms_D;
+//	Neighbors<Entity> phantoms_DL;
+//	Neighbors<Entity> phantoms_L;
+//	Neighbors<Entity> phantoms_UL;	
 	
-	Class<E> theClass;
-	public Grid(Class<E> c, int X, int Y){
+	Class<Entity> theClass;
+	public Grid(Class<Entity> c, int X, int Y){
 		if (X == 0){
 			X = 1;
 		} 
@@ -56,11 +55,12 @@ public class Grid<E> implements Representation{
 		this.Y = Y;
 		this.theClass = c;
 //		grid = new E[this.X][this.Y];
-		@SuppressWarnings("unchecked")
-		final E[][] grid = (E[][]) Array.newInstance(c, X,Y);		
+		
+//		final Entity[][] grid = (Entity[][]) Array.newInstance(c, X,Y);		
+		this.grid = new castleComponents.Entity[X][Y];
 		this.grid = grid;
 		
-		allContainedEntities = new ArrayList<E>();
+		allContainedEntities = new ArrayList<Entity>();
 	}
 	
 	//TODO: Set phantom size
@@ -68,11 +68,11 @@ public class Grid<E> implements Representation{
 		
 	}
 	
-	public E[][] getGrid(){
+	public Entity[][] getGrid(){
 		return grid;
 	}
 	
-	public E getEntityAtXY(int x, int y){
+	public Entity getEntityAtXY(int x, int y){
 		return grid[x][y];
 	}
 	public void setPhantomState(boolean p){
@@ -103,9 +103,9 @@ public class Grid<E> implements Representation{
 		if (Y == 0){
 			Y = 1;
 		}
-		theClass = (Class<E>) this.layoutParameters.getEntityType();
+		theClass = (Class<Entity>) this.layoutParameters.getEntityType();
 		//Allow the grid to store Entities of the type specified in the layout parameters
-		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
+		final Entity[][] grid = (Entity[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
 		
 		return true;
@@ -128,30 +128,30 @@ public class Grid<E> implements Representation{
 	}
 	
 	public void place() {
-//		System.out.println("GRID PLACE FUNCTION CALL");
+//		System.out.println("GRID PLACEntity FUNCTION CALL");
 		//Create the Cell with only Entity instantiation
 		//Figure out the class
-//		theClass = (Class<E>) this.layoutParameters.getEntityType();
+//		theClass = (Class<Entity>) this.layoutParameters.getEntityType();
 //		int count = 0;
 //		for (int i = 0; i < X; i++){
 //			for (int j = 0; j < Y; j++){
 //				//Create some EntityIDs
 //				EntityID eid = new EntityID(theClass.getCanonicalName()+"_"+i+"_"+j, count);
-//				E ent = (E) theClass.newInstance();
+//				Entity ent = (E) theClass.newInstance();
 //				
 //			}
 //		}
 		
 	}
 	
-	public void send(GridPositions location, Neighbors<E> neighbors, String function){
+	public void send(GridPositions location, Neighbors<Entity> neighbors, String function){
 		System.out.println("GRID SEND FUNCTION CALL");
 	}
 	
-//	public Neighbors<E> getAllNeighborsFromPosition(GridPositions gp){
-//		Neighbors<E> neigh = new Neighbors<E>();
+//	public Neighbors<Entity> getAllNeighborsFromPosition(GridPositions gp){
+//		Neighbors<Entity> neigh = new Neighbors<Entity>();
 ////		neigh.setD(getNeighbour_D(x, y));
-//		E[] tmpArray = getAllAsArray(gp);
+//		Entity[] tmpArray = getAllAsArray(gp);
 //		switch(gp){
 //		case LEFT:
 //			neigh.setL(tmpArray);
@@ -181,35 +181,35 @@ public class Grid<E> implements Representation{
 //		return null;
 //	}
 	
-	public List<E> getAll(GridPositions gp){
-		E[] arr = getAllAsArray(gp);
-		ArrayList<E> list = new ArrayList<E>();
-		for (E e : arr){
+	public List<Entity> getAll(GridPositions gp){
+		Entity[] arr = getAllAsArray(gp);
+		ArrayList<Entity> list = new ArrayList<Entity>();
+		for (Entity e : arr){
 			list.add(e);
 		}
 		return list;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public E[] getAllAsArray(GridPositions gp){
+	public Entity[] getAllAsArray(GridPositions gp){
 		switch(gp){
 		case LEFT:
 			//y is 0
-			final E[] neighborsl = (E[]) Array.newInstance(theClass, X);
+			final Entity[] neighborsl = (Entity[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
 				neighborsl[i] = grid[0][i];
 			}
 			return neighborsl;
 		case RIGHT:
 			//y is Y-1
-			final E[] neighborsr = (E[]) Array.newInstance(theClass, X);
+			final Entity[] neighborsr = (Entity[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
 				neighborsr[i] = grid[X-1][i];
 			}
 			return neighborsr;
 		case BOTTOM:
 			//x is X-1
-			final E[] neighborsd = (E[]) Array.newInstance(theClass, Y);
+			final Entity[] neighborsd = (Entity[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsd[i] = grid[X-1][i];
 				neighborsd[i] = grid[i][X-1];
@@ -217,7 +217,7 @@ public class Grid<E> implements Representation{
 			return neighborsd;
 		case TOP:
 			//x is 0
-			final E[] neighborsu = (E[]) Array.newInstance(theClass, Y);
+			final Entity[] neighborsu = (Entity[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsu[i] = grid[0][i];
 				neighborsu[i] = grid[i][0];
@@ -225,24 +225,24 @@ public class Grid<E> implements Representation{
 			return neighborsu;
 		case TOPLEFT:
 			//x is 0, y is 0
-			final E[] neighborsul = (E[]) Array.newInstance(theClass, 1);
+			final Entity[] neighborsul = (Entity[]) Array.newInstance(theClass, 1);
 			neighborsul[0] = grid[0][0];
 			return neighborsul;
 		case TOPRIGHT:
 			//x is 0, y is Y-1
-			final E[] neighborsur = (E[]) Array.newInstance(theClass, 1);
+			final Entity[] neighborsur = (Entity[]) Array.newInstance(theClass, 1);
 //			neighborsur[0] = grid[0][Y-1];
 			neighborsur[0] = grid[X-1][0];
 			return neighborsur;
 		case BOTTOMLEFT:
 			//x is X-1, y is 0
-			final E[] neighborsdl = (E[]) Array.newInstance(theClass, 1);
+			final Entity[] neighborsdl = (Entity[]) Array.newInstance(theClass, 1);
 //			neighborsdl[0] = grid[X-1][0];
 			neighborsdl[0] = grid[0][Y-1];
 			return neighborsdl;
 		case BOTTOMRIGHT:
 			//x is X-1, y is Y-1
-			final E[] neighborsdr = (E[]) Array.newInstance(theClass, 1);
+			final Entity[] neighborsdr = (Entity[]) Array.newInstance(theClass, 1);
 			neighborsdr[0] = grid[X-1][Y-1];
 			return neighborsdr;
 		default:
@@ -250,11 +250,11 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public void addCell(E c, int x, int y){
+	public void addCell(Entity c, int x, int y){
 		grid[x][y] = c;
 		allContainedEntities.add(c);
 	}
-	public void addCell(E c, Vector2 vec){
+	public void addCell(Entity c, Vector2 vec){
 		grid[(int)vec.getX()][(int)vec.getY()] = c;
 	}
 	
@@ -266,12 +266,12 @@ public class Grid<E> implements Representation{
 		return Y;
 	}
 
-	public List<E> getNeighboursFromVector(Vector2 v, int depth){
+	public List<Entity> getNeighboursFromVector(Vector2 v, int depth){
 		return getNeighbours((int)v.getX(), (int)v.getY(), depth);
 	}
 	
-	public List<E> getNeighbours(int x, int y, int depth){
-		ArrayList<E> neighbours = new ArrayList<E>();
+	public List<Entity> getNeighbours(int x, int y, int depth){
+		ArrayList<Entity> neighbours = new ArrayList<Entity>();
 		neighbours.add(getNeighbour_U(x, y));
 		neighbours.add(getNeighbour_UR(x, y));
 		neighbours.add(getNeighbour_R(x, y));
@@ -284,8 +284,8 @@ public class Grid<E> implements Representation{
 		return neighbours;
 	}
 	
-	public List<E> getNeighbours_Old(int x, int y, int depth){
-		ArrayList<E> neighbours = new ArrayList<E>();
+	public List<Entity> getNeighbours_Old(int x, int y, int depth){
+		ArrayList<Entity> neighbours = new ArrayList<Entity>();
 
 		//Edge cases??
 		if (x == 0){
@@ -401,7 +401,7 @@ public class Grid<E> implements Representation{
 		return neighbours;
 	}
 
-	public E getNeighbour_U(int x, int y){
+	public Entity getNeighbour_U(int x, int y){
 		if (allowPhantoms){
 			
 			if (y == 0){				
@@ -418,7 +418,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_UR(int x, int y){
+	public Entity getNeighbour_UR(int x, int y){
 		int gx = x + 1;
 		int gy = y - 1;
 		if (gx == X){
@@ -444,7 +444,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_R(int x, int y){
+	public Entity getNeighbour_R(int x, int y){
 		
 		if (allowPhantoms){
 			if (x == X-1){
@@ -461,7 +461,7 @@ public class Grid<E> implements Representation{
 		}		
 	}
 
-	public E getNeighbour_DR(int x, int y){
+	public Entity getNeighbour_DR(int x, int y){
 		int gx = x + 1;
 		int gy = y + 1;
 		if (gx == X){
@@ -487,7 +487,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_D(int x, int y){
+	public Entity getNeighbour_D(int x, int y){
 		if (allowPhantoms){
 			if (y == Y - 1){
 				return phantoms_D[x];
@@ -503,7 +503,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_DL(int x, int y){
+	public Entity getNeighbour_DL(int x, int y){
 		int gx = x - 1;
 		int gy = y + 1;
 		if (gx == -1){
@@ -528,7 +528,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_L(int x, int y){
+	public Entity getNeighbour_L(int x, int y){
 		if (allowPhantoms){
 			if (x == 0){
 //				System.out.println("pos y: "+y);
@@ -550,7 +550,7 @@ public class Grid<E> implements Representation{
 		}
 	}
 
-	public E getNeighbour_UL(int x, int y){
+	public Entity getNeighbour_UL(int x, int y){
 		int gx = x - 1;
 		int gy = y - 1;
 		if (gx == -1){
@@ -612,11 +612,11 @@ public class Grid<E> implements Representation{
 	
 	//Phantom State stuff
 	//TODO
-	public void receiveStates(GridPositions placement, E[] stateVector){
+	public void receiveStates(GridPositions placement, Entity[] stateVector){
 		
 	}				
 	
-	public void addPhantomCells(GridPositions placement, E[] stateVector){
+	public void addPhantomCells(GridPositions placement, Entity[] stateVector){
 		GridPositions oppo = getOpposite(placement);
 //		System.out.println(placement.toString()+" opposite: "+oppo.toString());
 		switch(oppo){
@@ -650,9 +650,9 @@ public class Grid<E> implements Representation{
 		}
 	}
 	
-	public void addPhantomCells(GridPositions gp, List<E> list){
+	public void addPhantomCells(GridPositions gp, List<Entity> list){
 		@SuppressWarnings("unchecked")
-		E[] arr = (E[]) Array.newInstance(theClass, list.size());
+		Entity[] arr = (Entity[]) Array.newInstance(theClass, list.size());
 		list.toArray(arr);
 	}
 	
@@ -685,20 +685,8 @@ public class Grid<E> implements Representation{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Entity> getEntities() {
-		return (List<Entity>) allContainedEntities;
-	}
-
-	@Override
-	public boolean addEntity(Entity e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeEntity(Entity e) {
-		// TODO Auto-generated method stub
-		return false;
+	public List<castleComponents.Entity> getEntities() {
+		return allContainedEntities;
 	}
 
 	@Override
@@ -709,6 +697,18 @@ public class Grid<E> implements Representation{
 
 	@Override
 	public boolean initializeEntity(Object... objects) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addEntity(castleComponents.Entity e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeEntity(castleComponents.Entity e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
