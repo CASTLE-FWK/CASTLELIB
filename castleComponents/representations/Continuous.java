@@ -126,6 +126,12 @@ public class Continuous<Entity> implements Representation{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean addEntities(List<castleComponents.Entity> es) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 //	public void updatePositions(){
 //		ArrayList<Entity> list = (ArrayList<Entity>) getEntities();

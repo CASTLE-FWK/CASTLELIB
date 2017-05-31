@@ -58,4 +58,10 @@ public class GIS implements Representation{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean addEntities(List<Entity> es) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

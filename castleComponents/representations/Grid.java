@@ -106,7 +106,7 @@ public class Grid implements Representation{
 		}
 		theClass = (Class<Entity>) this.layoutParameters.getEntityType();
 		//Allow the grid to store Entities of the type specified in the layout parameters
-		final Entity[][] grid = (Entity[][]) Array.newInstance(theClass, X,Y);		
+		final Entity[][] grid = (Entity[][]) Array.newInstance(theClass, X,Y);
 		this.theGrid = grid;
 		
 		return true;
@@ -128,7 +128,7 @@ public class Grid implements Representation{
 			if (pos == null){
 				return false;
 			}
-			theGrid[(int)pos.getX()][(int)pos.getY()] = e;
+			addCell(e,(int)pos.getX(),(int)pos.getY());
 		}
 		
 		return true;
