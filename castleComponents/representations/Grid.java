@@ -83,7 +83,7 @@ public class Grid implements Representation{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean initialize(Object...objects){
-		if (objects.length > 2){
+		if (objects.length > 2 || objects.length < 2){
 			return false; 
 		}
 		//First parameter is Vector2 layoutXY, 2nd parameter is LayoutParameters layoutParameters
@@ -116,6 +116,21 @@ public class Grid implements Representation{
 	
 	@Override
 	public boolean initializeEntities(Object... objects) {
+		//First object should be a counter, in this case a Vector2
+		if (objects.length > 4){
+			return false;
+		}
+		if (!(objects[0] instanceof Vector2)){
+			return false;
+		}
+//		Vector2 range = (Vector2)objects[0];
+//		int xRange = (int)range.getX();
+//		int yRange = (int)range.getY();
+//		for (int i = 0; i < xRange; i++){
+//			for (int j = 0; j < yRange; j++){ 
+//			}
+//		}
+		
 		//TODO: Pull some form on input validation from the entity for this
 		
 		//
