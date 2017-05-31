@@ -9,17 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import castleComponents.Entity;
-import castleComponents.EntityID;
+import castleComponents.EntityID;	
 import castleComponents.Enums.GridPositions;
 import castleComponents.objects.GridLocation;
 import castleComponents.objects.Neighbors;
 import castleComponents.objects.Vector2;
 
+
 //TODO: How to get this to work with multiple Entity types
-public class Grid<Entity> implements Representation{
+public class Grid implements Representation{
 	int X;
 	int Y;
-	castleComponents.Entity[][] grid;
+	Entity[][] theGrid;
 	LayoutParameters layoutParameters;
 	
 	boolean allowPhantoms = false;
@@ -55,10 +56,10 @@ public class Grid<Entity> implements Representation{
 		this.Y = Y;
 		this.theClass = c;
 //		grid = new E[this.X][this.Y];
-		
-//		final Entity[][] grid = (Entity[][]) Array.newInstance(c, X,Y);		
-		this.grid = new castleComponents.Entity[X][Y];
-		this.grid = grid;
+		@SuppressWarnings("unchecked")
+		final Entity[][] grid = (Entity[][]) Array.newInstance(c, X,Y);		
+//		theGrid = new Entity[X][Y];
+		this.theGrid = grid;
 		
 		allContainedEntities = new ArrayList<Entity>();
 	}
@@ -69,11 +70,11 @@ public class Grid<Entity> implements Representation{
 	}
 	
 	public Entity[][] getGrid(){
-		return grid;
+		return theGrid;
 	}
 	
 	public Entity getEntityAtXY(int x, int y){
-		return grid[x][y];
+		return theGrid[x][y];
 	}
 	public void setPhantomState(boolean p){
 		allowPhantoms = p;
@@ -106,7 +107,7 @@ public class Grid<Entity> implements Representation{
 		theClass = (Class<Entity>) this.layoutParameters.getEntityType();
 		//Allow the grid to store Entities of the type specified in the layout parameters
 		final Entity[][] grid = (Entity[][]) Array.newInstance(theClass, X,Y);		
-		this.grid = grid;
+		this.theGrid = grid;
 		
 		return true;
 		
@@ -197,14 +198,14 @@ public class Grid<Entity> implements Representation{
 			//y is 0
 			final Entity[] neighborsl = (Entity[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
-				neighborsl[i] = grid[0][i];
+				neighborsl[i] = theGrid[0][i];
 			}
 			return neighborsl;
 		case RIGHT:
 			//y is Y-1
 			final Entity[] neighborsr = (Entity[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
-				neighborsr[i] = grid[X-1][i];
+				neighborsr[i] = theGrid[X-1][i];
 			}
 			return neighborsr;
 		case BOTTOM:
@@ -212,7 +213,7 @@ public class Grid<Entity> implements Representation{
 			final Entity[] neighborsd = (Entity[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsd[i] = grid[X-1][i];
-				neighborsd[i] = grid[i][X-1];
+				neighborsd[i] = theGrid[i][X-1];
 			}
 			return neighborsd;
 		case TOP:
@@ -220,30 +221,30 @@ public class Grid<Entity> implements Representation{
 			final Entity[] neighborsu = (Entity[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsu[i] = grid[0][i];
-				neighborsu[i] = grid[i][0];
+				neighborsu[i] = theGrid[i][0];
 			}
 			return neighborsu;
 		case TOPLEFT:
 			//x is 0, y is 0
 			final Entity[] neighborsul = (Entity[]) Array.newInstance(theClass, 1);
-			neighborsul[0] = grid[0][0];
+			neighborsul[0] = theGrid[0][0];
 			return neighborsul;
 		case TOPRIGHT:
 			//x is 0, y is Y-1
 			final Entity[] neighborsur = (Entity[]) Array.newInstance(theClass, 1);
 //			neighborsur[0] = grid[0][Y-1];
-			neighborsur[0] = grid[X-1][0];
+			neighborsur[0] = theGrid[X-1][0];
 			return neighborsur;
 		case BOTTOMLEFT:
 			//x is X-1, y is 0
 			final Entity[] neighborsdl = (Entity[]) Array.newInstance(theClass, 1);
 //			neighborsdl[0] = grid[X-1][0];
-			neighborsdl[0] = grid[0][Y-1];
+			neighborsdl[0] = theGrid[0][Y-1];
 			return neighborsdl;
 		case BOTTOMRIGHT:
 			//x is X-1, y is Y-1
 			final Entity[] neighborsdr = (Entity[]) Array.newInstance(theClass, 1);
-			neighborsdr[0] = grid[X-1][Y-1];
+			neighborsdr[0] = theGrid[X-1][Y-1];
 			return neighborsdr;
 		default:
 			return null;
@@ -251,11 +252,11 @@ public class Grid<Entity> implements Representation{
 	}
 
 	public void addCell(Entity c, int x, int y){
-		grid[x][y] = c;
+		theGrid[x][y] = c;
 		allContainedEntities.add(c);
 	}
 	public void addCell(Entity c, Vector2 vec){
-		grid[(int)vec.getX()][(int)vec.getY()] = c;
+		theGrid[(int)vec.getX()][(int)vec.getY()] = c;
 	}
 	
 	public int getX(){
@@ -290,112 +291,112 @@ public class Grid<Entity> implements Representation{
 		//Edge cases??
 		if (x == 0){
 			if (y == 0){
-				neighbours.add(grid[x][y+1]);
-				neighbours.add(grid[x][Y-1]);
+				neighbours.add(theGrid[x][y+1]);
+				neighbours.add(theGrid[x][Y-1]);
 
-				neighbours.add(grid[x+1][y]);
-				neighbours.add(grid[x+1][y+1]);
-				neighbours.add(grid[x+1][Y-1]);
+				neighbours.add(theGrid[x+1][y]);
+				neighbours.add(theGrid[x+1][y+1]);
+				neighbours.add(theGrid[x+1][Y-1]);
 
-				neighbours.add(grid[X-1][y]);
-				neighbours.add(grid[X-1][Y-1]);
-				neighbours.add(grid[X-1][y+1]);
+				neighbours.add(theGrid[X-1][y]);
+				neighbours.add(theGrid[X-1][Y-1]);
+				neighbours.add(theGrid[X-1][y+1]);
 							
 			} else if (y == Y-1){
-				neighbours.add(grid[x][0]);
-				neighbours.add(grid[x][Y-1]);
+				neighbours.add(theGrid[x][0]);
+				neighbours.add(theGrid[x][Y-1]);
 
-				neighbours.add(grid[x+1][y]);
-				neighbours.add(grid[x+1][0]);
-				neighbours.add(grid[x+1][y-1]);	
+				neighbours.add(theGrid[x+1][y]);
+				neighbours.add(theGrid[x+1][0]);
+				neighbours.add(theGrid[x+1][y-1]);	
 
-				neighbours.add(grid[X-1][y]);
-				neighbours.add(grid[X-1][y-1]);				
-				neighbours.add(grid[X-1][0]);
+				neighbours.add(theGrid[X-1][y]);
+				neighbours.add(theGrid[X-1][y-1]);				
+				neighbours.add(theGrid[X-1][0]);
 				
 			} else {
-				neighbours.add(grid[x][y+1]);
-				neighbours.add(grid[x][y-1]);
+				neighbours.add(theGrid[x][y+1]);
+				neighbours.add(theGrid[x][y-1]);
 
-				neighbours.add(grid[x+1][y]);
-				neighbours.add(grid[x+1][y+1]);
-				neighbours.add(grid[x+1][y-1]);
+				neighbours.add(theGrid[x+1][y]);
+				neighbours.add(theGrid[x+1][y+1]);
+				neighbours.add(theGrid[x+1][y-1]);
 				
-				neighbours.add(grid[X-1][y]);
-				neighbours.add(grid[X-1][y+1]);
-				neighbours.add(grid[X-1][y-1]);
+				neighbours.add(theGrid[X-1][y]);
+				neighbours.add(theGrid[X-1][y+1]);
+				neighbours.add(theGrid[X-1][y-1]);
 			}
 		} else if (x == X-1){
 			if (y == 0){
-				neighbours.add(grid[x][y+1]);
-				neighbours.add(grid[x][Y-1]);
+				neighbours.add(theGrid[x][y+1]);
+				neighbours.add(theGrid[x][Y-1]);
 
-				neighbours.add(grid[x-1][y]);
-				neighbours.add(grid[x-1][y+1]);
-				neighbours.add(grid[x-1][Y-1]);
+				neighbours.add(theGrid[x-1][y]);
+				neighbours.add(theGrid[x-1][y+1]);
+				neighbours.add(theGrid[x-1][Y-1]);
 				
-				neighbours.add(grid[0][y]);
-				neighbours.add(grid[0][y+1]);
-				neighbours.add(grid[0][Y-1]);
+				neighbours.add(theGrid[0][y]);
+				neighbours.add(theGrid[0][y+1]);
+				neighbours.add(theGrid[0][Y-1]);
 			} else if (y == Y-1){
-				neighbours.add(grid[x][0]);
-				neighbours.add(grid[x][y-1]);
+				neighbours.add(theGrid[x][0]);
+				neighbours.add(theGrid[x][y-1]);
 
-				neighbours.add(grid[x-1][y]);
-				neighbours.add(grid[x-1][0]);
-				neighbours.add(grid[x-1][y-1]);
+				neighbours.add(theGrid[x-1][y]);
+				neighbours.add(theGrid[x-1][0]);
+				neighbours.add(theGrid[x-1][y-1]);
 				
-				neighbours.add(grid[0][y]);
-				neighbours.add(grid[0][0]);
-				neighbours.add(grid[0][y-1]);
+				neighbours.add(theGrid[0][y]);
+				neighbours.add(theGrid[0][0]);
+				neighbours.add(theGrid[0][y-1]);
 
 			} else {
-				neighbours.add(grid[x][y+1]);
-				neighbours.add(grid[x][y-1]);
+				neighbours.add(theGrid[x][y+1]);
+				neighbours.add(theGrid[x][y-1]);
 
-				neighbours.add(grid[x-1][y]);
-				neighbours.add(grid[x-1][y+1]);
-				neighbours.add(grid[x-1][y-1]);
+				neighbours.add(theGrid[x-1][y]);
+				neighbours.add(theGrid[x-1][y+1]);
+				neighbours.add(theGrid[x-1][y-1]);
 				
-				neighbours.add(grid[0][y]);
-				neighbours.add(grid[0][y+1]);
-				neighbours.add(grid[0][y-1]);
+				neighbours.add(theGrid[0][y]);
+				neighbours.add(theGrid[0][y+1]);
+				neighbours.add(theGrid[0][y-1]);
 			}
 		} else {
 			if (y == 0){
-				neighbours.add(grid[x][y+1]);
-				neighbours.add(grid[x][Y-1]);
+				neighbours.add(theGrid[x][y+1]);
+				neighbours.add(theGrid[x][Y-1]);
 
-				neighbours.add(grid[x-1][y]);
-				neighbours.add(grid[x-1][y+1]);
-				neighbours.add(grid[x-1][Y-1]);
+				neighbours.add(theGrid[x-1][y]);
+				neighbours.add(theGrid[x-1][y+1]);
+				neighbours.add(theGrid[x-1][Y-1]);
 				
-				neighbours.add(grid[x+1][y]);
-				neighbours.add(grid[x+1][y+1]);
-				neighbours.add(grid[x+1][Y-1]);
+				neighbours.add(theGrid[x+1][y]);
+				neighbours.add(theGrid[x+1][y+1]);
+				neighbours.add(theGrid[x+1][Y-1]);
 
 			} else if (y == Y-1){
-				neighbours.add(grid[x][0]);
-				neighbours.add(grid[x][y-1]);
+				neighbours.add(theGrid[x][0]);
+				neighbours.add(theGrid[x][y-1]);
 
-				neighbours.add(grid[x-1][y]);
-				neighbours.add(grid[x-1][0]);
-				neighbours.add(grid[x-1][y-1]);
+				neighbours.add(theGrid[x-1][y]);
+				neighbours.add(theGrid[x-1][0]);
+				neighbours.add(theGrid[x-1][y-1]);
 				
-				neighbours.add(grid[x+1][y]);
-				neighbours.add(grid[x+1][0]);
-				neighbours.add(grid[x+1][y-1]);
+				neighbours.add(theGrid[x+1][y]);
+				neighbours.add(theGrid[x+1][0]);
+				neighbours.add(theGrid[x+1][y-1]);
 			} else {
-				neighbours.add(grid[x][y-1]);
-				neighbours.add(grid[x][y+1]);
+				neighbours.add(theGrid[x][y-1]);
+				neighbours.add(theGrid[x][y+1]);
 				
-				neighbours.add(grid[x-1][y-1]);
-				neighbours.add(grid[x-1][y+1]);
-				neighbours.add(grid[x-1][y]);
+				neighbours.add(theGrid[x-1][y-1]);
+				neighbours.add(theGrid[x-1][y+1]);
+				neighbours.add(theGrid[x-1][y]);
 				
-				neighbours.add(grid[x+1][y-1]);
-				neighbours.add(grid[x+1][y+1]);
-				neighbours.add(grid[x+1][y]);
+				neighbours.add(theGrid[x+1][y-1]);
+				neighbours.add(theGrid[x+1][y+1]);
+				neighbours.add(theGrid[x+1][y]);
 			}
 		}
 		return neighbours;
@@ -407,13 +408,13 @@ public class Grid<Entity> implements Representation{
 			if (y == 0){				
 				return phantoms_U[x];
 			} else {
-				return grid[x][y-1];
+				return theGrid[x][y-1];
 			}
 		} else {
 			if (y == 0){
-				return grid[x][Y-1];
+				return theGrid[x][Y-1];
 			} else {
-				return grid[x][y-1];
+				return theGrid[x][y-1];
 			}	
 		}
 	}
@@ -437,10 +438,10 @@ public class Grid<Entity> implements Representation{
 			} else if (x + 1 == X && !(y - 1 == -1)){
 				return phantoms_R[y-1];
 			} else {
-				return grid[gx][gy];
+				return theGrid[gx][gy];
 			}
 		} else {
-			return grid[gx][gy];
+			return theGrid[gx][gy];
 		}
 	}
 
@@ -450,13 +451,13 @@ public class Grid<Entity> implements Representation{
 			if (x == X-1){
 				return phantoms_R[y];
 			} else {
-				return grid[x+1][y];
+				return theGrid[x+1][y];
 			}
 		} else { 
 			if (x == X-1){			
-				return grid[0][y];
+				return theGrid[0][y];
 			} else {
-				return grid[x+1][y];
+				return theGrid[x+1][y];
 			}
 		}		
 	}
@@ -480,10 +481,10 @@ public class Grid<Entity> implements Representation{
 			} else if (x + 1 == X && !(y + 1 == Y)){
 				return phantoms_R[y+1];
 			}  else {
-				return grid[gx][gy];
+				return theGrid[gx][gy];
 			}
 		} else{ 
-			return grid[gx][gy];
+			return theGrid[gx][gy];
 		}
 	}
 
@@ -492,13 +493,13 @@ public class Grid<Entity> implements Representation{
 			if (y == Y - 1){
 				return phantoms_D[x];
 			} else {
-				return grid[x][y+1];
+				return theGrid[x][y+1];
 			}
 		} else {
 			if (y == Y - 1){
-				return grid[x][0];
+				return theGrid[x][0];
 			} else {
-				return grid[x][y+1];
+				return theGrid[x][y+1];
 			}
 		}
 	}
@@ -521,10 +522,10 @@ public class Grid<Entity> implements Representation{
 			} else if (x - 1 == -1 && !(y + 1 == Y)){
 				return phantoms_L[y+1];
 			}  else {
-				return grid[gx][gy];
+				return theGrid[gx][gy];
 			}
 		} else {
-			return grid[gx][gy];
+			return theGrid[gx][gy];
 		}
 	}
 
@@ -539,13 +540,13 @@ public class Grid<Entity> implements Representation{
 //				System.out.println("");
 				return phantoms_L[y];
 			} else {
-				return grid[x-1][y];
+				return theGrid[x-1][y];
 			}
 		} else {		
 			if (x == 0){
-				return grid[X-1][y];
+				return theGrid[X-1][y];
 			} else {
-				return grid[x-1][y];
+				return theGrid[x-1][y];
 			}
 		}
 	}
@@ -568,10 +569,10 @@ public class Grid<Entity> implements Representation{
 			} else if (x - 1 == -1 && !(y - 1 == -1)){
 				return phantoms_L[y-1];
 			} else {
-				return grid[gx][gy];
+				return theGrid[gx][gy];
 			}
 		} else {
-			return grid[gx][gy];
+			return theGrid[gx][gy];
 		}
 	}
 
@@ -579,7 +580,7 @@ public class Grid<Entity> implements Representation{
 		String[][] cellAsString = new String[X][Y];
 		for (int i = 0; i < X; i++){
 			for (int j = 0; j < Y; j++){
-				cellAsString[i][j] = grid[i][j].toString(); 
+				cellAsString[i][j] = theGrid[i][j].toString(); 
 			}
 		}
 		return cellAsString;
@@ -591,7 +592,7 @@ public class Grid<Entity> implements Representation{
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < X; i++){
 			for (int j = 0; j < Y; j++){
-				sb.append(grid[i][j].toString()); 
+				sb.append(theGrid[i][j].toString()); 
 			}
 		}
 		return sb.toString();
@@ -604,7 +605,7 @@ public class Grid<Entity> implements Representation{
 		HashMap<Vector2, String> theMap = new HashMap<Vector2, String>();
 		for (int i = 0; i < X; i++){
 			for (int j = 0; j < Y; j++){
-				theMap.put(new Vector2(i + xOffset, j + yOffset), grid[i][j].toString());
+				theMap.put(new Vector2(i + xOffset, j + yOffset), theGrid[i][j].toString());
 			}
 		}
 		return theMap;
@@ -686,7 +687,7 @@ public class Grid<Entity> implements Representation{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<castleComponents.Entity> getEntities() {
-		return allContainedEntities;
+		return (List<castleComponents.Entity>) allContainedEntities;
 	}
 
 	@Override
