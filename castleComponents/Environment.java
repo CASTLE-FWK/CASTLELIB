@@ -26,12 +26,12 @@ public class Environment extends Entity {
 
 	protected ExecutorService groupExecutor;
 
-	//CELL CAPSULE STUFF
+	//CELL SEMANTIC GROUP STUFF
 	int groupsX = 10;
 	int groupsY = 10;
 
 	//2D representation of groups
-	protected Grid<SemanticGroup> theGrid;
+	protected Grid theGrid;
 
 	public Environment(String envType, EntityID eid){
 		super(envType,eid);
@@ -69,7 +69,7 @@ public class Environment extends Entity {
 		// }
 
 		// //Send messages to Capsules
-		// for (Capsule cap : storedCapsules){
+		// for (SemanticGroup cap : storedCapsules){
 		// 	cap.receiveMessage("MEOW");
 		// }
 
@@ -189,15 +189,15 @@ public class Environment extends Entity {
 	
 //	public void dummyAdd(int c){
 //		// for (int i = 0; i < c; i++){
-//		// 	// Capsule tmpCapsule = new Capsule(getEntityID().toString()+"_capsule",i);
+//		// 	// SemanticGroup tmpCapsule = new SemanticGroup(getEntityID().toString()+"_capsule",i);
 //		// 	// storedCapsules.add(tmpCapsule);
-//		// 	Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this);
+//		// 	SemanticGroup tmpCC = new SemanticGroup(getEntityID().toString()+"_Capsule",i, 100, 100, this);
 //		// 	storedCapsules.add(tmpCC);
 //		// }
 //
 //		for (int i = 0; i < groupsX; i++){
 //			for (int j = 0; j < groupsY; j++){
-////				Capsule tmpCC = new Capsule(getEntityID().toString()+"_Capsule",i, 100, 100, this,i,j);
+////				SemanticGroup tmpCC = new SemanticGroup(getEntityID().toString()+"_Capsule",i, 100, 100, this,i,j);
 //				SemanticGroup tmpC = new SemanticGroup(getEntityID().toString()+"_Capsule",i);
 //				storedCapsules.add(tmpC);
 //				theGrid.addCell(tmpC, i, j);
@@ -212,35 +212,35 @@ public class Environment extends Entity {
 	//CapsuleGrid stuff
 	//TODO: Make this generate from generic representations
 	public SemanticGroup getNeighbour_U(int x, int y){
-		return theGrid.getNeighbour_U(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_U(x,y);
 	}
 
 	public SemanticGroup getNeighbour_UR(int x, int y){
-		return theGrid.getNeighbour_UR(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_UR(x,y);
 	}
 
 	public SemanticGroup getNeighbour_R(int x, int y){
-		return theGrid.getNeighbour_R(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_R(x,y);
 	}
 
 	public SemanticGroup getNeighbour_DR(int x, int y){
-		return theGrid.getNeighbour_DR(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_DR(x,y);
 	}
 
 	public SemanticGroup getNeighbour_D(int x, int y){
-		return theGrid.getNeighbour_D(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_D(x,y);
 	}
 
 	public SemanticGroup getNeighbour_DL(int x, int y){
-		return theGrid.getNeighbour_DL(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_DL(x,y);
 	}
 
 	public SemanticGroup getNeighbour_L(int x, int y){
-		return theGrid.getNeighbour_L(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_L(x,y);
 	}
 
 	public SemanticGroup getNeighbour_UL(int x, int y){
-		return theGrid.getNeighbour_UL(x,y);
+		return (SemanticGroup) theGrid.getNeighbour_UL(x,y);
 	}
 }
 
