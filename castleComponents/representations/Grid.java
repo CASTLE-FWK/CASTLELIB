@@ -94,6 +94,7 @@ public class Grid<E> implements Representation<E>{
 			Y = 1;
 		}
 		theClass = (Class<E>) this.layoutParameters.getEntityType();
+		System.out.println(theClass.toString());
 		//Allow the grid to store Entities of the type specified in the layout parameters
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
@@ -694,12 +695,6 @@ public class Grid<E> implements Representation<E>{
 
 	@Override
 	public boolean initialize(Object... objects) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean initializeEntity(Object... objects) {
 		//Needs to be 2 objects
 		if (objects.length != 2){
 			return false;
@@ -723,6 +718,11 @@ public class Grid<E> implements Representation<E>{
 		}
 		init(layoutXY, layoutParameters);
 		return true;
+	}
+
+	@Override
+	public boolean initializeEntity(Object... objects) {
+		return false;
 	}
 
 	@Override
