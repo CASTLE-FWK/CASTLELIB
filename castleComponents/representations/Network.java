@@ -6,26 +6,26 @@ import java.util.List;
 
 import castleComponents.Entity;
 
-public class Network implements Representation {
+public class Network<E> implements Representation<E> {
 
-	ArrayList<Entity> allEntities;
+	ArrayList<E> allEntities;
 	HashMap<String, NetworkNode> nodes;
 	ArrayList<NetworkEdge> edges;
 	
 	public Network(){
-		allEntities = new ArrayList<Entity>();
+		allEntities = new ArrayList<E>();
 		nodes = new HashMap<String, NetworkNode>();
 		edges = new ArrayList<NetworkEdge>();
 	}
 	
-	public void addNode(Entity e){
+	public void addNode(E e){
 		allEntities.add(e);
 		nodes.put(e.getID(), new NetworkNode(e));
 	}
  
 	
 	@Override
-	public List<Entity> getEntities() {
+	public List<E> getEntities() {
 		return allEntities;
 	}
 	
@@ -40,13 +40,13 @@ public class Network implements Representation {
 	}
 
 	@Override
-	public boolean addEntity(Entity e) {
+	public boolean addEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean removeEntity(Entity e) {
+	public boolean removeEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -76,7 +76,7 @@ public class Network implements Representation {
 	}
 
 	@Override
-	public boolean addEntities(List<Entity> es) {
+	public boolean addEntities(List<E> es) {
 		// TODO Auto-generated method stub
 		return false;
 	}

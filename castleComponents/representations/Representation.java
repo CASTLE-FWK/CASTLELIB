@@ -4,12 +4,12 @@ import java.util.List;
 
 import castleComponents.Entity;
 
-public interface Representation {
+public interface Representation<E> {
 	
-	public List<Entity> getEntities();
-	public boolean addEntity(Entity e);
-	public boolean addEntities(List<Entity> es);
-	public boolean removeEntity(Entity e);
+	public List<E> getEntities();
+	public boolean addEntity(E e);
+	public boolean addEntities(List<E> es);
+	public boolean removeEntity(E e);
 	public boolean removeEntityByID(String id);
 	public boolean initialize(Object...objects);
 	public boolean initializeEntity(Object...objects);

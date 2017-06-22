@@ -11,7 +11,7 @@ import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 
-public class Continuous<Entity> implements Representation{
+public class Continuous<E> implements Representation<E>{
 	
 	HashMap<Entity, Vector2> entityLocationMap;
 	Vector2 dimensions;
@@ -81,24 +81,24 @@ public class Continuous<Entity> implements Representation{
 	}
 
 	@Override
-	public List<castleComponents.Entity> getEntities() {
+	public List<E> getEntities() {
 		List<Entity> out = new ArrayList<Entity>();
 		Iterator<Entry<Entity, Vector2>> it = entityLocationMap.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pair = (Map.Entry)it.next();
 	        out.add((Entity) pair.getKey());
 	    }
-	    return (List<castleComponents.Entity>) out;
+	    return (List<E>) out;
 	}
 
-	@Override
-	public boolean addEntity(castleComponents.Entity e) {
+
+	public boolean addEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean removeEntity(castleComponents.Entity e) {
+	public boolean removeEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -128,7 +128,7 @@ public class Continuous<Entity> implements Representation{
 	}
 
 	@Override
-	public boolean addEntities(List<castleComponents.Entity> es) {
+	public boolean addEntities(List<E> es) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -20,6 +20,7 @@ public class Environment extends Entity {
 
 	protected ArrayList<SemanticGroup> storedGroups;
 	protected ArrayList<Environment> storedEnvironments;
+	protected ArrayList<Agent> storedAgents;
 	protected MessageQueue messageQueue;
 	protected int numberOfGroups = 1;
 
@@ -47,6 +48,9 @@ public class Environment extends Entity {
 
 		//Init sub-environments
 		storedEnvironments = new ArrayList<Environment>();
+		
+		//
+		storedAgents = new ArrayList<Agent>();
 
 		//Init 2D representation
 //		theGrid = new CapsuleGrid(groupsX,groupsY);
@@ -208,6 +212,14 @@ public class Environment extends Entity {
 //		}
 //	}
 	
+
+	public ArrayList<Agent> getStoredAgents() {
+		return storedAgents;
+	}
+
+	public void setStoredAgents(ArrayList<Agent> storedAgents) {
+		this.storedAgents = storedAgents;
+	}
 
 	//CapsuleGrid stuff
 	//TODO: Make this generate from generic representations

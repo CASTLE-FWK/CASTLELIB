@@ -17,7 +17,7 @@ import castleComponents.objects.Vector2;
 
 
 //TODO: How to get this to work with multiple Entity types
-public class Grid<E> implements Representation{
+public class Grid<E> implements Representation<E>{
 	int X;
 	int Y;
 	E[][] grid;
@@ -664,24 +664,25 @@ public class Grid<E> implements Representation{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Entity> getEntities() {
-		return (List<Entity>) allContainedEntities;
+	public List<E> getEntities() {
+		return (List<E>) allContainedEntities;
 	}
 
 	@Override
-	public boolean addEntity(Entity e) {
+	public boolean addEntity(E e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
+	@Override
+	public boolean addEntities(List<E> es) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean addEntities(List<Entity> es) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeEntity(Entity e) {
+	public boolean removeEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}

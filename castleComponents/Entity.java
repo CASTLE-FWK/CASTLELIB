@@ -280,5 +280,9 @@ public class Entity implements Runnable {
 	public Vector2 getPosition() {
 		return position;
 	}
+	
+	public void setPosition(Vector2 p) {
+		position = new Vector2(p);
+	}
 		
 }

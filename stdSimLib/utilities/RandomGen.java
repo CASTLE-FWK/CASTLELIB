@@ -41,6 +41,10 @@ public class RandomGen {
 		return generateWithProbabilty(FIFTY_PERCENT);
 	}
 	
+	public static boolean generateBiasedCoinFlip(double f){
+		return generateWithProbabilty(f);
+	}
+	
 	public static float generateRandomFloat(){
 		return random.nextFloat();
 	}
