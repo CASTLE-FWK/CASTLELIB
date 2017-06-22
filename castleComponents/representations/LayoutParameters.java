@@ -14,73 +14,74 @@ public class LayoutParameters {
 	Class<?> clazz;
 	ArrayList<Entity> containedEntities;
 	private boolean allowPhantoms = false;
-	
-	public LayoutParameters(){
+
+	public LayoutParameters() {
 		containedEntities = new ArrayList<Entity>();
 	}
-	
-	public LayoutParameters(Enums.RepresentationTypes type){
+
+	public LayoutParameters(Enums.RepresentationTypes type) {
 		this.representationType = type;
 		containedEntities = new ArrayList<Entity>();
 	}
-	
-	public void setRepresentationType(Enums.RepresentationTypes rt){
+
+	public void setRepresentationType(Enums.RepresentationTypes rt) {
 		this.representationType = rt;
 	}
-	
-	public void addEntityType(Class<?> clazz){
+
+	public void addEntityType(Class<?> clazz) {
 		this.clazz = clazz;
 	}
-	
-	public Class<?> getEntityType(){
+
+	public Class<?> getEntityType() {
 		return clazz;
 	}
-	
+
 	public boolean allowPhantoms() {
 		return allowPhantoms;
 	}
-	
-	public void setAllowPhantoms(boolean b){
+
+	public void setAllowPhantoms(boolean b) {
 		allowPhantoms = b;
 	}
 
-	public void addContainedEntities(Representation r){
-		List<Entity> entities = r.getEntities();
-		containedEntities.addAll(entities);		
-	}	
-	
-	public ArrayList<Entity> getContainedEntities(){
+	public void addContainedEntities(Representation<Entity> r) {
+//		List<?> entities = r.getEntities();
+		containedEntities = (ArrayList<Entity>) r.getEntities();
+//		containedEntities.addAll(entities);
+	}
+
+	public ArrayList<Entity> getContainedEntities() {
 		return containedEntities;
 	}
-	
-	public ArrayList<Environment> getContainedEnvironments(){
+
+	public ArrayList<Environment> getContainedEnvironments() {
 		ArrayList<Environment> envs = new ArrayList<Environment>();
-		for (int i = 0; i < containedEntities.size(); i++){
-			if (containedEntities.get(i) instanceof Environment){
+		for (int i = 0; i < containedEntities.size(); i++) {
+			if (containedEntities.get(i) instanceof Environment) {
 				envs.add((Environment) containedEntities.get(i));
 			}
-		}		
+		}
 		return envs;
 	}
-	
-	public ArrayList<SemanticGroup> getContainedGroups(){
+
+	public ArrayList<SemanticGroup> getContainedGroups() {
 		ArrayList<SemanticGroup> envs = new ArrayList<SemanticGroup>();
-		for (int i = 0; i < containedEntities.size(); i++){
-			if (containedEntities.get(i) instanceof SemanticGroup){
+		for (int i = 0; i < containedEntities.size(); i++) {
+			if (containedEntities.get(i) instanceof SemanticGroup) {
 				envs.add((SemanticGroup) containedEntities.get(i));
 			}
-		}		
+		}
 		return envs;
 	}
-	
-	public ArrayList<Agent> getContainedAgents(){
+
+	public ArrayList<Agent> getContainedAgents() {
 		ArrayList<Agent> envs = new ArrayList<Agent>();
-		for (int i = 0; i < containedEntities.size(); i++){
-			if (containedEntities.get(i) instanceof Agent){
+		for (int i = 0; i < containedEntities.size(); i++) {
+			if (containedEntities.get(i) instanceof Agent) {
 				envs.add((Agent) containedEntities.get(i));
 			}
-		}		
+		}
 		return envs;
 	}
-	
+
 }

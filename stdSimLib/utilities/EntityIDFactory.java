@@ -9,6 +9,9 @@ public class EntityIDFactory {
 	private static HashMap<String, Long> existingIDs;
 	
 	public static EntityID getNewID(String entityType){
+		if (existingIDs == null){
+			existingIDs = new HashMap<String, Long>();
+		}
 		if (existingIDs.get(entityType) == null){
 			existingIDs.put(entityType, 0l);
 		}

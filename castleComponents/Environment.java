@@ -21,6 +21,7 @@ public class Environment extends Entity {
 	protected ArrayList<SemanticGroup> storedGroups;
 	protected ArrayList<Environment> storedEnvironments;
 	protected ArrayList<Agent> storedAgents;
+	protected ArrayList<Entity> storeEntities;
 	protected MessageQueue messageQueue;
 	protected int numberOfGroups = 1;
 
@@ -49,7 +50,7 @@ public class Environment extends Entity {
 		//Init sub-environments
 		storedEnvironments = new ArrayList<Environment>();
 		
-		//
+		//Init agents (for non-SG only)
 		storedAgents = new ArrayList<Agent>();
 
 		//Init 2D representation

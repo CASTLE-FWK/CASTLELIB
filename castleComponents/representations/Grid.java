@@ -65,7 +65,7 @@ public class Grid<E> implements Representation<E>{
 	
 	//TODO: Set phantom size
 	public Grid(){
-		
+		allContainedEntities = new ArrayList<E>();
 	}
 	
 	public E[][] getGrid(){
@@ -229,12 +229,13 @@ public class Grid<E> implements Representation<E>{
 		}
 	}
 
-	public void addCell(E c, int x, int y){
+	public boolean addCell(E c, int x, int y){
 		grid[x][y] = c;
-		allContainedEntities.add(c);
+		return allContainedEntities.add(c);
 	}
-	public void addCell(E c, Vector2 vec){
+	public boolean addCell(E c, Vector2 vec){
 		grid[(int)vec.getX()][(int)vec.getY()] = c;
+		return allContainedEntities.add(c);
 	}
 	
 	public int getX(){
@@ -669,16 +670,14 @@ public class Grid<E> implements Representation<E>{
 	}
 
 	@Override
-	public boolean addEntity(E e) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addEntity(E e, Vector2 p) {
+		return addCell(e, p);		
 	}
 
 	
 	@Override
 	public boolean addEntities(List<E> es) {
-		// TODO Auto-generated method stub
-		return false;
+		return allContainedEntities.addAll(es);
 	}
 
 	@Override
@@ -701,8 +700,29 @@ public class Grid<E> implements Representation<E>{
 
 	@Override
 	public boolean initializeEntity(Object... objects) {
-		// TODO Auto-generated method stub
-		return false;
+		//Needs to be 2 objects
+		if (objects.length != 2){
+			return false;
+		}
+		Vector2 layoutXY = null;
+		LayoutParameters layoutParameters = null;
+		if (objects[0] instanceof Vector2){
+			layoutXY = (Vector2) objects[0];
+			if (objects[1] instanceof LayoutParameters){
+				layoutParameters = (LayoutParameters) objects[1];
+			}
+		} else if (objects[1] instanceof Vector2){
+			layoutXY = (Vector2) objects[1];
+			if (objects[0] instanceof LayoutParameters){
+				layoutParameters = (LayoutParameters) objects[0];
+			}
+		}
+		
+		if (layoutXY == null || layoutParameters == null){
+			return false;
+		}
+		init(layoutXY, layoutParameters);
+		return true;
 	}
 
 	@Override
