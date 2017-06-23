@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
+
 import castleComponents.objects.Vector2;
+import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
 
 
@@ -30,7 +32,8 @@ public class Entity implements Runnable {
 	
 	
 	/*The Interaction Stuff*/
-	ArrayList<Interaction> interactionsInLastInterval;
+//	ArrayList<Interaction> interactionsInLastInterval;
+	HashMap<String, Interaction> interactionsInLastInterval;
 
 	public Entity(String type, long uid){
 		entityID = new EntityID(type,uid);
@@ -40,7 +43,7 @@ public class Entity implements Runnable {
 		logger = new Logger();
 		logger.mute();
 		initTriggerLists();
-		interactionsInLastInterval = new ArrayList<Interaction>();
+		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
 	}
 	public Entity(String type, EntityID eid){
@@ -51,7 +54,7 @@ public class Entity implements Runnable {
 		logger = new Logger();
 		logger.mute();
 		initTriggerLists();
-		interactionsInLastInterval = new ArrayList<Interaction>();
+		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
 	}
 	public Entity(String type, String idAsString){
@@ -62,7 +65,7 @@ public class Entity implements Runnable {
 		logger = new Logger();
 		logger.mute();
 		initTriggerLists();
-		interactionsInLastInterval = new ArrayList<Interaction>();
+		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
 	}
 	
@@ -246,26 +249,59 @@ public class Entity implements Runnable {
 	}
 	
 	
-	public void interactionTo(Entity entityTo, String interactionType){
-		Interaction checkingInteraction = checkForInteraction(entityTo, this, interactionType);
-		if (checkingInteraction == null) {
-			interactionsInLastInterval.add(new Interaction(this, entityTo, interactionType));
+//	public void interactionTo(Entity entityTo, String interactionType){
+//		Interaction checkingInteraction = checkForInteraction(entityTo, this, interactionType);
+//		if (checkingInteraction == null) {
+//			interactionsInLastInterval.add(new Interaction(this, entityTo, interactionType));
+//		} else {
+//			checkingInteraction.incrementOccurrence();
+//		}
+//	}
+	
+//	public Interaction checkForInteraction(Entity entityTo, Entity entityFrom, String interactionType){
+//		for (Interaction interaction : interactionsInLastInterval){
+//			if (interaction.checkForSimilarity(entityFrom.getID(), entityTo.getID(), interactionType)){
+//				return interaction;
+//			}
+//		}
+//		return null;
+//	}
+	
+//	public Interaction checkForDuplicateInteraction(Interaction inter){
+//		for (Interaction interaction : interactionsInLastInterval){
+//			if (!interaction.equals(inter)){
+//				return interaction;
+//			}
+//		}
+//		return null;
+//	}
+	
+	public void addInteraction(Entity entityTo, InteractionType type, String name){
+		Interaction interaction = new Interaction(this, entityTo, type, name);
+		Interaction storedInteraction = interactionsInLastInterval.get(interaction.getID()); 
+		if (storedInteraction == null){
+			interactionsInLastInterval.put(interaction.getID(), interaction);
 		} else {
-			checkingInteraction.incrementOccurrence();
+			storedInteraction.incrementOccurrence();
 		}
 	}
 	
-	public Interaction checkForInteraction(Entity entityTo, Entity entityFrom, String interactionType){
-		for (Interaction interaction : interactionsInLastInterval){
-			if (interaction.checkForSimilarity(entityFrom.getID(), entityTo.getID(), interactionType)){
-				return interaction;
-			}
-		}
-		return null;
+	//short cuts
+	public void addQueryInteraction(Entity entityTo, String name){
+		addInteraction(entityTo, InteractionType.QUERY, name);
+	}
+	
+	public void addCommunicationInteraction(Entity entityTo, String name){
+		addInteraction(entityTo, InteractionType.COMMUNICATION, name);
+	}
+	
+	public void addIndirectInteraction(Entity entityTo, String name){
+		addInteraction(entityTo, InteractionType.INDIRECT, name);
 	}
 	
 	public List<Interaction> publishInteractions(){
-		return interactionsInLastInterval;
+		List<Interaction> interactions = new ArrayList<Interaction>(interactionsInLastInterval.values());
+		return interactions;
 	}
 	
 	
