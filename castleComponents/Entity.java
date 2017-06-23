@@ -285,8 +285,7 @@ public class Entity implements Runnable {
 			storedInteraction.incrementOccurrence();
 		}
 	}
-	
-	//short cuts
+
 	public void addQueryInteraction(Entity entityTo, String name){
 		addInteraction(entityTo, InteractionType.QUERY, name);
 	}
