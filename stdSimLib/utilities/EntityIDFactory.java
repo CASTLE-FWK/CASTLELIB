@@ -10,12 +10,18 @@ public class EntityIDFactory {
 	
 	public static EntityID getNewID(String entityType){
 		if (existingIDs == null){
-			existingIDs = new HashMap<String, Long>();
+			reset();
 		}
 		if (existingIDs.get(entityType) == null){
-			existingIDs.put(entityType, 0l);
+			existingIDs.put(entityType, -1l);
 		}
+		existingIDs.put(entityType, existingIDs.get(entityType)+1);
+		
 		return new EntityID(entityType, existingIDs.get(entityType));
+	}
+	
+	public static void reset(){
+		existingIDs = new HashMap<String, Long>();
 	}
 	
 }
