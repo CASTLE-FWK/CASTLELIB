@@ -16,7 +16,7 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
 
 public class SemanticGroup extends Entity {
-	protected HashMap<String,Agent> storedAgents;
+	protected ArrayList<Agent> storedAgents;
 	ArrayList<SemanticGroup> storedCapsules;
 	protected Collection<Agent> agentsAsSet;
 	
@@ -33,38 +33,19 @@ public class SemanticGroup extends Entity {
 	//Blablah
 	public SemanticGroup(String capType, EntityID id){
 		super(capType, id);
-		storedAgents = new HashMap<String,Agent>();
+		storedAgents = new ArrayList<Agent>();
 		storedCapsules = new ArrayList<SemanticGroup>();
-
-
-		//TEsting
-		//1) Make some dummy agents, store them in storedAgents
-		dummy(dummyAgents);
 
 	}
 	
 	public void addStoredAgents(ArrayList<Agent> ags){
-		for (Agent a : ags){
-			storedAgents.put(a.getID(), a);
-		}
+		storedAgents.addAll(ags);
 	}
-
-	void dummy(int d){
-		for (int i = 0; i < d; i++){
-//			Agent tmpAgent = new Agent(getEntityID()+"agent_"+i);
-			// storedAgents.put(tmpAgent.getID(),tmpAgent); //Ooooooops
-		}
-		agentsAsSet = storedAgents.values(); //w/ever
-	}
-
 
 	void step(){
 		
 	}
 
-	public ArrayList<Agent> getAgentsAsSet(){
-		return new ArrayList<Agent>(storedAgents.values());
-	}
 	@Override
 	public void run(){
 		simulate();
