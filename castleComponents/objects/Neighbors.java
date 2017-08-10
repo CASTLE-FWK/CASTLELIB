@@ -1,6 +1,8 @@
 package castleComponents.objects;
 
-public class Neighbors<T> extends List<T>{
+import java.util.ArrayList;
+
+public class Neighbors<T>{
 	
 	/**
 	 * 
@@ -21,6 +23,20 @@ public class Neighbors<T> extends List<T>{
 	
 	
 	public Neighbors(){
+		
+	}
+	
+	public List<T> getAsList(){
+		ArrayList<T> nei = new ArrayList<T>();
+		nei.add(Neighbor_D);
+		nei.add(Neighbor_DL);
+		nei.add(Neighbor_DR);
+		nei.add(Neighbor_L);
+		nei.add(Neighbor_R);
+		nei.add(Neighbor_U);
+		nei.add(Neighbor_UL);
+		nei.add(Neighbor_UR);
+		return (List<T>) nei;
 		
 	}
 

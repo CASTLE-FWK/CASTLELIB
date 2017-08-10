@@ -247,6 +247,24 @@ public class Grid<E> implements Representation<E>{
 		return Y;
 	}
 
+	
+	
+	public Neighbors<E> getNeighborsFromVectorWithContext(Vector2 v, int depth){
+		Neighbors<E> nei = new Neighbors<E>();
+		int x = (int)v.getX();
+		int y = (int)v.getY();
+		nei.setU(getNeighbour_U(x, y));
+		nei.setD(getNeighbour_D(x, y));
+		nei.setDL(getNeighbour_DL(x, y));
+		nei.setDR(getNeighbour_DR(x, y));
+		nei.setL(getNeighbour_L(x, y));
+		nei.setR(getNeighbour_R(x, y));
+		nei.setUL(getNeighbour_UL(x, y));
+		nei.setUR(getNeighbour_UR(x, y));
+		return nei;		
+	}
+	
+	//This is great and fast, but we lose all perspective of where the neighbors are
 	public List<E> getNeighboursFromVector(Vector2 v, int depth){
 		return getNeighbours((int)v.getX(), (int)v.getY(), depth);
 	}
