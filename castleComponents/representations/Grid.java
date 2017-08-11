@@ -235,6 +235,9 @@ public class Grid<E> implements Representation<E>{
 		return allContainedEntities.add(c);
 	}
 	public boolean addCell(E c, Vector2 vec){
+		if (grid == null){
+			System.out.println("GRID IS NULL");
+		}
 		grid[(int)vec.getX()][(int)vec.getY()] = c;
 		return allContainedEntities.add(c);
 	}
@@ -247,7 +250,7 @@ public class Grid<E> implements Representation<E>{
 		return Y;
 	}
 
-	
+	 
 	
 	public Neighbors<E> getNeighborsFromVectorWithContext(Vector2 v, int depth){
 		Neighbors<E> nei = new Neighbors<E>();
@@ -690,7 +693,7 @@ public class Grid<E> implements Representation<E>{
 
 	@Override
 	public boolean addEntity(E e, Vector2 p) {
-		return addCell(e, p);		
+		return addCell(e, p);
 	}
 
 	
