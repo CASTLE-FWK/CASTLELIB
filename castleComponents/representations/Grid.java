@@ -79,6 +79,9 @@ public class Grid<E> implements Representation<E>{
 		allowPhantoms = p;
 	}
 	
+	public Vector2 getDimensions(){
+		return new Vector2(X, Y);
+	}
 	@SuppressWarnings("unchecked")
 	public void init(Vector2 layoutXY, LayoutParameters layoutParameters){
 		this.X = (int)layoutXY.getX();

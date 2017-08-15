@@ -27,6 +27,10 @@ public class LayoutParameters {
 	public void setRepresentationType(Enums.RepresentationTypes rt) {
 		this.representationType = rt;
 	}
+	
+	public void setRepresentationType(String rt) {
+		this.representationType = Enums.RepresentationTypes.valueOf(rt);
+	}
 
 	public void addEntityType(Class<?> clazz) {
 		this.clazz = clazz;
