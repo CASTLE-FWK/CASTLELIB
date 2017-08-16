@@ -27,6 +27,14 @@ public class Logger{
 		muted = false;
 	}
 	
+	public void setup(boolean isMuted, boolean toConsole, boolean toFile, String filePath){
+		muted = isMuted;
+		loggingToConsole = toConsole;
+		loggingToFile = toFile;
+		systemLogPath = filePath;
+		
+	}
+	
 	public void enableLoggingToFile(){
 		loggingToFile = true;
 	}
@@ -35,11 +43,11 @@ public class Logger{
 		loggingToFile = false;
 	}
 	
-	public void enableConsoleLog(){
+	public void enableLoggingToConsole(){
 		loggingToConsole = true;
 	}
-	public void disableConsoleLog(){
-		loggingToConsole = true;
+	public void disableLoggingToConsole(){
+		loggingToConsole = false;
 	}
 	
 	//Prints to terminal
@@ -63,8 +71,7 @@ public class Logger{
 			if (loggingToConsole){
 				print(str);
 			}
-		}
-		
+		}		
 	}
 	
 	//Sets up the log path (should be fully automated)
