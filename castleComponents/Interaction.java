@@ -2,9 +2,6 @@ package castleComponents;
 
 public class Interaction implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -262768393273140446L;
 
 	Entity entityFrom, entityTo;
@@ -104,7 +101,6 @@ public class Interaction implements java.io.Serializable {
 		return out;
 	}
 
-	// TODO: There has to be a faster way to do this.
 	public boolean checkForSimilarity(String from, String to, String interactionType) {
 		return ((entityFrom.getID().compareToIgnoreCase(from) == 0) && (entityTo.getID().compareToIgnoreCase(to) == 0)
 				&& (name.compareToIgnoreCase(interactionType) == 0));

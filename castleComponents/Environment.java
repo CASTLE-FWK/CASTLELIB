@@ -28,12 +28,12 @@ public class Environment extends Entity {
 
 	protected ExecutorService groupExecutor;
 
-	//CELL SEMANTIC GROUP STUFF
-	int groupsX = 10;
-	int groupsY = 10;
-
-	//2D representation of groups
-	protected Grid theGrid;
+//	//CELL SEMANTIC GROUP STUFF
+//	int groupsX = 10;
+//	int groupsY = 10;
+//
+//	//2D representation of groups
+//	protected Grid theGrid;
 
 	public Environment(String envType, EntityID eid){
 		super(envType,eid);
@@ -134,22 +134,22 @@ public class Environment extends Entity {
  
 	@Override
 	public void initialise(){
-		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
 	}
 
 	@Override
 	public void phase_Setup(){
-		logger.print(getEntityID().toString() + " performing phase_setup at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_setup at step " + getCurrentStep());
 	}
 
 	@Override
 	public void phase_Action(){
-		logger.print(getEntityID().toString() + " performing phase_action at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_action at step " + getCurrentStep());
 	}
 
 	@Override
 	public void phase_Cleanup(){
-		logger.print(getEntityID().toString() + " performing phase_cleanup at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_cleanup at step " + getCurrentStep());
 	}
 
 
@@ -163,8 +163,9 @@ public class Environment extends Entity {
 	 * @param  messageType [description]
 	 * @param  contents    [description]
 	 * @return             [description]
+	 * @throws Exception 
 	 */
-	protected <T> void broadcast(MessageType messageType, T contents){
+	protected <T> void broadcast(MessageType messageType, T contents) {
 		Message<T> message = new Message<T>(messageType, contents, getCurrentStep());
 
 		//Really you want generate a bunch of messages and put them in the queue
@@ -222,38 +223,38 @@ public class Environment extends Entity {
 		this.storedAgents = storedAgents;
 	}
 
-	//CapsuleGrid stuff
-	//TODO: Make this generate from generic representations
-	public SemanticGroup getNeighbour_U(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_U(x,y);
-	}
-
-	public SemanticGroup getNeighbour_UR(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_UR(x,y);
-	}
-
-	public SemanticGroup getNeighbour_R(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_R(x,y);
-	}
-
-	public SemanticGroup getNeighbour_DR(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_DR(x,y);
-	}
-
-	public SemanticGroup getNeighbour_D(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_D(x,y);
-	}
-
-	public SemanticGroup getNeighbour_DL(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_DL(x,y);
-	}
-
-	public SemanticGroup getNeighbour_L(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_L(x,y);
-	}
-
-	public SemanticGroup getNeighbour_UL(int x, int y){
-		return (SemanticGroup) theGrid.getNeighbour_UL(x,y);
-	}
+//	//CapsuleGrid stuff
+//	//TODO: Make this generate from generic representations
+//	public SemanticGroup getNeighbour_U(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_U(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_UR(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_UR(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_R(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_R(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_DR(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_DR(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_D(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_D(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_DL(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_DL(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_L(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_L(x,y);
+//	}
+//
+//	public SemanticGroup getNeighbour_UL(int x, int y){
+//		return (SemanticGroup) theGrid.getNeighbour_UL(x,y);
+//	}
 }
 

@@ -48,6 +48,12 @@ public class Utilities {
 		return dateFormat.format(date);
 	}
 	
+	public static String generateNiceTimeStamp(){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss on yy-MM-dd");
+		Date date = new Date();
+		return dateFormat.format(date);
+	}
+	
 	public static double calculateDistance2D(Vector2 vectorA, Vector2 vectorB){
 		return Math.sqrt(Math.pow(vectorA.getX() - vectorB.getX(), 2) + Math.pow(vectorA.getX() - vectorB.getX(),2));
 	}

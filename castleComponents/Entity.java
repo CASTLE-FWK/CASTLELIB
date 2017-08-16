@@ -40,8 +40,6 @@ public class Entity implements Runnable {
 		this.entityType = type;
 		currentPhase = Phase.SETUP;
 		parameters = new HashMap<String,Parameter<?>>();
-		logger = new Logger();
-//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
@@ -51,8 +49,6 @@ public class Entity implements Runnable {
 		currentPhase = Phase.SETUP;
 		this.entityType = type;
 		parameters = new HashMap<String,Parameter<?>>();
-		logger = new Logger();
-//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
@@ -62,8 +58,6 @@ public class Entity implements Runnable {
 		currentPhase = Phase.SETUP;
 		this.entityType = type;
 		parameters = new HashMap<String,Parameter<?>>();
-		logger = new Logger();
-//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
@@ -82,7 +76,6 @@ public class Entity implements Runnable {
 		actionTriggersToAdd = new ArrayList<Trigger>();
 	}
 	
-
 	protected EntityID entityID;
 	
 	public EntityID getEntityID(){
@@ -119,13 +112,7 @@ public class Entity implements Runnable {
 	}
 	
 	public void addFutureTrigger(Trigger tr, boolean unique){
-//		triggersToAdd.ad
 		if (unique){
-//			for (Trigger t : triggers){
-//				if (t.getTriggerName().compareToIgnoreCase(tr.getTriggerName()) == 0){
-//					return;
-//				}
-//			}
 			for (Trigger t : actionTriggersToAdd){
 				if (t.getTriggerName().compareToIgnoreCase(tr.getTriggerName()) == 0){
 					return;
@@ -142,15 +129,9 @@ public class Entity implements Runnable {
 					return;
 				}
 			}
-//			for (Trigger t : triggersToAdd){
-//				if (t.getTriggerID().compareToIgnoreCase(tr.getTriggerID()) == 0){
-//					return;
-//				}
-//			}
 		}
 		ListIterator<Trigger> i = actionTriggers.listIterator();
 		i.add(tr);
-//		triggers.add(tr);
 	}
 	
 	public void setCurrentStep(int step){
@@ -162,14 +143,8 @@ public class Entity implements Runnable {
 	}
 
 
-//	public String announce(){
-//		// return entityID.toString() +" is alive at step "+getCurrentStep();
-//		return "";
-//	}
-
 	@Override
 	public void run(){
-//		System.out.println(announce());
 	}
 
 	public void initialise(){
@@ -192,10 +167,8 @@ public class Entity implements Runnable {
 		
 	}
 
-
 	//Messaging
-	public void receiveMessage(Message msg){
-		// System.out.println(entityID.toString() + ": "+msg);
+	public void receiveMessage(Message<?> msg){
 		MessageType msgType = msg.getMessageType();
 
 		switch(msgType){
@@ -206,16 +179,14 @@ public class Entity implements Runnable {
 				setCurrentPhase((Phase)msg.getContents());
 			break;
 			default:
-				System.out.println("UH OH");
+				throwCASTLEError("unknown message type", "receiveMessage", this.getClass().getName());
 			break;
 		}
-
 	}
 
 	public void sendMessage(){
 
 	}
-	
 	
 	//Logging
 	public void muteLogger(){
@@ -278,7 +249,6 @@ public class Entity implements Runnable {
 		return interactions;
 	}
 	
-	
 	public void clearInteractions(){
 		interactionsInLastInterval.clear();
 	}
@@ -295,8 +265,6 @@ public class Entity implements Runnable {
 		position = new Vector2(p);
 	}
 	
-	
-	
 	//Trigger pulling
 	public void pullTriggers(List<Trigger> triggers){
 		for (Iterator<Trigger> iterator = triggers.iterator(); iterator.hasNext();){
@@ -307,5 +275,8 @@ public class Entity implements Runnable {
 			}
 		}
 	}
-		
+	
+	public void throwCASTLEError(String desc, String location, String clazz) {
+		System.out.println("CASTLE ERROR: "+desc+" at method: "+location+" in class: "+clazz);
+	}
 }

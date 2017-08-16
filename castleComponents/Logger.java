@@ -1,5 +1,8 @@
 package castleComponents;
 
+import java.util.List;
+
+import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
 public class Logger{
@@ -80,13 +83,26 @@ public class Logger{
 	//Sets up the log path (should be fully automated)
 	public void setUpLog(String str){
 		systemLogPath = str;
-		systemSpecPath = systemLogPath+"/systemSpec.txt";
-		systemLogDirPath = systemLogPath+"/logs";
-		systemOutputDirPath = systemLogPath+"/output";
+		systemSpecPath = systemLogPath+"/systemInitialization.txt";
+		systemLogDirPath = systemLogPath+"/systemLog.txt";
+		systemOutputDirPath = systemLogPath+"/";
 	}
 	
-	public void systemSpecs(String str){
-		Utilities.writeToFile(str, systemSpecPath);
+	public void writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params){
+		String out = "Simulation Initialization Details: \n";
+		out += "Name: "+sysName+"\n";
+		out += "Description: "+sysDescription+"\n";
+		out += "Execution Start Time: "+Utilities.generateNiceTimeStamp()+"\n";
+		out += "Initialization Parameters:\n";
+		for (Parameter<?> p : params){
+			out += "\t"+p.toString()+"\n";
+		}
+		out += "-----------------------------";
+		if (loggingToConsole){
+			print(out);
+		}
+		if (loggingToFile){
+			Utilities.writeToFile(out, systemSpecPath);
+		}
 	}
-
 }

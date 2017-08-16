@@ -100,7 +100,7 @@ public class OutputToJSON_Mongo{
 				initValues);
 	}
 	
-	public void dumpSystem(String systemName, String execID, int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
+	public void exportSystem(String systemName, String execID, int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
 		currentStep = stepNumber;
 		//Ideally this would call system.getSystemName and so on but this is just for layout testing
 		system.append("system-name",systemName);
@@ -114,7 +114,7 @@ public class OutputToJSON_Mongo{
 	}
 
 	
-	public void dumpEnvironment(Environment e){
+	public void exportEnvironment(Environment e){
 		Document environment = new Document();
 		environment.append("environment-ID", e.getID());
 		environment.append("environment-type", e.getType());
@@ -152,7 +152,7 @@ public class OutputToJSON_Mongo{
 		environmentsDocuments.add(environment);
 	}
 	
-	public void dumpGroup(SemanticGroup g){
+	public void exportGroup(SemanticGroup g){
 		Document group = new Document();
 		group.append("group-ID", g.getID());
 		group.append("group-type", g.getType());
@@ -188,7 +188,7 @@ public class OutputToJSON_Mongo{
 		groupsDocuments.add(group);
 	}
 
-	public void dumpAgent(Agent a){
+	public void exportAgent(Agent a){
 		Document agent = new Document();
 		agent.append("agent-ID", a.getID());
 		agent.append("agent-type", a.getType());
@@ -243,7 +243,7 @@ public class OutputToJSON_Mongo{
 			.append("interactions",interactions);	
 	}
 
-	public Document dumpParameters(String name, String parameterValue, String type){
+	public Document exportParameters(String name, String parameterValue, String type){
 		Document param = new Document();
 		param.append("parameter-name",name);
 		param.append("parameter-type",type);
