@@ -49,7 +49,7 @@ public class Utilities {
 	}
 	
 	public static String generateNiceTimeStamp(){
-		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss on yy-MM-dd");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss 'on' yyyy-MM-dd");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}
