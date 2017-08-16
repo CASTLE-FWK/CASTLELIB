@@ -31,7 +31,6 @@ public class Entity implements Runnable {
 	
 	Vector2 position;
 	
-	
 	/*The Interaction Stuff*/
 //	ArrayList<Interaction> interactionsInLastInterval;
 	HashMap<String, Interaction> interactionsInLastInterval;
@@ -42,7 +41,7 @@ public class Entity implements Runnable {
 		currentPhase = Phase.SETUP;
 		parameters = new HashMap<String,Parameter<?>>();
 		logger = new Logger();
-		logger.mute();
+//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
@@ -53,7 +52,7 @@ public class Entity implements Runnable {
 		this.entityType = type;
 		parameters = new HashMap<String,Parameter<?>>();
 		logger = new Logger();
-		logger.mute();
+//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
@@ -64,10 +63,14 @@ public class Entity implements Runnable {
 		this.entityType = type;
 		parameters = new HashMap<String,Parameter<?>>();
 		logger = new Logger();
-		logger.mute();
+//		logger.mute();
 		initTriggerLists();
 		interactionsInLastInterval = new HashMap<String, Interaction>();
 		position = new Vector2();
+	}
+	
+	public void setLogger(Logger l){
+		logger = l;
 	}
 	
 	public void initTriggerLists(){
@@ -246,36 +249,7 @@ public class Entity implements Runnable {
 	}
 	public <T> void updateParameter(String paramName, T value){
 		addParameter(value, paramName);
-//		parameters.put(paramName, parameters.get(paramName).updateValue(value));
 	}
-	
-	
-//	public void interactionTo(Entity entityTo, String interactionType){
-//		Interaction checkingInteraction = checkForInteraction(entityTo, this, interactionType);
-//		if (checkingInteraction == null) {
-//			interactionsInLastInterval.add(new Interaction(this, entityTo, interactionType));
-//		} else {
-//			checkingInteraction.incrementOccurrence();
-//		}
-//	}
-	
-//	public Interaction checkForInteraction(Entity entityTo, Entity entityFrom, String interactionType){
-//		for (Interaction interaction : interactionsInLastInterval){
-//			if (interaction.checkForSimilarity(entityFrom.getID(), entityTo.getID(), interactionType)){
-//				return interaction;
-//			}
-//		}
-//		return null;
-//	}
-	
-//	public Interaction checkForDuplicateInteraction(Interaction inter){
-//		for (Interaction interaction : interactionsInLastInterval){
-//			if (!interaction.equals(inter)){
-//				return interaction;
-//			}
-//		}
-//		return null;
-//	}
 	
 	public void addInteraction(Entity entityTo, InteractionType type, String name){
 		Interaction interaction = new Interaction(this, entityTo, type, name);
@@ -329,10 +303,7 @@ public class Entity implements Runnable {
 			Trigger t = iterator.next();
 			t.trigger();
 			if (t.isDead()){
-//				System.out.println("REMOVED A TRIGGER. NUMBER LEFT: "+triggers.size());
 				iterator.remove();
-			} else {
-//				System.out.println("DID NOT REMOVE A TRIGGER. NUMBER LEFT: "+triggers.size());
 			}
 		}
 	}

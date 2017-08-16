@@ -21,15 +21,10 @@ public class Agent extends Entity{
 	protected EntityID id;
 	private String type = "";
 	
-//	HashMap<String,Agent> localAgents;
-
-
 	public Agent(String type, EntityID id){
 		super(type, id);
 		this.id = id;
 		this.type = type;
-		logger = new Logger();
-//		localAgents = new HashMap<String,Agent>();
 	}
 
 	
