@@ -4,8 +4,9 @@ import stdSimLib.utilities.Utilities;
 
 public class Logger{
 
-	private boolean logging;
+	private boolean loggingToFile;
 	private boolean muted = true;
+	private boolean loggingToConsole;
 	
 	//Output paths
 	private String systemLogPath;
@@ -26,18 +27,24 @@ public class Logger{
 		muted = false;
 	}
 	
-	public void enableLogWrite(){
-		logging = true;
+	public void enableLoggingToFile(){
+		loggingToFile = true;
 	}
 	
-	public void disableLogWrite(){
-		logging = false;
+	public void disableLoggingToFile(){
+		loggingToFile = false;
+	}
+	
+	public void enableConsoleLog(){
+		loggingToConsole = true;
+	}
+	public void disableConsoleLog(){
+		loggingToConsole = true;
 	}
 	
 	//Prints to terminal
 	public void print(String str){
-		if (!muted)
-			System.out.println(str);
+		System.out.println(str);
 	}
 	
 	//Will always print to file, even if muted
@@ -50,7 +57,12 @@ public class Logger{
 	//Prints to file
 	public void log(String str){
 		if (!muted){
-			
+			if (loggingToFile){
+				printToFile(str);
+			}
+			if (loggingToConsole){
+				print(str);
+			}
 		}
 		
 	}
