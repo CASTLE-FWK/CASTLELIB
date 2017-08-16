@@ -31,27 +31,7 @@ public class Agent extends Entity{
 		logger = new Logger();
 //		localAgents = new HashMap<String,Agent>();
 	}
-	
-	@Override
-	public void initialise(){
 
-	}
-	@Override
-	public void phase_Setup(){
-
-	}
-	@Override
-	public void phase_Action(){
-
-	}
-	@Override
-	public void phase_Cleanup(){
-
-	}
-	@Override
-	public void final_call(){
-		
-	}
 	
 	
 	/******COPIED OVER FROM INTERLIB AGENT*******/

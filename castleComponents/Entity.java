@@ -2,6 +2,7 @@ package castleComponents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -318,6 +319,22 @@ public class Entity implements Runnable {
 	
 	public void setPosition(Vector2 p) {
 		position = new Vector2(p);
+	}
+	
+	
+	
+	//Trigger pulling
+	public void pullTriggers(List<Trigger> triggers){
+		for (Iterator<Trigger> iterator = triggers.iterator(); iterator.hasNext();){
+			Trigger t = iterator.next();
+			t.trigger();
+			if (t.isDead()){
+//				System.out.println("REMOVED A TRIGGER. NUMBER LEFT: "+triggers.size());
+				iterator.remove();
+			} else {
+//				System.out.println("DID NOT REMOVE A TRIGGER. NUMBER LEFT: "+triggers.size());
+			}
+		}
 	}
 		
 }
