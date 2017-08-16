@@ -33,6 +33,9 @@ public class Logger{
 		loggingToFile = toFile;
 		systemLogPath = filePath;
 		
+		if (loggingToFile){
+			setUpLog(systemLogPath);
+		}
 	}
 	
 	public void enableLoggingToFile(){

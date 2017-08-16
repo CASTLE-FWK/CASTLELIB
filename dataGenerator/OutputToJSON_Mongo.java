@@ -139,8 +139,8 @@ public class OutputToJSON_Mongo{
 		if (agentInteractions != null){
 			for (Interaction inter : agentInteractions){
 				Document interDoc = new Document()
-					.append("interaction-from",inter.getAgentFrom().getID())
-					.append("interaction-to", inter.getAgentTo().getID())
+					.append("interaction-from",inter.getEntityFrom().getID())
+					.append("interaction-to", inter.getEntityTo().getID())
 					.append("interaction-type",inter.getType());
 				interactions.add(interDoc);
 			}
@@ -176,8 +176,8 @@ public class OutputToJSON_Mongo{
 		if (agentInteractions != null){
 			for (Interaction inter : agentInteractions){
 				Document interDoc = new Document()
-					.append("interaction-from",inter.getAgentFrom().getID())
-					.append("interaction-to", inter.getAgentTo().getID())
+					.append("interaction-from",inter.getEntityFrom().getID())
+					.append("interaction-to", inter.getEntityTo().getID())
 					.append("interaction-type",inter.getType());
 				interactions.add(interDoc);
 			}
@@ -212,8 +212,8 @@ public class OutputToJSON_Mongo{
 		if (agentInteractions != null){
 			for (Interaction inter : agentInteractions){
 				Document interDoc = new Document()
-					.append("interaction-from",inter.getAgentFrom().getID())
-					.append("interaction-to", inter.getAgentTo().getID())
+					.append("interaction-from",inter.getEntityFrom().getID())
+					.append("interaction-to", inter.getEntityTo().getID())
 					.append("interaction-type",inter.getType());
 				interactions.add(interDoc);
 			}
