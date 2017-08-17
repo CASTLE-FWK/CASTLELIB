@@ -67,6 +67,10 @@ public class Entity implements Runnable {
 		logger = l;
 	}
 	
+	public boolean loggerIsNull(){
+		return (logger == null);
+	}
+	
 	public void initTriggerLists(){
 		setupTriggers = new ArrayList<Trigger>();
 		setupTriggersToAdd = new ArrayList<Trigger>();

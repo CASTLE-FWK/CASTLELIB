@@ -77,9 +77,7 @@ public class Agent extends Entity{
 	
 	/*The CAS Stuff*/
 //	CASStateOfInterest stateOfInterest;
-	
-	//A DebugLog
-	protected Logger logger;
+
 	
 	//Interactions are specified manually for now.
 	//The systemSpecifications model does also specifiy them

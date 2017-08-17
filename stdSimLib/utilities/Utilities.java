@@ -58,17 +58,32 @@ public class Utilities {
 		return Math.sqrt(Math.pow(vectorA.getX() - vectorB.getX(), 2) + Math.pow(vectorA.getX() - vectorB.getX(),2));
 	}
 	
-	public static void writeToFile(String fileContents, String absoluteFilePath){
-		File outputFile = new File(absoluteFilePath);	
+	public static void writeToFile(String fileContents, String absoluteFilePath, boolean append){
+		File outputFile = new File(absoluteFilePath);
+		
 		System.out.println("Writing file to: " + absoluteFilePath);
 		
-		try{			
-			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile.getAbsoluteFile(), false)));
+		try{
+			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile.getAbsoluteFile(), append)));
 			printWriter.print(fileContents);
 			printWriter.close();
 			
 		} catch (IOException exc){
 			exc.printStackTrace();
+		}
+	}
+	
+	public static void createFile(String absoluteFilePath, boolean isDirectory){
+		File outputFile = new File(absoluteFilePath);
+		try {
+			if (isDirectory){
+				outputFile.mkdir();
+			} else {
+				outputFile.createNewFile();
+			}
+		} catch (IOException e) {
+			System.out.println("Could not create file at "+absoluteFilePath);
+			e.printStackTrace();
 		}
 	}
 	
