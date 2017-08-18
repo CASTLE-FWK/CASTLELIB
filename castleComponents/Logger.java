@@ -16,6 +16,7 @@ public class Logger{
 	private String systemSpecPath;
 	private String systemLogDirPath;
 	private String systemOutputDirPath;
+	private String systemStepInfoDir;
 	private String sysName;
 	
 	private StringBuilder stringBuilder;
@@ -75,13 +76,24 @@ public class Logger{
 		}
 	}
 	
+	//Will always print to file, even if muted
+	public void printToNewFile(String str, String filePath){
+		Utilities.createFile(filePath, false);
+		if (systemLogPath.length() > 0){
+			Utilities.writeToFile(str, systemLogDirPath, true);
+		} else {
+			print("You can't write to a file that hasn't been specified.");
+		}
+	}
+
 	public void newStep(int stepNumber){
 		if (loggingToConsole){
 			print("Step "+stepNumber);
 		}
 		if (loggingToFile){
 			if (stringBuilder.length() != 0){
-				printToFile(stringBuilder.toString());
+//				printToNewFile(stringBuilder.toString(), systemStepInfoDir+"/Step"+stepNumber);
+				new ThreadWriter(systemStepInfoDir+"/Step"+stepNumber+".txt", stringBuilder.toString()).run();
 			}
 			stringBuilder = new StringBuilder();			
 			stringBuilder.append("Step "+stepNumber+"\n");
@@ -114,14 +126,20 @@ public class Logger{
 		systemOutputDirPath = systemLogPath+"/"+sysName+"-"+Utilities.generateTimeStamp();
 		systemSpecPath = systemOutputDirPath+"/systemInitialization.txt";
 		systemLogDirPath = systemOutputDirPath+"/systemLog.txt";
+		systemStepInfoDir = systemOutputDirPath+"/steps";
+		
 		
 		
 		if (loggingToFile){
 			//Create directories and initial files
 			System.out.println("Create directories and files for logging");
 			System.out.println("Log directory at "+systemLogPath);
+			//Create main log dir if doesn't exist
 			Utilities.createFile(systemLogPath, true);
+			
+			//
 			Utilities.createFile(systemOutputDirPath, true);
+			Utilities.createFile(systemStepInfoDir, true);
 			
 			Utilities.createFile(systemSpecPath, false);
 			
@@ -146,4 +164,32 @@ public class Logger{
 			Utilities.writeToFile(out, systemSpecPath, false);
 		}
 	}
+}
+
+class ThreadWriter implements Runnable{
+
+	String path;
+	String strToWrite;
+	
+	public ThreadWriter(String path, String strToWrite){
+		this.path = path;
+		this.strToWrite = strToWrite;
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		printToNewFile(strToWrite, path);
+	}
+	
+	public void printToNewFile(String str, String filePath){
+		Utilities.createFile(filePath, false);
+		if (filePath.length() > 0){
+			Utilities.writeToFile(str, filePath, true);
+		} else {
+			System.out.println("You can't write to a file that hasn't been specified.");
+		}
+	}
+	
+
 }
