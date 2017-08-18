@@ -120,6 +120,10 @@ public class Logger{
 		}		
 	}
 	
+	public void logToFile(String str){
+		
+	}
+	
 	//Sets up the log path (should be fully automated)
 	public void setUpLog(String str){
 		systemLogPath = str;
