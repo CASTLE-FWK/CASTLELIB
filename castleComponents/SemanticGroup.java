@@ -66,18 +66,6 @@ public class SemanticGroup extends Entity {
 			//Broadcast phase to storedCapsules
 			broadcast(MessageType.PHASE,getCurrentPhase());
 			phase_Action();
-
-			// ExecutorService capExecutor = Executors.newFixedThreadPool(dummySubCapsules);
-			// for (Capsule cap : storedCapsules){
-			// 	capExecutor.execute(cap);
-			// }
-			
-			// while (!capExecutor.isTerminated()){}
-
-			//Wait for storedCapsule ACKS
-
-			
-
 		} else if (getCurrentPhase() == Phase.CLEANUP) {
 			//Broadcast phase to storedCapsules
 			broadcast(MessageType.PHASE,getCurrentPhase());
@@ -90,12 +78,12 @@ public class SemanticGroup extends Entity {
 
 	@Override
 	public void initialise(){
-		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
 	}
 
 	@Override
 	public void phase_Setup(){
-		logger.print(getEntityID().toString() + " performing phase_setup at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_setup at step " + getCurrentStep());
 	}
 
 	@Override
@@ -103,12 +91,12 @@ public class SemanticGroup extends Entity {
 		// for (Agent agent : agentsAsSet){
 
 		// }
-		logger.print(getEntityID().toString() + " performing phase_action at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_action at step " + getCurrentStep());
 	}
 
 	@Override
 	public void phase_Cleanup(){
-		logger.print(getEntityID().toString() + " performing phase_cleanup at step " + getCurrentStep());
+//		logger.print(getEntityID().toString() + " performing phase_cleanup at step " + getCurrentStep());
 	}
 
 	/**
