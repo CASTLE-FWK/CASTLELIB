@@ -49,4 +49,8 @@ public class Enums {
 	public enum RepresentationTypes{
 		GRID, TORUS, BOUND, GRAPH, NETWORK, GIS, MESH3D, CONTINUOUS
 	}
+	
+	public enum FeatureTypes{
+		BEHAVIOR, ADAPTATION, INTERACTION, EXTERNAL_INTERACTION, INTERNAL_INTERACTION
+	}
 }
