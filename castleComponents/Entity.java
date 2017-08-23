@@ -309,17 +309,37 @@ public class Entity implements Runnable {
 	}
 	
 	public void writeModelData(){
-		if (writingModelDataToDB){
-			dbOut.exportEntity(this);
-		}
-		if (writingModelDataToFile || writingModelDataToConsole){
-			StringBuilder sb = writeEntityData();
-			
-			if (writingModelDataToConsole){
-				logger.logToConsole(sb.toString());
+		if (!dbIsNull()){
+			if (writingModelDataToDB){
+				dbOut.exportEntity(this);
 			}
-			if (writingModelDataToFile){
-				logger.logToFile(sb);
+		}
+		if (!loggerIsNull()){
+			if (writingModelDataToFile || writingModelDataToConsole){
+				StringBuilder sb = writeEntityData();
+				
+				if (writingModelDataToConsole){
+					logger.logToConsole(sb.toString());
+				}
+				if (writingModelDataToFile){
+					logger.logToFile(sb);
+				}
+			}
+		}
+	}
+	
+	public void log(String str){
+		if (!loggerIsNull()){
+			if (loggingToConsole){
+				logger.logToConsole(str);
+			}
+			if (loggingToFile){
+				logger.logToFile(str);
+			}
+		}
+		if (!dbIsNull()){
+			if (loggingToDB){
+				dbOut.exportLog(this, str);
 			}
 		}
 	}

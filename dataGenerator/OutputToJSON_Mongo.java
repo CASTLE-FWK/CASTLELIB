@@ -29,6 +29,7 @@ public class OutputToJSON_Mongo{
 	Document groups;
 	Document agents;
 	Document initValues;
+	Document logs;
 	ArrayList<Document> interactions;
 
 	//CouchDB stuff
@@ -44,6 +45,11 @@ public class OutputToJSON_Mongo{
 	ArrayList<Document> agentsDocuments;
 	ArrayList<Document> groupsDocuments;
 	ArrayList<Document> environmentsDocuments;
+	ArrayList<Document> logDocuments;
+	
+	final String GROUP = "group";
+	final String AGENT = "agent";
+	final String ENVIRONMENT = "environment";
 	
 	Output output;
 
@@ -78,6 +84,7 @@ public class OutputToJSON_Mongo{
 		environments = new Document();
 		groups = new Document();
 		agents = new Document();	
+		logDocuments = new ArrayList<Document>();
 		agentsDocuments = new ArrayList<Document>();
 		interactions =  new ArrayList<Document>();
 		environmentsDocuments = new ArrayList<Document>();
@@ -117,12 +124,17 @@ public class OutputToJSON_Mongo{
 		system.append("elapsed-time", elapsedTime);
 		system.append("notes", "");
 	}
-
-	public void exportEntity(Entity e){
-		String entityType = "";
-		final String GROUP = "group";
-		final String AGENT = "agent";
-		final String ENVIRONMENT = "environment";
+	
+	public void exportLog(Entity e, String str){
+		Document d = new Document();
+		String entityType = getEntityType(e);
+		d.append(entityType+"-ID", e.getID());
+		d.append("log-message", str);
+		logDocuments.add(d);
+	}
+	
+	public String getEntityType(Entity e){
+		String entityType = "";		
 		if (e instanceof SemanticGroup){
 			entityType = GROUP;
 		} else if (e instanceof Agent){
@@ -131,7 +143,13 @@ public class OutputToJSON_Mongo{
 			entityType = ENVIRONMENT;
 		} else {
 			System.out.println("Entity type unknown. Something has gone very wrong.");
+			entityType = null;
 		}
+		return entityType;
+	}
+
+	public void exportEntity(Entity e){
+		String entityType = getEntityType(e);
 		
 		Document entity = new Document();
 		entity.append(entityType+"-ID", e.getID());
@@ -170,17 +188,12 @@ public class OutputToJSON_Mongo{
 				groupsDocuments.add(entity);
 			break;
 			case AGENT:
-				groupsDocuments.add(entity);
+				agentsDocuments.add(entity);
 			break;
 			case ENVIRONMENT:
-				groupsDocuments.add(entity);
+				environmentsDocuments.add(entity);
 			break;
 		}
-	}
-
-	public void exportLog(Entity e, String l){
-		Document log = new Document();
-		
 	}
 	
 	public void endOfStep(){
@@ -190,7 +203,8 @@ public class OutputToJSON_Mongo{
 				.append("environments",environmentsDocuments)
 				.append("groups", groupsDocuments)
 				.append("agents", agentsDocuments)
-				.append("interactions",interactions));
+				.append("interactions",interactions)
+				.append("logs", logDocuments));
 //		currentCollection.insertOne(
 //				new Document("_id","step-"+currentStep)
 //				.append("system-info", system)
