@@ -428,7 +428,7 @@ public class Agent extends Entity{
 	/*****Logging Methods*****/
 	public void disableLog(){
 		logger.mute();
-		logger.disableLoggingToFile();
+//		logger.disableLoggingToFile();
 	}
 	
 	public void muteLog(){

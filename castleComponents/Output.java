@@ -23,7 +23,6 @@ public class Output {
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath = "";
-	String dbID = "";
 	OutputToJSON_Mongo mongoOutput;
 	MongoCollection<Document> currentCollection;
 
@@ -54,11 +53,11 @@ public class Output {
 
 	}
 
-	public void setUpDB(String systemName, String executionID, String dbID, String databaseName) {
+	public void setUpDB(String systemName, String executionID, String databaseName) {
 		this.executionID = executionID;
 		DBName = systemName;
 		currentPath = URL + DBName;
-		this.dbID = dbID;
+//		this.dbID = dbID;
 
 		mongoClient = new MongoClient();
 		db = mongoClient.getDatabase(databaseName);

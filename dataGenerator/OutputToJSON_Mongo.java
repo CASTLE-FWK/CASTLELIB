@@ -14,6 +14,7 @@ import org.bson.Document;
 
 import castleComponents.Environment;
 import castleComponents.SemanticGroup;
+import castleComponents.SimulationInfo;
 import stdSimLib.Parameter;
 import castleComponents.Agent;
 import castleComponents.Entity;
@@ -37,7 +38,7 @@ public class OutputToJSON_Mongo{
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath;
-	String dbID = "";
+//	String dbID = "";
 	
 	ArrayList<Document> agentsDocuments;
 	ArrayList<Document> groupsDocuments;
@@ -46,9 +47,9 @@ public class OutputToJSON_Mongo{
 	Output output;
 
 
-	public OutputToJSON_Mongo(Output output, String systemName, String executionID, String dbID, String databaseName){
+	public OutputToJSON_Mongo(Output output, SimulationInfo simInfo, String dbID, String databaseName){
 		//Create DB
-		output.setUpDB(systemName, executionID, dbID, databaseName);
+		output.setUpDB(simInfo.getSystemName(), simInfo.getExecutionID(), databaseName);
 //		this.executionID = executionID;
 //		DB_NAME = systemName;
 //		currentPath = URL+DB_NAME;

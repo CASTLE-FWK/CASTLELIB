@@ -2,15 +2,12 @@ package castleComponents;
 
 import java.util.List;
 
-import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
 public class Logger {
 
-	private boolean loggingToFile;
 	private boolean muted = true;
-	private boolean loggingToConsole;
 
 	// Output paths
 	private String systemLogPath;
@@ -21,19 +18,16 @@ public class Logger {
 	private String sysName;
 
 	private StringBuilder stringBuilder;
-
-	// For Database Stuff
-	private String dbPath;
-	private boolean loggingToDB;
-	private OutputToJSON_Mongo mongoOutput;
-
 	private Output output;
+	
+	private SimulationInfo simInfo;
 
 	public Logger() {
 	}
 
-	public Logger(Output op) {
+	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
+		this.simInfo = simInfo;
 	}
 
 	public void setOutput(Output op) {
@@ -55,7 +49,7 @@ public class Logger {
 		systemLogPath = filePath;
 		this.sysName = sysName;
 
-		if (loggingToFile) {
+		if (output.isLoggingToFile()) {
 			stringBuilder = new StringBuilder();
 			setUpLog(systemLogPath);
 		}
@@ -95,7 +89,7 @@ public class Logger {
 	// Sets up the log path (should be fully automated)
 	public void setUpLog(String str) {
 		systemLogPath = str;
-		systemOutputDirPath = systemLogPath + "/" + sysName + "-" + Utilities.generateTimeStamp();
+		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID();
 		systemSpecPath = systemOutputDirPath + "/systemInitialization.txt";
 		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
 		systemStepInfoDir = systemOutputDirPath + "/steps";

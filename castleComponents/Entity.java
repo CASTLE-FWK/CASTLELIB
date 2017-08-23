@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import castleComponents.objects.Vector2;
+import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureTypes;
 import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
@@ -15,6 +16,7 @@ public class Entity implements Runnable {
 
 	private int currentStep = -1;
 	protected Logger logger;
+	protected OutputToJSON_Mongo dbOut;
 	protected HashMap<String, Parameter<?>> parameters;
 
 	protected ArrayList<Trigger> setupTriggers;
@@ -68,9 +70,17 @@ public class Entity implements Runnable {
 	public void setLogger(Logger l) {
 		logger = l;
 	}
+	
+	public void setDBOut(OutputToJSON_Mongo d){
+		dbOut = d;
+	}
 
 	public boolean loggerIsNull() {
 		return (logger == null);
+	}
+	
+	public boolean dbIsNull(){
+		return (dbOut == null);
 	}
 
 	protected EntityID entityID;
