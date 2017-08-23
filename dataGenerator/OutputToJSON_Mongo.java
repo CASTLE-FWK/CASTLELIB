@@ -38,7 +38,8 @@ public class OutputToJSON_Mongo{
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath;
-//	String dbID = "";
+	
+	SimulationInfo simInfo;
 	
 	ArrayList<Document> agentsDocuments;
 	ArrayList<Document> groupsDocuments;
@@ -49,7 +50,9 @@ public class OutputToJSON_Mongo{
 
 	public OutputToJSON_Mongo(Output output, SimulationInfo simInfo, String dbID, String databaseName){
 		//Create DB
-		output.setUpDB(simInfo.getSystemName(), simInfo.getExecutionID(), databaseName);
+		this.simInfo = simInfo;
+		this.output = output;
+		output.setUpDB(this.simInfo.getSystemName(), this.simInfo.getExecutionID(), databaseName);
 //		this.executionID = executionID;
 //		DB_NAME = systemName;
 //		currentPath = URL+DB_NAME;
@@ -102,12 +105,12 @@ public class OutputToJSON_Mongo{
 //		currentCollection.insertOne(initValues);
 	}
 	
-	public void exportSystem(String systemName, String execID, int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
+	public void exportSystemStep(int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
 		currentStep = stepNumber;
 		//Ideally this would call system.getSystemName and so on but this is just for layout testing
-		system.append("system-name",systemName);
-		system.append("execution-ID", executionID);
-		system.append("output-ID",execID+"-"+stepNumber);
+		system.append("system-name",simInfo.getSystemName());
+		system.append("execution-ID", simInfo.getExecutionID());
+		system.append("output-ID",simInfo.getExecutionID()+"-"+stepNumber);
 		system.append("current-step",stepNumber);
 		system.append("total-steps",totalSteps);
 		system.append("time-since-last-step",timeSinceLastStep);
@@ -215,7 +218,7 @@ public class OutputToJSON_Mongo{
 	}
 
 	//Complete JSON and send to DB
-	public void finished(int finalStep, long elapsedTime, int totalSteps){
+	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps){
 		output.insertOneToDB(new Document("_id","termination-statistics")
 				.append("termination-step", finalStep)
 				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))

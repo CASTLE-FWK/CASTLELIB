@@ -14,6 +14,10 @@ public class Output {
 	private boolean loggingToFile;
 	private boolean loggingToConsole;
 	private boolean loggingToDB;
+	
+	private boolean writingModelDataToFile;
+	private boolean writingModelDataToConsole;
+	private boolean writingModelDataToDB;
 
 	// DB Stuff
 	private String dbPath;
@@ -23,15 +27,13 @@ public class Output {
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath = "";
-	OutputToJSON_Mongo mongoOutput;
+	
 	MongoCollection<Document> currentCollection;
 
 	MongoClient mongoClient;
 	MongoDatabase db;
 
-	public Output() {
-
-	}
+	public Output() {}
 
 	public Output(boolean ltf, boolean ltc, boolean ltd) {
 		loggingToFile = ltf;
@@ -78,6 +80,10 @@ public class Output {
 		if (loggingToConsole) {
 			System.out.println(log);
 		}
+	}
+	
+	public void newStep(){
+		
 	}
 
 	public void loggingToDB(String dbPath) {
@@ -135,6 +141,30 @@ public class Output {
 
 	public String getDbPath() {
 		return dbPath;
+	}
+
+	public boolean isWritingModelDataToFile() {
+		return writingModelDataToFile;
+	}
+
+	public void setWritingModelDataToFile(boolean writingModelDataToFile) {
+		this.writingModelDataToFile = writingModelDataToFile;
+	}
+
+	public boolean isWritingModelDataToConsole() {
+		return writingModelDataToConsole;
+	}
+
+	public void setWritingModelDataToConsole(boolean writingModelDataToConsole) {
+		this.writingModelDataToConsole = writingModelDataToConsole;
+	}
+
+	public boolean isWritingModelDataToDB() {
+		return writingModelDataToDB;
+	}
+
+	public void setWritingModelDataToDB(boolean writingModelDataToDB) {
+		this.writingModelDataToDB = writingModelDataToDB;
 	}
 }
 

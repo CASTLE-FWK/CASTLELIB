@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bson.Document;
 
 import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
@@ -27,6 +31,21 @@ public class Entity implements Runnable {
 
 	protected ArrayList<Trigger> actionTriggers;
 	protected ArrayList<Trigger> actionTriggersToAdd;
+	
+	private boolean loggingToFile;
+	private boolean loggingToConsole;
+	private boolean loggingToDB;
+	
+	private boolean writingModelDataToFile;
+	private boolean writingModelDataToConsole;
+	private boolean writingModelDataToDB;
+	
+	String entitySuperType = "";
+	final String GROUP = "group";
+	final String AGENT = "agent";
+	final String ENVIRONMENT = "environment";
+	
+	final char COMMA = ',';
 
 	boolean ready = false;
 
@@ -82,7 +101,16 @@ public class Entity implements Runnable {
 	public boolean dbIsNull(){
 		return (dbOut == null);
 	}
-
+	
+	public void outputDirections(boolean ltf, boolean ltc, boolean ltdb, boolean wmdf, boolean wmdc, boolean wmddb){
+		this.loggingToFile = ltf;
+		this.loggingToConsole = ltc;
+		this.loggingToDB = ltdb;
+		this.writingModelDataToFile = wmdf;
+		this.writingModelDataToConsole = wmdc;
+		this.writingModelDataToDB = wmddb;
+	}
+	
 	protected EntityID entityID;
 
 	public EntityID getEntityID() {
@@ -157,7 +185,7 @@ public class Entity implements Runnable {
 	}
 
 	public void phase_Setup() {
-
+		
 	}
 
 	public void phase_Action() {
@@ -165,7 +193,7 @@ public class Entity implements Runnable {
 	}
 
 	public void phase_Cleanup() {
-
+		writeModelData();
 	}
 
 	public void final_call() {
@@ -279,6 +307,13 @@ public class Entity implements Runnable {
 	public void setPosition(Vector2 p) {
 		position = new Vector2(p);
 	}
+	
+	public void writeModelData(){
+		if (writingModelDataToDB){
+			dbOut.exportEntity(this);
+		}
+		logger.logToFile(writeEntityData());
+	}
 
 	// Trigger pulling
 	public void pullTriggers(List<Trigger> triggers) {
@@ -293,6 +328,34 @@ public class Entity implements Runnable {
 
 	public void throwCASTLEError(String desc, String location, String clazz) {
 		System.out.println("CASTLE ERROR: " + desc + " at method: " + location + " in class: " + clazz);
+	}
+	
+	public StringBuilder writeEntityData(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(entityType+"-ID"+COMMA+getID());
+		sb.append(entityType+"-type"+COMMA+getType());
+		sb.append(entityType+"-name"+COMMA+getID());
+		sb.append("lifetime"+COMMA+ "-1");
+		
+		Iterator<Entry<String, Parameter<?>>> it = getParameters().entrySet().iterator();
+		while (it.hasNext()){
+			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
+			Parameter<?> param = pair.getValue();			
+			sb.append("parameter-name"+COMMA+param.getName());
+			sb.append("parameter-type"+COMMA+param.getType());
+			sb.append("parameter-value"+COMMA+param.getCurrentValue());			
+		}
+		
+		List<Interaction> entityInteractions = publishInteractions();
+		if (entityInteractions != null){
+			for (Interaction inter : entityInteractions){
+				sb.append("interaction-from"+COMMA+inter.getEntityFrom().getID());
+				sb.append("interaction-to"+COMMA+inter.getEntityTo().getID());
+				sb.append("interaction-type"+COMMA+inter.getType());
+			}
+		}
+		
+		return sb;
 	}
 }
 

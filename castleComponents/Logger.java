@@ -55,16 +55,18 @@ public class Logger {
 		}
 	}
 
-	public void newStep(int stepNumber) {
+	public void newStep(int stepNumber){
 		output.sendLogToConsole("Step " + stepNumber);
-		
+		stringBuilder = new StringBuilder();
+		stringBuilder.append("Step " + stepNumber + "\n");
+	}
+	
+	public void endOfStep(int stepNumber) {
 		if (output.isLoggingToFile()) {
 			if (stringBuilder.length() != 0) {
 				output.sendLogToFile(systemStepInfoDir + "/Step" + stepNumber + ".txt", stringBuilder.toString(),
 						false);
 			}
-			stringBuilder = new StringBuilder();
-			stringBuilder.append("Step " + stepNumber + "\n");
 		}
 	}
 
@@ -84,6 +86,21 @@ public class Logger {
 				output.sendLogToConsole(str);
 			}
 		}
+	}
+	
+	public void log(StringBuilder str) {
+		if (!muted) {
+			if (output.isLoggingToFile()) {
+				stringBuilder.append(str + "\n");
+			}
+			if (output.isLoggingToConsole()) {
+				output.sendLogToConsole(str.toString());
+			}
+		}
+	}
+	
+	public void logToFile(StringBuilder sb){
+		stringBuilder.append(sb + "\n");
 	}
 
 	// Sets up the log path (should be fully automated)
