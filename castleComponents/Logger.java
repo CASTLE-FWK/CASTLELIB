@@ -50,8 +50,8 @@ public class Logger {
 
 	public void setup(boolean isMuted, boolean toConsole, boolean toFile, String filePath, String sysName) {
 		muted = isMuted;
-		loggingToConsole = toConsole;
-		loggingToFile = toFile;
+		output.setLoggingToConsole(toConsole);
+		output.setLoggingToFile(toFile);
 		systemLogPath = filePath;
 		this.sysName = sysName;
 
@@ -61,41 +61,8 @@ public class Logger {
 		}
 	}
 
-//	public void loggingToDB(String dbPath) {
-//		this.dbPath = dbPath;
-//		output.enableLoggingToDB();
-//	}
-
-	// public void enableLoggingToDB(){
-	// loggingToDB = true;
-	// }
-	//
-	// public void disableLoggingToDB(){
-	// loggingToDB = false;
-	// }
-	//
-	// public void enableLoggingToFile(){
-	// loggingToFile = true;
-	// }
-	//
-	// public void disableLoggingToFile(){
-	// loggingToFile = false;
-	// }
-	//
-	// public void enableLoggingToConsole(){
-	// loggingToConsole = true;
-	// }
-	// public void disableLoggingToConsole(){
-	// loggingToConsole = false;
-	// }
-
-	// Prints to terminal
-	public void print(String str) {
-		output.sendLogToConsole(str);
-	}
-
 	public void newStep(int stepNumber) {
-		print("Step " + stepNumber);
+		output.sendLogToConsole("Step " + stepNumber);
 		
 		if (output.isLoggingToFile()) {
 			if (stringBuilder.length() != 0) {

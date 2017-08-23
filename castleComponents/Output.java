@@ -17,7 +17,8 @@ public class Output {
 
 	// DB Stuff
 	private String dbPath;
-	final String URL = "http://127.0.0.1:5984/"; //this isn't correct but it's close
+	final String URL = "http://127.0.0.1:5984/"; // this isn't correct but it's
+													// close
 	String DBName = "default_DB_Name";
 	String executionID = "";
 	int currentStep = 0;
@@ -25,7 +26,7 @@ public class Output {
 	String dbID = "";
 	OutputToJSON_Mongo mongoOutput;
 	MongoCollection<Document> currentCollection;
-	
+
 	MongoClient mongoClient;
 	MongoDatabase db;
 
@@ -50,27 +51,27 @@ public class Output {
 	}
 
 	public void sendLogToDB(String log) {
-		
+
 	}
-	
-	public void setUpDB(String systemName, String executionID, String dbID, String databaseName){
+
+	public void setUpDB(String systemName, String executionID, String dbID, String databaseName) {
 		this.executionID = executionID;
 		DBName = systemName;
-		currentPath = URL+DBName;
+		currentPath = URL + DBName;
 		this.dbID = dbID;
-		
+
 		mongoClient = new MongoClient();
 		db = mongoClient.getDatabase(databaseName);
-		DBName = DBName + "_" + executionID;	
+		DBName = DBName + "_" + executionID;
 		currentCollection = getCurrentCollectionFromDB(DBName);
-		System.out.println("MongoDB collection is at "+DBName);
+		System.out.println("MongoDB collection is at " + DBName);
 	}
-	
-	public MongoCollection<Document> getCurrentCollectionFromDB(String name){
+
+	public MongoCollection<Document> getCurrentCollectionFromDB(String name) {
 		return this.db.getCollection(name);
 	}
-	
-	public void insertOneToDB(Document doc){
+
+	public void insertOneToDB(Document doc) {
 		currentCollection.insertOne(doc);
 	}
 
@@ -119,6 +120,18 @@ public class Output {
 
 	public boolean isLoggingToDB() {
 		return loggingToDB;
+	}
+
+	public void setLoggingToFile(boolean loggingToFile) {
+		this.loggingToFile = loggingToFile;
+	}
+
+	public void setLoggingToConsole(boolean loggingToConsole) {
+		this.loggingToConsole = loggingToConsole;
+	}
+
+	public void setLoggingToDB(boolean loggingToDB) {
+		this.loggingToDB = loggingToDB;
 	}
 
 	public String getDbPath() {
