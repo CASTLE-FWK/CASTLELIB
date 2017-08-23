@@ -1,5 +1,11 @@
 package castleComponents;
 
+import org.bson.Document;
+
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.utilities.Utilities;
 
@@ -11,12 +17,17 @@ public class Output {
 
 	// DB Stuff
 	private String dbPath;
+	final String URL = "http://127.0.0.1:5984/"; //this isn't correct but it's close
 	String DBName = "default_DB_Name";
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath = "";
 	String dbID = "";
 	OutputToJSON_Mongo mongoOutput;
+	MongoCollection<Document> currentCollection;
+	
+	MongoClient mongoClient;
+	MongoDatabase db;
 
 	public Output() {
 
@@ -40,6 +51,27 @@ public class Output {
 
 	public void sendLogToDB(String log) {
 		
+	}
+	
+	public void setUpDB(String systemName, String executionID, String dbID, String databaseName){
+		this.executionID = executionID;
+		DBName = systemName;
+		currentPath = URL+DBName;
+		this.dbID = dbID;
+		
+		mongoClient = new MongoClient();
+		db = mongoClient.getDatabase(databaseName);
+		DBName = DBName + "_" + executionID;	
+		currentCollection = getCurrentCollectionFromDB(DBName);
+		System.out.println("MongoDB collection is at "+DBName);
+	}
+	
+	public MongoCollection<Document> getCurrentCollectionFromDB(String name){
+		return this.db.getCollection(name);
+	}
+	
+	public void insertOneToDB(Document doc){
+		currentCollection.insertOne(doc);
 	}
 
 	public void sendLogToConsole(String log) {

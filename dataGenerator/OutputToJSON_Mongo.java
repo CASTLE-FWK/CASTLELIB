@@ -18,6 +18,7 @@ import stdSimLib.Parameter;
 import castleComponents.Agent;
 import castleComponents.Entity;
 import castleComponents.Interaction;
+import castleComponents.Output;
 
 public class OutputToJSON_Mongo{
 
@@ -38,30 +39,29 @@ public class OutputToJSON_Mongo{
 	String currentPath;
 	String dbID = "";
 	
-	MongoClient mongoClient;
-	MongoDatabase db;
-	MongoCollection<Document> currentCollection;
-	
 	ArrayList<Document> agentsDocuments;
 	ArrayList<Document> groupsDocuments;
 	ArrayList<Document> environmentsDocuments;
+	
+	Output output;
 
 
-	public OutputToJSON_Mongo(String systemName, String executionID, String dbID){
+	public OutputToJSON_Mongo(Output output, String systemName, String executionID, String dbID, String databaseName){
 		//Create DB
-		this.executionID = executionID;
-		DB_NAME = systemName;
-		currentPath = URL+DB_NAME;
-		this.dbID = dbID;
-		System.out.println("current DB path for this execution: " + currentPath);
+		output.setUpDB(systemName, executionID, dbID, databaseName);
+//		this.executionID = executionID;
+//		DB_NAME = systemName;
+//		currentPath = URL+DB_NAME;
+//		this.dbID = dbID;
+//		System.out.println("current DB path for this execution: " + currentPath);
+//		
+//		mongoClient = new MongoClient();
+//		
+//		db = mongoClient.getDatabase(databaseName);
+//		DB_NAME = DB_NAME + "_" + executionID;
 		
-		mongoClient = new MongoClient();
-		
-		db = mongoClient.getDatabase("simulations");
-		DB_NAME = DB_NAME + "_" + executionID;
-		
-		currentCollection = db.getCollection(DB_NAME);
-		System.out.println("MongoDB collection is at "+DB_NAME);
+//		currentCollection = output.getCurrentCollectionFromDB(DB_NAME);
+//		System.out.println("MongoDB collection is at "+DB_NAME);
 
 		initValues = new Document();
 	}
@@ -97,8 +97,8 @@ public class OutputToJSON_Mongo{
 		initValues.append("notes","");
 		
 		//Upload to DB
-		currentCollection.insertOne(
-				initValues);
+		output.insertOneToDB(initValues);
+//		currentCollection.insertOne(initValues);
 	}
 	
 	public void exportSystem(String systemName, String execID, int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
@@ -180,13 +180,20 @@ public class OutputToJSON_Mongo{
 	}
 	
 	public void endOfStep(){
-		currentCollection.insertOne(
+		output.insertOneToDB(
 				new Document("_id","step-"+currentStep)
 				.append("system-info", system)
 				.append("environments",environmentsDocuments)
 				.append("groups", groupsDocuments)
 				.append("agents", agentsDocuments)
-				.append("interactions",interactions));	
+				.append("interactions",interactions));
+//		currentCollection.insertOne(
+//				new Document("_id","step-"+currentStep)
+//				.append("system-info", system)
+//				.append("environments",environmentsDocuments)
+//				.append("groups", groupsDocuments)
+//				.append("agents", agentsDocuments)
+//				.append("interactions",interactions));	
 	}
 	
 	public Document getCompleteDocument(){
@@ -208,11 +215,15 @@ public class OutputToJSON_Mongo{
 
 	//Complete JSON and send to DB
 	public void finished(int finalStep, long elapsedTime, int totalSteps){
-		currentCollection.insertOne(
-				new Document("_id","termination-statistics")
+		output.insertOneToDB(new Document("_id","termination-statistics")
 				.append("termination-step", finalStep)
 				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
-				.append("elapsed-time",elapsedTime));	
+				.append("elapsed-time",elapsedTime));
+//		currentCollection.insertOne(
+//				new Document("_id","termination-statistics")
+//				.append("termination-step", finalStep)
+//				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
+//				.append("elapsed-time",elapsedTime));	
 	}
 	
 	
