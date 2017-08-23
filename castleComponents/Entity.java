@@ -312,7 +312,16 @@ public class Entity implements Runnable {
 		if (writingModelDataToDB){
 			dbOut.exportEntity(this);
 		}
-		logger.logToFile(writeEntityData());
+		if (writingModelDataToFile || writingModelDataToConsole){
+			StringBuilder sb = writeEntityData();
+			
+			if (writingModelDataToConsole){
+				logger.logToConsole(sb.toString());
+			}
+			if (writingModelDataToFile){
+				logger.logToFile(sb);
+			}
+		}
 	}
 
 	// Trigger pulling

@@ -19,7 +19,7 @@ public class Logger {
 
 	private StringBuilder stringBuilder;
 	private Output output;
-	
+
 	private SimulationInfo simInfo;
 
 	public Logger() {
@@ -55,12 +55,12 @@ public class Logger {
 		}
 	}
 
-	public void newStep(int stepNumber){
+	public void newStep(int stepNumber) {
 		output.sendLogToConsole("Step " + stepNumber);
 		stringBuilder = new StringBuilder();
 		stringBuilder.append("Step " + stepNumber + "\n");
 	}
-	
+
 	public void endOfStep(int stepNumber) {
 		if (output.isLoggingToFile()) {
 			if (stringBuilder.length() != 0) {
@@ -80,27 +80,35 @@ public class Logger {
 	public void log(String str) {
 		if (!muted) {
 			if (output.isLoggingToFile()) {
-				stringBuilder.append(str + "\n");
+				logToFile(str + "\n");
 			}
 			if (output.isLoggingToConsole()) {
-				output.sendLogToConsole(str);
+				logToConsole(str);
 			}
 		}
 	}
-	
+
+	public void logToConsole(String str) {
+		output.sendLogToConsole(str.toString());
+	}
+
 	public void log(StringBuilder str) {
 		if (!muted) {
 			if (output.isLoggingToFile()) {
-				stringBuilder.append(str + "\n");
+				logToFile(str);
 			}
 			if (output.isLoggingToConsole()) {
-				output.sendLogToConsole(str.toString());
+				logToConsole(str.toString());
 			}
 		}
 	}
-	
-	public void logToFile(StringBuilder sb){
+
+	public void logToFile(StringBuilder sb) {
 		stringBuilder.append(sb + "\n");
+	}
+
+	public void logToFile(String str) {
+		stringBuilder.append(str + "\n");
 	}
 
 	// Sets up the log path (should be fully automated)
@@ -137,7 +145,7 @@ public class Logger {
 			out += "\t" + p.toString() + "\n";
 		}
 		out += "----------------------------------------";
-		
+
 		output.sendLogToConsole(out);
 		output.sendLogToFile(systemSpecPath, out, false);
 	}
