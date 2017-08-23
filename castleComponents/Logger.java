@@ -2,198 +2,165 @@ package castleComponents;
 
 import java.util.List;
 
+import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
-public class Logger{
+public class Logger {
 
 	private boolean loggingToFile;
 	private boolean muted = true;
 	private boolean loggingToConsole;
-	
-	//Output paths
+
+	// Output paths
 	private String systemLogPath;
 	private String systemSpecPath;
 	private String systemLogDirPath;
 	private String systemOutputDirPath;
 	private String systemStepInfoDir;
 	private String sysName;
-	
+
 	private StringBuilder stringBuilder;
-	
-	
-	public Logger(){
-		
+
+	// For Database Stuff
+	private String dbPath;
+	private boolean loggingToDB;
+	private OutputToJSON_Mongo mongoOutput;
+
+	private Output output;
+
+	public Logger() {
 	}
-	
-	public void mute(){
+
+	public Logger(Output op) {
+		this.output = op;
+	}
+
+	public void setOutput(Output op) {
+		this.output = op;
+	}
+
+	public void mute() {
 		muted = true;
 	}
-	
-	public void unmute(){
+
+	public void unmute() {
 		muted = false;
 	}
-	
-	public void setup(boolean isMuted, boolean toConsole, boolean toFile, String filePath, String sysName){
+
+	public void setup(boolean isMuted, boolean toConsole, boolean toFile, String filePath, String sysName) {
 		muted = isMuted;
 		loggingToConsole = toConsole;
 		loggingToFile = toFile;
 		systemLogPath = filePath;
 		this.sysName = sysName;
-		
-		if (loggingToFile){
+
+		if (loggingToFile) {
 			stringBuilder = new StringBuilder();
 			setUpLog(systemLogPath);
 		}
 	}
-	
-	public void enableLoggingToFile(){
-		loggingToFile = true;
+
+//	public void loggingToDB(String dbPath) {
+//		this.dbPath = dbPath;
+//		output.enableLoggingToDB();
+//	}
+
+	// public void enableLoggingToDB(){
+	// loggingToDB = true;
+	// }
+	//
+	// public void disableLoggingToDB(){
+	// loggingToDB = false;
+	// }
+	//
+	// public void enableLoggingToFile(){
+	// loggingToFile = true;
+	// }
+	//
+	// public void disableLoggingToFile(){
+	// loggingToFile = false;
+	// }
+	//
+	// public void enableLoggingToConsole(){
+	// loggingToConsole = true;
+	// }
+	// public void disableLoggingToConsole(){
+	// loggingToConsole = false;
+	// }
+
+	// Prints to terminal
+	public void print(String str) {
+		output.sendLogToConsole(str);
 	}
-	
-	public void disableLoggingToFile(){
-		loggingToFile = false;
-	}
-	
-	public void enableLoggingToConsole(){
-		loggingToConsole = true;
-	}
-	public void disableLoggingToConsole(){
-		loggingToConsole = false;
-	}
-	
-	//Prints to terminal
-	public void print(String str){
-		System.out.println(str);
-	}
-	
-	//Will always print to file, even if muted
-	public void printToFile(String str){
-		if (systemLogPath.length() > 0){
-			Utilities.writeToFile(str, systemLogDirPath, true);
-		} else {
-			print("You can't write to a file that hasn't been specified.");
-		}
-	}
-	
-	//Will always print to file, even if muted
-	public void printToNewFile(String str, String filePath){
-		Utilities.createFile(filePath, false);
-		if (systemLogPath.length() > 0){
-			Utilities.writeToFile(str, systemLogDirPath, true);
-		} else {
-			print("You can't write to a file that hasn't been specified.");
+
+	public void newStep(int stepNumber) {
+		print("Step " + stepNumber);
+		
+		if (output.isLoggingToFile()) {
+			if (stringBuilder.length() != 0) {
+				output.sendLogToFile(systemStepInfoDir + "/Step" + stepNumber + ".txt", stringBuilder.toString(),
+						false);
+			}
+			stringBuilder = new StringBuilder();
+			stringBuilder.append("Step " + stepNumber + "\n");
 		}
 	}
 
-	public void newStep(int stepNumber){
-		if (loggingToConsole){
-			print("Step "+stepNumber);
+	// This can overwrite things since the SYSTEM has power
+	// TODO
+	public void systemLog(String str) {
+
+	}
+
+	// Prints to file
+	public void log(String str) {
+		if (!muted) {
+			if (output.isLoggingToFile()) {
+				stringBuilder.append(str + "\n");
+			}
+			if (output.isLoggingToConsole()) {
+				output.sendLogToConsole(str);
+			}
 		}
-		if (loggingToFile){
-			if (stringBuilder.length() != 0){
-//				printToNewFile(stringBuilder.toString(), systemStepInfoDir+"/Step"+stepNumber);
-				new ThreadWriter(systemStepInfoDir+"/Step"+stepNumber+".txt", stringBuilder.toString()).run();
-			}
-			stringBuilder = new StringBuilder();			
-			stringBuilder.append("Step "+stepNumber+"\n");
-		}
 	}
-	
-	
-	//This can overwrite things since the SYSTEM has power
-	//TODO
-	public void systemLog(String str){
-		
-	}
-	
-	
-	//Prints to file
-	public void log(String str){
-		if (!muted){
-			if (loggingToFile){
-				stringBuilder.append(str+"\n");
-			}
-			if (loggingToConsole){
-				print(str);
-			}
-		}		
-	}
-	
-	public void logToFile(String str){
-		
-	}
-	
-	//Sets up the log path (should be fully automated)
-	public void setUpLog(String str){
+
+	// Sets up the log path (should be fully automated)
+	public void setUpLog(String str) {
 		systemLogPath = str;
-		systemOutputDirPath = systemLogPath+"/"+sysName+"-"+Utilities.generateTimeStamp();
-		systemSpecPath = systemOutputDirPath+"/systemInitialization.txt";
-		systemLogDirPath = systemOutputDirPath+"/systemLog.txt";
-		systemStepInfoDir = systemOutputDirPath+"/steps";
-		
-		
-		
-		if (loggingToFile){
-			//Create directories and initial files
+		systemOutputDirPath = systemLogPath + "/" + sysName + "-" + Utilities.generateTimeStamp();
+		systemSpecPath = systemOutputDirPath + "/systemInitialization.txt";
+		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
+		systemStepInfoDir = systemOutputDirPath + "/steps";
+
+		if (output.isLoggingToFile()) {
+			// Create directories and initial files
 			System.out.println("Create directories and files for logging");
-			System.out.println("Log directory at "+systemLogPath);
-			//Create main log dir if doesn't exist
-			Utilities.createFile(systemLogPath, true);
-			
-			//
-			Utilities.createFile(systemOutputDirPath, true);
-			Utilities.createFile(systemStepInfoDir, true);
-			
-			Utilities.createFile(systemSpecPath, false);
-			
-			Utilities.createFile(systemLogDirPath, false);			
+			System.out.println("Log directory at " + systemLogPath);
+			// Create main log dir if doesn't exist
+			output.initialiseLoggingPath(systemLogPath, true);
+
+			output.initialiseLoggingPath(systemOutputDirPath, true);
+			output.initialiseLoggingPath(systemStepInfoDir, true);
+
+			output.initialiseLoggingPath(systemSpecPath, false);
+
+			output.initialiseLoggingPath(systemLogDirPath, false);
 		}
 	}
-	
+
 	public void writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params) {
 		String out = "Simulation Initialization Details: \n";
-		out += "Name: "+sysName+"\n";
-		out += "Description: "+sysDescription+"\n";
-		out += "Execution Start Time: "+Utilities.generateNiceTimeStamp()+"\n";
+		out += "Name: " + sysName + "\n";
+		out += "Description: " + sysDescription + "\n";
+		out += "Execution Start Time: " + Utilities.generateNiceTimeStamp() + "\n";
 		out += "Initialization Parameters:\n";
-		for (Parameter<?> p : params){
-			out += "\t"+p.toString()+"\n";
+		for (Parameter<?> p : params) {
+			out += "\t" + p.toString() + "\n";
 		}
 		out += "----------------------------------------";
-		if (loggingToConsole){
-			print(out);
-		}
-		if (loggingToFile){
-			Utilities.writeToFile(out, systemSpecPath, false);
-		}
+		
+		output.sendLogToConsole(out);
+		output.sendLogToFile(systemSpecPath, out, false);
 	}
-}
-
-class ThreadWriter implements Runnable{
-
-	String path;
-	String strToWrite;
-	
-	public ThreadWriter(String path, String strToWrite){
-		this.path = path;
-		this.strToWrite = strToWrite;
-	}
-	
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		printToNewFile(strToWrite, path);
-	}
-	
-	public void printToNewFile(String str, String filePath){
-		Utilities.createFile(filePath, false);
-		if (filePath.length() > 0){
-			Utilities.writeToFile(str, filePath, true);
-		} else {
-			System.out.println("You can't write to a file that hasn't been specified.");
-		}
-	}
-	
-
 }

@@ -16,6 +16,7 @@ import castleComponents.Environment;
 import castleComponents.SemanticGroup;
 import stdSimLib.Parameter;
 import castleComponents.Agent;
+import castleComponents.Entity;
 import castleComponents.Interaction;
 
 public class OutputToJSON_Mongo{
@@ -113,14 +114,26 @@ public class OutputToJSON_Mongo{
 		system.append("notes", "");
 	}
 
-	
-	public void exportEnvironment(Environment e){
-		Document environment = new Document();
-		environment.append("environment-ID", e.getID());
-		environment.append("environment-type", e.getType());
-		environment.append("environment-name", e.getID());
-		environment.append("lifetime", -1);
+	public void exportEntity(Entity e){
+		String entityType = "";
+		final String GROUP = "group";
+		final String AGENT = "agent";
+		final String ENVIRONMENT = "environment";
+		if (e instanceof SemanticGroup){
+			entityType = GROUP;
+		} else if (e instanceof Agent){
+			entityType = AGENT;
+		} else if (e instanceof Environment){
+			entityType = ENVIRONMENT;
+		} else {
+			System.out.println("Entity type unknown. Something has gone very wrong.");
+		}
 		
+		Document entity = new Document();
+		entity.append(entityType+"-ID", e.getID());
+		entity.append(entityType+"-type", e.getType());
+		entity.append(entityType+"-name", e.getID());
+		entity.append("lifetime", -1);
 		ArrayList<Document> paramDocs = new ArrayList<Document>();
 		
 		Iterator<Entry<String, Parameter<?>>> it = e.getParameters().entrySet().iterator();
@@ -135,9 +148,9 @@ public class OutputToJSON_Mongo{
 			paramDocs.add(paramDoc);
 		}
 		
-		List<Interaction> agentInteractions = e.publishInteractions();
-		if (agentInteractions != null){
-			for (Interaction inter : agentInteractions){
+		List<Interaction> entityInteractions = e.publishInteractions();
+		if (entityInteractions != null){
+			for (Interaction inter : entityInteractions){
 				Document interDoc = new Document()
 					.append("interaction-from",inter.getEntityFrom().getID())
 					.append("interaction-to", inter.getEntityTo().getID())
@@ -146,82 +159,24 @@ public class OutputToJSON_Mongo{
 			}
 		}
 		
-	
-		environment.append("parameters",paramDocs);
+		entity.append("parameters",paramDocs);
 		
-		environmentsDocuments.add(environment);
-	}
-	
-	public void exportGroup(SemanticGroup g){
-		Document group = new Document();
-		group.append("group-ID", g.getID());
-		group.append("group-type", g.getType());
-		group.append("group-name", g.getID());
-		group.append("lifetime", -1);
-		ArrayList<Document> paramDocs = new ArrayList<Document>();
-		
-		Iterator<Entry<String, Parameter<?>>> it = g.getParameters().entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
-			Parameter<?> param = pair.getValue();
-			Document paramDoc = new Document()
-			.append("parameter-name", param.getName())
-			.append("parameter-type", param.getType())
-			.append("parameter-value", param.getCurrentValue());
-			
-			paramDocs.add(paramDoc);
+		switch(entityType){
+			case GROUP:
+				groupsDocuments.add(entity);
+			break;
+			case AGENT:
+				groupsDocuments.add(entity);
+			break;
+			case ENVIRONMENT:
+				groupsDocuments.add(entity);
+			break;
 		}
-		
-		List<Interaction> agentInteractions = g.publishInteractions();
-		if (agentInteractions != null){
-			for (Interaction inter : agentInteractions){
-				Document interDoc = new Document()
-					.append("interaction-from",inter.getEntityFrom().getID())
-					.append("interaction-to", inter.getEntityTo().getID())
-					.append("interaction-type",inter.getType());
-				interactions.add(interDoc);
-			}
-		}
-	
-		group.append("parameters",paramDocs);
-		
-		groupsDocuments.add(group);
 	}
 
-	public void exportAgent(Agent a){
-		Document agent = new Document();
-		agent.append("agent-ID", a.getID());
-		agent.append("agent-type", a.getType());
-		agent.append("agent-name", a.getID());
-		agent.append("lifetime", -1);
+	public void exportLog(Entity e, String l){
+		Document log = new Document();
 		
-		ArrayList<Document> paramDocs = new ArrayList<Document>();
-
-		Iterator<Entry<String, Parameter<?>>> it = a.getParameters().entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
-			Parameter<?> param = pair.getValue();
-			Document paramDoc = new Document()
-			.append("parameter-name", param.getName())
-			.append("parameter-type", param.getType())
-			.append("parameter-value", param.getCurrentValue());
-			paramDocs.add(paramDoc);
-		}
-		
-		List<Interaction> agentInteractions = a.publishInteractions();
-		if (agentInteractions != null){
-			for (Interaction inter : agentInteractions){
-				Document interDoc = new Document()
-					.append("interaction-from",inter.getEntityFrom().getID())
-					.append("interaction-to", inter.getEntityTo().getID())
-					.append("interaction-type",inter.getType());
-				interactions.add(interDoc);
-			}
-		}
-	
-		agent.append("parameters",paramDocs);
-		
-		agentsDocuments.add(agent);
 	}
 	
 	public void endOfStep(){
@@ -259,4 +214,115 @@ public class OutputToJSON_Mongo{
 				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
 				.append("elapsed-time",elapsedTime));	
 	}
+	
+	
+//	public void exportGroup(SemanticGroup g){
+//		Document group = new Document();
+//		group.append("group-ID", g.getID());
+//		group.append("group-type", g.getType());
+//		group.append("group-name", g.getID());
+//		group.append("lifetime", -1);
+//		ArrayList<Document> paramDocs = new ArrayList<Document>();
+//		
+//		Iterator<Entry<String, Parameter<?>>> it = g.getParameters().entrySet().iterator();
+//		while (it.hasNext()){
+//			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
+//			Parameter<?> param = pair.getValue();
+//			Document paramDoc = new Document()
+//			.append("parameter-name", param.getName())
+//			.append("parameter-type", param.getType())
+//			.append("parameter-value", param.getCurrentValue());
+//			
+//			paramDocs.add(paramDoc);
+//		}
+//		
+//		List<Interaction> agentInteractions = g.publishInteractions();
+//		if (agentInteractions != null){
+//			for (Interaction inter : agentInteractions){
+//				Document interDoc = new Document()
+//					.append("interaction-from",inter.getEntityFrom().getID())
+//					.append("interaction-to", inter.getEntityTo().getID())
+//					.append("interaction-type",inter.getType());
+//				interactions.add(interDoc);
+//			}
+//		}
+//	
+//		group.append("parameters",paramDocs);
+//		
+//		groupsDocuments.add(group);
+//	}
+	
+//	public void exportEnvironment(Environment e){
+//		Document environment = new Document();
+//		environment.append("environment-ID", e.getID());
+//		environment.append("environment-type", e.getType());
+//		environment.append("environment-name", e.getID());
+//		environment.append("lifetime", -1);
+//		
+//		ArrayList<Document> paramDocs = new ArrayList<Document>();
+//		
+//		Iterator<Entry<String, Parameter<?>>> it = e.getParameters().entrySet().iterator();
+//		while (it.hasNext()){
+//			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
+//			Parameter<?> param = pair.getValue();
+//			Document paramDoc = new Document()
+//			.append("parameter-name", param.getName())
+//			.append("parameter-type", param.getType())
+//			.append("parameter-value", param.getCurrentValue());
+//			
+//			paramDocs.add(paramDoc);
+//		}
+//		
+//		List<Interaction> agentInteractions = e.publishInteractions();
+//		if (agentInteractions != null){
+//			for (Interaction inter : agentInteractions){
+//				Document interDoc = new Document()
+//					.append("interaction-from",inter.getEntityFrom().getID())
+//					.append("interaction-to", inter.getEntityTo().getID())
+//					.append("interaction-type",inter.getType());
+//				interactions.add(interDoc);
+//			}
+//		}
+//		
+//	
+//		environment.append("parameters",paramDocs);
+//		
+//		environmentsDocuments.add(environment);
+//	}
+	
+//	public void exportAgent(Agent a){
+//		Document agent = new Document();
+//		agent.append("agent-ID", a.getID());
+//		agent.append("agent-type", a.getType());
+//		agent.append("agent-name", a.getID());
+//		agent.append("lifetime", -1);
+//		
+//		ArrayList<Document> paramDocs = new ArrayList<Document>();
+//
+//		Iterator<Entry<String, Parameter<?>>> it = a.getParameters().entrySet().iterator();
+//		while (it.hasNext()){
+//			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
+//			Parameter<?> param = pair.getValue();
+//			Document paramDoc = new Document()
+//			.append("parameter-name", param.getName())
+//			.append("parameter-type", param.getType())
+//			.append("parameter-value", param.getCurrentValue());
+//			paramDocs.add(paramDoc);
+//		}
+//		
+//		List<Interaction> agentInteractions = a.publishInteractions();
+//		if (agentInteractions != null){
+//			for (Interaction inter : agentInteractions){
+//				Document interDoc = new Document()
+//					.append("interaction-from",inter.getEntityFrom().getID())
+//					.append("interaction-to", inter.getEntityTo().getID())
+//					.append("interaction-type",inter.getType());
+//				interactions.add(interDoc);
+//			}
+//		}
+//	
+//		agent.append("parameters",paramDocs);
+//		
+//		agentsDocuments.add(agent);
+//	}
 }
