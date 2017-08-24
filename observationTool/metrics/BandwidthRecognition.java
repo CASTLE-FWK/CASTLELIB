@@ -5,6 +5,7 @@ import observationTool.results.MetricResult;
 
 /**
  * REQUIREMENTS:
+ * 
  * @author lachlan
  *
  */
@@ -14,7 +15,6 @@ public class BandwidthRecognition extends MetricBase implements MetricInterface 
 		super("BandwidthRecognition");
 		// TODO Auto-generated constructor stub
 	}
-
 
 	@Override
 	public void runMetric(Object... params) {
@@ -37,9 +37,7 @@ public class BandwidthRecognition extends MetricBase implements MetricInterface 
 	@Override
 	public void runMetric(SystemInfo si) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
-	
 }

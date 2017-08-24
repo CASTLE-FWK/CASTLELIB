@@ -7,7 +7,7 @@ import observationTool.VEntity;
 import observationTool.results.MetricResult;
 import stdSimLib.Interaction;
 
-/**
+/*
  * DESCRIPTION:
  * 	Multi-Scale Shannon Entropy (Parunak & Brueckner 2001)
  *  Define multiple scales of system states calculate the shannon entropy of them over time 
@@ -34,13 +34,11 @@ import stdSimLib.Interaction;
 public class MSSE extends MetricBase implements MetricInterface {
 
 	double finalResult;
-	
+
 	public MSSE() {
 		super("MSSE");
 		// TODO Auto-generated constructor stub
 	}
-
-
 
 	public Object metricResults() {
 		// TODO Auto-generated method stub
@@ -51,11 +49,9 @@ public class MSSE extends MetricBase implements MetricInterface {
 	public void runMetric(Object... params) {
 
 	}
-	
-	
-	
-	public void train(int stepNumber, ArrayList<VEntity> agents, ArrayList<Interaction> interactions){
-		
+
+	public void train(int stepNumber, ArrayList<VEntity> agents, ArrayList<Interaction> interactions) {
+
 	}
 
 	@Override
@@ -73,7 +69,7 @@ public class MSSE extends MetricBase implements MetricInterface {
 	@Override
 	public void runMetric(SystemInfo si) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

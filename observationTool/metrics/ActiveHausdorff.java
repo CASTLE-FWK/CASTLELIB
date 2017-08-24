@@ -5,24 +5,24 @@ import observationTool.results.MetricResult;
 
 /**
  * REQUIREMENTS:
+ * 
  * @author lachlan
  *
  */
 
-public class ActiveHausdorff implements MetricInterface{
+public class ActiveHausdorff implements MetricInterface {
 
 	public String metricName;
-	
+
 	public ActiveHausdorff() {
 		// TODO Auto-generated constructor stub
 		metricName = "ActiveHausdorff";
 	}
 
-
 	@Override
 	public void runMetric(Object... params) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ActiveHausdorff implements MetricInterface{
 	@Override
 	public void runMetric(SystemInfo si) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

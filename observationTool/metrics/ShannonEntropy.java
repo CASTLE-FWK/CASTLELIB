@@ -10,7 +10,6 @@ public class ShannonEntropy extends MetricBase implements MetricInterface {
 		// TODO Auto-generated constructor stub
 	}
 
-
 	@Override
 	public void runMetric(Object... params) {
 		// TODO Auto-generated method stub
@@ -32,7 +31,7 @@ public class ShannonEntropy extends MetricBase implements MetricInterface {
 	@Override
 	public void runMetric(SystemInfo si) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

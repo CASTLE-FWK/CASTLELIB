@@ -5,28 +5,29 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class MetricParameters{
+public class MetricParameters {
 	HashMap<String, Object> params;
+
 	public MetricParameters() {
 		params = new HashMap<String, Object>();
 	}
-	
-	public void addParameter(String name, Object value){
+
+	public void addParameter(String name, Object value) {
 		params.put(name, value);
 	}
-	
-	public Object getParameterValue(String name){
+
+	public Object getParameterValue(String name) {
 		return params.get(name);
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		String str = "";
 		Iterator<Entry<String, Object>> it = params.entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry<String, Object> pair = (Map.Entry<String, Object>)it.next();
-			str += pair.getKey()+": "+pair.getValue().toString()+", ";
-		}				
+		while (it.hasNext()) {
+			Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
+			str += pair.getKey() + ": " + pair.getValue().toString() + ", ";
+		}
 		return str;
 	}
 }

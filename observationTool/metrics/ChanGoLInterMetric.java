@@ -9,7 +9,7 @@ import observationTool.MetricRunner_ED;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
 
-/**
+/*
  * DESCRIPTION:
  * 	Based on WKV Chan's Interaction Metric (2011)
  * 	
@@ -33,97 +33,103 @@ import observationTool.results.MetricResult;
  *
  */
 
-public class ChanGoLInterMetric extends MetricBase implements MetricInterface{
+public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 
 	public HashMap<String, Double> cumulativeIndiv;
 	public int[] overallChanges;
 	public double[] maxAtT;
-	
+
 	public long result_Zt;
 	public double result_It;
 	public double[][] result_Yit;
-	
+
 	public ChanGoLInterMetric() {
 		// TODO Auto-generated constructor stub
 		super("ChanGoLInterMetric");
 		cumulativeIndiv = new HashMap<String, Double>();
 	}
 
-
-	//TODO: Being lazy and assuming correct things are there
+	// TODO: Being lazy and assuming correct things are there
 	@Override
 	public void runMetric(Object... params) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	//What needs to happen here?
-	public void setup(ArrayList<VEntity> step_zero, int numberOfSteps){
-		for (VEntity vagent : step_zero){
+
+	// What needs to happen here?
+	public void setup(ArrayList<VEntity> step_zero, int numberOfSteps) {
+		for (VEntity vagent : step_zero) {
 			cumulativeIndiv.put(vagent.getID(), 0.0);
 		}
 		overallChanges = new int[numberOfSteps];
 		maxAtT = new double[numberOfSteps];
 		result_Yit = new double[numberOfSteps][];
 	}
-	
-	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep){
-		//These lists should be the same size
-		if (step_tm1.size() != step_t.size()){
-//			System.out.println("Agent lists are not the same size. Terminating metric.");
-//			return;
+
+	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep) {
+		// These lists should be the same size
+		if (step_tm1.size() != step_t.size()) {
+			// System.out.println("Agent lists are not the same size.
+			// Terminating metric.");
+			// return;
 		}
-		
-		//Sort to fix any issues
+
+		// Sort to fix any issues
 		Collections.sort(step_tm1, VEntity.sortByName());
 		Collections.sort(step_t, VEntity.sortByName());
 		result_Yit[currentStep] = new double[step_tm1.size()];
-		
-		//compare life state between each one
-		for (int i = 0; i < step_tm1.size(); i++){
+
+		// compare life state between each one
+		for (int i = 0; i < step_tm1.size(); i++) {
 			VEntity vat = step_t.get(i);
 			VEntity vatm1 = step_tm1.get(i);
-			if (vat.getID().compareTo(vatm1.getID()) != 0){
-//				System.out.println("Issue with comparing non-identical agents. Terminating metric.");
+			if (vat.getID().compareTo(vatm1.getID()) != 0) {
+				// System.out.println("Issue with comparing non-identical
+				// agents. Terminating metric.");
 				continue;
 			}
-			
-//			if (MetricRunner_ED.getCurrentState(vatm1).compareTo(MetricRunner_ED.getCurrentState(vat)) != 0 ){
-//				cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
-//				overallChanges[currentStep]++;
-//				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]){
-//					maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
-//				}
-//			}
-			
-			if (vatm1.getParameterValueFromStringAsString("Alive").compareTo(vat.getParameterValueFromStringAsString("Alive")) != 0 ){
-				//Increment count of agent change
+
+			// if
+			// (MetricRunner_ED.getCurrentState(vatm1).compareTo(MetricRunner_ED.getCurrentState(vat))
+			// != 0 ){
+			// cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID())
+			// + 1.0);
+			// overallChanges[currentStep]++;
+			// if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]){
+			// maxAtT[currentStep] =
+			// cumulativeIndiv.get(vat.getID()).intValue();
+			// }
+			// }
+
+			if (vatm1.getParameterValueFromStringAsString("Alive")
+					.compareTo(vat.getParameterValueFromStringAsString("Alive")) != 0) {
+				// Increment count of agent change
 				cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
 				overallChanges[currentStep]++;
-				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]){
+				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
 					maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
 				}
 			}
-			
+
 		}
-		
-		//calculate It, Yit, and Zt
-		
-		//Calc It
+
+		// calculate It, Yit, and Zt
+
+		// Calc It
 		result_It = overallChanges[currentStep];
-		
-		//Calc Yit and Zt
-		for (int i = 0; i < step_t.size(); i++){
+
+		// Calc Yit and Zt
+		for (int i = 0; i < step_t.size(); i++) {
 			Double tmp = cumulativeIndiv.get(step_t.get(i).getID());
-			if (tmp == null){
+			if (tmp == null) {
 				cumulativeIndiv.put(step_t.get(i).getID(), 0.0);
 				tmp = 0.0;
 			} else {
 				tmp = tmp.doubleValue();
 			}
-			result_Yit[currentStep][i] = tmp / (double)maxAtT[currentStep];			
+			result_Yit[currentStep][i] = tmp / (double) maxAtT[currentStep];
 			result_Zt += cumulativeIndiv.get(step_t.get(i).getID()).intValue();
-		}	
+		}
 	}
 
 	public long getResult_Zt() {
@@ -137,12 +143,12 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface{
 	public double[] getResult_Yit(int currStep) {
 		return result_Yit[currStep];
 	}
-	
-	public double[] getResultArray(int currStep){
+
+	public double[] getResultArray(int currStep) {
 		double[] res = new double[2];
 		res[0] = result_Zt;
-		res[1] = result_It; 
-//		res[2] = result_Yit[currStep];
+		res[1] = result_It;
+		// res[2] = result_Yit[currStep];
 		return res;
 	}
 
@@ -161,7 +167,7 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface{
 	@Override
 	public void runMetric(SystemInfo si) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
