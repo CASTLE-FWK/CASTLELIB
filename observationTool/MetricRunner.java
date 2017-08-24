@@ -118,12 +118,12 @@ public class MetricRunner {
 				//Write results to file
 				if (!testing) {
 					Utilities.writeToFile(toTheDoc.toString(),
-							resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv");
+							resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
 				}
 
 				for (MetricResult r : allResults) {
 					Utilities.writeToFile(r.resultsToString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
-							+ r.getExperimentName() + "_allMetrics.tsv");
+							+ r.getExperimentName() + "_allMetrics.tsv", false);
 				}
 			}
 		} catch (IOException e) {
@@ -1266,7 +1266,7 @@ public class MetricRunner {
 
 		tt.zarf();
 		Utilities.writeToFile(sb.toString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
-				+ metricName.replaceAll("\\s+", "") + "/" + si.getConfigurationString() + "-densities-over-time.tsv");
+				+ metricName.replaceAll("\\s+", "") + "/" + si.getConfigurationString() + "-densities-over-time.tsv", false);
 	}
 
 	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si) {
