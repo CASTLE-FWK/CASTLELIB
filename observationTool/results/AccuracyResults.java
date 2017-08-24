@@ -1,7 +1,7 @@
 package observationTool.results;
 
 public class AccuracyResults {
-	
+
 	int falsePositives = 0;
 	int truePositives = 0;
 	int falseNegatives = 0;
@@ -11,111 +11,120 @@ public class AccuracyResults {
 	int goodHits = 0;
 	int badHits = 0;
 	int numberOfRealInstances = 0;
-	
-	public AccuracyResults(){
-		
+
+	public AccuracyResults() {
+
 	}
-	
-	public boolean checkSanity(){
-		if (sanitySum() == totalHits){
+
+	public boolean checkSanity() {
+		if (sanitySum() == totalHits) {
 			return true;
 		}
 		System.out.println("Error with Accuracy Calc");
 		return false;
 	}
-	
-	public int sanitySum(){
+
+	public int sanitySum() {
 		return (falsePositives + truePositives + falseNegatives + trueNegatives);
 	}
-	
-	public double getFalsePositivePercentage(){
-		return (double)falsePositives / (double)totalHits;
+
+	public double getFalsePositivePercentage() {
+		return (double) falsePositives / (double) totalHits;
 	}
-	public double getTruePositivePercentage(){
-		return (double)truePositives / (double)totalHits;
+
+	public double getTruePositivePercentage() {
+		return (double) truePositives / (double) totalHits;
 	}
-	public double getFalseNegativePercentage(){
-		return (double)falseNegatives / (double)totalHits;
+
+	public double getFalseNegativePercentage() {
+		return (double) falseNegatives / (double) totalHits;
 	}
-	public double getTrueNegativePercentage(){
-		return (double)trueNegatives / (double)totalHits;
+
+	public double getTrueNegativePercentage() {
+		return (double) trueNegatives / (double) totalHits;
 	}
-	
+
 	@Override
-	public String toString(){
-		return (String.format("TP: %1$d TN: %2$d FP: %3$d FN: %4$d TH: %5$d", truePositives, trueNegatives, falsePositives, falseNegatives, totalHits));
+	public String toString() {
+		return (String.format("TP: %1$d TN: %2$d FP: %3$d FN: %4$d TH: %5$d", truePositives, trueNegatives,
+				falsePositives, falseNegatives, totalHits));
 	}
-	
-	public void addHit(){
+
+	public void addHit() {
 		totalHits++;
 	}
-	public void addFalsePositive(){
+
+	public void addFalsePositive() {
 		falsePositives++;
 		addHit();
 	}
-	public void addTruePositive(){
+
+	public void addTruePositive() {
 		truePositives++;
 		addHit();
 	}
-	public void addFalseNegative(){
+
+	public void addFalseNegative() {
 		falseNegatives++;
 		addHit();
 	}
-	public void addTrueNegative(){
+
+	public void addTrueNegative() {
 		trueNegatives++;
 		addHit();
 	}
 
-	public double calculateTPR(){
-		return ((double)truePositives) / ((double)truePositives + falseNegatives);
+	public double calculateTPR() {
+		return ((double) truePositives) / ((double) truePositives + falseNegatives);
 	}
-	
-	public double calculateSPC(){
-		return ((double)trueNegatives) / ((double)trueNegatives + falsePositives);
+
+	public double calculateSPC() {
+		return ((double) trueNegatives) / ((double) trueNegatives + falsePositives);
 	}
-	
-	public double calculatePPV(){
-		if (truePositives + falsePositives == 0){
+
+	public double calculatePPV() {
+		if (truePositives + falsePositives == 0) {
 			return 0;
 		}
-		return ((double)truePositives) / ((double)truePositives + (double)falsePositives);
+		return ((double) truePositives) / ((double) truePositives + (double) falsePositives);
 	}
-	
-	public double calculateNPV(){
-		if (trueNegatives + falseNegatives == 0){
+
+	public double calculateNPV() {
+		if (trueNegatives + falseNegatives == 0) {
 			return 0;
 		}
-		return ((double)trueNegatives) / ((double)trueNegatives + (double)falseNegatives);
+		return ((double) trueNegatives) / ((double) trueNegatives + (double) falseNegatives);
 	}
-	
-	public double calculateACC(){
-		return ((double)truePositives + trueNegatives) / ((double)truePositives + falsePositives + trueNegatives + falseNegatives);
+
+	public double calculateACC() {
+		return ((double) truePositives + trueNegatives)
+				/ ((double) truePositives + falsePositives + trueNegatives + falseNegatives);
 	}
-	public double calculateMarkedness(){
+
+	public double calculateMarkedness() {
 		return (calculatePPV() + calculateNPV() - 1.0);
 	}
-	
-	public double calculateTruePositiveRatio(){
-		return (double)truePositives/totalHits;
+
+	public double calculateTruePositiveRatio() {
+		return (double) truePositives / totalHits;
 	}
-	
-	public double F1Score(){
-		return 2.0*truePositives / (double)((2.0 * truePositives) + falsePositives + falseNegatives);
+
+	public double F1Score() {
+		return 2.0 * truePositives / (double) ((2.0 * truePositives) + falsePositives + falseNegatives);
 	}
-	
-	public void setRealHits(int numRealHits){
+
+	public void setRealHits(int numRealHits) {
 		realHits = numRealHits;
 	}
-	
-	public double calculateRealHits(){
-		if (realHits == 0){
-//			System.out.println("is zero");
+
+	public double calculateRealHits() {
+		if (realHits == 0) {
+			//			System.out.println("is zero");
 			return 0.0;
 		}
-		return (double)truePositives / (double)realHits;
+		return (double) truePositives / (double) realHits;
 	}
-	
-	
+
 	public int getFalsePositives() {
 		return falsePositives;
 	}
@@ -155,7 +164,7 @@ public class AccuracyResults {
 	public void setTotalHits(int totalHits) {
 		this.totalHits = totalHits;
 	}
-	
+
 	public int getGoodHits() {
 		return goodHits;
 	}
@@ -175,17 +184,18 @@ public class AccuracyResults {
 	public int getRealHits() {
 		return realHits;
 	}
-	public void addBadHit(){
+
+	public void addBadHit() {
 		addHit();
 		badHits++;
 	}
-	
-	public void addGoodHit(){
+
+	public void addGoodHit() {
 		addHit();
 		goodHits++;
 	}
-	
-	public void removeGoodHit(){
+
+	public void removeGoodHit() {
 		goodHits--;
 	}
 
@@ -196,9 +206,8 @@ public class AccuracyResults {
 	public void setNumberOfRealInstances(int numberOfRealInstances) {
 		this.numberOfRealInstances = numberOfRealInstances;
 	}
-	
 
-	public AccuracyResults clone(){
+	public AccuracyResults clone() {
 		AccuracyResults nar = new AccuracyResults();
 		nar.setFalseNegatives(falseNegatives);
 		nar.setTrueNegatives(trueNegatives);
@@ -209,7 +218,7 @@ public class AccuracyResults {
 		nar.setGoodHits(goodHits);
 		nar.setBadHits(badHits);
 		nar.setNumberOfRealInstances(numberOfRealInstances);
-		
+
 		return nar;
 	}
 }

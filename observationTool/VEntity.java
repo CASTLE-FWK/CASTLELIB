@@ -9,9 +9,8 @@ import stdSimLib.Parameter;
 
 //This is a virtual Agent. Identical to an Agent it just allows the MetricRunner to process already stored information
 
+public class VEntity extends Entity {
 
-public class VEntity extends Entity{
-	
 	//TODO:
 	//set colour
 	//get position
@@ -22,51 +21,51 @@ public class VEntity extends Entity{
 		super(type, uid);
 		this.name = name;
 	}
-	
-	public VEntity(VEntity v){
+
+	public VEntity(VEntity v) {
 		super(v.getType(), v.getID());
 		this.name = v.getName();
 		parameters = new HashMap<String, Parameter<?>>(v.getParameters());
 	}
-	
-	public VEntity(Entity newV){
+
+	public VEntity(Entity newV) {
 		super(newV.getType(), newV.getID());
 		this.name = newV.getID();
-		parameters = new HashMap<String,Parameter<?>>(newV.getParameters());
+		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());
 	}
-	
-	public void addParameterFromString(String name, String type, String value){
-		if (name.compareToIgnoreCase("Position") == 0){
+
+	public void addParameterFromString(String name, String type, String value) {
+		if (name.compareToIgnoreCase("Position") == 0) {
 			position = new Vector2(value);
 		}
 		super.addParameterFromString(name, type, value);
 	}
-	
-	public Object getParameterValue(String paramName){
+
+	public Object getParameterValue(String paramName) {
 		return getParameterValueFromString(paramName);
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return entityID.toString();
 	}
-	
-	public static Comparator<VEntity> sortByName(){
+
+	public static Comparator<VEntity> sortByName() {
 		Comparator comp = new Comparator<VEntity>() {
 			@Override
-			public int compare(VEntity va1, VEntity va2){
+			public int compare(VEntity va1, VEntity va2) {
 				return va1.getID().compareTo(va2.getID());
 			}
 		};
 		return comp;
 	}
-	
+
 	@Override
-	public Vector2 getPosition(){
+	public Vector2 getPosition() {
 		return position;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
 }
