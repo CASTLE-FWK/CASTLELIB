@@ -250,7 +250,7 @@ public class MetricResult {
 				toFileString += i + "\t" + resultsReal[i] + "\t" + positiveHits[i] + "\n";
 			}
 			Utilities.writeToFile(toFileString,
-					resultsDir + resType1.replaceAll("\\s+", "") + "_" + resType2.replaceAll("\\s+", "") + ".tsv");
+					resultsDir + resType1.replaceAll("\\s+", "") + "_" + resType2.replaceAll("\\s+", "") + ".tsv", false);
 		}
 
 		//Calculate Fowlkes-Mallows index
