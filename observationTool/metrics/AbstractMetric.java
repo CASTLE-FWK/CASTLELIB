@@ -11,6 +11,12 @@ public abstract class AbstractMetric {
 	MetricInfo metricInfo;
 	HashMap<String, Parameter<?>> currentCalculationParameters;
 	
+	/**
+	 * Add in results and the variable they are to be stored in
+	 * For example, if the algorithm returns two results, //TODO
+	 * @param name
+	 * @param result
+	 */
 	public <T> void addMetricResults(String name, T result){
 		metricResults.addMetricResult(name, result);
 	}
