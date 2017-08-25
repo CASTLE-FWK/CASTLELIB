@@ -21,7 +21,14 @@
             "Metric-name": "Oscillation Detection",
             "Metric-parameters": "",
             "Needs-training": "false",
-            "Training-sets": []
+            "Training-sets": [],
+            "Metric-variable mapping":[
+                {
+                    "metric-variable":"var1",
+                    "entity-type":"Cell",
+                    "entity-variable":"Alive"
+                }
+            ]
         }
     ]
 }

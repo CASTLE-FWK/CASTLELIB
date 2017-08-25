@@ -48,7 +48,7 @@ public class Parameter<T> {
 		this.name = name;
 	}
 
-	public Object getValue() {
+	public T getValue() {
 		return value;
 	}
 
