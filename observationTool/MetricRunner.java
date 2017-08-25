@@ -1,7 +1,6 @@
 package observationTool;
 
 import interactionGraph.InteractionGraph;
-import interactionGraph.Node;
 import observationTool.metrics.ChanGoLInterMetric;
 import observationTool.metrics.ClusterTrack;
 import observationTool.metrics.Entropy;
@@ -21,9 +20,6 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import stdSimLib.Interaction;
 import stdSimLib.utilities.RandomGen;
@@ -34,7 +30,7 @@ import org.bson.Document;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import experimentExecution.Experiment;
-import experimentExecution.JsonParse;
+import experimentExecution.JsonParser;
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 
@@ -97,7 +93,7 @@ public class MetricRunner {
 				toTheDoc.append(notes + "\n");
 				toTheDoc.append(
 						"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
-				Experiment exp = JsonParse.parseExperiment(experimentDirRoot.concat(line));
+				Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
 				print(exp.toString());
 				ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
 

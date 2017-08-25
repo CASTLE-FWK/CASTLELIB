@@ -31,7 +31,7 @@ import org.bson.Document;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import experimentExecution.Experiment;
-import experimentExecution.JsonParse;
+import experimentExecution.JsonParser;
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 
@@ -94,7 +94,7 @@ public class MetricRunner_ED {
 				
 				toTheDoc.append(notes+"\n");
 				toTheDoc.append("System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
-				Experiment exp = JsonParse.parseExperiment(experimentDirRoot.concat(line));
+				Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
 				print(exp.toString());
 				ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
 				
@@ -113,11 +113,11 @@ public class MetricRunner_ED {
 				toTheDoc.append("\n#runtime\t"+runtime);
 				//Write results to file
 				if (!testing){
-					Utilities.writeToFile(toTheDoc.toString(), resultsDirRoot+"metricresults_"+Utilities.generateTimeID()+".tsv");
+					Utilities.writeToFile(toTheDoc.toString(), resultsDirRoot+"metricresults_"+Utilities.generateTimeID()+".tsv", false);
 				}
 				
 				for (MetricResult r : allResults){
-					Utilities.writeToFile(r.resultsToString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+r.getExperimentName()+"_allMetrics.tsv");
+					Utilities.writeToFile(r.resultsToString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+r.getExperimentName()+"_allMetrics.tsv", false);
 				}
 			}
 		} catch (IOException e) {

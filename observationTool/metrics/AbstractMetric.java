@@ -1,6 +1,7 @@
 package observationTool.metrics;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import experimentExecution.MetricInfo;
 import stdSimLib.Parameter;
@@ -11,7 +12,7 @@ public abstract class AbstractMetric {
 	MetricInfo metricInfo;
 	HashMap<String, Parameter<?>> currentCalculationParameters;
 	boolean specialised = false;
-	String specialisedSystems;
+	HashSet<String> specialisedSystems;
 	
 	/**
 	 * Add in results and the variable they are to be stored in
@@ -67,12 +68,12 @@ public abstract class AbstractMetric {
 		this.specialised = isSpecialised;
 	}
 
-	public String getSpecialisedSystems() {
+	public HashSet<String> getSpecialisedSystems() {
 		return specialisedSystems;
 	}
 
-	public void setSpecialisedSystems(String specialisedSystems) {
-		this.specialisedSystems = specialisedSystems;
+	public void setSpecialisedSystems(String name) {
+		this.specialisedSystems.add(name);
 	}
 
 	public void setMetricResults(MetricResults metricResults) {

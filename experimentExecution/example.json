@@ -4,27 +4,28 @@
     "Configuration": "Random 25x25",
     "System-db-id": "game_of_life_2016777777",
     "Description: ": "",
-    "Metrics": [
+    "Metrics-to-use": [
         {
             "Metric-name": "Limited Bandwidth Recognition",
-            "Metric-parameters": "",
-            "Needs-training": "true",
+            "Metric-parameter-values": "",
+            "Is-trained": "true",
+            "Metric-variable-maps":[],
             "Training-sets": [
                 {
-                "System-name": "Game of Life",
-                "Variant": "ll",
-                "System-db-id": "game_of_life_2013"
+                    "System-name": "Game of Life",
+                    "Variant": "ll",
+                    "System-db-id": "game_of_life_2013"
                 }
             ]
         },
         {
             "Metric-name": "Oscillation Detection",
-            "Metric-parameters": "",
-            "Needs-training": "false",
+            "Metric-parameter-values": "",
+            "Is-trained": "false",
             "Training-sets": [],
-            "Metric-variable mapping":[
+            "Metric-variable-mappings":[
                 {
-                    "metric-variable":"var1",
+                    "metric-variable":"state",
                     "entity-type":"Cell",
                     "entity-variable":"Alive"
                 }

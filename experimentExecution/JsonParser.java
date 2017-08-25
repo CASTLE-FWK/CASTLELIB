@@ -8,7 +8,7 @@ import observationTool.metrics.MetricParameters;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-public class JsonParse {
+public class JsonParser {
 
 	static String test = "test.json";
 
@@ -30,7 +30,7 @@ public class JsonParse {
 						obj.get("Configuration").asObject().get("Dimensions").asString(),
 						obj.get("System-db-id").asString()));
 			}
-			anExperiment.addMetricInfos(parseMetricInfos(object.get("Metrics").asArray()));
+			anExperiment.addMetricInfos(parseMetricInfoForExperiment(object.get("Metrics-to-use").asArray()));
 
 			return anExperiment;
 		} catch (Exception e) {
@@ -39,16 +39,16 @@ public class JsonParse {
 		}
 	}
 
-	public static ArrayList<MetricInfo> parseMetricInfos(JsonArray arr) {
+	public static ArrayList<MetricInfo> parseMetricInfoForExperiment(JsonArray arr) {
 		ArrayList<MetricInfo> metricInfos = new ArrayList<MetricInfo>();
 		for (int i = 0; i < arr.size(); i++) {
 			JsonObject MetricInfoInfo = arr.get(i).asObject();
-			MetricInfo m = new MetricInfo(MetricInfoInfo.get("Metric-name").asString(),
-					MetricInfoInfo.get("Needs-training").asBoolean());
-			m.addTrainingSystems(parseTrainingSets(MetricInfoInfo.get("Training-sets").asArray()));
+			MetricInfo mi = new MetricInfo(MetricInfoInfo.get("Metric-name").asString(),
+					MetricInfoInfo.get("Is-trained").asBoolean());
+			mi.addTrainingSystems(parseTrainingSets(MetricInfoInfo.get("Training-sets").asArray()));
 
 			// Parse Metric parameters
-			JsonArray params = MetricInfoInfo.get("Metric-parameters").asArray();
+			JsonArray params = MetricInfoInfo.get("Metric-parameter-values").asArray();
 			MetricParameters mp = null;
 			for (int j = 0; j < params.size(); j++) {
 				mp = new MetricParameters();
@@ -64,12 +64,11 @@ public class JsonParse {
 					} else {
 						mp.addParameter(member.getName(), member.getValue());
 					}
-
 				}
-				m.addMetricParameters(mp);
+				mi.addMetricParameters(mp);
 			}
-
-			metricInfos.add(m);
+			parseMetricMappings(MetricInfoInfo.get("Metric-variable-mappings").asArray(), mi);
+			metricInfos.add(mi);
 		}
 		return metricInfos;
 	}
@@ -81,6 +80,13 @@ public class JsonParse {
 			systems.add(new SystemInfo(MetricInfoInfo.get("System-db-id").asString()));
 		}
 		return systems;
+	}
+	
+	public static void parseMetricMappings(JsonArray arr, MetricInfo mi){
+		for (int i = 0; i < arr.size(); i++){
+			JsonObject item = arr.get(i).asObject();
+			mi.addVariableMap(item.get("metric-variable").asString(), item.get("entity-type").asString(), item.get("entity-variable").asString());
+		}
 	}
 }
 

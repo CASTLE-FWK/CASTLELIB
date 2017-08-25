@@ -14,6 +14,7 @@ public class ChanInteractionMetric extends AbstractMetric {
 	
 	//Metric result variables
 	//Needs to be declared manually and must match metric specification JSON
+	//Can then be initialised from the JSON configuration
 	int[] overallChanges;
 	double[] maxAtT;
 	long result_Zt;
