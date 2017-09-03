@@ -4,10 +4,17 @@ import java.util.List;
 
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
+import castleComponents.representations.Grid;
 
 public class Map2D {
 	
-	public Map2D(){}
+	//How can we do this
+	//Can use a grid! 
+	Grid<MapComponents> theGridMap;
+	
+	public Map2D(){
+		theGridMap = new Grid<MapComponent>();
+	}
 	
 	public Vector2 getPositionOfEntity(Entity e){
 		//Find entity and return its position
