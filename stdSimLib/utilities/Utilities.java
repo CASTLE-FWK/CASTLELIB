@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -209,6 +210,11 @@ public class Utilities {
 		}
 		double variance = temp/list.length;		
 		return Math.sqrt(variance);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<?> getMapAsList(HashMap<?,?> theMap){
+		return new ArrayList(theMap.values());
 	}
 	
 }

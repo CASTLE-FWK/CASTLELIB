@@ -6,6 +6,7 @@ import castleComponents.Entity;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
+import stdSimLib.utilities.Utilities;
 
 public class Map2D {
 	
@@ -13,8 +14,14 @@ public class Map2D {
 	//Can use a grid! 
 	Grid<MapComponents> theGridMap;
 	Range2D range;
+	String name;
+	boolean open = true;
+	int scale = 1;
 	
-	public Map2D(){
+	public Map2D(String name, boolean isOpen, int scale){
+		this.name = name;
+		this.open = isOpen;
+		this.scale = scale;
 		theGridMap = new Grid<MapComponents>();
 		
 	}
@@ -61,14 +68,20 @@ public class Map2D {
 		
 	}
 	
-	public boolean isRoad(Vector2:pos){
-		
+	public boolean isRoad(Vector2 pos){
+		MapComponents m = getMapComponent(pos);
+		return (m.getType() == Type.ROAD_L || m.getType() == Type.ROAD_R ||
+				m.getType() == Type.TURN_L || m.getType() == Type.TURN_R);				
 	}
 	
-	public boolean isPark(Vector2:pos){
+	public boolean isPark(Vector2 pos){
+		MapComponents m = getMapComponent(pos);
+		return (m.getType() == Type.PARK);
 		
 	}
-	public boolean isNoGo(Vector2:pos){
+	public boolean isNoGo(Vector2 pos){
+		MapComponents m = getMapComponent(pos);
+		return (m.getType() == Type.NOGO);
 		
 	}
 	public int countEntitiesInRange(Vector2 pos, Vector2 range){
@@ -78,32 +91,54 @@ public class Map2D {
 		
 	}
 	
-	public boolean isType(String typeName){
-		
+//	public boolean isType(String typeName){
+//		//
+//	}
+	
+	public boolean addMapSection(Map2D map, Vector2 pos){
+		return getMapComponent(pos).setMap(map);
 	}
 	
-	public boolean addMapSection(Map2D map){
-		
+	public Map2D getMapSection(Vector2 pos){
+		return getMapComponent(pos).getMap();
 	}
 	
-	public Map2D getMapSection(Vector2 v){
-					
-	}
-	
+	@SuppressWarnings("unchecked")
 	public List<Entity> getEntitiesAtPos(Vector2 pos){
-		
+		MapComponents m = getMapComponent(pos);
+		return (List<Entity>) Utilities.getMapAsList(m.getContainedEntities());
 	}
 	
-	public boolean addEntity(Entity e){
-		
+	public MapComponents getMapComponent(Vector2 pos){
+		return theGridMap.getEntityAtPos(pos);
 	}
 	
-	public Park getParkAtPos(Vector2 pos){
-		
+	public boolean addEntity(Entity e, Vector2 pos){
+		MapComponents m = getMapComponent(pos);
+		return m.addEntity(e);
+	}
+	
+	public Park getParkAtPos(Vector2 pos){		
+		if (isPark(pos)){
+			MapComponents m = getMapComponent(pos);
+			return m.getPark();
+		} else {
+			return null;
+		}
 	}
 	
 	public boolean entityParking(Entity e, Vector2 pos){
-		
+		//check if park
+		Park p = getParkAtPos(pos);
+		if (p != null) {
+			//check if spaces
+			if (p.freeSpaces()){
+				//Then Park
+				//TODO
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -73,6 +73,12 @@ public class Grid<E> implements Representation<E>{
 		return grid;
 	}
 	
+	public E getEntityAtPos(Vector2 pos){
+		int x = (int)pos.getX();
+		int y = (int)pos.getY();
+		return getEntityAtXY(x,y);
+	}
+	
 	public E getEntityAtXY(int x, int y){
 		return grid[x][y];
 	}

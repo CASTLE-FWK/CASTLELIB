@@ -53,4 +53,8 @@ public class Park {
 		return currentOccupants;
 	}
 	
+	public boolean freeSpaces(){
+		return (currentCapacity < maxCapacity);
+	}
+	
 }
