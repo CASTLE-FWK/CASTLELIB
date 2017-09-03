@@ -3,6 +3,7 @@ package castleComponents.representations.Map2D;
 import java.util.List;
 
 import castleComponents.Entity;
+import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 
@@ -11,9 +12,34 @@ public class Map2D {
 	//How can we do this
 	//Can use a grid! 
 	Grid<MapComponents> theGridMap;
+	Range2D range;
 	
 	public Map2D(){
-		theGridMap = new Grid<MapComponent>();
+		theGridMap = new Grid<MapComponents>();
+		
+	}
+	
+	public Map2D(Vector2 gridDims){
+		theGridMap = new Grid<MapComponents>();
+		theGridMap.init(gridDims, MapComponents.class);
+	}
+	
+	public void setRange(Range2D r){
+		this.range = r;
+		//Apply this to Grid
+	}
+	
+	public void setRange(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
+		range = new Range2D(a,b,c,d);
+		//Apply this to Grid
+	}
+	
+	public Map2D(String parsedMapFile){
+		
+	}
+	
+	public void importMap(String parsedMapFile){
+		
 	}
 	
 	public Vector2 getPositionOfEntity(Entity e){

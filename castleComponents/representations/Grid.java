@@ -45,6 +45,7 @@ public class Grid<E> implements Representation<E>{
 //	Neighbors<E> phantoms_UL;	
 	
 	Class<E> theClass;
+	
 	public Grid(Class<E> c, int X, int Y){
 		if (X == 0){
 			X = 1;
@@ -97,6 +98,28 @@ public class Grid<E> implements Representation<E>{
 			Y = 1;
 		}
 		theClass = (Class<E>) this.layoutParameters.getEntityType();
+		System.out.println(theClass.toString());
+		//Allow the grid to store Entities of the type specified in the layout parameters
+		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
+		this.grid = grid;
+		
+		
+//		System.out.println("GRID INIT FUNCTION CALL");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void init(Vector2 layoutXY, Class<E> theClass){
+		this.X = (int)layoutXY.getX();
+		this.Y = (int)layoutXY.getY();
+		setPhantomState(this.layoutParameters.allowPhantoms());
+		
+		//Check for 0 sized dimensions and fix
+		if (X == 0){
+			X = 1;
+		} 
+		if (Y == 0){
+			Y = 1;
+		}
 		System.out.println(theClass.toString());
 		//Allow the grid to store Entities of the type specified in the layout parameters
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		

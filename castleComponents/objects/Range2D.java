@@ -6,16 +6,25 @@ public class Range2D {
 	Vector2 pointC;
 	Vector2 pointD;
 	
+	public Range2D(){}
+	
 	public Range2D(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
+		setPoints(a,b,c,d);
+	}
+	
+	
+	public void setPoints(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
 		pointA = a;
 		pointB = b;
 		pointC = c;
-		pointD = d;
-		
-		
+		pointD = d;	
 	}
 	
 	public boolean containsPoint(Vector2 point){
+		
+	}
+	
+	public Vector2 getDimensions(){
 		
 	}
 	
