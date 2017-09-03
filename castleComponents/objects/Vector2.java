@@ -24,6 +24,8 @@ public class Vector2 implements java.io.Serializable {
 	
 	private boolean nullPoint = true;
 	
+	public static final Vector2 NULL = new Vector2(true);
+	
 	public Vector2(){
 		this.x = 0;
 		this.y = 0;

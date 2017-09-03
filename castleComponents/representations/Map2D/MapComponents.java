@@ -3,11 +3,14 @@ package castleComponents.representations.Map2D;
 import java.util.HashMap;
 
 import castleComponents.Entity;
+import castleComponents.objects.Vector2;
 
 public class MapComponents {
 	
 	HashMap<String, Entity> containedEntities;
 	Type theType;
+	
+	Vector2 position;
 	
 	//The ways to store types
 	Map2D map;
@@ -15,6 +18,14 @@ public class MapComponents {
 	
 	public MapComponents(){
 		containedEntities = new HashMap<String, Entity>();
+	}
+	
+	public void setPosition(Vector2 p){
+		this.position = p;
+	}
+	
+	public Vector2 getPosition(){
+		return this.position;
 	}
 	
 	public void setType(Type t){
@@ -27,6 +38,10 @@ public class MapComponents {
 		} else {
 			return true;
 		}
+	}
+	
+	public void removeEntity(String id){
+		containedEntities.remove(id);
 	}
 	
 	public HashMap<String, Entity> getContainedEntities(){
@@ -55,6 +70,10 @@ public class MapComponents {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean checkForEntity(String eID){
+		return containedEntities.containsKey(eID);
 	}
 	
 }

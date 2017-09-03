@@ -1,5 +1,6 @@
 package castleComponents.representations.Map2D;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import castleComponents.Entity;
@@ -51,20 +52,55 @@ public class Map2D {
 	
 	public Vector2 getPositionOfEntity(Entity e){
 		//Find entity and return its position
+		//Cycle through grid, and check with each containedEntities map
+		ArrayList<MapComponents> mapComponents = new ArrayList<MapComponents>(theGridMap.getEntities());
+		String eID = e.getID();
+		for (MapComponents mc : mapComponents) {
+			if (mc.checkForEntity(eID)){
+				return mc.getPosition();
+			}
+		}
+
 		//Otherwise return the NULL vector2
-		
-		
-		return null;
+		return Vector2.NULL;
 	}
 	
 	//This should return states
-	public boolean moveTo(Entity e, Vector2 pos){
+	public Outcome moveTo(Entity e, Vector2 pos){
 		//Move an entity to a particular location
-		//If pos is out of bounds 
-		return true;
+		if (!range.containsPoint(pos)){
+			return Outcome.OUT_OF_BOUNDS;
+		}
+		
+		if (isNoGo(pos)){
+			return Outcome.INVALID;
+		}
+
+		//Surely there are some more bad cases here
+		
+		//This will be slow
+		MapComponents oldMC = getMapComponent(getPositionOfEntity(e));
+		oldMC.removeEntity(e.getID());
+		
+		MapComponents mc = getMapComponent(pos);
+		mc.addEntity(e);
+		
+		return Outcome.VALID;
+		
 	}
 	
-	public Outcome moveToWithVelocity(Entity e, Vector2 pod, Vector2 vel){
+	public Outcome moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel){
+		Vector2 newPos = pos.add(vel);
+		return moveTo(e,newPos);		
+	}
+	
+	//This is a standard range
+	public int countEntitiesInRange(Vector2 pos, Vector2 range){
+		
+	}
+	
+	//This is a total range (i.e. 360° vis)
+	public int countEntitiesInRange(Vector2 pos, int range){
 		
 	}
 	
@@ -84,12 +120,7 @@ public class Map2D {
 		return (m.getType() == Type.NOGO);
 		
 	}
-	public int countEntitiesInRange(Vector2 pos, Vector2 range){
-		
-	}
-	public int countEntitiesInRange(Vector2 pos, int range){
-		
-	}
+	
 	
 //	public boolean isType(String typeName){
 //		//
@@ -144,5 +175,5 @@ public class Map2D {
 }
 
 enum Outcome {
-	OUT_OF_BOUNDS, INVALID;
+	OUT_OF_BOUNDS, INVALID, VALID;
 }
