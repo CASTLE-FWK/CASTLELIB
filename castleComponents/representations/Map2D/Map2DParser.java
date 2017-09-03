@@ -15,6 +15,9 @@ public class Map2DParser {
 	boolean open;
 	int scale;
 	
+	int xCounter;
+	int yCounter;
+	
 	public Map2DParser(Map2D theMapToStore){
 		this.theMapToStore = theMapToStore;
 	}
@@ -84,6 +87,9 @@ public class Map2DParser {
 						}
 						break;
 					case END_MAP:{
+						if (yCounter != (int)dimensions.getY()){
+							//Uh-oh
+						}
 						//This will just be noise
 					}
 				}
@@ -96,7 +102,15 @@ public class Map2DParser {
 	}
 	
 	public void parseMapContent(String line){
-		
+		char[] chars = line.toCharArray();
+		xCounter = chars.length;
+		if (xCounter != (int)dimensions.getX()){
+			//Uh-oh
+		}
+		for (int i = 0; i < chars.length; i++){
+			//Parse each symbol
+		}
+		yCounter++;
 	}
 	
 }
