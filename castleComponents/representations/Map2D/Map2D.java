@@ -47,6 +47,9 @@ public class Map2D {
 	}
 	
 	public void importMap(String parsedMapFile){
+		//Oh boy, this will be fun
+		
+		
 		
 	}
 	
