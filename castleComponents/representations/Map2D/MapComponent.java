@@ -1,9 +1,11 @@
 package castleComponents.representations.Map2D;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
+import stdSimLib.utilities.Utilities;
 
 public class MapComponent {
 	
@@ -55,6 +57,11 @@ public class MapComponent {
 	
 	public HashMap<String, Entity> getContainedEntities(){
 		return containedEntities;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<Entity> getContainedEntitiesAsList(){
+		return (ArrayList<Entity>) Utilities.getMapAsList(containedEntities);
 	}
 	
 	public Type getType(){

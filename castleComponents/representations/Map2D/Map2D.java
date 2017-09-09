@@ -1,6 +1,7 @@
 package castleComponents.representations.Map2D;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.activation.MailcapCommandMap;
@@ -109,15 +110,20 @@ public class Map2D {
 	
 	
 	//	TODO
-//	//This is a standard range
-//	public int countEntitiesInRange(Vector2 pos, Vector2 range){
-//		
-//	}
-//	
-//	//This is a total range (i.e. 360° vis)
-//	public int countEntitiesInRange(Vector2 pos, int range){
-//		
-//	}
+	//This is a standard range
+	public int countEntitiesInRange(Vector2 pos, Vector2 range){
+		
+	}
+	
+	//This is a total range (i.e. 360° vis)
+	public int countEntitiesInRange(Vector2 pos, int range){
+		ArrayList<MapComponent> mcs = new ArrayList<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
+		HashSet<Entity> ents = new HashSet<Entity>();
+		for (MapComponent mc : mcs){
+			ents.addAll(mc.getContainedEntitiesAsList());
+		}
+		return ents.size();		
+	}
 	
 	public boolean isRoad(Vector2 pos){
 		MapComponent m = getMapComponent(pos);
