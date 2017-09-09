@@ -132,6 +132,12 @@ public class Continuous<E> implements Representation<E>{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean addEntity(E e, Vector2 p) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 //	public void updatePositions(){
 //		ArrayList<Entity> list = (ArrayList<Entity>) getEntities();
