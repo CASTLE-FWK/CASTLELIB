@@ -5,7 +5,7 @@ import java.util.HashMap;
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 
-public class MapComponents {
+public class MapComponent {
 	
 	HashMap<String, Entity> containedEntities;
 	Type theType;
@@ -16,11 +16,11 @@ public class MapComponents {
 	Map2D map;
 	Park park;
 	
-	public MapComponents(){
+	public MapComponent(){
 		containedEntities = new HashMap<String, Entity>();
 	}
 	
-	public MapComponents(Vector2 pos, Type t){
+	public MapComponent(Vector2 pos, Type t){
 		containedEntities = new HashMap<String, Entity>();
 		setPosition(pos);
 		setType(t);

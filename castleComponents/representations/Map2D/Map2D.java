@@ -15,27 +15,28 @@ public class Map2D {
 	
 	//How can we do this
 	//Can use a grid! 
-	Grid<MapComponents> theGridMap;
+	Grid<MapComponent> theGridMap;
 	Range2D range;
 	String name;
-	boolean open = true;
+	boolean open = false;
 	int scale = 1;
+	Vector2 dimensions;
 	
 	public Map2D(String name, boolean isOpen, int scale){
 		this.name = name;
 		this.open = isOpen;
 		this.scale = scale;
-		theGridMap = new Grid<MapComponents>();
+		theGridMap = new Grid<MapComponent>();
 		
 	}
 	
 	public Map2D(Vector2 gridDims){
-		theGridMap = new Grid<MapComponents>();
-		theGridMap.init(gridDims, MapComponents.class);
+		theGridMap = new Grid<MapComponent>();
+		theGridMap.init(gridDims, MapComponent.class);
 	}
 	
 	public void init(Vector2 gridDims){
-		theGridMap.init(gridDims, MapComponents.class);
+		theGridMap.init(gridDims, MapComponent.class);
 	}
 	
 	public void setRange(Range2D r){
@@ -49,7 +50,7 @@ public class Map2D {
 	}
 	
 	public Map2D(){
-		theGridMap = new Grid<MapComponents>();
+		theGridMap = new Grid<MapComponent>();
 	}
 	
 	
@@ -64,9 +65,9 @@ public class Map2D {
 	public Vector2 getPositionOfEntity(Entity e){
 		//Find entity and return its position
 		//Cycle through grid, and check with each containedEntities map
-		ArrayList<MapComponents> mapComponents = new ArrayList<MapComponents>(theGridMap.getEntities());
+		ArrayList<MapComponent> mapComponents = new ArrayList<MapComponent>(theGridMap.getEntities());
 		String eID = e.getID();
-		for (MapComponents mc : mapComponents) {
+		for (MapComponent mc : mapComponents) {
 			if (mc.checkForEntity(eID)){
 				return mc.getPosition();
 			}
@@ -90,10 +91,10 @@ public class Map2D {
 		//Surely there are some more bad cases here
 		
 		//This will be slow
-		MapComponents oldMC = getMapComponent(getPositionOfEntity(e));
+		MapComponent oldMC = getMapComponent(getPositionOfEntity(e));
 		oldMC.removeEntity(e.getID());
 		
-		MapComponents mc = getMapComponent(pos);
+		MapComponent mc = getMapComponent(pos);
 		mc.addEntity(e);
 		
 		return Outcome.VALID;
@@ -119,18 +120,18 @@ public class Map2D {
 //	}
 	
 	public boolean isRoad(Vector2 pos){
-		MapComponents m = getMapComponent(pos);
+		MapComponent m = getMapComponent(pos);
 		return (m.getType() == Type.ROAD_H || m.getType() == Type.ROAD_V ||
 				m.getType() == Type.TURN_L || m.getType() == Type.TURN_R);				
 	}
 	
 	public boolean isPark(Vector2 pos){
-		MapComponents m = getMapComponent(pos);
+		MapComponent m = getMapComponent(pos);
 		return (m.getType() == Type.PARK);
 		
 	}
 	public boolean isNoGo(Vector2 pos){
-		MapComponents m = getMapComponent(pos);
+		MapComponent m = getMapComponent(pos);
 		return (m.getType() == Type.NOGO);
 		
 	}
@@ -150,22 +151,22 @@ public class Map2D {
 	
 	@SuppressWarnings("unchecked")
 	public List<Entity> getEntitiesAtPos(Vector2 pos){
-		MapComponents m = getMapComponent(pos);
+		MapComponent m = getMapComponent(pos);
 		return (List<Entity>) Utilities.getMapAsList(m.getContainedEntities());
 	}
 	
-	public MapComponents getMapComponent(Vector2 pos){
+	public MapComponent getMapComponent(Vector2 pos){
 		return theGridMap.getEntityAtPos(pos);
 	}
 	
 	public boolean addEntity(Entity e, Vector2 pos){
-		MapComponents m = getMapComponent(pos);
+		MapComponent m = getMapComponent(pos);
 		return m.addEntity(e);
 	}
 	
 	public Park getParkAtPos(Vector2 pos){		
 		if (isPark(pos)){
-			MapComponents m = getMapComponent(pos);
+			MapComponent m = getMapComponent(pos);
 			return m.getPark();
 		} else {
 			return null;
@@ -188,11 +189,77 @@ public class Map2D {
 	
 	//Map building functions
 	public void addMapComponent(Vector2 pos, Type t){
-		MapComponents mc = new MapComponents(pos, t);
+		MapComponent mc = new MapComponent(pos, t);
 		theGridMap.addCell(mc, pos);
 	}
 	
+	public void setName(String n){
+		this.name = n;		
+	}
 	
+	public void setOpen(boolean open){
+		this.open = open;
+	}
+	
+	public void setScale(int s){
+		this.scale = s;
+	}
+	
+	public void setDimensions(Vector2 v){
+		this.dimensions = new Vector2(v);
+	}
+	
+	public boolean validateDimensions(){
+		System.out.println(dimensions.toString());
+		System.out.println(theGridMap.getDimensions().toString());
+		return dimensions.compare(theGridMap.getDimensions());
+	}
+	
+	public String toString(){
+		return getInformation()+'\n'+printMap();
+	}
+	
+	public String getInformation(){
+		return "----Map2D Information----\nName: "+name
+				+"\nisOpen: "+open
+				+"\nsScale: "+scale
+				+"\nDimensions: "+dimensions.toString();
+	}
+	
+	public String printMap(){
+		String str = "";
+		MapComponent[][] mc = theGridMap.getGrid();
+		for (int i = 0; i < mc.length; i++){
+			for (int j = 0; j < mc[i].length; j++){
+				Type currType = mc[i][j].getType();
+				switch (currType){
+					case NOGO:
+						str += Map2DParser.NOGO;
+					break;
+					case PARK:
+						str += Map2DParser.PARK;
+					break;
+					case ROAD_H:
+						str += Map2DParser.ROAD_H;
+					break;
+					case ROAD_V:
+						str += Map2DParser.ROAD_V;
+					break;
+					case TURN_R:
+						str += Map2DParser.TURN_R;
+					break;
+					case TURN_L:
+						str += Map2DParser.TURN_L;
+					break;
+					default:
+						System.out.println("aosjhdilajsd");
+					break;
+				}
+			}
+			str += '\n';
+		}
+		return str;
+	}
 
 }
 

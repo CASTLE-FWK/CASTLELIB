@@ -19,22 +19,22 @@ public class Map2DParser {
 	int yCounter;
 	
 	//Symbols
-	final char PARK = 'P';
-	final char NOGO = '*';
-	final char ROAD_H = '-';
-	final char ROAD_V = '|';
-	final char TURN_R = '\\';
-	final char TURN_L = '/';
-	final char ENT_0 = '0';
-	final char ENT_1 = '1';
-	final char ENT_2 = '2';
-	final char ENT_3 = '3';
-	final char ENT_4 = '4';
-	final char ENT_5 = '5';
-	final char ENT_6 = '6';
-	final char ENT_7 = '7';
-	final char ENT_8 = '8';
-	final char ENT_9 = '9';
+	public final static char PARK = 'P';
+	public final static char NOGO = '*';
+	public final static char ROAD_H = '-';
+	public final static char ROAD_V = '|';
+	public final static char TURN_R = '\\';
+	public final static char TURN_L = '/';
+	public final static char ENT_0 = '0';
+	public final static char ENT_1 = '1';
+	public final static char ENT_2 = '2';
+	public final static char ENT_3 = '3';
+	public final static char ENT_4 = '4';
+	public final static char ENT_5 = '5';
+	public final static char ENT_6 = '6';
+	public final static char ENT_7 = '7';
+	public final static char ENT_8 = '8';
+	public final static char ENT_9 = '9';
 	
 	Vector2 currentPosition;
 	public Map2DParser(Map2D theMapToStore){
@@ -60,6 +60,7 @@ public class Map2DParser {
 							if (line.startsWith("Name:")){
 								this.name = line.split("\"")[1];
 								currState = ParseState.DIMENSIONS;
+								theMapToStore.setName(name);
 							} else {
 								//error
 							}							
@@ -67,8 +68,9 @@ public class Map2DParser {
 					case DIMENSIONS:
 						if (line.startsWith("Dimensions:")){
 							double x = Double.parseDouble(line.split("<")[1].split(",")[0]);
-							double y = Double.parseDouble(line.split("<")[1].split(",")[0].split(">")[0]);
+							double y = Double.parseDouble(line.split("<")[1].split(",")[1].split(">")[0]);
 							dimensions = new Vector2(x,y);
+							theMapToStore.setDimensions(dimensions);
 							theMapToStore.init(dimensions);
 							currState = ParseState.OPEN;
 						} else {
@@ -83,6 +85,7 @@ public class Map2DParser {
 							} else if (line.contains("false")){
 								open = false;
 							}
+							theMapToStore.setOpen(open);
 							currState = ParseState.SCALE;
 						} else {
 							//error
@@ -92,6 +95,7 @@ public class Map2DParser {
 						if (line.startsWith("Scale:")){
 							scale = Integer.parseInt(line.split(":")[1].trim().split("x")[0]);
 							currState = ParseState.BEGIN_MAP;
+							theMapToStore.setScale(scale);
 						} else {
 							//error
 						}

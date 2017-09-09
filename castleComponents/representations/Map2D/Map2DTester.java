@@ -8,5 +8,10 @@ public class Map2DTester {
 		Map2D map = new Map2D();
 		Map2DParser parser = new Map2DParser(map);
 		parser.parseMapFile(mapPath);
+		if (!map.validateDimensions()){
+			System.out.println("WRONG");
+			System.exit(0);
+		}
+		System.out.println(map.toString());
 	}
 }
