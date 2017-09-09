@@ -76,8 +76,8 @@ public class Vector2 implements java.io.Serializable {
 	
 	//TODO: WHAT IS THIS ONE FOR?
 	public void modify(double x, double y){
-		this.x += x;
-		this.y += y;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public void modify(Vector2 vec){

@@ -20,6 +20,15 @@ public class MapComponents {
 		containedEntities = new HashMap<String, Entity>();
 	}
 	
+	public MapComponents(Vector2 pos, Type t){
+		containedEntities = new HashMap<String, Entity>();
+		setPosition(pos);
+		setType(t);
+		if (t == Type.PARK){
+			this.park = new Park();
+		}
+	}
+	
 	public void setPosition(Vector2 p){
 		this.position = p;
 	}
@@ -78,5 +87,5 @@ public class MapComponents {
 	
 }
 enum Type {
-	ROAD_L, ROAD_R, TURN_L, TURN_R, NOGO, PARK, MAP
+	ROAD_H, ROAD_V, TURN_L, TURN_R, NOGO, PARK, MAP
 }

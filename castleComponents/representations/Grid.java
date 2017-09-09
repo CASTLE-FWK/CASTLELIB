@@ -117,7 +117,7 @@ public class Grid<E> implements Representation<E>{
 	public void init(Vector2 layoutXY, Class<E> theClass){
 		this.X = (int)layoutXY.getX();
 		this.Y = (int)layoutXY.getY();
-		setPhantomState(this.layoutParameters.allowPhantoms());
+//		setPhantomState(this.layoutParameters.allowPhantoms());
 		
 		//Check for 0 sized dimensions and fix
 		if (X == 0){

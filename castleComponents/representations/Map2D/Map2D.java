@@ -3,6 +3,8 @@ package castleComponents.representations.Map2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.MailcapCommandMap;
+
 import castleComponents.Entity;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
@@ -32,6 +34,10 @@ public class Map2D {
 		theGridMap.init(gridDims, MapComponents.class);
 	}
 	
+	public void init(Vector2 gridDims){
+		theGridMap.init(gridDims, MapComponents.class);
+	}
+	
 	public void setRange(Range2D r){
 		this.range = r;
 		//Apply this to Grid
@@ -42,11 +48,13 @@ public class Map2D {
 		//Apply this to Grid
 	}
 	
-	public Map2D(String parsedMapFile){
-		
+	public Map2D(){
+		theGridMap = new Grid<MapComponents>();
 	}
 	
-	public void importMap(String parsedMapFile){
+	
+	
+	public static void importMap(String parsedMapFile){
 		//Oh boy, this will be fun
 		
 		
@@ -96,20 +104,23 @@ public class Map2D {
 		Vector2 newPos = pos.add(vel);
 		return moveTo(e,newPos);		
 	}
+
 	
-	//This is a standard range
-	public int countEntitiesInRange(Vector2 pos, Vector2 range){
-		
-	}
 	
-	//This is a total range (i.e. 360° vis)
-	public int countEntitiesInRange(Vector2 pos, int range){
-		
-	}
+	//	TODO
+//	//This is a standard range
+//	public int countEntitiesInRange(Vector2 pos, Vector2 range){
+//		
+//	}
+//	
+//	//This is a total range (i.e. 360° vis)
+//	public int countEntitiesInRange(Vector2 pos, int range){
+//		
+//	}
 	
 	public boolean isRoad(Vector2 pos){
 		MapComponents m = getMapComponent(pos);
-		return (m.getType() == Type.ROAD_L || m.getType() == Type.ROAD_R ||
+		return (m.getType() == Type.ROAD_H || m.getType() == Type.ROAD_V ||
 				m.getType() == Type.TURN_L || m.getType() == Type.TURN_R);				
 	}
 	
@@ -174,6 +185,14 @@ public class Map2D {
 		}
 		return false;
 	}
+	
+	//Map building functions
+	public void addMapComponent(Vector2 pos, Type t){
+		MapComponents mc = new MapComponents(pos, t);
+		theGridMap.addCell(mc, pos);
+	}
+	
+	
 
 }
 
