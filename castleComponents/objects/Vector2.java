@@ -2,6 +2,9 @@ package castleComponents.objects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+
+import stdSimLib.utilities.Utilities;
 
 
 //import repast.simphony.space.continuous.NdPoint;
@@ -176,6 +179,16 @@ public class Vector2 implements java.io.Serializable {
 	public double calculateSlope(Vector2 b){
 		return (b.getY() - getY()) / (b.getX() - getX());
 	}
+	
+	//TODO: Seriously this is simple, why cant you think?
+//	public static List<Vector2> getAllPointsBetweenTwoVectors(Vector2 v1, Vector2 v2){
+//		double minX = Utilities.calculateMin(new double[]{v1.getX(), v2.getX()});
+//		double maxX = Utilities.calculateMax(new double[]{v1.getX(), v2.getX()});
+//		double minY = Utilities.calculateMin(new double[]{v1.getY(), v2.getY()});
+//		double maxY = Utilities.calculateMax(new double[]{v1.getY(), v2.getY()});
+//		
+//		
+//	}
 	
 	public ArrayList<Vector2> possibleOffsets(double offset){
 		ArrayList<Vector2> offsets = new ArrayList<Vector2>();

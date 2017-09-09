@@ -309,6 +309,8 @@ public class Entity implements Runnable {
 		position = new Vector2(p);
 	}
 	
+	
+	
 	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange){
 		ArrayList<Vector2> points = new ArrayList<Vector2>();
 		double halfTheta = theta / 0.5;
