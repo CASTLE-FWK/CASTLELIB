@@ -15,6 +15,7 @@ import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureTypes;
 import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
+import stdSimLib.utilities.Utilities;
 
 public class Entity implements Runnable {
 
@@ -306,6 +307,38 @@ public class Entity implements Runnable {
 
 	public void setPosition(Vector2 p) {
 		position = new Vector2(p);
+	}
+	
+	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange){
+		ArrayList<Vector2> points = new ArrayList<Vector2>();
+		double halfTheta = theta / 0.5;
+		double lastAngle = 180 - 90 - halfTheta;
+		double slope = pos.calculateSlope(vRange);
+
+		
+		//Boy this is some baaaad year 8 maths
+		//Calcs for 1 half of triangle
+		double adj = pos.compareDistance(vRange.add((pos)));
+		double opp = Math.tan(halfTheta) * adj;		
+		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); //√
+		double wideSide = opp * 2.0; //√
+		
+		double cY = Math.pow(adj, 2) + Math.pow(hypot, 2) - Math.pow(opp, 2);
+		double cX = Math.sqrt((Math.pow(hypot,2) - (Math.pow(cY, 2))));
+		Vector2 point1 = new Vector2(cY, cX);
+		Vector2 point2 = pos.getDifference(point1).negate();
+		
+		//Now we have the 3 points, we can iterate through to find each valid point
+		//Root to p1
+		double minX = Utilities.calculateMin(new double[]{pos.getX(), point1.getX()});
+		double maxX = Utilities.calculateMax(new double[]{pos.getX(), point1.getX()});
+		double minY = Utilities.calculateMin(new double[]{pos.getY(), point1.getY()});
+		double maxY = Utilities.calculateMax(new double[]{pos.getY(), point1.getY()});
+
+		//Root to p2
+		
+		
+		return points;
 	}
 	
 	public void writeModelData(){

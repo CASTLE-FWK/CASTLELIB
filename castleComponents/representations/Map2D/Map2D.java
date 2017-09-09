@@ -115,6 +115,7 @@ public class Map2D {
 		
 	}
 	
+	
 	//This is a total range (i.e. 360° vis)
 	public int countEntitiesInRange(Vector2 pos, int range){
 		ArrayList<MapComponent> mcs = new ArrayList<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));

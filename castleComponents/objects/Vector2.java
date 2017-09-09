@@ -157,12 +157,24 @@ public class Vector2 implements java.io.Serializable {
 		return (v.getX() == getX() && v.getY() == getY());
 	}
 	
+	public Vector2 getDifference(Vector2 v){
+		return new Vector2(getX() - v.getX(), getY() - v.getY());
+	}
+	
+	public Vector2 negate(){
+		return new Vector2(-getX(), -getY());
+	}
+	
 	public boolean compare(Vector2 v){
 		return (v.getX() == getX() && v.getY() == getY());
 	}
 	
 	public double compareDistance (Vector2 b){
 		return Math.sqrt((Math.pow(this.x - b.getX(), 2) + Math.pow(this.y - b.getY(), 2)));
+	}
+	
+	public double calculateSlope(Vector2 b){
+		return (b.getY() - getY()) / (b.getX() - getX());
 	}
 	
 	public ArrayList<Vector2> possibleOffsets(double offset){
