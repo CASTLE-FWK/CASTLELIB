@@ -186,8 +186,6 @@ public class Vector2 implements java.io.Serializable {
 //		double maxX = Utilities.calculateMax(new double[]{v1.getX(), v2.getX()});
 //		double minY = Utilities.calculateMin(new double[]{v1.getY(), v2.getY()});
 //		double maxY = Utilities.calculateMax(new double[]{v1.getY(), v2.getY()});
-//		
-//		
 //	}
 	
 	public ArrayList<Vector2> possibleOffsets(double offset){
