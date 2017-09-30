@@ -55,6 +55,10 @@ public class RandomGen {
 		
 		return new Vector2(X,Y);
 	}
+
+	public static Vector2 randomiseVectorDouble(Vector2 xVec, Vector2 yVec){
+		return randomiseVectorDouble(xVec.getX(), xVec.getY(), yVec.getX(), yVec.getY());
+	}
 	
 	public static Vector2 randomiseVectorDouble(double min, double max){	
 		return randomiseVectorDouble(min,max,min,max);
