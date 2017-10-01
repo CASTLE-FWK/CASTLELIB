@@ -50,7 +50,7 @@ public class Continuous<E> implements Representation<E>{
 		add(obj, entityLocationMap.get(obj).add(shiftPos));
 	}
 	
-	public List<Entity> getNeighborsFromPosition(Vector2 pos, double dist){
+	public List<Entity> getNeighborsFromVector(Vector2 pos, double dist){
 		ArrayList<Entity> items = new ArrayList<Entity>();
 		ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
 		for (Vector2 v : possiblePositions){
