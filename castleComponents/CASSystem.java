@@ -25,6 +25,19 @@ public class CASSystem{
 	protected ArrayList<Parameter<?>> parameters;
 	String dbID;
 	
+	protected SimulationInfo simulationInfo;
+	protected Logger logger;
+	protected Output output;
+	protected OutputToJSON_Mongo dbOut = null;
+	
+	private boolean loggingToFile;
+	private boolean loggingToConsole;
+	private boolean loggingToDB;
+	
+	private boolean writingModelDataToFile;
+	private boolean writingModelDataToConsole;
+	private boolean writingModelDataToDB;
+	
 	long startTime = 0;
 	long timeSinceLastStep = 0;
 	long elapsedTime = 0;
@@ -38,30 +51,59 @@ public class CASSystem{
 	//TESTING
 	int numCaps;
 
-	public CASSystem(int steps, int numCaps){
-		//Basic inits
-		storedEnvironments = new ArrayList<Environment>();
-		storedCapsules = new ArrayList<SemanticGroup>();
+//	public CASSystem(int steps, int numCaps){
+//		//Basic inits
+//		storedEnvironments = new ArrayList<Environment>();
+//		storedCapsules = new ArrayList<SemanticGroup>();
+//		
+//		sysID = new EntityID("System",0);
+//		numberOfSteps = steps;
+//		currentPhase = Phase.SETUP;
+//		
+//		String name = "THESYSTEM";
+//		
+//		executionID = Utilities.generateTimeID();
+//		dbID = Utilities.generateID();
+//		parameters = new ArrayList<Parameter<?>>();
+//		
+//		dbOutputter = new OutputToJSON_Mongo(name.replaceAll(" ", "_").toLowerCase(), executionID, dbID);
+//		
+//
+//		//TESTING
+//		this.numCaps = numCaps;
+//
+//		//Parse init file with Environment & Capsule descriptors
+////		dummy();
+//		simulate();
+//	}
+	
+	public CASSystem(){
 		
-		sysID = new EntityID("System",0);
-		numberOfSteps = steps;
-		currentPhase = Phase.SETUP;
-		
-		String name = "THESYSTEM";
-		
-		executionID = Utilities.generateTimeID();
-		dbID = Utilities.generateID();
-		parameters = new ArrayList<Parameter<?>>();
-		
-		dbOutputter = new OutputToJSON_Mongo(name.replaceAll(" ", "_").toLowerCase(), executionID, dbID);
-		
+	}
+	
+	public void setLogger(Logger l) {
+		logger = l;
+	}
+	
+	public void setDBOut(OutputToJSON_Mongo d){
+		dbOut = d;
+	}
 
-		//TESTING
-		this.numCaps = numCaps;
-
-		//Parse init file with Environment & Capsule descriptors
-		dummy();
-		simulate();
+	public boolean loggerIsNull() {
+		return (logger == null);
+	}
+	
+	public boolean dbIsNull(){
+		return (dbOut == null);
+	}
+	
+	public void outputDirections(boolean ltf, boolean ltc, boolean ltdb, boolean wmdf, boolean wmdc, boolean wmddb){
+		this.loggingToFile = ltf;
+		this.loggingToConsole = ltc;
+		this.loggingToDB = ltdb;
+		this.writingModelDataToFile = wmdf;
+		this.writingModelDataToConsole = wmdc;
+		this.writingModelDataToDB = wmddb;
 	}
 
 	void simulate(){
@@ -204,7 +246,7 @@ public class CASSystem{
 	//Send output to database
 	public void updateDatabase(){
 		//Fill System section
-		dbOutputter.dumpSystem(systemName, executionID, clock, numberOfSteps, timeSinceLastStep, elapsedTime);
+		dbOutputter.exportSystemStep(clock, numberOfSteps, timeSinceLastStep, elapsedTime);
 		
 		//Fill Environment section
 		

@@ -47,7 +47,7 @@ public class Enums {
 	}
 
 	public enum RepresentationTypes{
-		GRID, TORUS, BOUND, GRAPH, NETWORK, GIS, MESH3D, CONTINUOUS
+		REP_GRID, REP_TORUS, REP_BOUND, REP_GRAPH, REP_NETWORK, REP_GIS, REP_MESH3D, REP_CONTINUOUS, REP_MAP2D
 	}
 	
 	public enum FeatureTypes{
