@@ -7,51 +7,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 
 public class Continuous<E> implements Representation<E>{
 	
-	HashMap<Entity, Vector2> entityLocationMap;
+	HashMap<E, Vector2> entityLocationMap;
 	Vector2 dimensions;
 	
 	public Continuous(){
 		dimensions = new Vector2();
-		entityLocationMap = new HashMap<Entity, Vector2>();
+		entityLocationMap = new HashMap<E, Vector2>();
 	}
 	
 	public Continuous(Vector2 dimensions){
 		this.dimensions = dimensions;
-		entityLocationMap = new HashMap<Entity, Vector2>();
+		entityLocationMap = new HashMap<E, Vector2>();
 	}
 	
 	public void setDimensions(Vector2 dims){
 		dimensions = new Vector2(dims);
-		entityLocationMap = new HashMap<Entity, Vector2>();
+		entityLocationMap = new HashMap<E, Vector2>();
 	}
 	public void setDimensions(double x, double y){
 		dimensions = new Vector2(x,y);
 	}
 	
-	public void add(Entity obj, Vector2 pos){
+	public void add(E obj, Vector2 pos){
 		entityLocationMap.put(obj, pos);
 	}
 	
-	public boolean remove(Entity obj){
+	public boolean remove(E obj){
 		return (entityLocationMap.remove(obj) != null);
 	}
 	
-	public void moveTo(Entity obj, Vector2 newPos){
+	public void moveTo(E obj, Vector2 newPos){
 		add(obj, newPos);
 	}
 	
-	public void moveByVector(Entity obj, Vector2 shiftPos){
+	public void moveByVector(E obj, Vector2 shiftPos){
 		add(obj, entityLocationMap.get(obj).add(shiftPos));
 	}
 	
-	public List<Entity> getNeighborsFromVector(Vector2 pos, double dist){
-		ArrayList<Entity> items = new ArrayList<Entity>();
+	public List<E> getNeighborsFromVector(Vector2 pos, double dist){
+		ArrayList<E> items = new ArrayList<E>();
 		ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
 		for (Vector2 v : possiblePositions){
 			items.addAll(getObjectsAtLocation(v.getX(), v.getY()));
@@ -60,14 +61,14 @@ public class Continuous<E> implements Representation<E>{
 		return items;
 	}
 	
-	public double getDistance(Entity obj1, Entity obj2){
+	public double getDistance(E obj1, E obj2){
 		return Utilities.calculateDistance2D(entityLocationMap.get(obj1), entityLocationMap.get(obj2));
 	}
 	
-	public List<Entity> getObjectsAtLocation(double x, double y){
-		ArrayList<Entity> objs = new ArrayList<Entity>();
+	public List<E> getObjectsAtLocation(double x, double y){
+		ArrayList<E> objs = new ArrayList<E>();
 		Vector2 loc = new Vector2(x,y);
-		for (Entry<Entity, Vector2> entry : entityLocationMap.entrySet()) {
+		for (Entry<E, Vector2> entry : entityLocationMap.entrySet()) {
 			
 	        if (entry.getValue().compare(loc)) {
 	            objs.add(entry.getKey());
@@ -82,11 +83,11 @@ public class Continuous<E> implements Representation<E>{
 
 	@Override
 	public List<E> getEntities() {
-		List<Entity> out = new ArrayList<Entity>();
-		Iterator<Entry<Entity, Vector2>> it = entityLocationMap.entrySet().iterator();
+		List<E> out = new ArrayList<E>();
+		Iterator<Entry<E, Vector2>> it = entityLocationMap.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pair = (Map.Entry)it.next();
-	        out.add((Entity) pair.getKey());
+	        out.add((E) pair.getKey());
 	    }
 	    return (List<E>) out;
 	}
@@ -140,8 +141,8 @@ public class Continuous<E> implements Representation<E>{
 	}
 	
 //	public void updatePositions(){
-//		ArrayList<Entity> list = (ArrayList<Entity>) getEntities();
-//		for (Entity e : list){
+//		ArrayList<E> list = (ArrayList<E>) getEntities();
+//		for (E e : list){
 //			entityLocationMap.put(e, e.getPosition());
 //		}
 //	}

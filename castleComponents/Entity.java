@@ -17,7 +17,7 @@ import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
-public class Entity implements Runnable {
+public class Entity implements Runnable, CastleEntityInterface {
 
 	private int currentStep = -1;
 	protected Logger logger;
