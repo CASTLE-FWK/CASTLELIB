@@ -6,9 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import castleComponents.Entity;
+import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 
@@ -51,12 +53,44 @@ public class Continuous<E> implements Representation<E>{
 		add(obj, entityLocationMap.get(obj).add(shiftPos));
 	}
 	
+	/**
+	 * This finds neighbours in a rectangle & is not very useful for things with limited sight
+	 * @param pos
+	 * @param dist
+	 * @return
+	 */
 	public List<E> getNeighborsFromVector(Vector2 pos, double dist){
 		ArrayList<E> items = new ArrayList<E>();
-		ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
-		for (Vector2 v : possiblePositions){
-			items.addAll(getObjectsAtLocation(v.getX(), v.getY()));
+		
+		Range2D range = new Range2D(
+				new Vector2(pos.getX() - dist, pos.getY() - dist), 
+				new Vector2(pos.getX() + dist, pos.getY() - dist),
+				new Vector2(pos.getX() - dist, pos.getY() + dist),
+				new Vector2(pos.getX() + dist, pos.getY() + dist)
+		);
+//		System.out.println(range.getDimensions().toString());
+		
+		//Find all entities that intersect here
+		
+		ArrayList<Vector2> positions = new ArrayList<Vector2>(entityLocationMap.values());
+		for (Vector2 v : positions){
+			if (range.containsPoint(v)){
+				//Get all entities at that location
+				items.addAll(
+						entityLocationMap.entrySet()
+						.parallelStream()
+						.filter(entry -> Objects.equals(entry.getValue(), v))
+						.map(Map.Entry::getKey)
+						.collect(Collectors.toSet()));
+			}
 		}
+		
+		
+		
+//		ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
+//		for (Vector2 v : possiblePositions){
+//			items.addAll(getObjectsAtLocation(v.getX(), v.getY()));
+//		}
 
 		return items;
 	}
@@ -80,6 +114,7 @@ public class Continuous<E> implements Representation<E>{
 	public Vector2 getDimensions(){
 		return dimensions;
 	}
+	
 
 	@Override
 	public List<E> getEntities() {
