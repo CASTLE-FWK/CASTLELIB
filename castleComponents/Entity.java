@@ -421,6 +421,10 @@ public class Entity implements Runnable {
 		
 		return sb;
 	}
+	
+	public void logToConsole(String str){
+		System.out.println(str);
+	}
 }
 
 class Feature {

@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/lachlan/repos/CASTLE-FWK/CASTLELIB/libs/minimal-json-0.9.5.jar"/>
-	<classpathentry kind="lib" path="/Users/lachlan/repos/CASTLE-FWK/CASTLELIB/libs/mongo-java-driver-3.4.2.jar"/>
-	<classpathentry kind="lib" path="/Users/lachlan/repos/CASTLE-FWK/CASTLELIB/libs/commons-math3-3.6.1.jar"/>
-	<classpathentry kind="lib" path="/Users/lachlan/repos/CASTLE-FWK/CASTLELIB/libs/unirest-java-1.4.9.jar"/>
+	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/minimal-json-0.9.5.jar"/>
+	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/mongo-java-driver-3.4.2.jar"/>
+	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/unirest-java-1.4.9.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
