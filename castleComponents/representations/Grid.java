@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.EntityID;
 import castleComponents.Enums.GridPositions;
 import castleComponents.objects.GridLocation;

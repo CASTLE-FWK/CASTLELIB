@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.EntityID;	
 import castleComponents.Enums.GridPositions;
 import castleComponents.objects.GridLocation;
@@ -17,23 +17,23 @@ import castleComponents.objects.Vector2;
 
 
 //TODO: How to get this to work with multiple Entity types
-public class Grid2 implements Representation{
+public class Grid2<E> implements Representation<E>{
 	int X;
 	int Y;
-	Entity[][] theGrid;
+	E[][] theGrid;
 	LayoutParameters layoutParameters;
 	
 	boolean allowPhantoms = false;
-	Entity[] phantoms_U;
-	Entity[] phantoms_UR;
-	Entity[] phantoms_R;
-	Entity[] phantoms_DR;
-	Entity[] phantoms_D;
-	Entity[] phantoms_DL;
-	Entity[] phantoms_L;
-	Entity[] phantoms_UL;
+	E[] phantoms_U;
+	E[] phantoms_UR;
+	E[] phantoms_R;
+	E[] phantoms_DR;
+	E[] phantoms_D;
+	E[] phantoms_DL;
+	E[] phantoms_L;
+	E[] phantoms_UL;
 	
-	List<Entity> allContainedEntities;
+	List<E> allContainedEntities;
 	
 //	Neighbors<Entity> phantoms_U;
 //	Neighbors<Entity> phantoms_UR;
@@ -44,8 +44,8 @@ public class Grid2 implements Representation{
 //	Neighbors<Entity> phantoms_L;
 //	Neighbors<Entity> phantoms_UL;	
 	
-	Class<Entity> theClass;
-	public Grid2(Class<Entity> c, int X, int Y){
+	Class<E> theClass;
+	public Grid2(Class<E> c, int X, int Y){
 		if (X == 0){
 			X = 1;
 		} 
@@ -57,11 +57,11 @@ public class Grid2 implements Representation{
 		this.theClass = c;
 //		grid = new E[this.X][this.Y];
 		@SuppressWarnings("unchecked")
-		final Entity[][] grid = (Entity[][]) Array.newInstance(c, X,Y);		
+		final E[][] grid = (E[][]) Array.newInstance(c, X,Y);		
 //		theGrid = new Entity[X][Y];
 		this.theGrid = grid;
 		
-		allContainedEntities = new ArrayList<Entity>();
+		allContainedEntities = new ArrayList<E>();
 	}
 	
 	//TODO: Set phantom size
@@ -69,11 +69,11 @@ public class Grid2 implements Representation{
 		
 	}
 	
-	public Entity[][] getGrid(){
+	public E[][] getGrid(){
 		return theGrid;
 	}
 	
-	public Entity getEntityAtXY(int x, int y){
+	public E getEntityAtXY(int x, int y){
 		return theGrid[x][y];
 	}
 	public void setPhantomState(boolean p){
@@ -102,16 +102,16 @@ public class Grid2 implements Representation{
 		if (Y == 0){
 			Y = 1;
 		}
-		theClass = (Class<Entity>) this.layoutParameters.getEntityType();
+		theClass = (Class<E>) this.layoutParameters.getEntityType();
 		//Allow the grid to store Entities of the type specified in the layout parameters
-		final Entity[][] grid = (Entity[][]) Array.newInstance(theClass, X,Y);
+		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);
 		this.theGrid = grid;
 		
 		return true;
 	}
 	
 	@Override
-	public boolean addEntities(List<Entity> es){
+	public boolean addEntities(List<E> es){
 		if (es == null){
 			return false;
 		}
@@ -119,12 +119,12 @@ public class Grid2 implements Representation{
 			return false;
 		}
 		
-		for (Entity e : es){
-			Vector2 pos = e.getPosition();
-			if (pos == null){
-				return false;
-			}
-			addCell(e,(int)pos.getX(),(int)pos.getY());
+		for (E e : es){
+//			Vector2 pos = e.getPosition();
+//			if (pos == null){
+//				return false;
+//			}
+//			addCell(e,(int)pos.getX(),(int)pos.getY());
 		}
 		
 		return true;
@@ -176,7 +176,7 @@ public class Grid2 implements Representation{
 		
 	}
 	
-	public void send(GridPositions location, Neighbors<Entity> neighbors, String function){
+	public void send(GridPositions location, Neighbors<E> neighbors, String function){
 		System.out.println("GRID SEND FUNCTION CALL");
 	}
 	
@@ -213,35 +213,35 @@ public class Grid2 implements Representation{
 //		return null;
 //	}
 	
-	public List<Entity> getAll(GridPositions gp){
-		Entity[] arr = getAllAsArray(gp);
-		ArrayList<Entity> list = new ArrayList<Entity>();
-		for (Entity e : arr){
+	public List<E> getAll(GridPositions gp){
+		E[] arr = getAllAsArray(gp);
+		ArrayList<E> list = new ArrayList<E>();
+		for (E e : arr){
 			list.add(e);
 		}
 		return list;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Entity[] getAllAsArray(GridPositions gp){
+	public E[] getAllAsArray(GridPositions gp){
 		switch(gp){
 		case LEFT:
 			//y is 0
-			final Entity[] neighborsl = (Entity[]) Array.newInstance(theClass, X);
+			final E[] neighborsl = (E[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
 				neighborsl[i] = theGrid[0][i];
 			}
 			return neighborsl;
 		case RIGHT:
 			//y is Y-1
-			final Entity[] neighborsr = (Entity[]) Array.newInstance(theClass, X);
+			final E[] neighborsr = (E[]) Array.newInstance(theClass, X);
 			for (int i = 0; i < X; i++){
 				neighborsr[i] = theGrid[X-1][i];
 			}
 			return neighborsr;
 		case BOTTOM:
 			//x is X-1
-			final Entity[] neighborsd = (Entity[]) Array.newInstance(theClass, Y);
+			final E[] neighborsd = (E[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsd[i] = grid[X-1][i];
 				neighborsd[i] = theGrid[i][X-1];
@@ -249,7 +249,7 @@ public class Grid2 implements Representation{
 			return neighborsd;
 		case TOP:
 			//x is 0
-			final Entity[] neighborsu = (Entity[]) Array.newInstance(theClass, Y);
+			final E[] neighborsu = (E[]) Array.newInstance(theClass, Y);
 			for (int i = 0; i < Y; i++){
 //				neighborsu[i] = grid[0][i];
 				neighborsu[i] = theGrid[i][0];
@@ -257,24 +257,24 @@ public class Grid2 implements Representation{
 			return neighborsu;
 		case TOPLEFT:
 			//x is 0, y is 0
-			final Entity[] neighborsul = (Entity[]) Array.newInstance(theClass, 1);
+			final E[] neighborsul = (E[]) Array.newInstance(theClass, 1);
 			neighborsul[0] = theGrid[0][0];
 			return neighborsul;
 		case TOPRIGHT:
 			//x is 0, y is Y-1
-			final Entity[] neighborsur = (Entity[]) Array.newInstance(theClass, 1);
+			final E[] neighborsur = (E[]) Array.newInstance(theClass, 1);
 //			neighborsur[0] = grid[0][Y-1];
 			neighborsur[0] = theGrid[X-1][0];
 			return neighborsur;
 		case BOTTOMLEFT:
 			//x is X-1, y is 0
-			final Entity[] neighborsdl = (Entity[]) Array.newInstance(theClass, 1);
+			final E[] neighborsdl = (E[]) Array.newInstance(theClass, 1);
 //			neighborsdl[0] = grid[X-1][0];
 			neighborsdl[0] = theGrid[0][Y-1];
 			return neighborsdl;
 		case BOTTOMRIGHT:
 			//x is X-1, y is Y-1
-			final Entity[] neighborsdr = (Entity[]) Array.newInstance(theClass, 1);
+			final E[] neighborsdr = (E[]) Array.newInstance(theClass, 1);
 			neighborsdr[0] = theGrid[X-1][Y-1];
 			return neighborsdr;
 		default:
@@ -282,11 +282,11 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public void addCell(Entity c, int x, int y){
+	public void addCell(E c, int x, int y){
 		theGrid[x][y] = c;
 		allContainedEntities.add(c);
 	}
-	public void addCell(Entity c, Vector2 vec){
+	public void addCell(E c, Vector2 vec){
 		theGrid[(int)vec.getX()][(int)vec.getY()] = c;
 	}
 	
@@ -298,12 +298,12 @@ public class Grid2 implements Representation{
 		return Y;
 	}
 
-	public List<Entity> getNeighboursFromVector(Vector2 v, int depth){
+	public List<E> getNeighboursFromVector(Vector2 v, int depth){
 		return getNeighbours((int)v.getX(), (int)v.getY(), depth);
 	}
 	
-	public List<Entity> getNeighbours(int x, int y, int depth){
-		ArrayList<Entity> neighbours = new ArrayList<Entity>();
+	public List<E> getNeighbours(int x, int y, int depth){
+		ArrayList<E> neighbours = new ArrayList<E>();
 		neighbours.add(getNeighbour_U(x, y));
 		neighbours.add(getNeighbour_UR(x, y));
 		neighbours.add(getNeighbour_R(x, y));
@@ -316,8 +316,8 @@ public class Grid2 implements Representation{
 		return neighbours;
 	}
 	
-	public List<Entity> getNeighbours_Old(int x, int y, int depth){
-		ArrayList<Entity> neighbours = new ArrayList<Entity>();
+	public List<E> getNeighbours_Old(int x, int y, int depth){
+		ArrayList<E> neighbours = new ArrayList<E>();
 
 		//Edge cases??
 		if (x == 0){
@@ -433,7 +433,7 @@ public class Grid2 implements Representation{
 		return neighbours;
 	}
 
-	public Entity getNeighbour_U(int x, int y){
+	public E getNeighbour_U(int x, int y){
 		if (allowPhantoms){
 			
 			if (y == 0){				
@@ -450,7 +450,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_UR(int x, int y){
+	public E getNeighbour_UR(int x, int y){
 		int gx = x + 1;
 		int gy = y - 1;
 		if (gx == X){
@@ -476,7 +476,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_R(int x, int y){
+	public E getNeighbour_R(int x, int y){
 		
 		if (allowPhantoms){
 			if (x == X-1){
@@ -493,7 +493,7 @@ public class Grid2 implements Representation{
 		}		
 	}
 
-	public Entity getNeighbour_DR(int x, int y){
+	public E getNeighbour_DR(int x, int y){
 		int gx = x + 1;
 		int gy = y + 1;
 		if (gx == X){
@@ -519,7 +519,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_D(int x, int y){
+	public E getNeighbour_D(int x, int y){
 		if (allowPhantoms){
 			if (y == Y - 1){
 				return phantoms_D[x];
@@ -535,7 +535,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_DL(int x, int y){
+	public E getNeighbour_DL(int x, int y){
 		int gx = x - 1;
 		int gy = y + 1;
 		if (gx == -1){
@@ -560,7 +560,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_L(int x, int y){
+	public E getNeighbour_L(int x, int y){
 		if (allowPhantoms){
 			if (x == 0){
 //				System.out.println("pos y: "+y);
@@ -582,7 +582,7 @@ public class Grid2 implements Representation{
 		}
 	}
 
-	public Entity getNeighbour_UL(int x, int y){
+	public E getNeighbour_UL(int x, int y){
 		int gx = x - 1;
 		int gy = y - 1;
 		if (gx == -1){
@@ -644,11 +644,11 @@ public class Grid2 implements Representation{
 	
 	//Phantom State stuff
 	//TODO
-	public void receiveStates(GridPositions placement, Entity[] stateVector){
+	public void receiveStates(GridPositions placement, E[] stateVector){
 		
 	}				
 	
-	public void addPhantomCells(GridPositions placement, Entity[] stateVector){
+	public void addPhantomCells(GridPositions placement, E[] stateVector){
 		GridPositions oppo = getOpposite(placement);
 //		System.out.println(placement.toString()+" opposite: "+oppo.toString());
 		switch(oppo){
@@ -682,9 +682,9 @@ public class Grid2 implements Representation{
 		}
 	}
 	
-	public void addPhantomCells(GridPositions gp, List<Entity> list){
+	public void addPhantomCells(GridPositions gp, List<E> list){
 		@SuppressWarnings("unchecked")
-		Entity[] arr = (Entity[]) Array.newInstance(theClass, list.size());
+		E[] arr = (E[]) Array.newInstance(theClass, list.size());
 		list.toArray(arr);
 	}
 	
@@ -717,8 +717,8 @@ public class Grid2 implements Representation{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<castleComponents.Entity> getEntities() {
-		return (List<castleComponents.Entity>) allContainedEntities;
+	public List<E> getEntities() {
+		return (List<E>) allContainedEntities;
 	}
 
 	@Override
@@ -734,13 +734,13 @@ public class Grid2 implements Representation{
 	}
 
 	@Override
-	public boolean addEntity(castleComponents.Entity e) {
+	public boolean addEntity(E e, Vector2 p) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean removeEntity(castleComponents.Entity e) {
+	public boolean removeEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}

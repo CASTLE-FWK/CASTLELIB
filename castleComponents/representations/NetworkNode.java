@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Vector2;
 
 
-public class NetworkNode {
+public class NetworkNode<E> {
 
 	String name;
 	String type;
@@ -24,17 +24,11 @@ public class NetworkNode {
 	HashSet<NetworkNode> connectedNodes;
 	
 	//Store the agent information inside the NetworkNode (who cares about RAM)
-	Entity entity = null;
+	E entity = null;
 
 	
-	public NetworkNode(Entity entity){
-		this.entity = entity;
-		this.name = entity.getID();
-		if (entity.getPosition() == null){
-			this.position = new Vector2();
-		} else {
-			this.position = new Vector2(entity.getPosition());
-		}
+	public NetworkNode(E e){
+		this.entity = e;
 		this.x = this.position.getX();
 		this.y = this.position.getY();	
 		outgoingInteraction = 0;
@@ -238,7 +232,7 @@ public class NetworkNode {
 	//************Only useful if they have VAgents stored
 	
 	
-	public Entity getEntity(){
+	public E getEntity(){
 		return entity;
 	}
 	
@@ -246,11 +240,15 @@ public class NetworkNode {
 		return new Comparator<NetworkNode>() {
 			@Override
 			public int compare(NetworkNode n1, NetworkNode n2) {
-				String v1 = n1.getEntity().getID();
-				String v2 = n2.getEntity().getID();
-				return v1.compareToIgnoreCase(v2);
+//				String v1 = n1.getEntity().getID();
+//				String v2 = n2.getEntity().getID();
+//				return v1.compareToIgnoreCase(v2);
+				System.out.println("PLEASAE STOP COMPARING, IT IS BROKEN");
+				return 0;
 			}
 		};
+		
+		
 	}
 	
 	public HashSet<NetworkNode> getConnectedNodes(){

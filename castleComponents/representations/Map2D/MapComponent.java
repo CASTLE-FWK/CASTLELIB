@@ -3,13 +3,13 @@ package castleComponents.representations.Map2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 
 public class MapComponent {
 	
-	HashMap<String, Entity> containedEntities;
+	HashMap<String, E> containedEntities;
 	Type theType;
 	
 	Vector2 position;
@@ -19,11 +19,11 @@ public class MapComponent {
 	Park park;
 	
 	public MapComponent(){
-		containedEntities = new HashMap<String, Entity>();
+		containedEntities = new HashMap<String, E>();
 	}
 	
 	public MapComponent(Vector2 pos, Type t){
-		containedEntities = new HashMap<String, Entity>();
+		containedEntities = new HashMap<String, E>();
 		setPosition(pos);
 		setType(t);
 		if (t == Type.PARK){
@@ -43,7 +43,7 @@ public class MapComponent {
 		theType = t;
 	}
 	
-	public boolean addEntity(Entity e){
+	public boolean addEntity(E e){
 		if (containedEntities.put(e.getID(), e) == null) {
 			return false;
 		} else {
@@ -55,13 +55,13 @@ public class MapComponent {
 		containedEntities.remove(id);
 	}
 	
-	public HashMap<String, Entity> getContainedEntities(){
+	public HashMap<String, E> getContainedEntities(){
 		return containedEntities;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<Entity> getContainedEntitiesAsList(){
-		return (ArrayList<Entity>) Utilities.getMapAsList(containedEntities);
+	public ArrayList<E> getContainedEntitiesAsList(){
+		return (ArrayList<E>) Utilities.getMapAsList(containedEntities);
 	}
 	
 	public Type getType(){

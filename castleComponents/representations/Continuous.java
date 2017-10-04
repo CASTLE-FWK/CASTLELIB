@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;

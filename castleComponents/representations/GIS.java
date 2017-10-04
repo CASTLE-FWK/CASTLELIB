@@ -2,7 +2,8 @@ package castleComponents.representations;
 
 import java.util.List;
 
-import castleComponents.Entity;
+import castleComponents.E;
+import castleComponents.objects.Vector2;
 
 /**
  * GIS representation.
@@ -10,10 +11,10 @@ import castleComponents.Entity;
  * @author lachlan
  *
  */
-public class GIS implements Representation{
+public class GIS<E> implements Representation<E>{
 
 	@Override
-	public List<Entity> getEntities() {
+	public List<E> getEntities() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -23,14 +24,13 @@ public class GIS implements Representation{
 		System.out.println("THE GIS REPRESENTATION CURRENTLY DOES NOTHING");
 	}
 
-	@Override
-	public boolean addEntity(Entity e) {
+	public boolean addEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean removeEntity(Entity e) {
+	public boolean removeEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -60,7 +60,13 @@ public class GIS implements Representation{
 	}
 
 	@Override
-	public boolean addEntities(List<Entity> es) {
+	public boolean addEntities(List<E> es) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addEntity(E e, Vector2 p) {
 		// TODO Auto-generated method stub
 		return false;
 	}

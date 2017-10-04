@@ -17,7 +17,7 @@ import castleComponents.SemanticGroup;
 import castleComponents.SimulationInfo;
 import stdSimLib.Parameter;
 import castleComponents.Agent;
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.Interaction;
 import castleComponents.Output;
 
@@ -125,7 +125,7 @@ public class OutputToJSON_Mongo{
 		system.append("notes", "");
 	}
 	
-	public void exportLog(Entity e, String str){
+	public void exportLog(E e, String str){
 		Document d = new Document();
 		String entityType = getEntityType(e);
 		d.append(entityType+"-ID", e.getID());
@@ -133,7 +133,7 @@ public class OutputToJSON_Mongo{
 		logDocuments.add(d);
 	}
 	
-	public String getEntityType(Entity e){
+	public String getEntityType(E e){
 		String entityType = "";		
 		if (e instanceof SemanticGroup){
 			entityType = GROUP;
@@ -148,7 +148,7 @@ public class OutputToJSON_Mongo{
 		return entityType;
 	}
 
-	public void exportEntity(Entity e){
+	public void exportEntity(E e){
 		String entityType = getEntityType(e);
 		
 		Document entity = new Document();

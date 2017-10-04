@@ -17,7 +17,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
 
-public class Agent extends Entity{
+public class Agent extends E{
 	protected EntityID id;
 	private String type = "";
 	

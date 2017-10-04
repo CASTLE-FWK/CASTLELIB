@@ -16,12 +16,12 @@ import com.eclipsesource.json.JsonValue;
 
 import castleComponents.representations.Grid;
 
-public class Environment extends Entity {
+public class Environment extends E {
 
 	protected ArrayList<SemanticGroup> storedGroups;
 	protected ArrayList<Environment> storedEnvironments;
 	protected ArrayList<Agent> storedAgents;
-	protected ArrayList<Entity> storeEntities;
+	protected ArrayList<E> storeEntities;
 	protected MessageQueue messageQueue;
 	protected int numberOfGroups = 1;
 
@@ -186,7 +186,7 @@ public class Environment extends Entity {
 	void sendAllMessages(){
 		while (!messageQueue.isEmpty()){
 			Message<?> msg = messageQueue.removeMessage();
-			Entity recipient = msg.getRecipient();
+			E recipient = msg.getRecipient();
 			recipient.receiveMessage(msg);
 		}
 	}

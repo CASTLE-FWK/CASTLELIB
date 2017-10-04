@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 import stdSimLib.Agent;
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Vector2;
 import observationTool.VEntity;
 
@@ -78,7 +78,7 @@ public class Node {
 		connectedNodes = new HashSet<Node>();
 	}
 	
-	public Node(Entity agent){
+	public Node(E agent){
 		this.vAgent = new VEntity(agent);
 		this.name = agent.getID();
 		if (agent.getPosition() == null){

@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Vector2;
 import stdSimLib.Agent;
 import stdSimLib.Interaction;
@@ -53,9 +53,9 @@ public class InteractionGraph {
 		nodesMap = new HashMap<String,Node>();
 	}
 	
-	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions){
+	public InteractionGraph(ArrayList<E> entities, ArrayList<Interaction> interactions){
 		nodes = new HashSet<Node>();
-		for (Entity e : entities){
+		for (E e : entities){
 			addNode(new Node(e));
 		}
 		for (Interaction inter : interactions){

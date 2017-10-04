@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.activation.MailcapCommandMap;
 
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
@@ -63,7 +63,7 @@ public class Map2D {
 		
 	}
 	
-	public Vector2 getPositionOfEntity(Entity e){
+	public Vector2 getPositionOfEntity(E e){
 		//Find entity and return its position
 		//Cycle through grid, and check with each containedEntities map
 		ArrayList<MapComponent> mapComponents = new ArrayList<MapComponent>(theGridMap.getEntities());
@@ -79,7 +79,7 @@ public class Map2D {
 	}
 	
 	//This should return states
-	public Outcome moveTo(Entity e, Vector2 pos){
+	public Outcome moveTo(E e, Vector2 pos){
 		//Move an entity to a particular location
 		if (!range.containsPoint(pos)){
 			return Outcome.OUT_OF_BOUNDS;
@@ -102,7 +102,7 @@ public class Map2D {
 		
 	}
 	
-	public Outcome moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel){
+	public Outcome moveToWithVelocity(E e, Vector2 pos, Vector2 vel){
 		Vector2 newPos = pos.add(vel);
 		return moveTo(e,newPos);		
 	}
@@ -119,7 +119,7 @@ public class Map2D {
 	//This is a total range (i.e. 360° vis)
 	public int countEntitiesInRange(Vector2 pos, int range){
 		ArrayList<MapComponent> mcs = new ArrayList<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
-		HashSet<Entity> ents = new HashSet<Entity>();
+		HashSet<E> ents = new HashSet<E>();
 		for (MapComponent mc : mcs){
 			ents.addAll(mc.getContainedEntitiesAsList());
 		}
@@ -157,16 +157,16 @@ public class Map2D {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Entity> getEntitiesAtPos(Vector2 pos){
+	public List<E> getEntitiesAtPos(Vector2 pos){
 		MapComponent m = getMapComponent(pos);
-		return (List<Entity>) Utilities.getMapAsList(m.getContainedEntities());
+		return (List<E>) Utilities.getMapAsList(m.getContainedEntities());
 	}
 	
 	public MapComponent getMapComponent(Vector2 pos){
 		return theGridMap.getEntityAtPos(pos);
 	}
 	
-	public boolean addEntity(Entity e, Vector2 pos){
+	public boolean addEntity(E e, Vector2 pos){
 		MapComponent m = getMapComponent(pos);
 		return m.addEntity(e);
 	}
@@ -180,7 +180,7 @@ public class Map2D {
 		}
 	}
 	
-	public boolean entityParking(Entity e, Vector2 pos){
+	public boolean entityParking(E e, Vector2 pos){
 		//check if park
 		Park p = getParkAtPos(pos);
 		if (p != null) {

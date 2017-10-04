@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import castleComponents.Entity;
+import castleComponents.E;
+import castleComponents.objects.Vector2;
 
 public class Network<E> implements Representation<E> {
 
@@ -18,9 +19,9 @@ public class Network<E> implements Representation<E> {
 		edges = new ArrayList<NetworkEdge>();
 	}
 	
-	public void addNode(E e){
+	public void addNode(E e, String id){
 		allEntities.add(e);
-		nodes.put(e.getID(), new NetworkNode(e));
+		nodes.put(id, new NetworkNode(e));
 	}
  
 	
@@ -39,7 +40,6 @@ public class Network<E> implements Representation<E> {
 		e.getEnd().addIncomingEdge(e);
 	}
 
-	@Override
 	public boolean addEntity(E e) {
 		// TODO Auto-generated method stub
 		return false;
@@ -77,6 +77,12 @@ public class Network<E> implements Representation<E> {
 
 	@Override
 	public boolean addEntities(List<E> es) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addEntity(E e, Vector2 p) {
 		// TODO Auto-generated method stub
 		return false;
 	}

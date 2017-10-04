@@ -4,7 +4,7 @@ public class Interaction implements java.io.Serializable {
 
 	private static final long serialVersionUID = -262768393273140446L;
 
-	Entity entityFrom, entityTo;
+	E entityFrom, entityTo;
 	InteractionType type; // Types are defined somewhere...
 	String name;
 	int occurrence = 0;
@@ -16,7 +16,7 @@ public class Interaction implements java.io.Serializable {
 		QUERY, COMMUNICATION, INDIRECT
 	};
 
-	public Interaction(Entity entityFrom, Entity entityTo, InteractionType type, String name) {
+	public Interaction(E entityFrom, E entityTo, InteractionType type, String name) {
 		this.entityFrom = entityFrom;
 		this.entityTo = entityTo;
 		this.type = type;
@@ -38,7 +38,7 @@ public class Interaction implements java.io.Serializable {
 		occurrence = 1;
 	}
 
-	public Interaction(Entity entityFrom, Entity entityTo, String interactionType) {
+	public Interaction(E entityFrom, E entityTo, String interactionType) {
 		this.entityFrom = entityFrom;
 		this.entityTo = entityTo;
 		this.name = interactionType;
@@ -53,18 +53,18 @@ public class Interaction implements java.io.Serializable {
 	/**
 	 * @return the agentFrom
 	 */
-	public Entity getEntityFrom() {
+	public E getEntityFrom() {
 		return entityFrom;
 	}
 
 	/**
 	 * @return the agentTo
 	 */
-	public Entity getEntityTo() {
+	public E getEntityTo() {
 		return entityTo;
 	}
 
-	public boolean checkAgentPresence(Entity ent) {
+	public boolean checkAgentPresence(E ent) {
 		return (entityFrom.compareEntity(ent));
 	}
 

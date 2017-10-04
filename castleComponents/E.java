@@ -17,7 +17,7 @@ import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
-public class Entity implements Runnable {
+public class E implements Runnable {
 
 	private int currentStep = -1;
 	protected Logger logger;
@@ -55,19 +55,19 @@ public class Entity implements Runnable {
 	HashMap<String, Interaction> interactionsInLastInterval;
 	HashMap<String, Feature> featuresInLastInterval;
 
-	public Entity(String type, long uid) {
+	public E(String type, long uid) {
 		entityID = new EntityID(type, uid);
 		this.entityType = type;
 		init();
 	}
 
-	public Entity(String type, EntityID eid) {
+	public E(String type, EntityID eid) {
 		this.entityID = new EntityID(eid);
 		this.entityType = type;
 		init();
 	}
 
-	public Entity(String type, String idAsString) {
+	public E(String type, String idAsString) {
 		entityID = new EntityID(idAsString);
 		this.entityType = type;
 		init();
@@ -258,7 +258,7 @@ public class Entity implements Runnable {
 		addParameter(value, paramName);
 	}
 
-	public void addInteraction(Entity entityTo, InteractionType type, String name) {
+	public void addInteraction(E entityTo, InteractionType type, String name) {
 		Interaction interaction = new Interaction(this, entityTo, type, name);
 		Interaction storedInteraction = interactionsInLastInterval.get(interaction.getID());
 		if (storedInteraction == null) {
@@ -268,15 +268,15 @@ public class Entity implements Runnable {
 		}
 	}
 
-	public void addQueryInteraction(Entity entityTo, String name) {
+	public void addQueryInteraction(E entityTo, String name) {
 		addInteraction(entityTo, InteractionType.QUERY, name);
 	}
 
-	public void addCommunicationInteraction(Entity entityTo, String name) {
+	public void addCommunicationInteraction(E entityTo, String name) {
 		addInteraction(entityTo, InteractionType.COMMUNICATION, name);
 	}
 
-	public void addIndirectInteraction(Entity entityTo, String name) {
+	public void addIndirectInteraction(E entityTo, String name) {
 		addInteraction(entityTo, InteractionType.INDIRECT, name);
 	}
 
@@ -297,7 +297,7 @@ public class Entity implements Runnable {
 		interactionsInLastInterval.clear();
 	}
 
-	public boolean compareEntity(Entity entity) {
+	public boolean compareEntity(E entity) {
 		return (("" + getID()).equalsIgnoreCase(entity.getID()));
 	}
 

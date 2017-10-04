@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import castleComponents.Agent;
-import castleComponents.Entity;
+import castleComponents.E;
 import castleComponents.Interaction;
 import castleComponents.objects.Vector2;
 import phorcys.java.API;
@@ -76,7 +76,7 @@ public class LiveSimulator {
 		//ReInit
 		png.newImage();
 		//Display things
-		for (Entity agt : agents){
+		for (E agt : agents){
 			drawAgentOnGrid((VEntity)agt);
 		}
 		png.prepImage();
