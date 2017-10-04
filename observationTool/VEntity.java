@@ -3,13 +3,13 @@ package observationTool;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import castleComponents.E;
+import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 import stdSimLib.Parameter;
 
 //This is a virtual Agent. Identical to an Agent it just allows the MetricRunner to process already stored information
 
-public class VEntity extends E {
+public class VEntity extends Entity {
 
 	//TODO:
 	//set colour
@@ -28,7 +28,7 @@ public class VEntity extends E {
 		parameters = new HashMap<String, Parameter<?>>(v.getParameters());
 	}
 
-	public VEntity(E newV) {
+	public VEntity(Entity newV) {
 		super(newV.getType(), newV.getID());
 		this.name = newV.getID();
 		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());

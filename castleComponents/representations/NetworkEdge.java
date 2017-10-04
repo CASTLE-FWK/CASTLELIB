@@ -1,6 +1,5 @@
 package castleComponents.representations;
 
-import stdSimLib.Interaction;
 
 public class NetworkEdge implements Comparable<NetworkEdge>{
 	NetworkNode start, end;

@@ -15,7 +15,7 @@ public class Message<T> {
 		this.messageType = mt;
 	}
 
-	public Message(MessageType mt, T contents, long time, E recipient){
+	public Message(MessageType mt, T contents, long time, Entity recipient){
 		this.time = time;
 		this.contents = contents;
 		this.messageType = mt;	
@@ -52,13 +52,13 @@ public class Message<T> {
 		this.contents = contents;
 	}
 
-	private E recipient;
+	private Entity recipient;
 	
-	public E getRecipient(){
+	public Entity getRecipient(){
 		return recipient;
 	}
 	 
-	public void setRecipient(E recipient){
+	public void setRecipient(Entity recipient){
 		this.recipient = recipient;
 	}
 

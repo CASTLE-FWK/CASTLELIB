@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import castleComponents.E;
 import castleComponents.objects.Vector2;
 
 public class Network<E> implements Representation<E> {

@@ -9,15 +9,15 @@ public class Trigger {
 	
 	int startingLife = 0;
 	int timeToLive = 0;
-	Function<E, Void> functionToTrigger;
+	Function<Entity, Void> functionToTrigger;
 
 	//Bi
-	BiFunction<E, Object, Void> bifunctionToTrigger;
+	BiFunction<Entity, Object, Void> bifunctionToTrigger;
 	Object objectToRun;
 	
 	boolean repeatable = false;
 	int fired = 0;
-	E entity;
+	Entity entity;
 	String triggerID;
 	
 	String triggerName;
@@ -26,7 +26,7 @@ public class Trigger {
 	
 	boolean bi = false;
 	
-	public Trigger(int lifeTime, String triggerName, Function<E, Void> fn, boolean repeatable, E c){
+	public Trigger(int lifeTime, String triggerName, Function<Entity, Void> fn, boolean repeatable, Entity c){
 		this.startingLife = lifeTime;
 		this.timeToLive = this.startingLife;
 		this.functionToTrigger = fn;
@@ -37,7 +37,7 @@ public class Trigger {
 		triggerID = this.entity.getID()+Utilities.generateUID();
 	}
 	
-	public Trigger(int lifeTime, String triggerName, BiFunction<E, Object, Void> fn, boolean repeatable, E c){
+	public Trigger(int lifeTime, String triggerName, BiFunction<Entity, Object, Void> fn, boolean repeatable, Entity c){
 		this.startingLife = lifeTime;
 		this.timeToLive = this.startingLife;
 		this.bifunctionToTrigger = fn;

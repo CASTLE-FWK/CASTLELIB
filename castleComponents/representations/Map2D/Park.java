@@ -2,18 +2,18 @@ package castleComponents.representations.Map2D;
 
 import java.util.HashMap;
 
-import castleComponents.E;
+import castleComponents.Entity;
 
 public class Park {
 	int maxCapacity;
 	int currentCapacity;
-	HashMap<String, E> currentOccupants;
+	HashMap<String, Entity> currentOccupants;
 	
 	public Park(){
 		
 	}
 	
-	public boolean addOccupant(E e){
+	public boolean addOccupant(Entity e){
 		if (currentCapacity < maxCapacity) {
 			currentOccupants.put(e.getID(), e);
 			currentCapacity = currentOccupants.size();
@@ -23,8 +23,8 @@ public class Park {
 		}
 	}
 	
-	public E removeOccupant(String id){
-		E e = currentOccupants.get(id);
+	public Entity removeOccupant(String id){
+		Entity e = currentOccupants.get(id);
 		if (e != null){
 			currentCapacity = currentOccupants.size();
 			return e;
@@ -49,7 +49,7 @@ public class Park {
 		this.currentCapacity = currentCapacity;
 	}
 
-	public HashMap<String, E> getCurrentOccupants() {
+	public HashMap<String, Entity> getCurrentOccupants() {
 		return currentOccupants;
 	}
 	

@@ -4,14 +4,10 @@ import static castleComponents.Enums.getOpposite;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import castleComponents.E;
-import castleComponents.EntityID;	
 import castleComponents.Enums.GridPositions;
-import castleComponents.objects.GridLocation;
 import castleComponents.objects.Neighbors;
 import castleComponents.objects.Vector2;
 
@@ -715,7 +711,6 @@ public class Grid2<E> implements Representation<E>{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getEntities() {
 		return (List<E>) allContainedEntities;

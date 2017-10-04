@@ -1,10 +1,9 @@
 package castleComponents.representations;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import castleComponents.Agent;
-import castleComponents.E;
+import castleComponents.Entity;
 import castleComponents.Enums;
 import castleComponents.Environment;
 import castleComponents.SemanticGroup;
@@ -12,16 +11,16 @@ import castleComponents.SemanticGroup;
 public class LayoutParameters {
 	Enums.RepresentationTypes representationType;
 	Class<?> clazz;
-	ArrayList<E> containedEntities;
+	ArrayList<Entity> containedEntities;
 	private boolean allowPhantoms = false;
 
 	public LayoutParameters() {
-		containedEntities = new ArrayList<E>();
+		containedEntities = new ArrayList<Entity>();
 	}
 
 	public LayoutParameters(Enums.RepresentationTypes type) {
 		this.representationType = type;
-		containedEntities = new ArrayList<E>();
+		containedEntities = new ArrayList<Entity>();
 	}
 
 	public void setRepresentationType(Enums.RepresentationTypes rt) {
@@ -48,13 +47,13 @@ public class LayoutParameters {
 		allowPhantoms = b;
 	}
 
-	public void addContainedEntities(Representation<E> r) {
+	public void addContainedEntities(Representation<Entity> r) {
 //		List<?> entities = r.getEntities();
-		containedEntities = (ArrayList<E>) r.getEntities();
+		containedEntities = (ArrayList<Entity>) r.getEntities();
 //		containedEntities.addAll(entities);
 	}
 
-	public ArrayList<E> getContainedEntities() {
+	public ArrayList<Entity> getContainedEntities() {
 		return containedEntities;
 	}
 

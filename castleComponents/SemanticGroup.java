@@ -15,7 +15,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
 
-public class SemanticGroup extends E {
+public class SemanticGroup extends Entity {
 	protected ArrayList<Agent> storedAgents;
 	ArrayList<SemanticGroup> storedCapsules;
 	protected Collection<Agent> agentsAsSet;
