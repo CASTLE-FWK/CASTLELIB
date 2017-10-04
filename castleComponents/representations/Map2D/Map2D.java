@@ -113,6 +113,8 @@ public class Map2D {
 	//This is a standard range
 	public int countEntitiesInRange(Vector2 pos, Vector2 range){
 		
+		
+		return 0;
 	}
 	
 	
