@@ -34,7 +34,7 @@ public class Entity implements Runnable {
 	protected ArrayList<Trigger> actionTriggersToAdd;
 	
 	private boolean loggingToFile;
-	private boolean loggingToConsole;
+	private boolean loggingToConsole = true;
 	private boolean loggingToDB;
 	
 	private boolean writingModelDataToFile;
@@ -367,7 +367,8 @@ public class Entity implements Runnable {
 		if (!loggerIsNull()){
 			if (loggingToConsole){
 				logger.logToConsole(str);
-			}
+			} 
+			
 			if (loggingToFile){
 				logger.logToFile(str);
 			}

@@ -77,9 +77,7 @@ public class Output {
 	}
 
 	public void sendLogToConsole(String log) {
-		if (loggingToConsole) {
-			System.out.println(log);
-		}
+		System.out.println(log);
 	}
 	
 	public void newStep(){

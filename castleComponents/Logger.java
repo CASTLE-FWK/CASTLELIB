@@ -75,6 +75,7 @@ public class Logger {
 	public void systemLog(String str) {
 
 	}
+	
 
 	// Prints to file
 	public void log(String str) {
@@ -84,6 +85,8 @@ public class Logger {
 			}
 			if (output.isLoggingToConsole()) {
 				logToConsole(str);
+			} else {
+				System.out.println("oaso");
 			}
 		}
 	}
