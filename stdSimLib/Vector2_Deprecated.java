@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * of useful functions for use with Repast.
  */
 
-public class Vector2 implements java.io.Serializable {
+public class Vector2_Deprecated implements java.io.Serializable {
 
 	/**
 	 * 
@@ -21,22 +21,22 @@ public class Vector2 implements java.io.Serializable {
 
 	private double x, y;
 	
-	public Vector2(){
+	public Vector2_Deprecated(){
 		this.x = 0;
 		this.y = 0;
 	}
 	
-	public Vector2(double x, double y){
+	public Vector2_Deprecated(double x, double y){
 		this.x = x;
 		this.y = y;
 	}
 
-	public Vector2(Vector2 v){
+	public Vector2_Deprecated(Vector2_Deprecated v){
 		this.x = v.x;
 		this.y = v.y;
 	}
 	
-	public Vector2(String stringVector){
+	public Vector2_Deprecated(String stringVector){
 		stringVector = stringVector.replaceAll("\\(", "").replaceAll("\\)","");
 		String[] terms = stringVector.split(",");
 		this.x = Double.parseDouble(terms[0]);
@@ -48,7 +48,7 @@ public class Vector2 implements java.io.Serializable {
 		this.y = 0;
 	}
 	
-	public double distance(Vector2 vec){
+	public double distance(Vector2_Deprecated vec){
 		double x = Math.pow((vec.getX() - getX()),2);
 		double y = Math.pow((vec.getY() - getY()),2);
 				
@@ -61,24 +61,24 @@ public class Vector2 implements java.io.Serializable {
 		this.y += y;
 	}
 	
-	public void modify(Vector2 vec){
+	public void modify(Vector2_Deprecated vec){
 		setX(vec.getX());
 		setY(vec.getY());
 	}
 	
-	public Vector2 subtract(Vector2 v){
+	public Vector2_Deprecated subtract(Vector2_Deprecated v){
 		this.x -= v.x;
 		this.y -= v.y;
 		return this;
 	}
 	
-	public Vector2 add(Vector2 v){
+	public Vector2_Deprecated add(Vector2_Deprecated v){
 		this.x += v.x;
 		this.y += v.y;
 		return this;
 	}
 	
-	public double dotProduct(Vector2 v){
+	public double dotProduct(Vector2_Deprecated v){
 		return (this.x * v.x + this.y * v.y);
 	}
 	
@@ -117,7 +117,7 @@ public class Vector2 implements java.io.Serializable {
 	
 	@Override
 	public boolean equals(Object o){
-		return compare((Vector2)o);
+		return compare((Vector2_Deprecated)o);
 	}
 	
 	@Override
@@ -125,28 +125,28 @@ public class Vector2 implements java.io.Serializable {
 		return toString().hashCode();
 	}
 		
-	public boolean equals(Vector2 v){
+	public boolean equals(Vector2_Deprecated v){
 		return (v.getX() == getX() && v.getY() == getY());
 	}
 	
-	public boolean compare(Vector2 v){
+	public boolean compare(Vector2_Deprecated v){
 		return (v.getX() == getX() && v.getY() == getY());
 	}
 	
-	public double compareDistance (Vector2 b){
+	public double compareDistance (Vector2_Deprecated b){
 		return Math.sqrt((Math.pow(this.x - b.getX(), 2) + Math.pow(this.y - b.getY(), 2)));
 	}
 	
-	public ArrayList<Vector2> possibleOffsets(int offset){
-		ArrayList<Vector2> offsets = new ArrayList<Vector2>();
-		offsets.add(new Vector2(x-offset,y+offset)); //-1,1
-		offsets.add(new Vector2(x,y+offset)); //0,1
-		offsets.add(new Vector2(x+offset,y+offset)); //1,1
-		offsets.add(new Vector2(x+offset,y)); //1,0
-		offsets.add(new Vector2(x+offset,y-offset)); //1,-1
-		offsets.add(new Vector2(x,y-offset)); //0,-1
-		offsets.add(new Vector2(x-offset,y-offset)); //-1,-1
-		offsets.add(new Vector2(x-offset,y)); //-1,0
+	public ArrayList<Vector2_Deprecated> possibleOffsets(int offset){
+		ArrayList<Vector2_Deprecated> offsets = new ArrayList<Vector2_Deprecated>();
+		offsets.add(new Vector2_Deprecated(x-offset,y+offset)); //-1,1
+		offsets.add(new Vector2_Deprecated(x,y+offset)); //0,1
+		offsets.add(new Vector2_Deprecated(x+offset,y+offset)); //1,1
+		offsets.add(new Vector2_Deprecated(x+offset,y)); //1,0
+		offsets.add(new Vector2_Deprecated(x+offset,y-offset)); //1,-1
+		offsets.add(new Vector2_Deprecated(x,y-offset)); //0,-1
+		offsets.add(new Vector2_Deprecated(x-offset,y-offset)); //-1,-1
+		offsets.add(new Vector2_Deprecated(x-offset,y)); //-1,0
 		return offsets;
 	}
 }
