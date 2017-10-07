@@ -32,27 +32,115 @@ public class Output {
 
 	MongoClient mongoClient;
 	MongoDatabase db;
+	
+	SimulationInfo simInfo;
+	
+	OutputToJSON_Mongo dbOutput;
+	boolean dbOutputMuted = false;
+	
+	private Logger logger;
+	boolean loggerMuted = false;
 
-	public Output() {}
+	public Output(SimulationInfo si) {
+		setSimulationInfo(si);
+	}
 
-	public Output(boolean ltf, boolean ltc, boolean ltd) {
+
+	public void setSimulationInfo(SimulationInfo si){
+		simInfo = si;
+	}
+	
+	public void setLoggerMuted(boolean m){
+		loggerMuted = m;
+	}
+	
+	public boolean getLoggerMuted(){
+		return loggerMuted;
+	}
+	
+	public void setDBOutputMuted(boolean m){
+		dbOutputMuted = m;
+	}
+	
+	public boolean getDBOutputMuted(){
+		return dbOutputMuted;
+	}
+	
+	public void setup(boolean ltf, boolean ltc, boolean ltd, String logFilePath, boolean wdf, boolean wdc, boolean wddb){
 		loggingToFile = ltf;
 		loggingToConsole = ltc;
 		loggingToDB = ltd;
+		writingModelDataToFile = wdf;
+		writingModelDataToConsole = wdc;
+		writingModelDataToDB = wddb;
+		logger.setup(logFilePath, simInfo.getSystemName());
+	}
+	
+	public void setLogger(Logger l){
+		logger = l;
+	}
+	
+	public Logger getLogger(){
+		return logger;
+	}
+	
+	public void setDatabaseOutput(OutputToJSON_Mongo o){
+		dbOutput = o;
+	}
+	
+	public OutputToJSON_Mongo getDatabaseOutput(){
+		return dbOutput;
 	}
 
 	public void initialiseLoggingPath(String str, boolean isDir) {
 		Utilities.createFile(str, isDir);
+	}
+	
+	public void log(Entity e, String str){
+		if (!loggerMuted){
+			if (loggingToConsole){
+				logger.logToConsole(str);
+			}
+			if (loggingToFile){
+				logger.logToFile(str);
+			}
+		}
+		if (!dbOutputMuted){
+			if (loggingToDB){
+				dbOutput.exportEntity(e);
+			}
+		}
+	}
+	
+	public void logWithOptionalWrite(String str){
+		logger.logWithOptionalWrite(str);
+	}
+	
+	public void forceToConsole(String str){
+		logger.logToConsole(str);
+	}
+	
+	public void writeModelData(Entity e){
+		if (!loggerMuted){
+			if (writingModelDataToConsole){
+				logger.logToConsole(e.writeEntityData().toString());
+			}
+			if (writingModelDataToFile){
+				logger.logToFile(e.writeEntityData());
+			}
+		}
+		if (!dbOutputMuted){
+			if (writingModelDataToDB){
+				dbOutput.exportEntity(e);
+			}
+		}
+		
 	}
 
 	public void sendLogToFile(String filePath, String log, boolean append) {
 		if (loggingToFile) {
 			new ThreadedFileWriter(filePath, log, append).run();
 		}
-	}
-
-	public void sendLogToDB(String log) {
-
 	}
 
 	public void setUpDB(String systemName, String executionID, String databaseName) {

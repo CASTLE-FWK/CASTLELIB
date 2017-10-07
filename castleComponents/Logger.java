@@ -22,8 +22,6 @@ public class Logger {
 
 	private SimulationInfo simInfo;
 
-	public Logger() {
-	}
 
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
@@ -42,16 +40,23 @@ public class Logger {
 		muted = false;
 	}
 
-	public void setup(boolean isMuted, boolean toConsole, boolean toFile, String filePath, String sysName) {
-		muted = isMuted;
-		output.setLoggingToConsole(toConsole);
-		output.setLoggingToFile(toFile);
+	public void setup(String filePath, String sysName) {
+//		muted = isMuted;
+//		output.setLoggingToConsole(toConsole);
+//		output.setLoggingToFile(toFile);
 		systemLogPath = filePath;
 		this.sysName = sysName;
 
 		if (output.isLoggingToFile()) {
 			stringBuilder = new StringBuilder();
 			setUpLog(systemLogPath);
+		}
+	}
+	
+	public void setupFromOutput(){
+		if (output == null){
+			System.out.println("Output is null, please fix the generator."); 
+			return;
 		}
 	}
 
@@ -79,16 +84,21 @@ public class Logger {
 
 	// Prints to file
 	public void log(String str) {
-		if (!muted) {
-			if (output.isLoggingToFile()) {
-				logToFile(str + "\n");
-			}
-			if (output.isLoggingToConsole()) {
-				logToConsole(str);
-			} else {
-				System.out.println("oaso");
-			}
+		if (output.isLoggingToFile()) {
+			logToFile(str + "\n");
 		}
+		if (output.isLoggingToConsole()) {
+			logToConsole(str);
+		}
+	}
+	
+	public void logWithOptionalWrite(String str){
+		if (output.isLoggingToFile()) {
+			logToFile(str + "\n");
+		}
+
+		logToConsole(str);
+
 	}
 
 	public void logToConsole(String str) {
@@ -96,13 +106,11 @@ public class Logger {
 	}
 
 	public void log(StringBuilder str) {
-		if (!muted) {
-			if (output.isLoggingToFile()) {
-				logToFile(str);
-			}
-			if (output.isLoggingToConsole()) {
-				logToConsole(str.toString());
-			}
+		if (output.isLoggingToFile()) {
+			logToFile(str);
+		}
+		if (output.isLoggingToConsole()) {
+			logToConsole(str.toString());
 		}
 	}
 
@@ -112,6 +120,15 @@ public class Logger {
 
 	public void logToFile(String str) {
 		stringBuilder.append(str + "\n");
+	}
+	
+	public void writeModelData(StringBuilder sb){
+		if (output.isWritingModelDataToConsole()){
+			logToConsole(sb.toString());
+		}
+		if (output.isWritingModelDataToFile()){
+			logToFile(sb);
+		}
 	}
 
 	// Sets up the log path (should be fully automated)

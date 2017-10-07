@@ -33,14 +33,6 @@ public class Entity implements Runnable {
 	protected ArrayList<Trigger> actionTriggers;
 	protected ArrayList<Trigger> actionTriggersToAdd;
 	
-	private boolean loggingToFile;
-	private boolean loggingToConsole = true;
-	private boolean loggingToDB;
-	
-	private boolean writingModelDataToFile;
-	private boolean writingModelDataToConsole;
-	private boolean writingModelDataToDB;
-	
 	String entitySuperType = "";
 	final String GROUP = "group";
 	final String AGENT = "agent";
@@ -51,6 +43,8 @@ public class Entity implements Runnable {
 	boolean ready = false;
 
 	Vector2 position;
+	
+	protected Output output;
 
 	HashMap<String, Interaction> interactionsInLastInterval;
 	HashMap<String, Feature> featuresInLastInterval;
@@ -102,15 +96,7 @@ public class Entity implements Runnable {
 	public boolean dbIsNull(){
 		return (dbOut == null);
 	}
-	
-	public void outputDirections(boolean ltf, boolean ltc, boolean ltdb, boolean wmdf, boolean wmdc, boolean wmddb){
-		this.loggingToFile = ltf;
-		this.loggingToConsole = ltc;
-		this.loggingToDB = ltdb;
-		this.writingModelDataToFile = wmdf;
-		this.writingModelDataToConsole = wmdc;
-		this.writingModelDataToDB = wmddb;
-	}
+
 	
 	protected EntityID entityID;
 
@@ -343,41 +329,23 @@ public class Entity implements Runnable {
 		return points;
 	}
 	
+	public void setOutput(Output out){
+		output = out;
+	}
+	
+	public Output getOutput(){
+		return output;
+	}
+	
 	public void writeModelData(){
-		if (!dbIsNull()){
-			if (writingModelDataToDB){
-				dbOut.exportEntity(this);
-			}
-		}
-		if (!loggerIsNull()){
-			if (writingModelDataToFile || writingModelDataToConsole){
-				StringBuilder sb = writeEntityData();
-				
-				if (writingModelDataToConsole){
-					logger.logToConsole(sb.toString());
-				}
-				if (writingModelDataToFile){
-					logger.logToFile(sb);
-				}
-			}
-		}
+		output.writeModelData(this);
 	}
 	
 	public void log(String str){
-		if (!loggerIsNull()){
-			if (loggingToConsole){
-				logger.logToConsole(str);
-			} 
-			
-			if (loggingToFile){
-				logger.logToFile(str);
-			}
+		if (output == null){
+			System.out.println("8881717");
 		}
-		if (!dbIsNull()){
-			if (loggingToDB){
-				dbOut.exportLog(this, str);
-			}
-		}
+		output.log(this, str);
 	}
 
 	// Trigger pulling

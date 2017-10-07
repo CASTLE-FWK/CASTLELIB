@@ -5,6 +5,7 @@ package castleComponents;
  * 
  */
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,14 +30,7 @@ public class CASSystem{
 	protected Logger logger;
 	protected Output output;
 	protected OutputToJSON_Mongo dbOut = null;
-	
-	private boolean loggingToFile;
-	private boolean loggingToConsole;
-	private boolean loggingToDB;
-	
-	private boolean writingModelDataToFile;
-	private boolean writingModelDataToConsole;
-	private boolean writingModelDataToDB;
+
 	
 	long startTime = 0;
 	long timeSinceLastStep = 0;
@@ -97,14 +91,6 @@ public class CASSystem{
 		return (dbOut == null);
 	}
 	
-	public void outputDirections(boolean ltf, boolean ltc, boolean ltdb, boolean wmdf, boolean wmdc, boolean wmddb){
-		this.loggingToFile = ltf;
-		this.loggingToConsole = ltc;
-		this.loggingToDB = ltdb;
-		this.writingModelDataToFile = wmdf;
-		this.writingModelDataToConsole = wmdc;
-		this.writingModelDataToDB = wmddb;
-	}
 
 	void simulate(){
 		//Initialize clock
@@ -256,6 +242,21 @@ public class CASSystem{
 		
 		//Fill Agent section
 	}
+	
+
+	public String writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params) {
+		String out = "Simulation Initialization Details: \n";
+		out += "Name: " + sysName + "\n";
+		out += "Description: " + sysDescription + "\n";
+		out += "Execution Start Time: " + Utilities.generateNiceTimeStamp() + "\n";
+		out += "Initialization Parameters:\n";
+		for (Parameter<?> p : params) {
+			out += "\t" + p.toString() + "\n";
+		}
+		out += "----------------------------------------";
+		return out;
+	}
+	
 	
 /*	Context<Environment> build(Context<Environment> context){
 		//Create environments
