@@ -28,10 +28,7 @@ public class Output {
 	int currentStep = 0;
 	String currentPath = "";
 	
-	MongoCollection<Document> currentCollection;
-
-	MongoClient mongoClient;
-	MongoDatabase db;
+	
 	
 	SimulationInfo simInfo;
 	
@@ -73,6 +70,18 @@ public class Output {
 		writingModelDataToFile = wdf;
 		writingModelDataToConsole = wdc;
 		writingModelDataToDB = wddb;
+		
+		
+		forceToConsole("logging to console: "+ltc
+				+"\nlogging to file: "+ltf
+				+"\nlogging to database: "+ltd
+				+"\nwriting execution data to console: "+wdc
+				+"\nwriting execution data to file: "+wdf
+				+"\nwriting execution data to database: "+wddb
+				+"\nwriting to file path: "+logFilePath
+		);
+		
+		
 		logger.setup(logFilePath, simInfo.getSystemName());
 	}
 	
@@ -144,32 +153,66 @@ public class Output {
 	}
 
 	public void setUpDB(String systemName, String executionID, String databaseName) {
-		this.executionID = executionID;
-		DBName = systemName;
-		currentPath = URL + DBName;
-//		this.dbID = dbID;
-
-		mongoClient = new MongoClient();
-		db = mongoClient.getDatabase(databaseName);
-		DBName = DBName + "_" + executionID;
-		currentCollection = getCurrentCollectionFromDB(DBName);
-		System.out.println("MongoDB collection is at " + DBName);
+		if (loggingToDB || writingModelDataToDB){
+			if (dbOutput != null){
+				dbOutput.setupDB(systemName, executionID, databaseName);
+				this.executionID = executionID;
+				DBName = systemName;
+				currentPath = URL + DBName;
+				DBName = DBName + "_" + executionID;
+			} else {
+				dbOutputMuted = true;
+				System.out.println("dbOutput is null for some reason.");
+			}
+		} else {
+			dbOutputMuted = true;
+			System.out.println("New database not created as nothing will be sent to it.");
+		}
 	}
 
-	public MongoCollection<Document> getCurrentCollectionFromDB(String name) {
-		return this.db.getCollection(name);
-	}
-
-	public void insertOneToDB(Document doc) {
-		currentCollection.insertOne(doc);
-	}
+	
 
 	public void sendLogToConsole(String log) {
 		System.out.println(log);
 	}
 	
-	public void newStep(){
-		
+	public void newStep(int ticks){
+		if (dbOutput != null){
+			if (!dbOutputMuted){
+				dbOutput.newStep();
+			}
+		}
+		if (logger != null){
+			if (!loggerMuted){
+				logger.newStep(ticks);
+			}
+		}
+	}
+	
+	public void endOfStep(int ticks){
+		if (dbOutput != null){
+			if (!dbOutputMuted){
+				dbOutput.endOfStep();
+			}
+		}
+		if (logger != null){
+			if (!loggerMuted){
+				logger.endOfStep(ticks);
+			}
+		}
+	}
+	
+	public void endOfSimulation(int ticks, long elapsedTime, int desiredTotalTicks){
+		if (dbOutput != null){
+			if (!dbOutputMuted){
+				dbOutput.endOfSimulation(ticks, elapsedTime, desiredTotalTicks);
+			}
+		}
+		if (logger != null){
+			if (!loggerMuted){
+				logger.endOfStep(ticks);
+			}
+		}
 	}
 
 	public void loggingToDB(String dbPath) {

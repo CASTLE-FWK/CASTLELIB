@@ -51,14 +51,21 @@ public class OutputToJSON_Mongo{
 	final String AGENT = "agent";
 	final String ENVIRONMENT = "environment";
 	
+	MongoCollection<Document> currentCollection;
+
+	MongoClient mongoClient;
+	MongoDatabase db;
+	
+	String DBName = "default_DB_Name";
+	
 	Output output;
 
 
-	public OutputToJSON_Mongo(Output output, SimulationInfo simInfo, String dbID, String databaseName){
+	public OutputToJSON_Mongo(Output output, SimulationInfo simInfo){
 		//Create DB
 		this.simInfo = simInfo;
 		this.output = output;
-		output.setUpDB(this.simInfo.getSystemName(), this.simInfo.getExecutionID(), databaseName);
+//		output.setUpDB(this.simInfo.getSystemName(), this.simInfo.getExecutionID(), databaseName);
 //		this.executionID = executionID;
 //		DB_NAME = systemName;
 //		currentPath = URL+DB_NAME;
@@ -74,6 +81,25 @@ public class OutputToJSON_Mongo{
 //		System.out.println("MongoDB collection is at "+DB_NAME);
 
 		initValues = new Document();
+	}
+	
+	public void setupDB(String systemName, String executionID, String databaseName){
+		this.executionID = executionID;
+		DBName = systemName;
+		currentPath = URL + DBName;
+//		this.dbID = dbID;
+
+		mongoClient = new MongoClient();
+		db = mongoClient.getDatabase(databaseName);
+		if (db == null){
+			System.out.println("db is null, which means the database called "+databaseName+" probably doesn't exist");
+		}	
+		DBName = DBName + "_" + executionID;
+		this.currentCollection = getCurrentCollectionFromDB(DBName);
+		if (this.currentCollection == null){
+			System.out.println("cc is null");
+		}
+		System.out.println("MongoDB collection is at " + DBName);
 	}
 	
 	//Clean and init things
@@ -108,8 +134,8 @@ public class OutputToJSON_Mongo{
 		initValues.append("notes","");
 		
 		//Upload to DB
-		output.insertOneToDB(initValues);
-//		currentCollection.insertOne(initValues);
+//		output.insertOneToDB(initValues);
+		currentCollection.insertOne(initValues);
 	}
 	
 	public void exportSystemStep(int stepNumber,int totalSteps, long timeSinceLastStep, long elapsedTime){
@@ -197,21 +223,21 @@ public class OutputToJSON_Mongo{
 	}
 	
 	public void endOfStep(){
-		output.insertOneToDB(
-				new Document("_id","step-"+currentStep)
-				.append("system-info", system)
-				.append("environments",environmentsDocuments)
-				.append("groups", groupsDocuments)
-				.append("agents", agentsDocuments)
-				.append("interactions",interactions)
-				.append("logs", logDocuments));
-//		currentCollection.insertOne(
+//		output.insertOneToDB(
 //				new Document("_id","step-"+currentStep)
 //				.append("system-info", system)
 //				.append("environments",environmentsDocuments)
 //				.append("groups", groupsDocuments)
 //				.append("agents", agentsDocuments)
-//				.append("interactions",interactions));	
+//				.append("interactions",interactions)
+//				.append("logs", logDocuments));
+		currentCollection.insertOne(
+				new Document("_id","step-"+currentStep)
+				.append("system-info", system)
+				.append("environments",environmentsDocuments)
+				.append("groups", groupsDocuments)
+				.append("agents", agentsDocuments)
+				.append("interactions",interactions));	
 	}
 	
 	public Document getCompleteDocument(){
@@ -233,15 +259,19 @@ public class OutputToJSON_Mongo{
 
 	//Complete JSON and send to DB
 	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps){
-		output.insertOneToDB(new Document("_id","termination-statistics")
-				.append("termination-step", finalStep)
-				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
-				.append("elapsed-time",elapsedTime));
-//		currentCollection.insertOne(
-//				new Document("_id","termination-statistics")
+//		output.insertOneToDB(new Document("_id","termination-statistics")
 //				.append("termination-step", finalStep)
 //				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
-//				.append("elapsed-time",elapsedTime));	
+//				.append("elapsed-time",elapsedTime));
+		currentCollection.insertOne(
+				new Document("_id","termination-statistics")
+				.append("termination-step", finalStep)
+				.append("%-of-execution-finished",(((double)finalStep) / ((double)totalSteps) * 100))
+				.append("elapsed-time",elapsedTime));	
+	}
+	
+	public MongoCollection<Document> getCurrentCollectionFromDB(String name) {
+		return this.db.getCollection(name);
 	}
 	
 	
