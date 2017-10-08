@@ -1,4 +1,4 @@
-package castleComponents.representations;
+package castleComponents.representations.Network;
 
 import java.util.ArrayList;
 import java.util.Comparator;

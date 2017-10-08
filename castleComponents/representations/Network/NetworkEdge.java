@@ -1,4 +1,4 @@
-package castleComponents.representations;
+package castleComponents.representations.Network;
 
 
 public class NetworkEdge implements Comparable<NetworkEdge>{

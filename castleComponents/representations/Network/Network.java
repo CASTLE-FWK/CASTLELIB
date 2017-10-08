@@ -1,10 +1,11 @@
-package castleComponents.representations;
+package castleComponents.representations.Network;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import castleComponents.objects.Vector2;
+import castleComponents.representations.Representation;
 
 public class Network<E> implements Representation<E> {
 
