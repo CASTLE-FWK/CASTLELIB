@@ -25,6 +25,10 @@ public class EntityID {
 		this.idnumber = id.idnumber;
 		this.parentID = id.parentID;
 	}
+	
+	public EntityID(){
+		//This is because of auto-generation
+	}
 
 	public EntityID addParent(String parent) {
 		parentID = parent;
@@ -39,6 +43,10 @@ public class EntityID {
 	@Override
 	public String toString() {
 		return entityUID;
+	}
+	
+	public String getID(){
+		return toString();
 	}
 
 	public boolean equals(EntityID id) {
