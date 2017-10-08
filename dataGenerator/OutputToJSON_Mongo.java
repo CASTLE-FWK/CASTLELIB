@@ -202,7 +202,7 @@ public class OutputToJSON_Mongo{
 				Document interDoc = new Document()
 					.append("interaction-from",inter.getEntityFrom().getID())
 					.append("interaction-to", inter.getEntityTo().getID())
-					.append("interaction-type",inter.getType());
+					.append("interaction-type",inter.getType().toString());
 				interactions.add(interDoc);
 			}
 		}
