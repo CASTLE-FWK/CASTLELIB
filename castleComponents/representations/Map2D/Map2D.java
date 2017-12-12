@@ -173,7 +173,7 @@ public class Map2D {
 		return m.addEntity(e);
 	}
 	
-	public Park getParkAtPos(Vector2 pos){		
+	public Park getParkAtPosition(Vector2 pos){		
 		if (isPark(pos)){
 			MapComponent m = getMapComponent(pos);
 			return m.getPark();
@@ -184,7 +184,7 @@ public class Map2D {
 	
 	public boolean entityParking(Entity e, Vector2 pos){
 		//check if park
-		Park p = getParkAtPos(pos);
+		Park p = getParkAtPosition(pos);
 		if (p != null) {
 			//check if spaces
 			if (p.freeSpaces()){

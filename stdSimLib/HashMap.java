@@ -2,10 +2,10 @@ package stdSimLib;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Map<K,T> {
+public class HashMap<K,T> {
 	private ConcurrentHashMap<K, T> theMap = null;
 	
-	public Map(){
+	public HashMap(){
 		theMap = new ConcurrentHashMap<K,T>();
 		
 	}

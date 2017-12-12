@@ -19,22 +19,22 @@ import castleComponents.objects.Vector2;
  * @param <T>
  *
  */
-public class Map2D<T> {
+public class HashMap2D<T> {
 	
 	private int dimensionX = 0;
 	private int dimensionY = 0;
 //	private ArrayList<ArrayList<Integer>> theMap = null;
 	private ConcurrentHashMap<Vector2, T> theMap = null;
 	
-	public Map2D(){}
+	public HashMap2D(){}
 	
-	public Map2D(Vector2 size){
+	public HashMap2D(Vector2 size){
 		dimensionX = (int)size.getX();
 		dimensionY = (int)size.getY();
 		setUpMap();
 	}
 	
-	public Map2D(int x, int y){
+	public HashMap2D(int x, int y){
 		dimensionX = x;
 		dimensionY = y;
 		setUpMap();
