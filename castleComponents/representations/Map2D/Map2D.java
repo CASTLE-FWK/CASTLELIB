@@ -1,6 +1,7 @@
 package castleComponents.representations.Map2D;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class Map2D {
 	
 	public static void importMap(String parsedMapFile){
 		//Oh boy, this will be fun
-		
+		//TODO: This
 		
 		
 	}
@@ -76,6 +77,20 @@ public class Map2D {
 
 		//Otherwise return the NULL vector2
 		return Vector2.NULL;
+	}
+	
+	public Entity getEntity(){
+		ArrayList<MapComponent> mapComponents = new ArrayList<MapComponent>(theGridMap.getEntities());
+		if (mapComponents.size() > 1){
+			System.out.println("Map2D: More than 1 entity here");
+			return null;
+		}
+		HashMap<String, Entity> ents = mapComponents.get(0).getContainedEntities();
+		if (ents.size() > 1){
+			System.out.println("Map2D: More than 1 entity in the component");
+			return null;
+		}
+		return (Entity)mapComponents.get(0).getContainedEntities().values().toArray()[0];
 	}
 	
 	//This should return states
@@ -189,7 +204,8 @@ public class Map2D {
 			//check if spaces
 			if (p.freeSpaces()){
 				//Then Park
-				//TODO
+				//TODO: Park the entity
+				p.addOccupant(e);
 				return true;
 			}
 		}
@@ -273,5 +289,5 @@ public class Map2D {
 }
 
 enum Outcome {
-	OUT_OF_BOUNDS, INVALID, VALID;
+	OUT_OF_BOUNDS, INVALID, VALID, MOVED;
 }
