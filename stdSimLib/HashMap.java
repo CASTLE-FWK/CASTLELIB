@@ -1,5 +1,6 @@
 package stdSimLib;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HashMap<K,T> {
@@ -10,8 +11,11 @@ public class HashMap<K,T> {
 		
 	}
 	
-	
-	
+	@SuppressWarnings("unchecked")
+	public void addAll(HashMap<K,T> h){
+		theMap.putAll((Map<? extends K, ? extends T>) h);
+		
+	}
 	public T add(K key, T value){
 		return theMap.put(key,value);
 	}
