@@ -306,7 +306,7 @@ public class Entity implements Runnable {
 		
 		//Boy this is some baaaad year 8 maths
 		//Calcs for 1 half of triangle
-		double adj = pos.compareDistance(vRange.add((pos)));
+		double adj = pos.calculateDistance(vRange.add((pos)));
 		double opp = Math.tan(halfTheta) * adj;		
 		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); //√
 		double wideSide = opp * 2.0; //√

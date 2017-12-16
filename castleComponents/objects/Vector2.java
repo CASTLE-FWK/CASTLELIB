@@ -172,7 +172,7 @@ public class Vector2 implements java.io.Serializable {
 		return (v.getX() == getX() && v.getY() == getY());
 	}
 	
-	public double compareDistance (Vector2 b){
+	public double calculateDistance (Vector2 b){
 		return Math.sqrt((Math.pow(this.x - b.getX(), 2) + Math.pow(this.y - b.getY(), 2)));
 	}
 	

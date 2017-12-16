@@ -39,6 +39,10 @@ public class EntityID {
 	public EntityID(String id) {
 		entityUID = id;
 	}
+	
+	public void setID(String id){
+		entityUID = id;
+	}
 
 	@Override
 	public String toString() {

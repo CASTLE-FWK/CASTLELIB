@@ -117,9 +117,9 @@ public class Map2D {
 		
 	}
 	
-	public Outcome moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel){
+	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel){
 		Vector2 newPos = pos.add(vel);
-		return moveTo(e,newPos);		
+		return moveTo(e,newPos).toString();		
 	}
 
 	

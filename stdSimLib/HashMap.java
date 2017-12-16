@@ -20,6 +20,9 @@ public class HashMap<K,T> {
 		return theMap.put(key,value);
 	}
 
+	public T put(K key, T value){
+		return add(key, value);
+	}
 	public T get(K key){
 		return theMap.get(key);
 	}
