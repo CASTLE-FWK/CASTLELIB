@@ -69,6 +69,23 @@ public class Grid<E> implements Representation<E>{
 		return grid;
 	}
 	
+	public void copy(Class<E> c, Grid<E> g, LayoutParameters lp) {
+		layoutParameters = lp;
+		X = g.getX();
+		Y = g.getY();
+		this.theClass = c;
+		@SuppressWarnings("unchecked")
+		final E[][] grid = (E[][]) Array.newInstance(c, X,Y);		
+		this.grid = grid;
+		
+		E[][] gGrid = g.getGrid();
+		for (int i = 0; i < gGrid[0].length; i++) {
+			for (int j = 0; j < gGrid.length; j++) {
+				grid[j][i] = gGrid[j][i];
+			}
+		}
+	}
+	
 	public E getEntityAtPos(Vector2 pos){
 		int x = (int)pos.getX();
 		int y = (int)pos.getY();
@@ -267,6 +284,8 @@ public class Grid<E> implements Representation<E>{
 			System.out.println("GRID IS NULL");
 		}
 		grid[(int)vec.getX()][(int)vec.getY()] = c;
+//		System.out.println("ll: " + (grid[(int)vec.getX()][(int)vec.getY()] == null));
+//		System.out.println("lk: "+ (getEntityAtPos(vec) == null));
 		return allContainedEntities.add(c);
 	}
 	
@@ -768,6 +787,8 @@ public class Grid<E> implements Representation<E>{
 		return true;
 	}
 
+	
+	
 	@Override
 	public boolean initializeEntity(Object... objects) {
 		return false;

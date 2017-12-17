@@ -31,6 +31,14 @@ public class MapComponent {
 		}
 	}
 	
+	public MapComponent(MapComponent mc) {
+		theType = mc.getType();
+		position = mc.getPosition();
+		containedEntities = new HashMap<String, Entity>();
+		
+		containedEntities.putAll(mc.getContainedEntities());
+	}
+	
 	public void setPosition(Vector2 p){
 		this.position = p;
 	}

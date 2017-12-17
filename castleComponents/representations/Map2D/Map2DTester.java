@@ -5,6 +5,7 @@ public class Map2DTester {
 	
 	public static void main(String[] args){
 		String mapPath = args[0];
+		System.out.println(mapPath);
 		Map2D map = new Map2D();
 		Map2DParser parser = new Map2DParser(map);
 		parser.parseMapFile(mapPath);

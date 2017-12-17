@@ -1,16 +1,16 @@
 package castleComponents.representations.Map2D;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.activation.MailcapCommandMap;
 
 import castleComponents.Entity;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
+import castleComponents.objects.List;
 import castleComponents.representations.Grid;
+import castleComponents.representations.LayoutParameters;
 import stdSimLib.utilities.Utilities;
 
 public class Map2D {
@@ -24,6 +24,7 @@ public class Map2D {
 	int scale = 1;
 	Vector2 dimensions;
 	
+
 	public Map2D(String name, boolean isOpen, int scale){
 		this.name = name;
 		this.open = isOpen;
@@ -55,11 +56,59 @@ public class Map2D {
 		theGridMap = new Grid<MapComponent>();
 	}
 	
+	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
+		theGridMap.init(gridDims, MapComponent.class);
+		importMap(pathToMapFile);
+		System.out.println("Map2D file initialized with name "+name+" and dims "+dimensions.toString());
+		System.out.println(getMapComponent(new Vector2(0,0)));
+	}
+	
+	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {
+		theGridMap.init(gridDims, MapComponent.class);
+		//TODO: Clone existing Map
+		scale = theMap.scale;
+		open = theMap.open;
+		Grid<MapComponent> oldMap = theMap.theGridMap;
+		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
+		MapComponent[][] oldGrid = oldMap.getGrid();
+		for (int i = 0; i < oldGrid[0].length; i++) {
+			for (int j = 0; j < oldGrid.length; j++) {
+				theGridMap.getGrid()[j][i] = new MapComponent(oldGrid[j][i]);
+			}
+		}
+		
+		
+		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
+	}
 	
 	
-	public static void importMap(String parsedMapFile){
-		//Oh boy, this will be fun
-		//TODO: This
+	//Chunking
+	List<Range2D> chunkedRanges = null;
+	List<Map2D> chunkedMap = null;
+	public List<Map2D> chunkMapIntoSections(int numberOfSections){
+		List<Map2D> chunks = new List<Map2D>();
+		chunkedRanges = new List<Range2D>();
+		//TODO
+		if (numberOfSections == 1) {
+			chunks.add(this);
+			chunkedRanges.add(range);
+		}
+		
+		//chunkedRanges = ;
+		chunkedMap = chunks;
+		return chunks;
+	}
+	
+	public List<Range2D> getChunkedMapRanges(){
+		return chunkedRanges;
+	}
+	
+	public void importMap(String pathToMapFile){
+		//Make sure this Map is initialized and clean
+		
+		
+		Map2DParser map2dParser = new Map2DParser(this);
+		map2dParser.parseMapFile(pathToMapFile);
 		
 		
 	}
@@ -67,7 +116,7 @@ public class Map2D {
 	public Vector2 getPositionOfEntity(Entity e){
 		//Find entity and return its position
 		//Cycle through grid, and check with each containedEntities map
-		ArrayList<MapComponent> mapComponents = new ArrayList<MapComponent>(theGridMap.getEntities());
+		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
 		String eID = e.getID();
 		for (MapComponent mc : mapComponents) {
 			if (mc.checkForEntity(eID)){
@@ -80,7 +129,7 @@ public class Map2D {
 	}
 	
 	public Entity getEntity(){
-		ArrayList<MapComponent> mapComponents = new ArrayList<MapComponent>(theGridMap.getEntities());
+		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
 		if (mapComponents.size() > 1){
 			System.out.println("Map2D: More than 1 entity here");
 			return null;
@@ -135,7 +184,7 @@ public class Map2D {
 	
 	//This is a total range (i.e. 360° vis)
 	public int countEntitiesInRange(Vector2 pos, int range){
-		ArrayList<MapComponent> mcs = new ArrayList<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
+		List<MapComponent> mcs = new List<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
 		HashSet<Entity> ents = new HashSet<Entity>();
 		for (MapComponent mc : mcs){
 			ents.addAll(mc.getContainedEntitiesAsList());
