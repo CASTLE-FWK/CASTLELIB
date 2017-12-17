@@ -55,6 +55,10 @@ public class Vector2 implements java.io.Serializable {
 		nullPoint = false;
 	}
 	
+	public static Vector2 parseFromString(String stringVector) {
+		return new Vector2(stringVector);
+	}
+	
 	public Vector2(boolean n){
 		if (n){
 			nullPoint = true;

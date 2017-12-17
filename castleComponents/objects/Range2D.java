@@ -1,8 +1,6 @@
 package castleComponents.objects;
 
 import java.util.Arrays;
-import java.util.Collections;
-
 import stdSimLib.utilities.Utilities;
 
 public class Range2D {
@@ -96,6 +94,18 @@ public class Range2D {
 				new Vector2(b.getX(), a.getY()),
 				new Vector2(b.getX(), b.getY()));
 		return nr;
+		
+	}
+	
+	public static Range2D parseFromString(String str) {
+		//is of the form: <(0,0),(0,3),(3,0)(3,3)>
+		String noArrows = str.replaceAll(">", "").replaceAll("<", "");
+		String[] noCommas = noArrows.split(",");
+		return new Range2D(
+				new Vector2(noCommas[0]),
+				new Vector2(noCommas[1]),
+				new Vector2(noCommas[2]),
+				new Vector2(noCommas[3]));
 		
 	}
 

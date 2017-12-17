@@ -1,6 +1,5 @@
 package stdSimLib;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import castleComponents.objects.List;
@@ -13,7 +12,6 @@ public class HashMap<K,T> {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void addAll(HashMap<K,T> h){
 		List<K> keys = h.getKeys();
 		for (K k : keys) {
