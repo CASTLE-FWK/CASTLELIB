@@ -1,5 +1,8 @@
 package castleComponents.objects;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import stdSimLib.utilities.Utilities;
 
 public class Range2D {
@@ -58,12 +61,30 @@ public class Range2D {
 		return vOut;
 	}
 	
+	public Vector2[] cloneAllPoints() {
+		Vector2[] vOut = new Vector2[4];
+		vOut[0] = new Vector2(pointA);
+		vOut[1] = new Vector2(pointB);
+		vOut[2] = new Vector2(pointC);
+		vOut[3] = new Vector2(pointD);
+		return vOut;
+	}
+	
 	public void sortPoints(){
-		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
-		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+		Vector2[] pts = cloneAllPoints();
+		Arrays.sort(pts, Vector2.sortByX());
+		pointA = pts[0];
+		pointB = pts[1];
+		pointC = pts[2];
+		pointD = pts[3];
 		
-		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
-		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
+		
+		
+//		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+//		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+//		
+//		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
+//		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
 		
 	}
 	
@@ -80,6 +101,22 @@ public class Range2D {
 
 	public List<Range2D> chunkRange(int numberOfFogs) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		List<Range2D> chunks = new List<Range2D>();
+		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+		
+		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
+		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
+		
+		double xDist = maxX - minX;
+		double yDist = maxY - minY;
+		
+		double xChunkSize = xDist / (double)numberOfFogs;
+		double yChunkSize = yDist / (double)numberOfFogs;
+		
+		
+		
+		return chunks;
 	}
 }

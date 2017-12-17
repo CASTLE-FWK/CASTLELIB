@@ -3,6 +3,8 @@ package stdSimLib;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import castleComponents.objects.List;
+
 public class HashMap<K,T> {
 	private ConcurrentHashMap<K, T> theMap = null;
 	
@@ -13,8 +15,10 @@ public class HashMap<K,T> {
 	
 	@SuppressWarnings("unchecked")
 	public void addAll(HashMap<K,T> h){
-		theMap.putAll((Map<? extends K, ? extends T>) h);
-		
+		List<K> keys = h.getKeys();
+		for (K k : keys) {
+			put(k, h.get(k));
+		}
 	}
 	public T add(K key, T value){
 		return theMap.put(key,value);
@@ -41,6 +45,11 @@ public class HashMap<K,T> {
 	
 	public int size(){
 		return theMap.size();
+	}
+	
+	public List<K> getKeys(){
+		return new List<K>(theMap.keySet());
+		
 	}
 	
 	
