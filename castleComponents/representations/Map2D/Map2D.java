@@ -109,16 +109,9 @@ public class Map2D {
 	public void importMap(String pathToMapFile){
 		//Make sure this Map is initialized and clean
 		
-		
 		Map2DParser map2dParser = new Map2DParser(this);
 		map2dParser.parseMapFile(pathToMapFile);
-		range = new Range2D(
-				new Vector2(0,0),
-				new Vector2(0, dimensions.getY()),
-				new Vector2(dimensions.getX(), 0),
-				new Vector2(dimensions.getX(), dimensions.getY()));
-		
-		
+		range = Range2D.createRange(new Vector2(0,0), dimensions);		
 	}
 	
 	public Vector2 getPositionOfEntity(Entity e){
@@ -167,6 +160,7 @@ public class Map2D {
 		MapComponent oldMC = getMapComponent(getPositionOfEntity(e));
 		oldMC.removeEntity(e.getID());
 		
+		//TODO: What the heck is this meant to do?
 		MapComponent mc = getMapComponent(pos);
 		mc.addEntity(e);
 		

@@ -17,6 +17,9 @@ public class Range2D {
 	public Range2D(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
 		setPoints(a,b,c,d);
 	}
+	public Range2D(Range2D r) {
+		copy(r);
+	}
 	
 	public void setPoints(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
 		pointA = new Vector2(a);
@@ -61,6 +64,17 @@ public class Range2D {
 		
 		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
 		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
+		
+	}
+	
+	public static Range2D createRange(Vector2 a, Vector2 b) {
+		Range2D nr = new Range2D();
+		nr = new Range2D(
+				new Vector2(a.getX(),a.getY()),
+				new Vector2(a.getX(), b.getY()),
+				new Vector2(b.getX(), a.getY()),
+				new Vector2(b.getX(), b.getY()));
+		return nr;
 		
 	}
 }

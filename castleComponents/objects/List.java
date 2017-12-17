@@ -36,4 +36,8 @@ public class List<T> extends ArrayList<T>{
 	public void addEntity(T t) {
 		add(t);
 	}
+	
+	public T peek() {
+		return super.get(0);
+	}
 }
