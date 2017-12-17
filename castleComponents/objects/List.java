@@ -28,4 +28,12 @@ public class List<T> extends ArrayList<T>{
 	public List() {
 		super();
 	}
+	
+	public void initialize(int size) {
+		//Do nothing for now
+	}
+	
+	public void addEntity(T t) {
+		add(t);
+	}
 }

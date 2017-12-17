@@ -30,12 +30,13 @@ public class Map2D {
 		this.open = isOpen;
 		this.scale = scale;
 		theGridMap = new Grid<MapComponent>();
-		
+		range = new Range2D();
 	}
 	
 	public Map2D(Vector2 gridDims){
 		theGridMap = new Grid<MapComponent>();
 		theGridMap.init(gridDims, MapComponent.class);
+		range = new Range2D();
 	}
 	
 	public void init(Vector2 gridDims){
@@ -54,6 +55,7 @@ public class Map2D {
 	
 	public Map2D(){
 		theGridMap = new Grid<MapComponent>();
+		range = new Range2D();
 	}
 	
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
@@ -68,6 +70,7 @@ public class Map2D {
 		//TODO: Clone existing Map
 		scale = theMap.scale;
 		open = theMap.open;
+		range.copy(theMap.range);
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
 		MapComponent[][] oldGrid = oldMap.getGrid();
@@ -109,6 +112,11 @@ public class Map2D {
 		
 		Map2DParser map2dParser = new Map2DParser(this);
 		map2dParser.parseMapFile(pathToMapFile);
+		range = new Range2D(
+				new Vector2(0,0),
+				new Vector2(0, dimensions.getY()),
+				new Vector2(dimensions.getX(), 0),
+				new Vector2(dimensions.getX(), dimensions.getY()));
 		
 		
 	}

@@ -19,11 +19,16 @@ public class Range2D {
 	}
 	
 	public void setPoints(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
-		pointA = a;
-		pointB = b;
-		pointC = c;
-		pointD = d;	
+		pointA = new Vector2(a);
+		pointB = new Vector2(b);
+		pointC = new Vector2(c);
+		pointD = new Vector2(d);	
 		sortPoints();
+	}
+	
+	public void copy(Range2D src) {
+		Vector2[] p = src.getPoints();
+		setPoints(p[0],p[1],p[2],p[3]);
 	}
 	
 	public boolean containsPoint(Vector2 point){
