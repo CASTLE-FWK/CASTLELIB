@@ -77,4 +77,9 @@ public class Range2D {
 		return nr;
 		
 	}
+
+	public List<Range2D> chunkRange(int numberOfFogs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
