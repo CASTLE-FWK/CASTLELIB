@@ -3,8 +3,6 @@ package castleComponents.representations.Map2D;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.activation.MailcapCommandMap;
-
 import castleComponents.Entity;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
@@ -24,6 +22,11 @@ public class Map2D {
 	int scale = 1;
 	Vector2 dimensions;
 	
+	
+	//Map changing
+	int changeCounter = 0;
+	HashMap<Map2D, String> mapStorage;
+	
 
 	public Map2D(String name, boolean isOpen, int scale){
 		this.name = name;
@@ -31,12 +34,18 @@ public class Map2D {
 		this.scale = scale;
 		theGridMap = new Grid<MapComponent>();
 		range = new Range2D();
+		mapStorage = new HashMap<Map2D, String>();
 	}
 	
 	public Map2D(Vector2 gridDims){
 		theGridMap = new Grid<MapComponent>();
 		theGridMap.init(gridDims, MapComponent.class);
 		range = new Range2D();
+		mapStorage = new HashMap<Map2D, String>();
+	}
+	
+	public Map2D(Map2D map) {
+		//TODO
 	}
 	
 	public void init(Vector2 gridDims){
@@ -336,9 +345,35 @@ public class Map2D {
 		}
 		return str;
 	}
+	
+	public boolean changeSectionOfMap(Range2D coords, String name) {
+		boolean changeOccured = false;
+		//TODO
+		Vector2 dims = coords.getDimensions();
+		
+		//1: Store existing section of the map
+		Map2D existingMap = new Map2D();
+		
+		
+		//2: Change those
+		
+		
+		//3: Finish
+		return changeOccured;
+	}
+	public boolean changeSectionOfMap(Range2D coords, String name, Map2D newSection) {
+		boolean changeOccured = false;
+		//TODO
+		
+		//1: Store existing section of the map
+		
+		//2: Replace with new section
+		return changeOccured;
+	}
 
 }
 
 enum Outcome {
 	OUT_OF_BOUNDS, INVALID, VALID, MOVED;
 }
+

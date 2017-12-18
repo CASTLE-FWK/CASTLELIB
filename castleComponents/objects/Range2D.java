@@ -113,6 +113,12 @@ public class Range2D {
 		// TODO Auto-generated method stub
 		
 		List<Range2D> chunks = new List<Range2D>();
+		if (numberOfFogs == 1) {
+			chunks.add(this);
+			return chunks;
+		}
+		
+		
 		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
 		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
 		
