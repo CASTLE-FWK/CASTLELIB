@@ -33,6 +33,7 @@ public class Range2D {
 	public void copy(Range2D src) {
 		Vector2[] p = src.getPoints();
 		setPoints(p[0],p[1],p[2],p[3]);
+		sortPoints();
 	}
 	
 	public boolean containsPoint(Vector2 point){
@@ -70,7 +71,7 @@ public class Range2D {
 	
 	public void sortPoints(){
 		Vector2[] pts = cloneAllPoints();
-		Arrays.sort(pts, Vector2.sortByX());
+		Arrays.sort(pts, Vector2.sort());
 		pointA = pts[0];
 		pointB = pts[1];
 		pointC = pts[2];
@@ -85,6 +86,24 @@ public class Range2D {
 //		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
 		
 	}
+	
+	
+	public List<Vector2> getAllCoordPairs(){
+		//TODO
+		List<Vector2> allCoordPairs = new List<Vector2>();
+		
+		for (double i = minX; i <= maxX; i++) {
+			for (double j = minY; j <= maxY; j++) {
+				Vector2 v = new Vector2(i,j);
+				if (containsPoint(v)) {
+					allCoordPairs.add(v);
+				}
+			}
+		}
+		
+		return allCoordPairs;
+	}
+	
 	
 	public static Range2D createRange(Vector2 a, Vector2 b) {
 		Range2D nr = new Range2D();

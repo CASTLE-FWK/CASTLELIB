@@ -221,6 +221,21 @@ public class Vector2 implements java.io.Serializable {
 		};
 	}
 	
+	public static Comparator<Vector2> sort(){
+		return new Comparator<Vector2>() {
+			@Override
+			public int compare(Vector2 o1, Vector2 o2) {
+				// TODO Auto-generated method stub
+				int byX = sortByX().compare(o1, o2);
+				if (byX == 0) {
+					return sortByY().compare(o1, o2);
+				} else {
+					return byX;
+				}
+			}
+		};
+	}
+	
 	public static Comparator<Vector2> sortByY(){
 		return new Comparator<Vector2>() {
 			@Override

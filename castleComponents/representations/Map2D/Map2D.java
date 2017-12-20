@@ -67,6 +67,10 @@ public class Map2D {
 		range = new Range2D();
 	}
 	
+	public Grid<MapComponent> getTheGridMap(){
+		return theGridMap;
+	}
+	
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
@@ -346,19 +350,34 @@ public class Map2D {
 		return str;
 	}
 	
-	public boolean changeSectionOfMap(Range2D coords, String name) {
+	public boolean changeSectionOfMapToType(Range2D coords, String name, Type type) {
 		boolean changeOccured = false;
-		//TODO
 		Vector2 dims = coords.getDimensions();
-		
-		//1: Store existing section of the map
+		//1: Get all co-ord pairs from the range
+		List<Vector2> allCoords = coords.getAllCoordPairs();
+		//2: Store existing section of the map
 		Map2D existingMap = new Map2D();
+		MapComponent[][] emc = existingMap.getTheGridMap().getGrid();
 		
+		MapComponent[][] mc = theGridMap.getGrid();
 		
-		//2: Change those
+		//TODO: Time to resume
+		existingMap.init(dims);
+		for (Vector2 v : allCoords) {
+			int x = (int) v.getX();
+			int y = (int) v.getY();
+			emc[x][y].setType(mc[x][y].getType());
+		}
 		
+		//3: Change the corresponding points to 
 		
-		//3: Finish
+		for (Vector2 v : allCoords) {
+			int x = (int) v.getX();
+			int y = (int) v.getY();
+			mc[x][y].setType(type);
+		}
+		
+		//4: Finish
 		return changeOccured;
 	}
 	public boolean changeSectionOfMap(Range2D coords, String name, Map2D newSection) {
