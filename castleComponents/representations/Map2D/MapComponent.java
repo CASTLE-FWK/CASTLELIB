@@ -20,6 +20,7 @@ public class MapComponent {
 	
 	public MapComponent(){
 		containedEntities = new HashMap<String, Entity>();
+		theType = Type.UNSET;
 	}
 	
 	public MapComponent(Vector2 pos, Type t){
@@ -102,5 +103,5 @@ public class MapComponent {
 	
 }
 enum Type {
-	ROAD_H, ROAD_V, TURN_L, TURN_R, NOGO, PARK, MAP
+	ROAD_H, ROAD_V, TURN_L, TURN_R, NOGO, PARK, MAP, UNSET
 }

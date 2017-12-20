@@ -43,13 +43,18 @@ public class Map2D {
 		range = new Range2D();
 		mapStorage = new HashMap<Map2D, String>();
 	}
-	
+		
 	public Map2D(Map2D map) {
 		//TODO
 	}
 	
 	public void init(Vector2 gridDims){
 		theGridMap.init(gridDims, MapComponent.class);
+		theGridMap.initializeAllCells(new MapComponent());
+	}
+	
+	public void initializeEmptyMap() {
+		theGridMap.initializeAllCells(new MapComponent());
 	}
 	
 	public void setRange(Range2D r){
@@ -350,26 +355,34 @@ public class Map2D {
 		return str;
 	}
 	
-	public boolean changeSectionOfMapToType(Range2D coords, String name, Type type) {
-		boolean changeOccured = false;
+	public Map2D extractMapSection(Range2D coords) {
 		Vector2 dims = coords.getDimensions();
 		//1: Get all co-ord pairs from the range
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		//2: Store existing section of the map
-		Map2D existingMap = new Map2D();
-		MapComponent[][] emc = existingMap.getTheGridMap().getGrid();
+		Map2D existingMap = new Map2D(dims);
+				
+		existingMap.init(dims);
+		for (Vector2 v : allCoords) {
+			
+			MapComponent mcc = existingMap.getMapComponent(v);
+				mcc.setType(getMapComponent(v)
+				.getType());
+		}
+		
+		return existingMap;
+	}
+	
+	public boolean changeSectionOfMapToType(Range2D coords, String name, Type type) {
+		boolean changeOccured = false;
+		Vector2 dims = coords.getDimensions();
+		List<Vector2> allCoords = coords.getAllCoordPairs();
 		
 		MapComponent[][] mc = theGridMap.getGrid();
 		
-		//TODO: Time to resume
-		existingMap.init(dims);
-		for (Vector2 v : allCoords) {
-			int x = (int) v.getX();
-			int y = (int) v.getY();
-			emc[x][y].setType(mc[x][y].getType());
-		}
+
 		
-		//3: Change the corresponding points to 
+		//3: Change the corresponding points to type
 		
 		for (Vector2 v : allCoords) {
 			int x = (int) v.getX();
@@ -380,11 +393,12 @@ public class Map2D {
 		//4: Finish
 		return changeOccured;
 	}
-	public boolean changeSectionOfMap(Range2D coords, String name, Map2D newSection) {
+	public boolean replaceSectionOfMap(Range2D coords, Map2D newSection) {
 		boolean changeOccured = false;
 		//TODO
 		
 		//1: Store existing section of the map
+		System.out.println("MAGICS");
 		
 		//2: Replace with new section
 		return changeOccured;

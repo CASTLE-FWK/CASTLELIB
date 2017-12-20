@@ -40,4 +40,5 @@ public class List<T> extends ArrayList<T>{
 	public T peek() {
 		return super.get(0);
 	}
+	
 }

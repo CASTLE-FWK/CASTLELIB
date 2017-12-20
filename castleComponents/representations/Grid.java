@@ -86,6 +86,12 @@ public class Grid<E> implements Representation<E>{
 		}
 	}
 	
+	public void setEntityAtPos(Vector2 pos, E e) {
+		int x = (int)pos.getX();
+		int y = (int)pos.getY();
+		grid[x][y] = e;
+	}
+	
 	public E getEntityAtPos(Vector2 pos){
 		int x = (int)pos.getX();
 		int y = (int)pos.getY();
@@ -148,8 +154,13 @@ public class Grid<E> implements Representation<E>{
 //		System.out.println("GRID INIT FUNCTION CALL");
 	}
 	
-	public void initCells(Object... objs){
-		
+	public void initializeAllCells(E e){
+		E[][] gGrid = getGrid();
+		for (int i = 0; i < gGrid[0].length; i++) {
+			for (int j = 0; j < gGrid.length; j++) {
+				grid[j][i] = e;
+			}
+		}
 	}
 	
 	public void place() {
