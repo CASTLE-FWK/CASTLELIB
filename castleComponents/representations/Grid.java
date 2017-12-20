@@ -123,7 +123,6 @@ public class Grid<E> implements Representation<E>{
 			Y = 1;
 		}
 		theClass = (Class<E>) this.layoutParameters.getEntityType();
-		System.out.println(theClass.toString());
 		//Allow the grid to store Entities of the type specified in the layout parameters
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
@@ -145,7 +144,6 @@ public class Grid<E> implements Representation<E>{
 		if (Y == 0){
 			Y = 1;
 		}
-		System.out.println(theClass.toString());
 		//Allow the grid to store Entities of the type specified in the layout parameters
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;

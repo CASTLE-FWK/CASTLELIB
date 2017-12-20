@@ -80,7 +80,6 @@ public class Map2D {
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
 		System.out.println("Map2D file initialized with name "+name+" and dims "+dimensions.toString());
-		System.out.println(getMapComponent(new Vector2(0,0)));
 	}
 	
 	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {

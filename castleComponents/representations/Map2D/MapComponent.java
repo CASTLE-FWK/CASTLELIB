@@ -102,6 +102,3 @@ public class MapComponent {
 	}
 	
 }
-enum Type {
-	ROAD_H, ROAD_V, TURN_L, TURN_R, NOGO, PARK, MAP, UNSET
-}
