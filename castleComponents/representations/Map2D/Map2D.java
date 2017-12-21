@@ -372,34 +372,27 @@ public class Map2D {
 		return existingMap;
 	}
 	
+	public void changeMapComponentType(Vector2 coords, Type type) {
+		getMapComponent(coords).setType(type);
+	}
+	
 	public boolean changeSectionOfMapToType(Range2D coords, String name, Type type) {
 		boolean changeOccured = false;
-		Vector2 dims = coords.getDimensions();
 		List<Vector2> allCoords = coords.getAllCoordPairs();
-		
-		MapComponent[][] mc = theGridMap.getGrid();
-		
-
-		
-		//3: Change the corresponding points to type
-		
 		for (Vector2 v : allCoords) {
-			int x = (int) v.getX();
-			int y = (int) v.getY();
-			mc[x][y].setType(type);
+			changeMapComponentType(v, type);
 		}
-		
-		//4: Finish
 		return changeOccured;
 	}
 	public boolean replaceSectionOfMap(Range2D coords, Map2D newSection) {
 		boolean changeOccured = false;
 		//TODO
-		
-		//1: Store existing section of the map
+		List<Vector2> allCoords = coords.getAllCoordPairs();
+		for (Vector2 v : allCoords) {
+			changeMapComponentType(v, newSection.getMapComponent(v).getType());
+		}
 		System.out.println("MAGICS");
 		
-		//2: Replace with new section
 		return changeOccured;
 	}
 
