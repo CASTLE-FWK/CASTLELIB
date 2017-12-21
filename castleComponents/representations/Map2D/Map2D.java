@@ -80,6 +80,7 @@ public class Map2D {
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
 		System.out.println("Map2D file initialized with name "+name+" and dims "+dimensions.toString());
+		System.out.println(printMap());
 	}
 	
 	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {
@@ -168,6 +169,7 @@ public class Map2D {
 		}
 		
 		if (isNoGo(pos)){
+			System.out.println("ENTITY "+e.getEntityID().toString()+" IS IN A NOGO");
 			return Outcome.INVALID;
 		}
 
@@ -186,6 +188,7 @@ public class Map2D {
 	}
 	
 	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel){
+		Vector2 unitVector = vel.getUnitVector();
 		Vector2 newPos = pos.add(vel);
 		return moveTo(e,newPos).toString();		
 	}
@@ -322,9 +325,9 @@ public class Map2D {
 	public String printMap(){
 		String str = "";
 		MapComponent[][] mc = theGridMap.getGrid();
-		for (int i = 0; i < mc.length; i++){
-			for (int j = 0; j < mc[i].length; j++){
-				Type currType = mc[i][j].getType();
+		for (int i = 0; i < mc[0].length; i++){
+			for (int j = 0; j < mc.length; j++){
+				Type currType = mc[j][i].getType();
 				switch (currType){
 					case NOGO:
 						str += Map2DParser.NOGO;

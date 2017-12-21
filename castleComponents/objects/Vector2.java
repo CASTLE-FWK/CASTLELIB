@@ -108,14 +108,16 @@ public class Vector2 implements java.io.Serializable {
 		return (this.x * v.x + this.y * v.y);
 	}
 	
-	public void multiply(double mult){
+	public Vector2 multiply(double mult){
 		this.x = this.x * mult;
 		this.y = this.y * mult;
+		return this;
 	}
 	
-	public void divide(double divide){
+	public Vector2 divide(double divide){
 		this.x = this.x / divide;
 		this.y = this.y / divide;
+		return this;
 	}
 	
 	public double getX(){
@@ -134,6 +136,9 @@ public class Vector2 implements java.io.Serializable {
 		y = Y;
 	}
 	
+	public Vector2 getUnitVector() {
+		return new Vector2(getX() / Math.abs(getX()), getY() / Math.abs(getY()));
+	}
 	public int getMultipleAsInt(){
 		return (int)(x * y);
 	}
