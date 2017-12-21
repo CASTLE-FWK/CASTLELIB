@@ -22,6 +22,13 @@ public class Range2D {
 		copy(r);
 	}
 	
+	public void shiftByVector(Vector2 v) {
+		pointA.add(v);
+		pointB.add(v);
+		pointC.add(v);
+		pointD.add(v);
+	}
+	
 	public void setPoints(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
 		pointA = new Vector2(a);
 		pointB = new Vector2(b);
