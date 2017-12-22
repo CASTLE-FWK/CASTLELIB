@@ -27,6 +27,7 @@ public class Range2D {
 		pointB.add(v);
 		pointC.add(v);
 		pointD.add(v);
+		sortPoints();
 	}
 	
 	public void setPoints(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
@@ -47,7 +48,7 @@ public class Range2D {
 		double x = point.getX();
 		double y = point.getY();
 		boolean isInX = (x >= minX && x <= maxX);
-		boolean isInY = (y >= minY && x <= maxY);
+		boolean isInY = (y >= minY && y <= maxY);
 		return (isInX && isInY);		
 	}
 	
@@ -84,16 +85,12 @@ public class Range2D {
 		pointC = pts[2];
 		pointD = pts[3];
 		
-		
-		
 		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
 		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
 		
 		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
 		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
-		
 	}
-	
 	
 	public List<Vector2> getAllCoordPairs(){
 		List<Vector2> allCoordPairs = new List<Vector2>();
@@ -182,5 +179,9 @@ public class Range2D {
 		
 		
 		return chunks;
+	}
+	
+	public String toString() {
+		return "<"+pointA.toString()+","+pointB.toString()+","+pointC.toString()+","+pointD.toString()+">";
 	}
 }

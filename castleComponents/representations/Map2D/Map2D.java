@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import castleComponents.Entity;
+import castleComponents.EntityID;
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
@@ -40,7 +41,7 @@ public class Map2D {
 		theGridMap = new Grid<MapComponent>();
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
-		range = new Range2D();
+		range = Range2D.createRange(new Vector2(0,0), getDimensions());
 		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
@@ -60,10 +61,6 @@ public class Map2D {
 		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
-	public Vector2 getDimensions() {
-		return dimensions; // TODO Make sure this gets set
-	}
-
 	public void init(Vector2 gridDims) {
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
@@ -73,21 +70,7 @@ public class Map2D {
 	public void initializeEmptyMap() {
 		theGridMap.initializeAllCells(new MapComponent());
 	}
-
-	public void setRange(Range2D r) {
-		this.range = r;
-		// Apply this to Grid
-	}
-
-	public void setRange(Vector2 a, Vector2 b, Vector2 c, Vector2 d) {
-		range = new Range2D(a, b, c, d);
-		// Apply this to Grid
-	}
-
-	public Grid<MapComponent> getTheGridMap() {
-		return theGridMap;
-	}
-
+	
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
@@ -98,9 +81,9 @@ public class Map2D {
 
 	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {
 		setDimensions(gridDims);
-		scale = theMap.scale;
-		open = theMap.open;
-		range.copy(theMap.range);
+		scale = theMap.getScale();
+		open = theMap.isOpen();
+		range = new Range2D(theMap.getRange());
 		theGridMap.init(gridDims, MapComponent.class);
 		
 		Grid<MapComponent> oldMap = theMap.theGridMap;
@@ -113,6 +96,25 @@ public class Map2D {
 		}
 		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
 	}
+
+	public Vector2 getDimensions() {
+		return dimensions; // TODO Make sure this gets set
+	}
+	
+	public void setRange(Range2D r) {
+		this.range = new Range2D(r);
+		// Apply this to Grid
+	}
+
+	public void setRange(Vector2 a, Vector2 b, Vector2 c, Vector2 d) {
+		range = new Range2D(a, b, c, d);
+		// Apply this to Grid
+	}
+
+	public Grid<MapComponent> getTheGridMap() {
+		return theGridMap;
+	}
+
 
 	public void createSubMaps(int numberOfSections) {
 		// How to divide a grid into X evenly sized chunks
@@ -193,14 +195,27 @@ public class Map2D {
 		return (Entity) mapComponents.get(0).getContainedEntities().values().toArray()[0];
 	}
 	
-//	public Entity getEn
+	public Entity getEntityFromID(EntityID eid) {
+		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
+		for (MapComponent mc : mapComponents) {
+			for (Entity e : mc.getContainedEntitiesAsList()) {
+				if (e.getEntityID().equals(eid)){
+					return e;
+				}
+			}
+		}
+		return null;
+	}
 
 	// This should return states
 	public Outcome moveTo(Entity e, Vector2 pos) {
 		// Move an entity to a particular location
+		System.out.println("pos: "+pos.toString());
+		System.out.println("range: "+range.toString());
 		if (!range.containsPoint(pos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
+		System.out.println("90aa");
 
 		if (isNoGo(pos)) {
 			System.out.println("ENTITY " + e.getEntityID().toString() + " IS IN A NOGO");
