@@ -330,7 +330,6 @@ public class Grid<E> implements Representation<E>{
 	
 	public List<E> getNeighbours(int x, int y, int depth){
 		ArrayList<E> neighbours = new ArrayList<E>();
-		System.out.println(" get neighbours call: X,Y: "+this.X+","+this.Y);
 		neighbours.add(getNeighbour_U(x, y));
 		neighbours.add(getNeighbour_UR(x, y));
 		neighbours.add(getNeighbour_R(x, y));
@@ -462,16 +461,20 @@ public class Grid<E> implements Representation<E>{
 
 	public E getNeighbour_U(int x, int y){
 		if (allowPhantoms){
-			
 			if (y == 0){				
 				return phantoms_U[x];
 			} else {
 				return grid[x][y-1];
 			}
 		} else {
+			if (y >= Y || y < 0 || x >= X || x < 0) {
+				return null;
+			}
+			
 			if (y == 0){
 				return grid[x][Y-1];
 			} else {
+				System.out.println("x: "+x);
 				return grid[x][y-1];
 			}	
 		}
@@ -486,6 +489,10 @@ public class Grid<E> implements Representation<E>{
 		if (gy == -1){
 			gy = Y - 1;
 		}
+		if (y >= Y || y < 0 || x >= X || x < 0) {
+			return null;
+		}
+		
 		if (allowPhantoms){
 			if (x + 1 == X && y - 1 == -1){
 //				System.out.println("UR: "+ phantoms_UR[0]+"  |  "+grid[gx][gy]);
@@ -511,7 +518,10 @@ public class Grid<E> implements Representation<E>{
 			} else {
 				return grid[x+1][y];
 			}
-		} else { 
+		} else {
+			if (y >= Y || y < 0 || x >= X || x < 0) {
+				return null;
+			}
 			if (x == X-1){			
 				return grid[0][y];
 			} else {
@@ -528,6 +538,9 @@ public class Grid<E> implements Representation<E>{
 		}
 		if (gy == Y){
 			gy = 0;
+		}
+		if (y >= Y || y < 0 || x >= X || x < 0) {
+			return null;
 		}
 		if (allowPhantoms){
 			if (x + 1 == X && y+1 == Y){
@@ -554,6 +567,9 @@ public class Grid<E> implements Representation<E>{
 				return grid[x][y+1];
 			}
 		} else {
+			if (y >= Y || y < 0 || x >= X || x < 0) {
+				return null;
+			}
 			if (y == Y - 1){
 				return grid[x][0];
 			} else {
@@ -570,6 +586,9 @@ public class Grid<E> implements Representation<E>{
 		}
 		if (gy == Y){
 			gy = 0;
+		}
+		if (y >= Y || y < 0 || x >= X || x < 0) {
+			return null;
 		}
 		if (allowPhantoms){
 			if (x - 1 == -1 && y + 1 == Y){
@@ -600,7 +619,10 @@ public class Grid<E> implements Representation<E>{
 			} else {
 				return grid[x-1][y];
 			}
-		} else {		
+		} else {	
+			if (y >= Y || y < 0 || x >= X || x < 0) {
+				return null;
+			}
 			if (x == 0){
 				return grid[X-1][y];
 			} else {
@@ -617,6 +639,9 @@ public class Grid<E> implements Representation<E>{
 		}
 		if (gy == -1){
 			gy = Y-1;
+		}
+		if (y >= Y || y < 0 || x >= X || x < 0) {
+			return null;
 		}
 		if (allowPhantoms){
 			if (x - 1 == -1 && y - 1 == -1){

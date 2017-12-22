@@ -3,6 +3,8 @@ package castleComponents.representations.Map2D;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.sun.org.apache.xml.internal.serialize.XHTMLSerializer;
+
 import castleComponents.Entity;
 import castleComponents.EntityID;
 import castleComponents.objects.Range2D;
@@ -41,7 +43,7 @@ public class Map2D {
 		theGridMap = new Grid<MapComponent>();
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
-		range = Range2D.createRange(new Vector2(0,0), getDimensions());
+		range = Range2D.createRange(new Vector2(0,0), getSize());
 		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
@@ -50,7 +52,7 @@ public class Map2D {
 		name = map.getName();
 		open = map.isOpen();
 		scale = map.getScale();
-		setDimensions(map.getDimensions());
+		setDimensions(map.getSize());
 		theGridMap = new Grid<MapComponent>();
 		subMapStorage = new HashMap<String, SubMapStore>();
 	}
@@ -76,7 +78,7 @@ public class Map2D {
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
 		System.out.println("Map2D file initialized with name " + name + " and dims " + dimensions.toString());
-//		System.out.println(printMap());
+		System.out.println(printMap());
 	}
 
 	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {
@@ -121,14 +123,17 @@ public class Map2D {
 		int xChunkSize = (int) (dimensions.getX() / numberOfSections);
 		int yChunkSize = (int) (dimensions.getY() / numberOfSections);
 		
-		
+		System.out.println("xcs: " + dimensions.getX());
 		int prevX = 0;
 		int prevY = 0;
 		int nextX = xChunkSize;
 		int nextY = yChunkSize;
 		for (int i = 0; i < numberOfSections; i++) {
-			Range2D grabRange = new Range2D(new Vector2(prevX, prevY), new Vector2(prevX, nextY),
-					new Vector2(nextX, nextY), new Vector2(nextX, prevY));
+			Range2D grabRange = new Range2D(
+					new Vector2(prevX, prevY), 
+					new Vector2(prevX, nextY),
+					new Vector2(nextX, nextY), 
+					new Vector2(nextX, prevY));
 			Map2D sub = extractMapSection(grabRange);
 			String smName = name + "_submap_" + i;
 			subMapStorage.put(smName, new SubMapStore(sub, smName, grabRange));
@@ -159,16 +164,15 @@ public class Map2D {
 
 		Map2DParser map2dParser = new Map2DParser(this);
 		map2dParser.parseMapFile(pathToMapFile);
-		range = Range2D.createRange(new Vector2(0, 0), dimensions);
+		range = Range2D.createRange(new Vector2(0, 0), getSize());
 	}
 
 	public Vector2 getPositionOfEntity(Entity e) {
 		// Find entity and return its position
 		// Cycle through grid, and check with each containedEntities map
 		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
-		String eID = e.getID();
 		for (MapComponent mc : mapComponents) {
-			if (mc.checkForEntity(eID)) {
+			if (mc.checkForEntity(e.getEntityID())) {
 				return mc.getPosition();
 			}
 		}
@@ -207,15 +211,19 @@ public class Map2D {
 		return null;
 	}
 
+	public Outcome initialEntityMove(Entity e, Vector2 pos) {
+		MapComponent mc = getMapComponent(pos);
+		mc.addEntity(e);
+		return Outcome.VALID;
+	}
+	
 	// This should return states
 	public Outcome moveTo(Entity e, Vector2 pos) {
 		// Move an entity to a particular location
 		System.out.println("pos: "+pos.toString());
-		System.out.println("range: "+range.toString());
-		if (!range.containsPoint(pos)) {
+		if (!range.containsIndexPoint(pos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
-		System.out.println("90aa");
 
 		if (isNoGo(pos)) {
 			System.out.println("ENTITY " + e.getEntityID().toString() + " IS IN A NOGO");
@@ -251,10 +259,14 @@ public class Map2D {
 
 	// This is a total range (i.e. 360° vis)
 	public int countEntitiesInRange(Vector2 pos, int range) {
+		
+		
 		List<MapComponent> mcs = new List<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
 		HashSet<Entity> ents = new HashSet<Entity>();
 		for (MapComponent mc : mcs) {
-			ents.addAll(mc.getContainedEntitiesAsList());
+			if (mc != null) {
+				ents.addAll(mc.getContainedEntitiesAsList());
+			}
 		}
 		return ents.size();
 	}
@@ -279,7 +291,7 @@ public class Map2D {
 
 	// How do we add Maps in Maps and still be able to retrieve these submaps
 	public void addSubMap(Vector2 topLeft, Map2D theSubMap) {
-		Vector2 size = theSubMap.getDimensions();
+		Vector2 size = theSubMap.getSize();
 		// Is the subMap + its setting position to big for the current map?
 		// TODO
 		// Place the submap in
@@ -385,9 +397,9 @@ public class Map2D {
 	}
 
 	public void setDimensions(Vector2 v) {
-//		this.size = new Vector2(v);
-//		this.dimensions = new Vector2(v).subtract(new Vector2(1,1));
-		this.dimensions = new Vector2(v);
+		this.size = new Vector2(v);
+		this.dimensions = new Vector2(v).subtract(new Vector2(1,1));
+//		this.dimensions = new Vector2(v);
 	}
 
 	public boolean validateDimensions() {
@@ -402,7 +414,7 @@ public class Map2D {
 
 	public String getInformation() {
 		return "----Map2D Information----\nName: " + name + "\nisOpen: " + open + "\nsScale: " + scale
-				+ "\nDimensions: " + dimensions.toString();
+				+ "\nDimensions: " + size.toString();
 	}
 
 	public String printMap() {
@@ -441,20 +453,23 @@ public class Map2D {
 	}
 
 	public Map2D extractMapSection(Range2D coords) {
-		Vector2 dims = coords.getDimensions();
-//		Vector2 size = coords.getSize();
+		//Make a blank Map2D the same size as the existing one
+		Map2D existingMap = new Map2D(getSize());
+		existingMap.init(getSize());
+//		System.out.println("size: "+getSize());
 		// 1: Get all co-ord pairs from the range
-		List<Vector2> allCoords = coords.getAllIndexCoordPairs();
+		List<Vector2> allCoords = coords.getAllCoordPairs();
 		// 2: Store existing section of the map
-		Map2D existingMap = new Map2D(dims);
+//		Map2D existingMap = new Map2D(dims);
 
-		existingMap.init(dims);
+//		existingMap.init(dims);
 		for (Vector2 v : allCoords) {
 
 			MapComponent mcc = existingMap.getMapComponent(v);
 			mcc.setType(getMapComponent(v).getType());
 		}
-
+//		System.out.println("existing: "+existingMap.printMap());
+		
 		return existingMap;
 	}
 
@@ -476,9 +491,12 @@ public class Map2D {
 		// TODO
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		for (Vector2 v : allCoords) {
-			changeMapComponentType(v, newSection.getMapComponent(v).getType());
+			changeMapComponentType(v, 
+					newSection.getMapComponent(v)
+					.getType());
 		}
-		System.out.println("MAGICS");
+		System.out.println("MAGICS: "+allCoords.size());
+		System.out.println(printMap());
 
 		return changeOccured;
 	}

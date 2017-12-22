@@ -51,6 +51,13 @@ public class Range2D {
 		boolean isInY = (y >= minY && y <= maxY);
 		return (isInX && isInY);		
 	}
+	public boolean containsIndexPoint(Vector2 point){
+		double x = point.getX();
+		double y = point.getY();
+		boolean isInX = (x >= minX && x < maxX);
+		boolean isInY = (y >= minY && y < maxY);
+		return (isInX && isInY);		
+	}
 	
 	//I think this will be correct
 	public Vector2 getDimensions(){

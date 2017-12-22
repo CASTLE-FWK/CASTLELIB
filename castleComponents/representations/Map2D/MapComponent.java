@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import castleComponents.Entity;
+import castleComponents.EntityID;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 
@@ -97,8 +98,8 @@ public class MapComponent {
 		}
 	}
 	
-	public boolean checkForEntity(String eID){
-		return containedEntities.containsKey(eID);
+	public boolean checkForEntity(EntityID eID){
+		return containedEntities.containsKey(eID.toString());
 	}
 	
 }

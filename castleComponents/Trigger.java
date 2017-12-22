@@ -142,4 +142,8 @@ public class Trigger {
 	public String getTriggerID(){
 		return triggerID;
 	}
+	public void kill() {
+		timeToLive = -1;
+		repeatable = false;
+	}
 }

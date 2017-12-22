@@ -70,7 +70,7 @@ public class Map2DParser {
 							double x = Double.parseDouble(line.split("<")[1].split(",")[0]);
 							double y = Double.parseDouble(line.split("<")[1].split(",")[1].split(">")[0]);
 							dimensions = new Vector2(x,y);
-							theMapToStore.setDimensions(dimensions);
+							System.out.println("parse: "+dimensions.toString());
 							theMapToStore.init(dimensions);
 							currState = ParseState.OPEN;
 						} else {
