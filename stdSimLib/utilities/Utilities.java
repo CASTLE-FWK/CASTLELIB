@@ -213,7 +213,7 @@ public class Utilities {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static List<?> getMapAsList(HashMap<?,?> theMap){
+	public static ArrayList<?> getMapAsList(HashMap<?,?> theMap){
 		return new ArrayList(theMap.values());
 	}
 	

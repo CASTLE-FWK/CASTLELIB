@@ -21,10 +21,11 @@ public class Map2D {
 	boolean open = false;
 	int scale = 1;
 	Vector2 dimensions;
+	Vector2 size;
 
 	// Map changing
 	int changeCounter = 0;
-	HashMap<String, SubMapStorage> subMapStorage;
+	HashMap<String, SubMapStore> subMapStorage;
 
 	public Map2D(String name, boolean isOpen, int scale) {
 		this.name = name;
@@ -32,18 +33,31 @@ public class Map2D {
 		this.scale = scale;
 		theGridMap = new Grid<MapComponent>();
 		range = new Range2D();
-		subMapStorage = new HashMap<String, SubMapStorage>();
+		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Map2D(Vector2 gridDims) {
 		theGridMap = new Grid<MapComponent>();
+		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
 		range = new Range2D();
-		subMapStorage = new HashMap<String, SubMapStorage>();
+		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Map2D(Map2D map) {
-		// TODO
+		range = new Range2D(map.getRange());
+		name = map.getName();
+		open = map.isOpen();
+		scale = map.getScale();
+		setDimensions(map.getDimensions());
+		theGridMap = new Grid<MapComponent>();
+		subMapStorage = new HashMap<String, SubMapStore>();
+	}
+
+	public Map2D() {
+		theGridMap = new Grid<MapComponent>();
+		range = new Range2D();
+		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Vector2 getDimensions() {
@@ -51,6 +65,7 @@ public class Map2D {
 	}
 
 	public void init(Vector2 gridDims) {
+		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
 		theGridMap.initializeAllCells(new MapComponent());
 	}
@@ -69,28 +84,25 @@ public class Map2D {
 		// Apply this to Grid
 	}
 
-	public Map2D() {
-		theGridMap = new Grid<MapComponent>();
-		range = new Range2D();
-	}
-
 	public Grid<MapComponent> getTheGridMap() {
 		return theGridMap;
 	}
 
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
+		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
 		System.out.println("Map2D file initialized with name " + name + " and dims " + dimensions.toString());
-		System.out.println(printMap());
+//		System.out.println(printMap());
 	}
 
 	public void initialize(Vector2 gridDims, Map2D theMap, LayoutParameters lp) {
-		theGridMap.init(gridDims, MapComponent.class);
-		// TODO: Clone existing Map
+		setDimensions(gridDims);
 		scale = theMap.scale;
 		open = theMap.open;
 		range.copy(theMap.range);
+		theGridMap.init(gridDims, MapComponent.class);
+		
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
 		MapComponent[][] oldGrid = oldMap.getGrid();
@@ -99,14 +111,15 @@ public class Map2D {
 				theGridMap.getGrid()[j][i] = new MapComponent(oldGrid[j][i]);
 			}
 		}
-
 		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
 	}
-	
+
 	public void createSubMaps(int numberOfSections) {
 		// How to divide a grid into X evenly sized chunks
 		int xChunkSize = (int) (dimensions.getX() / numberOfSections);
 		int yChunkSize = (int) (dimensions.getY() / numberOfSections);
+		
+		
 		int prevX = 0;
 		int prevY = 0;
 		int nextX = xChunkSize;
@@ -115,12 +128,30 @@ public class Map2D {
 			Range2D grabRange = new Range2D(new Vector2(prevX, prevY), new Vector2(prevX, nextY),
 					new Vector2(nextX, nextY), new Vector2(nextX, prevY));
 			Map2D sub = extractMapSection(grabRange);
-			String smName = name+"_submap_"+i;
-			subMapStorage.put(smName, new SubMapStorage(sub, smName, grabRange));
+			String smName = name + "_submap_" + i;
+			subMapStorage.put(smName, new SubMapStore(sub, smName, grabRange));
 		}
-	
+//		System.out.println("size of submapstorage; "+ subMapStorage.size());
 	}
-	
+
+	public List<Map2D> getSubMapsAsList() {
+		List<SubMapStore> subMapsst = new List<SubMapStore>(subMapStorage.values());
+		List<Map2D> subMaps = new List<Map2D>();
+		for (SubMapStore sms : subMapsst) {
+			subMaps.add(sms.getMap());
+		}
+		return subMaps;
+	}
+
+	public List<Range2D> getSubMapRangesAsList() {
+		List<SubMapStore> subMapsst = new List<SubMapStore>(subMapStorage.values());
+		List<Range2D> subMapRanges = new List<Range2D>();
+		for (SubMapStore sms : subMapsst) {
+			subMapRanges.add(sms.getR2d());
+		}
+		return subMapRanges;
+	}
+
 	public void importMap(String pathToMapFile) {
 		// Make sure this Map is initialized and clean
 
@@ -161,6 +192,8 @@ public class Map2D {
 		}
 		return (Entity) mapComponents.get(0).getContainedEntities().values().toArray()[0];
 	}
+	
+//	public Entity getEn
 
 	// This should return states
 	public Outcome moveTo(Entity e, Vector2 pos) {
@@ -241,13 +274,13 @@ public class Map2D {
 		nr2d.shiftByVector(topLeft);
 		// Contains submaps option?
 		// HashMap with
-		SubMapStorage sms = new SubMapStorage(theSubMap, theSubMap.getName(), nr2d);
+		SubMapStore sms = new SubMapStore(theSubMap, theSubMap.getName(), nr2d);
 		subMapStorage.put(theSubMap.getName(), sms);
 	}
 
 	public Map2D findSubMapFromVector(Vector2 v) {
-		List<SubMapStorage> smsList = (List<SubMapStorage>) Utilities.getMapAsList(subMapStorage);
-		for (SubMapStorage sms : smsList) {
+		List<SubMapStore> smsList = new List<SubMapStore>(subMapStorage.values());
+		for (SubMapStore sms : smsList) {
 			if (sms.containsPoint(v)) {
 				return sms.getMap();
 			}
@@ -268,7 +301,7 @@ public class Map2D {
 	}
 
 	public Map2D getMapSection(Vector2 pos) {
-		return getMapComponent(pos).getMap();
+		return findSubMapFromVector(pos);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -284,6 +317,14 @@ public class Map2D {
 	public boolean addEntity(Entity e, Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
 		return m.addEntity(e);
+	}
+
+	public void addEntityOverRange(Entity e, Range2D r2d) {
+		List<Vector2> allCoordPairs = r2d.getAllIndexCoordPairs();
+		for (Vector2 v : allCoordPairs) {
+			addEntity(e, v);
+		}
+
 	}
 
 	public Park getParkAtPosition(Vector2 pos) {
@@ -329,6 +370,8 @@ public class Map2D {
 	}
 
 	public void setDimensions(Vector2 v) {
+//		this.size = new Vector2(v);
+//		this.dimensions = new Vector2(v).subtract(new Vector2(1,1));
 		this.dimensions = new Vector2(v);
 	}
 
@@ -384,8 +427,9 @@ public class Map2D {
 
 	public Map2D extractMapSection(Range2D coords) {
 		Vector2 dims = coords.getDimensions();
+//		Vector2 size = coords.getSize();
 		// 1: Get all co-ord pairs from the range
-		List<Vector2> allCoords = coords.getAllCoordPairs();
+		List<Vector2> allCoords = coords.getAllIndexCoordPairs();
 		// 2: Store existing section of the map
 		Map2D existingMap = new Map2D(dims);
 
@@ -423,18 +467,49 @@ public class Map2D {
 
 		return changeOccured;
 	}
+
+	public int getChangeCounter() {
+		return changeCounter;
+	}
+
+	public void setChangeCounter(int changeCounter) {
+		this.changeCounter = changeCounter;
+	}
+
+	public HashMap<String, SubMapStore> getSubMapStorage() {
+		return subMapStorage;
+	}
+
+	public void setSubMapStorage(HashMap<String, SubMapStore> subMapStorage) {
+		this.subMapStorage = subMapStorage;
+	}
+
+	public boolean isOpen() {
+		return open;
+	}
+
+	public int getScale() {
+		return scale;
+	}
+
+	public void setTheGridMap(Grid<MapComponent> theGridMap) {
+		this.theGridMap = theGridMap;
+	}
+	public Vector2 getSize() {
+		return size;
+	}
 }
 
 enum Outcome {
 	OUT_OF_BOUNDS, INVALID, VALID, MOVED;
 }
 
-class SubMapStorage {
+class SubMapStore {
 	Map2D map;
 	String name;
 	Range2D r2d;
 
-	public SubMapStorage(Map2D map, String name, Range2D r2d) {
+	public SubMapStore(Map2D map, String name, Range2D r2d) {
 		this.map = map;
 		this.name = name;
 		this.r2d = r2d;

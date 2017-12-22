@@ -127,8 +127,8 @@ public class Grid<E> implements Representation<E>{
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
 		
-		
-//		System.out.println("GRID INIT FUNCTION CALL");
+//		System.out.println("size: "+getDimensions().toString());
+//		System.out.println("GRID INIT FUNCTION CALLA");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -148,8 +148,8 @@ public class Grid<E> implements Representation<E>{
 		final E[][] grid = (E[][]) Array.newInstance(theClass, X,Y);		
 		this.grid = grid;
 		
-		
-//		System.out.println("GRID INIT FUNCTION CALL");
+//		System.out.println("size: "+getDimensions().toString());
+//		System.out.println("GRID INIT FUNCTION CALLB");
 	}
 	
 	public void initializeAllCells(E e){
@@ -330,6 +330,7 @@ public class Grid<E> implements Representation<E>{
 	
 	public List<E> getNeighbours(int x, int y, int depth){
 		ArrayList<E> neighbours = new ArrayList<E>();
+		System.out.println(" get neighbours call: X,Y: "+this.X+","+this.Y);
 		neighbours.add(getNeighbour_U(x, y));
 		neighbours.add(getNeighbour_UR(x, y));
 		neighbours.add(getNeighbour_R(x, y));
@@ -743,7 +744,14 @@ public class Grid<E> implements Representation<E>{
 
 	@Override
 	public List<E> getEntities() {
-		return (List<E>) allContainedEntities;
+		List<E> entities = new ArrayList<E>();
+		for (int i = 0; i < X; i ++) {
+			for (int j = 0 ; j < Y; j++) {
+				entities.add(getEntityAtXY(i, j));
+			}
+		}
+		
+		return (List<E>) entities;
 	}
 
 	@Override

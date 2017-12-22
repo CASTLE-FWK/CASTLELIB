@@ -86,21 +86,43 @@ public class Range2D {
 		
 		
 		
-//		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
-//		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
-//		
-//		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
-//		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
+		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
+		
+		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
+		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
 		
 	}
 	
 	
 	public List<Vector2> getAllCoordPairs(){
-		//TODO
 		List<Vector2> allCoordPairs = new List<Vector2>();
 		
 		for (double i = minX; i <= maxX; i++) {
 			for (double j = minY; j <= maxY; j++) {
+				Vector2 v = new Vector2(i,j);
+				if (containsPoint(v)) {
+					allCoordPairs.add(v);
+				}
+			}
+		}
+		
+		return allCoordPairs;
+	}
+	
+	public List<Vector2> getAllIndexCoordPairs(){
+		List<Vector2> allCoordPairs = new List<Vector2>();
+		
+		int miX = 0, miY = 0;
+		if (minX > miX) {
+			miX = (int) (minX - 1);
+		}
+		if (miY > miY) {
+			miY = (int) (minY - 1);
+		}
+		
+		for (double i = minX; i < maxX; i++) {
+			for (double j = minY; j < maxY; j++) {
 				Vector2 v = new Vector2(i,j);
 				if (containsPoint(v)) {
 					allCoordPairs.add(v);
