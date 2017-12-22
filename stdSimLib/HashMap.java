@@ -1,6 +1,8 @@
 package stdSimLib;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import castleComponents.objects.List;
 
@@ -48,6 +50,10 @@ public class HashMap<K,T> {
 	public List<K> getKeys(){
 		return new List<K>(theMap.keySet());
 		
+	}
+
+	public List<T> values() {
+		return new List<T>(theMap.values());
 	}
 	
 	

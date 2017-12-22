@@ -123,7 +123,6 @@ public class Map2D {
 		int xChunkSize = (int) (dimensions.getX() / numberOfSections);
 		int yChunkSize = (int) (dimensions.getY() / numberOfSections);
 		
-		System.out.println("xcs: " + dimensions.getX());
 		int prevX = 0;
 		int prevY = 0;
 		int nextX = xChunkSize;
@@ -488,7 +487,6 @@ public class Map2D {
 
 	public boolean replaceSectionOfMap(Range2D coords, Map2D newSection) {
 		boolean changeOccured = false;
-		// TODO
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		for (Vector2 v : allCoords) {
 			changeMapComponentType(v, 
