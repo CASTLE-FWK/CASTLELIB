@@ -43,7 +43,7 @@ public class Map2D {
 		theGridMap = new Grid<MapComponent>();
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
-		range = Range2D.createRange(new Vector2(0,0), getSize());
+		range = Range2D.createRange(new Vector2(0, 0), getSize());
 		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
@@ -72,7 +72,7 @@ public class Map2D {
 	public void initializeEmptyMap() {
 		theGridMap.initializeAllCells(new MapComponent());
 	}
-	
+
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
@@ -87,7 +87,7 @@ public class Map2D {
 		open = theMap.isOpen();
 		range = new Range2D(theMap.getRange());
 		theGridMap.init(gridDims, MapComponent.class);
-		
+
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
 		MapComponent[][] oldGrid = oldMap.getGrid();
@@ -102,7 +102,7 @@ public class Map2D {
 	public Vector2 getDimensions() {
 		return dimensions; // TODO Make sure this gets set
 	}
-	
+
 	public void setRange(Range2D r) {
 		this.range = new Range2D(r);
 		// Apply this to Grid
@@ -117,27 +117,23 @@ public class Map2D {
 		return theGridMap;
 	}
 
-
 	public void createSubMaps(int numberOfSections) {
 		// How to divide a grid into X evenly sized chunks
 		int xChunkSize = (int) (dimensions.getX() / numberOfSections);
 		int yChunkSize = (int) (dimensions.getY() / numberOfSections);
-		
+
 		int prevX = 0;
 		int prevY = 0;
 		int nextX = xChunkSize;
 		int nextY = yChunkSize;
 		for (int i = 0; i < numberOfSections; i++) {
-			Range2D grabRange = new Range2D(
-					new Vector2(prevX, prevY), 
-					new Vector2(prevX, nextY),
-					new Vector2(nextX, nextY), 
-					new Vector2(nextX, prevY));
+			Range2D grabRange = new Range2D(new Vector2(prevX, prevY), new Vector2(prevX, nextY),
+					new Vector2(nextX, nextY), new Vector2(nextX, prevY));
 			Map2D sub = extractMapSection(grabRange);
 			String smName = name + "_submap_" + i;
 			subMapStorage.put(smName, new SubMapStore(sub, smName, grabRange));
 		}
-//		System.out.println("size of submapstorage; "+ subMapStorage.size());
+		// System.out.println("size of submapstorage; "+ subMapStorage.size());
 	}
 
 	public List<Map2D> getSubMapsAsList() {
@@ -197,12 +193,12 @@ public class Map2D {
 		}
 		return (Entity) mapComponents.get(0).getContainedEntities().values().toArray()[0];
 	}
-	
+
 	public Entity getEntityFromID(EntityID eid) {
 		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
 		for (MapComponent mc : mapComponents) {
 			for (Entity e : mc.getContainedEntitiesAsList()) {
-				if (e.getEntityID().equals(eid)){
+				if (e.getEntityID().equals(eid)) {
 					return e;
 				}
 			}
@@ -215,38 +211,155 @@ public class Map2D {
 		mc.addEntity(e);
 		return Outcome.VALID;
 	}
-	
+
 	// This should return states
-	public Outcome moveTo(Entity e, Vector2 pos) {
+	
+	//Heading?
+	public Outcome moveTo(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		// Move an entity to a particular location
-		System.out.println("pos: "+pos.toString());
-		if (!range.containsIndexPoint(pos)) {
+		System.out.println("intendedPos: " + intendedPos.toString());
+		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
 
-		if (isNoGo(pos)) {
+		if (isNoGo(intendedPos)) {
 			System.out.println("ENTITY " + e.getEntityID().toString() + " IS IN A NOGO");
 			return Outcome.INVALID;
 		}
+		
+		//Type of road (validity check) this is going to be bigsssssss
+		MapComponent mc = getMapComponent(intendedPos);
+		//Track road between curr pos and intended pos
+		
 
 		// Surely there are some more bad cases here
 
 		// This will be slow
-		MapComponent oldMC = getMapComponent(getPositionOfEntity(e));
+		MapComponent oldMC = getMapComponent(oldPos);
 		oldMC.removeEntity(e.getID());
 
 		// TODO: What the heck is this meant to do?
-		MapComponent mc = getMapComponent(pos);
+		
 		mc.addEntity(e);
 
 		return Outcome.VALID;
 
 	}
+	
+	public boolean validatePath(Vector2 source, Vector2 dest, Vector2 vh) {
+		boolean acheiveable = false;
+		boolean running = true;
+		Vector2 currPos = new Vector2(source);
+		//How do we terminate this loop?
+		while (running) {
+			MapComponent mc = getMapComponent(currPos);
+			Type type = mc.getType();
+			//Get the type of the next segment
+			Vector2 nextPos = new Vector2(currPos).add(vh);
+			if (dest.compare(dest)) {
+				running = false;
+				acheiveable = true;
+				break;
+			} else {
+				currPos = new Vector2(nextPos);
+			}
+		}
+		
+		
+		
+		return acheiveable;
+	}
+	
+	
+	
+	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
+		MapComponent mc = getMapComponent(currPos);
+		Type currType = mc.getType();
+		Heading head = calculateHeadingFromVector(vh);
+		return new Vector2(currPos).add(vh);
+//		switch (currType) {
+//		case NOGO:
+//			return currPos;
+//			break;
+//		case PARK:
+//			return currPos;
+//			break;
+//		case ROAD_H:
+//			str += Map2DParser.ROAD_H;
+//			break;
+//		case ROAD_V:
+//			str += Map2DParser.ROAD_V;
+//			break;
+//		case ONEWAY_N:
+//			str += Map2DParser.ONEWAY_N;
+//			break;
+//		case ONEWAY_S:
+//			str += Map2DParser.ONEWAY_S;
+//			break;
+//		case ONEWAY_E:
+//			str += Map2DParser.ONEWAY_E;
+//			break;
+//		case ONEWAY_W:
+//			str += Map2DParser.ONEWAY_W;
+//			break;
+//		case FOUR_WAY:
+//			str += Map2DParser.FOUR_WAY;
+//			break;
+//		case T_SEC:
+//			str += Map2DParser.T_SEC;
+//			break;
+//		case UNSET:
+//			str += Map2DParser.UNSET;
+//			break;
+//		case EVENT:
+//			str += Map2DParser.EVENT;
+//			break;
+//		default:
+//			System.out.println("aosjhdilajsd");
+//			break;
+//		}
+	}
+	
+	public Heading calculateHeadingFromVector(Vector2 vh) {
+		Vector2 unitVector = vh.getUnitVector();
+		double x = unitVector.getX();
+		double y = unitVector.getY();
+		if (x == -1) {
+			if (y == 1) {
+				return Heading.NW;
+			} else if (y == 0) {
+				return Heading.W;
+			} else if (y == -1) {
+				return Heading.SW;
+			}
+		} else if (x == 1) {
+			if (y == 1) {
+				return Heading.NE;
+			} else if (y == 0) {
+				return Heading.E;
+			} else if (y == -1) {
+				return Heading.SE;
+			}
+		} else if (x == 0) {
+			if (y == 1) {
+				return Heading.N;
+			} else if (y == 0) {
+				return Heading.O;
+			} else if (y == -1) {
+				return Heading.S;
+			}			
+		}
+		return Heading.O;
+	}
+
+	public String moveAlongWithSpeed(Entity e, Vector2 pos, float speed) {
+		return "";
+	}
 
 	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel) {
 		Vector2 unitVector = vel.getUnitVector();
 		Vector2 newPos = pos.add(vel);
-		return moveTo(e, newPos).toString();
+		return moveTo(e, pos, newPos).toString();
 	}
 
 	// TODO
@@ -258,8 +371,7 @@ public class Map2D {
 
 	// This is a total range (i.e. 360° vis)
 	public int countEntitiesInRange(Vector2 pos, int range) {
-		
-		
+
 		List<MapComponent> mcs = new List<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
 		HashSet<Entity> ents = new HashSet<Entity>();
 		for (MapComponent mc : mcs) {
@@ -272,8 +384,8 @@ public class Map2D {
 
 	public boolean isRoad(Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
-		return (m.getType() == Type.ROAD_H || m.getType() == Type.ROAD_V || m.getType() == Type.TURN_L
-				|| m.getType() == Type.TURN_R);
+		return (m.getType() == Type.ROAD_H || m.getType() == Type.ROAD_V || m.getType() == Type.ONEWAY_N
+				|| m.getType() == Type.ONEWAY_S || m.getType() == Type.ONEWAY_E || m.getType() == Type.ONEWAY_W);
 	}
 
 	public boolean isPark(Vector2 pos) {
@@ -397,8 +509,8 @@ public class Map2D {
 
 	public void setDimensions(Vector2 v) {
 		this.size = new Vector2(v);
-		this.dimensions = new Vector2(v).subtract(new Vector2(1,1));
-//		this.dimensions = new Vector2(v);
+		this.dimensions = new Vector2(v).subtract(new Vector2(1, 1));
+		// this.dimensions = new Vector2(v);
 	}
 
 	public boolean validateDimensions() {
@@ -435,11 +547,29 @@ public class Map2D {
 				case ROAD_V:
 					str += Map2DParser.ROAD_V;
 					break;
-				case TURN_R:
-					str += Map2DParser.TURN_R;
+				case ONEWAY_N:
+					str += Map2DParser.ONEWAY_N;
 					break;
-				case TURN_L:
-					str += Map2DParser.TURN_L;
+				case ONEWAY_S:
+					str += Map2DParser.ONEWAY_S;
+					break;
+				case ONEWAY_E:
+					str += Map2DParser.ONEWAY_E;
+					break;
+				case ONEWAY_W:
+					str += Map2DParser.ONEWAY_W;
+					break;
+				case FOUR_WAY:
+					str += Map2DParser.FOUR_WAY;
+					break;
+				case T_SEC:
+					str += Map2DParser.T_SEC;
+					break;
+				case UNSET:
+					str += Map2DParser.UNSET;
+					break;
+				case EVENT:
+					str += Map2DParser.EVENT;
 					break;
 				default:
 					System.out.println("aosjhdilajsd");
@@ -452,23 +582,23 @@ public class Map2D {
 	}
 
 	public Map2D extractMapSection(Range2D coords) {
-		//Make a blank Map2D the same size as the existing one
+		// Make a blank Map2D the same size as the existing one
 		Map2D existingMap = new Map2D(getSize());
 		existingMap.init(getSize());
-//		System.out.println("size: "+getSize());
+		// System.out.println("size: "+getSize());
 		// 1: Get all co-ord pairs from the range
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		// 2: Store existing section of the map
-//		Map2D existingMap = new Map2D(dims);
+		// Map2D existingMap = new Map2D(dims);
 
-//		existingMap.init(dims);
+		// existingMap.init(dims);
 		for (Vector2 v : allCoords) {
 
 			MapComponent mcc = existingMap.getMapComponent(v);
 			mcc.setType(getMapComponent(v).getType());
 		}
-//		System.out.println("existing: "+existingMap.printMap());
-		
+		// System.out.println("existing: "+existingMap.printMap());
+
 		return existingMap;
 	}
 
@@ -489,11 +619,9 @@ public class Map2D {
 		boolean changeOccured = false;
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		for (Vector2 v : allCoords) {
-			changeMapComponentType(v, 
-					newSection.getMapComponent(v)
-					.getType());
+			changeMapComponentType(v, newSection.getMapComponent(v).getType());
 		}
-		System.out.println("MAGICS: "+allCoords.size());
+		System.out.println("MAGICS: " + allCoords.size());
 		System.out.println(printMap());
 
 		return changeOccured;
@@ -526,6 +654,7 @@ public class Map2D {
 	public void setTheGridMap(Grid<MapComponent> theGridMap) {
 		this.theGridMap = theGridMap;
 	}
+
 	public Vector2 getSize() {
 		return size;
 	}
@@ -535,6 +664,9 @@ enum Outcome {
 	OUT_OF_BOUNDS, INVALID, VALID, MOVED;
 }
 
+enum Heading {
+	N, NE, E, SE, S, SW, W, NW, O
+}
 class SubMapStore {
 	Map2D map;
 	String name;

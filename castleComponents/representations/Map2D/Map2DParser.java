@@ -23,8 +23,16 @@ public class Map2DParser {
 	public final static char NOGO = '*';
 	public final static char ROAD_H = '-';
 	public final static char ROAD_V = '|';
-	public final static char TURN_R = '\\';
-	public final static char TURN_L = '/';
+	public final static char ONEWAY_N = ';';
+	public final static char ONEWAY_S = ':';
+	public final static char ONEWAY_E = '>';
+	public final static char ONEWAY_W = '<';
+	public final static char FOUR_WAY = '+';
+	public final static char ENTRY = '&';
+	public final static char T_SEC = 'T';
+	public final static char MAP = 'M';
+	public final static char EVENT = 'E';
+	public final static char UNSET = 'U';
 	public final static char ENT_0 = '0';
 	public final static char ENT_1 = '1';
 	public final static char ENT_2 = '2';
@@ -153,11 +161,32 @@ public class Map2DParser {
 				case ROAD_V:
 					theMapToStore.addMapComponent(currentPosition, Type.ROAD_V);
 				break;
-				case TURN_R:
-					theMapToStore.addMapComponent(currentPosition, Type.TURN_R);
+				case ONEWAY_N:
+					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_N);
 				break;
-				case TURN_L:
-					theMapToStore.addMapComponent(currentPosition, Type.TURN_L);
+				case ONEWAY_S:
+					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_S);
+				break;
+				case ONEWAY_E:
+					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_E);
+				break;
+				case ONEWAY_W:
+					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_W);
+				break;
+				case FOUR_WAY:
+					theMapToStore.addMapComponent(currentPosition, Type.FOUR_WAY);
+				break;
+				case T_SEC:
+					theMapToStore.addMapComponent(currentPosition, Type.T_SEC);
+				break;
+				case MAP:
+					theMapToStore.addMapComponent(currentPosition, Type.MAP);
+				break;
+				case UNSET:
+					theMapToStore.addMapComponent(currentPosition, Type.UNSET);
+				break;
+				case EVENT:
+					theMapToStore.addMapComponent(currentPosition, Type.EVENT);
 				break;
 				case ENT_0:
 				break;
