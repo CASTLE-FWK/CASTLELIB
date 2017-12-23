@@ -140,7 +140,15 @@ public class Vector2 implements java.io.Serializable {
 	}
 	
 	public Vector2 getUnitVector() {
-		return new Vector2(getX() / Math.abs(getX()), getY() / Math.abs(getY()));
+		double x = getX() / Math.abs(getX());
+		if (x == Double.NaN) {
+			x = 0;
+		}
+		double y =  getY() / Math.abs(getY());
+		if (y == Double.NaN) {
+			y = 0;
+		}
+		return new Vector2(x, y);
 	}
 	public int getMultipleAsInt(){
 		return (int)(x * y);

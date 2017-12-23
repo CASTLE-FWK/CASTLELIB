@@ -69,8 +69,8 @@ public class MapComponent {
 		}
 	}
 	
-	public void removeEntity(String id){
-		containedEntities.remove(id);
+	public boolean removeEntity(String id){
+		return (containedEntities.remove(id) != null);
 	}
 	
 	public HashMap<String, Entity> getContainedEntities(){

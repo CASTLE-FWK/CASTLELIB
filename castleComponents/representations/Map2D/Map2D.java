@@ -223,7 +223,7 @@ public class Map2D {
 	//Heading?
 	public Outcome moveTo(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		// Move an entity to a particular location
-		System.out.println("intendedPos: " + intendedPos.toString());
+//		System.out.println("intendedPos: " + intendedPos.toString());
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
@@ -236,14 +236,15 @@ public class Map2D {
 		//Type of road (validity check) this is going to be bigsssssss
 		MapComponent mc = getMapComponent(intendedPos);
 		//Track road between curr pos and intended pos
-		
 
 		// Surely there are some more bad cases here
 
 		// This will be slow
 		MapComponent oldMC = getMapComponent(oldPos);
-		oldMC.removeEntity(e.getID());
-
+		boolean removeSuccess = oldMC.removeEntity(e.getID());
+		if (!removeSuccess) {
+			System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF "+oldPos);
+		}
 		// TODO: What the heck is this meant to do?
 		
 		mc.addEntity(e);
@@ -285,47 +286,6 @@ public class Map2D {
 		Type currType = mc.getType();
 		Heading head = calculateHeadingFromVector(vh);
 		return new Vector2(currPos).add(vh);
-//		switch (currType) {
-//		case NOGO:
-//			return currPos;
-//			break;
-//		case PARK:
-//			return currPos;
-//			break;
-//		case ROAD_H:
-//			str += Map2DParser.ROAD_H;
-//			break;
-//		case ROAD_V:
-//			str += Map2DParser.ROAD_V;
-//			break;
-//		case ONEWAY_N:
-//			str += Map2DParser.ONEWAY_N;
-//			break;
-//		case ONEWAY_S:
-//			str += Map2DParser.ONEWAY_S;
-//			break;
-//		case ONEWAY_E:
-//			str += Map2DParser.ONEWAY_E;
-//			break;
-//		case ONEWAY_W:
-//			str += Map2DParser.ONEWAY_W;
-//			break;
-//		case FOUR_WAY:
-//			str += Map2DParser.FOUR_WAY;
-//			break;
-//		case T_SEC:
-//			str += Map2DParser.T_SEC;
-//			break;
-//		case UNSET:
-//			str += Map2DParser.UNSET;
-//			break;
-//		case EVENT:
-//			str += Map2DParser.EVENT;
-//			break;
-//		default:
-//			System.out.println("aosjhdilajsd");
-//			break;
-//		}
 	}
 	
 	public Heading calculateHeadingFromVector(Vector2 vh) {
@@ -360,13 +320,13 @@ public class Map2D {
 		return Heading.O;
 	}
 
-	public String moveAlongWithSpeed(Entity e, Vector2 pos, float speed) {
-		return "";
+	public String moveAlongWithSpeed(Entity e, Vector2 pos, float speed, Vector2 heading) {
+		return moveToWithVelocity(e,pos,new Vector2(heading).multiply(speed));
 	}
 
 	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel) {
 		Vector2 unitVector = vel.getUnitVector();
-		Vector2 newPos = pos.add(vel);
+		Vector2 newPos = new Vector2(pos).add(vel);
 		return moveTo(e, pos, newPos).toString();
 	}
 
@@ -399,7 +359,7 @@ public class Map2D {
 				for (Entity e : cEnt) {
 					if (e.getType().compareToIgnoreCase(theType) == 0) {
 						ents.add(e);
-						System.out.println(e.getEntityID().toString());
+						System.out.println("irt: "+e.getEntityID() + " at " + mc.getPosition());
 					}
 				}
 			}
@@ -479,7 +439,6 @@ public class Map2D {
 
 	public boolean addEntity(Entity e, Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
-		System.out.println("add vehicle: "+m.getPosition());
 		return m.addEntity(e);
 	}
 

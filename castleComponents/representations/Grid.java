@@ -362,8 +362,8 @@ public class Grid<E> implements Representation<E> {
 			if (y == 0) {
 				return grid[x][Y - 1];
 			} else {
-				System.out.println("x: " + x +" y-1: "+(y-1));
-				System.out.println(((MapComponent)grid[x][y - 1]).getPosition());
+//				System.out.println("x: " + x +" y-1: "+(y-1));
+//				System.out.println(((MapComponent)grid[x][y - 1]).getPosition());
 				return grid[x][y - 1];
 			}
 		}
