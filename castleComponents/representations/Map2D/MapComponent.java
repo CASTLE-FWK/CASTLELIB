@@ -2,6 +2,8 @@ package castleComponents.representations.Map2D;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import castleComponents.Entity;
 import castleComponents.EntityID;
@@ -20,6 +22,7 @@ public class MapComponent {
 	Park park;
 	
 	public MapComponent(){
+		position = Vector2.NULL;
 		containedEntities = new HashMap<String, Entity>();
 		theType = Type.UNSET;
 	}
@@ -34,15 +37,20 @@ public class MapComponent {
 	}
 	
 	public MapComponent(MapComponent mc) {
-		theType = mc.getType();
-		position = mc.getPosition();
+		setType(mc.getType());
+		setPosition(mc.getPosition());
 		containedEntities = new HashMap<String, Entity>();
 		
+		HashMap<String, Entity> oldHashMap = mc.getContainedEntities();
+		Set<String> keys = oldHashMap.keySet();
+		for (String k : keys) {
+			containedEntities.put(k, oldHashMap.get(k));
+		}
 		containedEntities.putAll(mc.getContainedEntities());
 	}
 	
 	public void setPosition(Vector2 p){
-		this.position = p;
+		this.position = new Vector2(p);
 	}
 	
 	public Vector2 getPosition(){

@@ -1,5 +1,6 @@
 package castleComponents.representations.Map2D;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -66,11 +67,16 @@ public class Map2D {
 	public void init(Vector2 gridDims) {
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
-		theGridMap.initializeAllCells(new MapComponent());
+		initializeEmptyMap();
 	}
 
 	public void initializeEmptyMap() {
-		theGridMap.initializeAllCells(new MapComponent());
+		MapComponent[][] grid = theGridMap.getGrid();
+		for (int i = 0; i < grid[0].length; i++) {
+			for (int j = 0; j < grid.length; j++) {
+				theGridMap.getGrid()[j][i] = new MapComponent(new Vector2(j,i), Type.UNSET);
+			}
+		}
 	}
 
 	public void initialize(Vector2 gridDims, String pathToMapFile, LayoutParameters lp) {
@@ -86,7 +92,6 @@ public class Map2D {
 		scale = theMap.getScale();
 		open = theMap.isOpen();
 		range = new Range2D(theMap.getRange());
-		theGridMap.init(gridDims, MapComponent.class);
 
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
@@ -96,7 +101,7 @@ public class Map2D {
 				theGridMap.getGrid()[j][i] = new MapComponent(oldGrid[j][i]);
 			}
 		}
-		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
+//		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
 	}
 
 	public Vector2 getDimensions() {
@@ -166,14 +171,15 @@ public class Map2D {
 		// Find entity and return its position
 		// Cycle through grid, and check with each containedEntities map
 		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
+		Vector2 pos = Vector2.NULL;
 		for (MapComponent mc : mapComponents) {
 			if (mc.checkForEntity(e.getEntityID())) {
-				return mc.getPosition();
+				pos = new Vector2(mc.getPosition());
+				break;
 			}
 		}
-
 		// Otherwise return the NULL vector2
-		return Vector2.NULL;
+		return pos;
 	}
 
 	public Range2D getRange() {
@@ -266,10 +272,12 @@ public class Map2D {
 		}
 		
 		
-		
 		return acheiveable;
 	}
 	
+	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
+		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
+	}
 	
 	
 	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
@@ -381,6 +389,23 @@ public class Map2D {
 		}
 		return ents.size();
 	}
+	
+	public int countEntitiesInRangeOfType(Vector2 pos, int range, String theType) {
+		List<MapComponent> mcs = new List<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
+		HashSet<Entity> ents = new HashSet<Entity>();
+		for (MapComponent mc : mcs) {
+			if (mc != null) {
+				ArrayList<Entity> cEnt = mc.getContainedEntitiesAsList();
+				for (Entity e : cEnt) {
+					if (e.getType().compareToIgnoreCase(theType) == 0) {
+						ents.add(e);
+						System.out.println(e.getEntityID().toString());
+					}
+				}
+			}
+		}
+		return ents.size();
+	}
 
 	public boolean isRoad(Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
@@ -454,6 +479,7 @@ public class Map2D {
 
 	public boolean addEntity(Entity e, Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
+		System.out.println("add vehicle: "+m.getPosition());
 		return m.addEntity(e);
 	}
 
@@ -585,25 +611,23 @@ public class Map2D {
 		// Make a blank Map2D the same size as the existing one
 		Map2D existingMap = new Map2D(getSize());
 		existingMap.init(getSize());
-		// System.out.println("size: "+getSize());
 		// 1: Get all co-ord pairs from the range
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		// 2: Store existing section of the map
-		// Map2D existingMap = new Map2D(dims);
-
-		// existingMap.init(dims);
 		for (Vector2 v : allCoords) {
-
-			MapComponent mcc = existingMap.getMapComponent(v);
-			mcc.setType(getMapComponent(v).getType());
+			existingMap.setMapComponent(v, getMapComponent(v));
+//			mcc.setPosition(new Vector2(v));
+//			mcc.setType(getMapComponent(v).getType());
 		}
-		// System.out.println("existing: "+existingMap.printMap());
-
 		return existingMap;
 	}
 
 	public void changeMapComponentType(Vector2 coords, Type type) {
 		getMapComponent(coords).setType(type);
+	}
+	
+	public void setMapComponent(Vector2 coords, MapComponent newMC) {
+		theGridMap.setEntityAtPos(coords, new MapComponent(newMC));
 	}
 
 	public boolean changeSectionOfMapToType(Range2D coords, String name, Type type) {

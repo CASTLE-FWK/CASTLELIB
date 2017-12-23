@@ -42,9 +42,12 @@ public class Vector2 implements java.io.Serializable {
 	}
 
 	public Vector2(Vector2 v){
+		this.x = 0;
+		this.y = 0;
 		this.x = v.x;
 		this.y = v.y;
-		nullPoint = false;
+		this.nullPoint = v.isANullPoint();
+//		nullPoint = false;
 	}
 	
 	public Vector2(String stringVector){
@@ -152,6 +155,9 @@ public class Vector2 implements java.io.Serializable {
 	public String toString(){
 		String out = "";
 		out += "("+this.x+","+this.y+")";
+		if (nullPoint) {
+			out += "(NULLVEC)";
+		}
 		return out;
 	}
 	
