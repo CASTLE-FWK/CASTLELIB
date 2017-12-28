@@ -132,6 +132,12 @@ public class Map2DParser {
 					}
 				}								
 			}
+			
+			//TODO
+			//Do validation of T_SEC and PARK exits here
+			
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -148,36 +154,59 @@ public class Map2DParser {
 			currentPosition.modify(i, currentPosition.getY());
 			//Parse each symbol
 			char currCar = chars[i];
+			MapComponent mc;
 			switch (currCar){
 				case NOGO:
 					theMapToStore.addMapComponent(currentPosition, Type.NOGO);
 				break;
 				case PARK:
 					theMapToStore.addMapComponent(currentPosition, Type.PARK);
+					//TODO Set Valid Exits
 				break;
 				case ROAD_H:
 					theMapToStore.addMapComponent(currentPosition, Type.ROAD_H);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(1,0)));
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(-1,0)));
+					
 				break;
 				case ROAD_V:
 					theMapToStore.addMapComponent(currentPosition, Type.ROAD_V);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,1)));
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,-1)));
 				break;
 				case ONEWAY_N:
 					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_N);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,-1)));
 				break;
 				case ONEWAY_S:
 					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_S);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,1)));
 				break;
 				case ONEWAY_E:
 					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_E);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(1,0)));
 				break;
 				case ONEWAY_W:
 					theMapToStore.addMapComponent(currentPosition, Type.ONEWAY_W);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(-1,0)));
 				break;
 				case FOUR_WAY:
 					theMapToStore.addMapComponent(currentPosition, Type.FOUR_WAY);
+					mc = theMapToStore.getMapComponent(currentPosition);
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,1)));
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(0,-1)));
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(1,0)));
+					mc.addValidExit(new Vector2(currentPosition).add(new Vector2(-1,0)));
 				break;
 				case T_SEC:
 					theMapToStore.addMapComponent(currentPosition, Type.T_SEC);
+					//TODO Set Valid Exits
 				break;
 				case MAP:
 					theMapToStore.addMapComponent(currentPosition, Type.MAP);

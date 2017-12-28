@@ -1,10 +1,9 @@
 package castleComponents.representations.Map2D;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import com.sun.org.apache.xml.internal.serialize.XHTMLSerializer;
 
 import castleComponents.Entity;
 import castleComponents.EntityID;
@@ -138,7 +137,6 @@ public class Map2D {
 			String smName = name + "_submap_" + i;
 			subMapStorage.put(smName, new SubMapStore(sub, smName, grabRange));
 		}
-		// System.out.println("size of submapstorage; "+ subMapStorage.size());
 	}
 
 	public List<Map2D> getSubMapsAsList() {
@@ -161,10 +159,123 @@ public class Map2D {
 
 	public void importMap(String pathToMapFile) {
 		// Make sure this Map is initialized and clean
-
 		Map2DParser map2dParser = new Map2DParser(this);
 		map2dParser.parseMapFile(pathToMapFile);
-		range = Range2D.createRange(new Vector2(0, 0), getSize());
+		setRange(Range2D.createRange(new Vector2(0, 0), getSize()));
+		finishValidation();
+	}
+	
+	public void finishValidation() {
+		List<Vector2> coord = range.getAllCoordPairs();
+		for (Vector2 v : coord) {
+			MapComponent mc = getMapComponent(v);
+			Vector2 Wp = new Vector2(v).add(new Vector2(-1,0));
+			Vector2 Ep = new Vector2(v).add(new Vector2(1,0));
+			Vector2 Np = new Vector2(v).add(new Vector2(0, -1));
+			Vector2 Sp = new Vector2(v).add(new Vector2(0, 1));
+			Type W = getMapComponent(Wp).getType();
+			Type E = getMapComponent(Ep).getType();
+			Type N = getMapComponent(Np).getType();
+			Type S = getMapComponent(Sp).getType();
+
+			if (mc.getType() == Type.T_SEC) {
+				
+				if (W.isHoriz() && E.isHoriz()) {
+					if (N.isVert() && !S.isVert()) {
+						if (N == Type.ONEWAY_S) {
+							//Yay TODO
+							mc.addValidExit(Wp);
+							mc.addValidExit(Ep);
+						} else {
+							//Yay
+							mc.addValidExit(Wp);
+							mc.addValidExit(Ep);
+							mc.addValidExit(Np);
+						}
+					} else if (!N.isVert() && S.isVert()) {
+						if (S == Type.ONEWAY_N) {
+							//Yay TODO
+							mc.addValidExit(Wp);
+							mc.addValidExit(Ep);
+						} else {
+							//Yay
+							mc.addValidExit(Wp);
+							mc.addValidExit(Ep);
+							mc.addValidExit(Sp);
+						}
+					}
+				} else if (N.isVert() && S.isVert()) {
+					if (W.isHoriz() && !E.isHoriz()) {
+						if (W == Type.ONEWAY_E) {
+							//Yay TODO
+							mc.addValidExit(Np);
+							mc.addValidExit(Sp);
+						} else {
+							//Yay 
+							mc.addValidExit(Np);
+							mc.addValidExit(Sp);
+							mc.addValidExit(Wp);
+						}
+					} else if (!W.isHoriz() && E.isHoriz()) {
+						if (E == Type.ONEWAY_W) {
+							//Yay TODO
+							mc.addValidExit(Np);
+							mc.addValidExit(Sp);
+						} else {
+							//Yay
+							mc.addValidExit(Np);
+							mc.addValidExit(Sp);
+							mc.addValidExit(Ep);
+						}
+					}
+				}
+				
+			} else if (mc.getType() == Type.PARK) {
+				if (N.isVert() && N != Type.ONEWAY_N) {
+					mc.addValidExit(Np);
+				}
+				if (S.isVert() && S != Type.ONEWAY_S) {
+					mc.addValidExit(Sp);
+				}
+				if (W.isHoriz() && W != Type.ONEWAY_W) {
+					mc.addValidExit(Wp);
+				}
+				if (E.isHoriz() && E != Type.ONEWAY_E) {
+					mc.addValidExit(Ep);
+				}
+			}
+		}
+	}
+	
+	public Type getMostCommonType(List<Type> types) {
+		HashMap<Type, Integer> lazyCounter = new HashMap<Type, Integer>();
+		Type maxType = null;
+		int maxCount = 0;
+		for (Type t : types) {
+			if (lazyCounter.get(t) != null) {
+				lazyCounter.put(t, lazyCounter.get(t)+1);
+				if (lazyCounter.get(t) > maxCount) {
+					maxCount = lazyCounter.get(t);
+					maxType = t;
+				}
+			}
+		}
+		return maxType;
+	}
+	public int numberOfMatchingTypes(List<Type> types) {
+		HashMap<Type, Integer> lazyCounter = new HashMap<Type, Integer>();
+		Type maxType = null;
+		int maxCount = 0;
+		for (Type t : types) {
+			if (lazyCounter.get(t) != null) {
+				lazyCounter.put(t, lazyCounter.get(t)+1);
+				if (lazyCounter.get(t) > maxCount) {
+					maxCount = lazyCounter.get(t);
+					maxType = t;
+				}
+			}
+		}
+		return maxCount;
 	}
 
 	public Vector2 getPositionOfEntity(Entity e) {
@@ -232,9 +343,14 @@ public class Map2D {
 			System.out.println("ENTITY " + e.getEntityID().toString() + " IS IN A NOGO");
 			return Outcome.INVALID;
 		}
-		
+
 		//Type of road (validity check) this is going to be bigsssssss
 		MapComponent mc = getMapComponent(intendedPos);
+		//Test for T-intersection
+		if (mc.getType() == Type.T_SEC) {
+			
+		}
+
 		//Track road between curr pos and intended pos
 
 		// Surely there are some more bad cases here
@@ -251,6 +367,11 @@ public class Map2D {
 
 		return Outcome.VALID;
 
+	}
+	//TODO
+	public boolean hasValidExit(Vector2 currPos, Vector2 intendedPos) {
+		MapComponent mc = getMapComponent(currPos);
+		return mc.isValidExit(intendedPos);
 	}
 	
 	public boolean validatePath(Vector2 source, Vector2 dest, Vector2 vh) {
@@ -271,15 +392,12 @@ public class Map2D {
 				currPos = new Vector2(nextPos);
 			}
 		}
-		
-		
 		return acheiveable;
 	}
 	
 	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
-	
 	
 	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
 		MapComponent mc = getMapComponent(currPos);
@@ -430,7 +548,7 @@ public class Map2D {
 	@SuppressWarnings("unchecked")
 	public List<Entity> getEntitiesAtPos(Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
-		return (List<Entity>) Utilities.getMapAsList(m.getContainedEntities());
+		return new List<Entity>((Collection<? extends Entity>)Utilities.getMapAsList(m.getContainedEntities()));
 	}
 
 	public MapComponent getMapComponent(Vector2 pos) {
@@ -640,6 +758,18 @@ public class Map2D {
 
 	public Vector2 getSize() {
 		return size;
+	}
+
+	public int countEntitiesOfTypeAtPos(String type, Vector2 t1Pos) {
+		int count = 0;
+		MapComponent mc = getMapComponent(t1Pos);
+		List<Entity> ents = new List<Entity>(mc.getContainedEntitiesAsList());
+		for (Entity e : ents) {
+			if (e.getType().compareToIgnoreCase(type) == 0){
+				count++;
+			}
+		}
+		return count;
 	}
 }
 

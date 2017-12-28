@@ -14,6 +14,7 @@ public class MapComponent {
 	
 	HashMap<String, Entity> containedEntities;
 	Type theType;
+	ArrayList<Vector2> validExits;
 	
 	Vector2 position;
 	
@@ -25,10 +26,12 @@ public class MapComponent {
 		position = Vector2.NULL;
 		containedEntities = new HashMap<String, Entity>();
 		theType = Type.UNSET;
+		validExits = new ArrayList<Vector2>();
 	}
 	
 	public MapComponent(Vector2 pos, Type t){
 		containedEntities = new HashMap<String, Entity>();
+		validExits = new ArrayList<Vector2>();
 		setPosition(pos);
 		setType(t);
 		if (t == Type.PARK){
@@ -39,6 +42,7 @@ public class MapComponent {
 	public MapComponent(MapComponent mc) {
 		setType(mc.getType());
 		setPosition(mc.getPosition());
+		validExits = new ArrayList<Vector2>();
 		containedEntities = new HashMap<String, Entity>();
 		
 		HashMap<String, Entity> oldHashMap = mc.getContainedEntities();
@@ -62,6 +66,9 @@ public class MapComponent {
 	}
 	
 	public boolean addEntity(Entity e){
+		if (containedEntities.get(e.getID()) != null) {
+			System.out.println(e.getID()+" already exist");
+		}
 		if (containedEntities.put(e.getID(), e) == null) {
 			return false;
 		} else {
@@ -110,4 +117,19 @@ public class MapComponent {
 		return containedEntities.containsKey(eID.toString());
 	}
 	
+	public void addValidExit(Vector2 v) {
+		validExits.add(v);
+		if (validExits.size() > 4) {
+			System.out.println("too many exits");
+		}
+	}
+	
+	public boolean isValidExit(Vector2 v2) {
+		for (Vector2 v : validExits) {
+			if (v.compare(v2)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
