@@ -59,7 +59,11 @@ public class Grid<E> implements Representation<E> {
 
 		allContainedEntities = new ArrayList<E>();
 	}
-
+	public boolean isOutOfBounds(Vector2 v) {
+		int x = (int)v.getX();
+		int y = (int)v.getY();
+		return (x >= X || y >= Y || x < 0 || y < 0);
+	}
 	// TODO: Set phantom size
 	public Grid() {
 		allContainedEntities = new ArrayList<E>();

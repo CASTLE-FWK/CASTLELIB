@@ -51,6 +51,11 @@ public class MapComponent {
 			containedEntities.put(k, oldHashMap.get(k));
 		}
 		containedEntities.putAll(mc.getContainedEntities());
+		ArrayList<Vector2> oldVE = mc.getValidExits();
+		for (Vector2 v : oldVE) {
+			addValidExit(new Vector2(v));
+		}
+		
 	}
 	
 	public void setPosition(Vector2 p){
@@ -131,5 +136,15 @@ public class MapComponent {
 			}
 		}
 		return false;
+	}
+	public ArrayList<Vector2> getValidExits(){
+		return validExits;
+	}
+	public String validExitsToString() {
+		String str = "";
+		for (Vector2 v : validExits) {
+			str += v +", ";
+		}
+		return str;
 	}
 }

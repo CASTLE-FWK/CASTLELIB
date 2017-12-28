@@ -73,7 +73,7 @@ public class Map2D {
 		MapComponent[][] grid = theGridMap.getGrid();
 		for (int i = 0; i < grid[0].length; i++) {
 			for (int j = 0; j < grid.length; j++) {
-				theGridMap.getGrid()[j][i] = new MapComponent(new Vector2(j,i), Type.UNSET);
+				theGridMap.getGrid()[j][i] = new MapComponent(new Vector2(j, i), Type.UNSET);
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class Map2D {
 				theGridMap.getGrid()[j][i] = new MapComponent(oldGrid[j][i]);
 			}
 		}
-//		theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
+		// theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
 	}
 
 	public Vector2 getDimensions() {
@@ -164,41 +164,42 @@ public class Map2D {
 		setRange(Range2D.createRange(new Vector2(0, 0), getSize()));
 		finishValidation();
 	}
-	
+
 	public void finishValidation() {
-		List<Vector2> coord = range.getAllCoordPairs();
+		List<Vector2> coord = range.getAllIndexCoordPairs();
 		for (Vector2 v : coord) {
 			MapComponent mc = getMapComponent(v);
-			Vector2 Wp = new Vector2(v).add(new Vector2(-1,0));
-			Vector2 Ep = new Vector2(v).add(new Vector2(1,0));
+			// TODO: OOB
+			Vector2 Wp = new Vector2(v).add(new Vector2(-1, 0));
+			Vector2 Ep = new Vector2(v).add(new Vector2(1, 0));
 			Vector2 Np = new Vector2(v).add(new Vector2(0, -1));
 			Vector2 Sp = new Vector2(v).add(new Vector2(0, 1));
-			Type W = getMapComponent(Wp).getType();
-			Type E = getMapComponent(Ep).getType();
-			Type N = getMapComponent(Np).getType();
-			Type S = getMapComponent(Sp).getType();
+			Type W = getMapComponentType(Wp);
+			Type E = getMapComponentType(Ep);
+			Type N = getMapComponentType(Np);
+			Type S = getMapComponentType(Sp);
 
 			if (mc.getType() == Type.T_SEC) {
-				
+
 				if (W.isHoriz() && E.isHoriz()) {
 					if (N.isVert() && !S.isVert()) {
 						if (N == Type.ONEWAY_S) {
-							//Yay TODO
+							// Yay TODO
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 						} else {
-							//Yay
+							// Yay
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 							mc.addValidExit(Np);
 						}
 					} else if (!N.isVert() && S.isVert()) {
 						if (S == Type.ONEWAY_N) {
-							//Yay TODO
+							// Yay TODO
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 						} else {
-							//Yay
+							// Yay
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 							mc.addValidExit(Sp);
@@ -207,29 +208,29 @@ public class Map2D {
 				} else if (N.isVert() && S.isVert()) {
 					if (W.isHoriz() && !E.isHoriz()) {
 						if (W == Type.ONEWAY_E) {
-							//Yay TODO
+							// Yay TODO
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 						} else {
-							//Yay 
+							// Yay
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 							mc.addValidExit(Wp);
 						}
 					} else if (!W.isHoriz() && E.isHoriz()) {
 						if (E == Type.ONEWAY_W) {
-							//Yay TODO
+							// Yay TODO
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 						} else {
-							//Yay
+							// Yay
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 							mc.addValidExit(Ep);
 						}
 					}
 				}
-				
+
 			} else if (mc.getType() == Type.PARK) {
 				if (N.isVert() && N != Type.ONEWAY_N) {
 					mc.addValidExit(Np);
@@ -246,14 +247,14 @@ public class Map2D {
 			}
 		}
 	}
-	
+
 	public Type getMostCommonType(List<Type> types) {
 		HashMap<Type, Integer> lazyCounter = new HashMap<Type, Integer>();
 		Type maxType = null;
 		int maxCount = 0;
 		for (Type t : types) {
 			if (lazyCounter.get(t) != null) {
-				lazyCounter.put(t, lazyCounter.get(t)+1);
+				lazyCounter.put(t, lazyCounter.get(t) + 1);
 				if (lazyCounter.get(t) > maxCount) {
 					maxCount = lazyCounter.get(t);
 					maxType = t;
@@ -262,13 +263,14 @@ public class Map2D {
 		}
 		return maxType;
 	}
+
 	public int numberOfMatchingTypes(List<Type> types) {
 		HashMap<Type, Integer> lazyCounter = new HashMap<Type, Integer>();
 		Type maxType = null;
 		int maxCount = 0;
 		for (Type t : types) {
 			if (lazyCounter.get(t) != null) {
-				lazyCounter.put(t, lazyCounter.get(t)+1);
+				lazyCounter.put(t, lazyCounter.get(t) + 1);
 				if (lazyCounter.get(t) > maxCount) {
 					maxCount = lazyCounter.get(t);
 					maxType = t;
@@ -330,11 +332,11 @@ public class Map2D {
 	}
 
 	// This should return states
-	
-	//Heading?
+
+	// Heading?
 	public Outcome moveTo(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		// Move an entity to a particular location
-//		System.out.println("intendedPos: " + intendedPos.toString());
+		// System.out.println("intendedPos: " + intendedPos.toString());
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
@@ -344,45 +346,50 @@ public class Map2D {
 			return Outcome.INVALID;
 		}
 
-		//Type of road (validity check) this is going to be bigsssssss
+		// Type of road (validity check) this is going to be bigsssssss
 		MapComponent mc = getMapComponent(intendedPos);
-		//Test for T-intersection
-		if (mc.getType() == Type.T_SEC) {
-			
-		}
-
-		//Track road between curr pos and intended pos
-
-		// Surely there are some more bad cases here
-
-		// This will be slow
 		MapComponent oldMC = getMapComponent(oldPos);
-		boolean removeSuccess = oldMC.removeEntity(e.getID());
-		if (!removeSuccess) {
-			System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF "+oldPos);
+		if (oldMC.isValidExit(intendedPos)) {
+
+			// Track road between curr pos and intended pos
+
+			// Surely there are some more bad cases here
+
+			// This will be slow
+			
+			boolean removeSuccess = oldMC.removeEntity(e.getID());
+			if (!removeSuccess) {
+				System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+			}
+			// TODO: What the heck is this meant to do?
+
+			mc.addEntity(e);
+		} else {
+			System.out.println("NOT VALID EXIT. CURRPOS: "+oldPos+" new pos: "+intendedPos);
+			System.out.println("ve: "+oldMC.validExitsToString());
+			// Turn the car around
+			return Outcome.DEADEND;
 		}
-		// TODO: What the heck is this meant to do?
-		
-		mc.addEntity(e);
 
 		return Outcome.VALID;
 
 	}
-	//TODO
+
+	// TODO
 	public boolean hasValidExit(Vector2 currPos, Vector2 intendedPos) {
 		MapComponent mc = getMapComponent(currPos);
 		return mc.isValidExit(intendedPos);
 	}
-	
+
 	public boolean validatePath(Vector2 source, Vector2 dest, Vector2 vh) {
 		boolean acheiveable = false;
 		boolean running = true;
 		Vector2 currPos = new Vector2(source);
-		//How do we terminate this loop?
+		// How do we terminate this loop?
 		while (running) {
 			MapComponent mc = getMapComponent(currPos);
 			Type type = mc.getType();
-			//Get the type of the next segment
+			// Get the type of the next segment
 			Vector2 nextPos = new Vector2(currPos).add(vh);
 			if (dest.compare(dest)) {
 				running = false;
@@ -394,18 +401,18 @@ public class Map2D {
 		}
 		return acheiveable;
 	}
-	
+
 	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
-	
+
 	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
 		MapComponent mc = getMapComponent(currPos);
 		Type currType = mc.getType();
 		Heading head = calculateHeadingFromVector(vh);
 		return new Vector2(currPos).add(vh);
 	}
-	
+
 	public Heading calculateHeadingFromVector(Vector2 vh) {
 		Vector2 unitVector = vh.getUnitVector();
 		double x = unitVector.getX();
@@ -433,13 +440,13 @@ public class Map2D {
 				return Heading.O;
 			} else if (y == -1) {
 				return Heading.S;
-			}			
+			}
 		}
 		return Heading.O;
 	}
 
 	public String moveAlongWithSpeed(Entity e, Vector2 pos, float speed, Vector2 heading) {
-		return moveToWithVelocity(e,pos,new Vector2(heading).multiply(speed));
+		return moveToWithVelocity(e, pos, new Vector2(heading).multiply(speed));
 	}
 
 	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel) {
@@ -467,7 +474,7 @@ public class Map2D {
 		}
 		return ents.size();
 	}
-	
+
 	public int countEntitiesInRangeOfType(Vector2 pos, int range, String theType) {
 		List<MapComponent> mcs = new List<MapComponent>(theGridMap.getNeighboursFromVector(pos, range));
 		HashSet<Entity> ents = new HashSet<Entity>();
@@ -477,7 +484,7 @@ public class Map2D {
 				for (Entity e : cEnt) {
 					if (e.getType().compareToIgnoreCase(theType) == 0) {
 						ents.add(e);
-						System.out.println("irt: "+e.getEntityID() + " at " + mc.getPosition());
+						System.out.println("irt: " + e.getEntityID() + " at " + mc.getPosition());
 					}
 				}
 			}
@@ -548,11 +555,18 @@ public class Map2D {
 	@SuppressWarnings("unchecked")
 	public List<Entity> getEntitiesAtPos(Vector2 pos) {
 		MapComponent m = getMapComponent(pos);
-		return new List<Entity>((Collection<? extends Entity>)Utilities.getMapAsList(m.getContainedEntities()));
+		return new List<Entity>((Collection<? extends Entity>) Utilities.getMapAsList(m.getContainedEntities()));
 	}
 
 	public MapComponent getMapComponent(Vector2 pos) {
 		return theGridMap.getEntityAtPos(pos);
+	}
+	
+	public Type getMapComponentType(Vector2 pos) {
+		if (theGridMap.isOutOfBounds(pos)) {
+			return Type.UNSET;
+		}
+		return getMapComponent(pos).getType();
 	}
 
 	public boolean addEntity(Entity e, Vector2 pos) {
@@ -693,8 +707,8 @@ public class Map2D {
 		// 2: Store existing section of the map
 		for (Vector2 v : allCoords) {
 			existingMap.setMapComponent(v, getMapComponent(v));
-//			mcc.setPosition(new Vector2(v));
-//			mcc.setType(getMapComponent(v).getType());
+			// mcc.setPosition(new Vector2(v));
+			// mcc.setType(getMapComponent(v).getType());
 		}
 		return existingMap;
 	}
@@ -702,7 +716,7 @@ public class Map2D {
 	public void changeMapComponentType(Vector2 coords, Type type) {
 		getMapComponent(coords).setType(type);
 	}
-	
+
 	public void setMapComponent(Vector2 coords, MapComponent newMC) {
 		theGridMap.setEntityAtPos(coords, new MapComponent(newMC));
 	}
@@ -765,7 +779,7 @@ public class Map2D {
 		MapComponent mc = getMapComponent(t1Pos);
 		List<Entity> ents = new List<Entity>(mc.getContainedEntitiesAsList());
 		for (Entity e : ents) {
-			if (e.getType().compareToIgnoreCase(type) == 0){
+			if (e.getType().compareToIgnoreCase(type) == 0) {
 				count++;
 			}
 		}
@@ -774,12 +788,13 @@ public class Map2D {
 }
 
 enum Outcome {
-	OUT_OF_BOUNDS, INVALID, VALID, MOVED;
+	OUT_OF_BOUNDS, INVALID, VALID, MOVED, DEADEND;
 }
 
 enum Heading {
 	N, NE, E, SE, S, SW, W, NW, O
 }
+
 class SubMapStore {
 	Map2D map;
 	String name;
