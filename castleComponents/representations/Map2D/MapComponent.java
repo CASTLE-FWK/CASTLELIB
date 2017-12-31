@@ -21,6 +21,7 @@ public class MapComponent {
 	//The ways to store types
 	Map2D map;
 	Park park;
+	boolean exitPoint = false;
 	
 	public MapComponent(){
 		position = Vector2.NULL;
@@ -146,5 +147,11 @@ public class MapComponent {
 			str += v +", ";
 		}
 		return str;
+	}
+	public boolean isExitPoint() {
+		return exitPoint;
+	}
+	public void setExitPoint(boolean b) {
+		exitPoint = b;
 	}
 }

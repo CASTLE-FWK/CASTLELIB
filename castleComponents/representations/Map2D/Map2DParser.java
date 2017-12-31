@@ -18,7 +18,7 @@ public class Map2DParser {
 	int xCounter;
 	int yCounter;
 	
-	//Symbols
+	//Map Symbols
 	public final static char PARK = 'P';
 	public final static char NOGO = '*';
 	public final static char ROAD_H = '-';
@@ -127,9 +127,33 @@ public class Map2DParser {
 					case END_MAP:{
 						if (yCounter != (int)dimensions.getY()){
 							//Uh-oh
+							System.out.println("Dimensions stated and ones parsed do not match!");
 						}
-						//This will just be noise
+						if (line.startsWith("BEGIN LIGHT PLACEMENT")){
+							currState = ParseState.BEGIN_LIGHT_PLACEMENT;
+						}
 					}
+						break;
+					case BEGIN_LIGHT_PLACEMENT: {
+						if (line.startsWith("BEGIN LIGHT PLACEMENT")) {
+							currState = ParseState.READING_LIGHT_PLACEMENT;
+						}
+					}
+					break;
+					case READING_LIGHT_PLACEMENT:{
+						if (line.startsWith("END LIGHT PLACEMENT")) {
+							currState = ParseState.END_LIGHT_PLACEMENT;
+						} else {
+							parseLightContent(line);
+						}
+					}
+					break;
+					case END_LIGHT_PLACEMENT: {
+						
+					}
+					break;
+ 						//This will just be noise
+					
 				}								
 			}
 			
@@ -226,6 +250,15 @@ public class Map2DParser {
 		currentPosition.modify(currentPosition.getX(), yCounter);
 	}
 	
+	public void parseLightContent(String str) {
+		String[] half = str.split("(");
+		Vector2 pos = Vector2.parseFromString(half[0]);
+		String noBrace = half[1].replaceAll("", "").replaceAll("+\\s", "");
+		//TODO use this to configure the traffic light placements 
+		
+		
+	}
+	
 	public Map2D getMap(){
 		return theMapToStore;
 	}
@@ -233,5 +266,5 @@ public class Map2DParser {
 }
 
 enum ParseState{
-	NAME, DIMENSIONS, OPEN, SCALE, BEGIN_MAP, READING_MAP, END_MAP
+	NAME, DIMENSIONS, OPEN, SCALE, BEGIN_MAP, READING_MAP, END_MAP, BEGIN_LIGHT_PLACEMENT, END_LIGHT_PLACEMENT, READING_LIGHT_PLACEMENT
 }

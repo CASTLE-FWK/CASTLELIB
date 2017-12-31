@@ -107,6 +107,12 @@ public class Vector2 implements java.io.Serializable {
 		return this;
 	}
 	
+	public Vector2 add(double x, double y) {
+		this.x += x;
+		this.y += y;
+		return this;
+	}
+	
 	public double dotProduct(Vector2 v){
 		return (this.x * v.x + this.y * v.y);
 	}
@@ -141,11 +147,11 @@ public class Vector2 implements java.io.Serializable {
 	
 	public Vector2 getUnitVector() {
 		double x = getX() / Math.abs(getX());
-		if (x == Double.NaN) {
+		if (Double.isNaN(x)) {
 			x = 0;
 		}
 		double y =  getY() / Math.abs(getY());
-		if (y == Double.NaN) {
+		if (Double.isNaN(y)) {
 			y = 0;
 		}
 		return new Vector2(x, y);

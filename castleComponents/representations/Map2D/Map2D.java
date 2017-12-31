@@ -29,38 +29,44 @@ public class Map2D {
 	// Map changing
 	int changeCounter = 0;
 	HashMap<String, SubMapStore> subMapStorage;
+	
+	List<Vector2> listOfCarParkLocations;
+	List<Vector2> listOfMapEntryPoints;
 
 	public Map2D(String name, boolean isOpen, int scale) {
+		constructInit();
 		this.name = name;
 		this.open = isOpen;
 		this.scale = scale;
-		theGridMap = new Grid<MapComponent>();
 		range = new Range2D();
-		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Map2D(Vector2 gridDims) {
-		theGridMap = new Grid<MapComponent>();
+		constructInit();
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
 		range = Range2D.createRange(new Vector2(0, 0), getSize());
-		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Map2D(Map2D map) {
+		constructInit();
 		range = new Range2D(map.getRange());
 		name = map.getName();
 		open = map.isOpen();
 		scale = map.getScale();
 		setDimensions(map.getSize());
-		theGridMap = new Grid<MapComponent>();
-		subMapStorage = new HashMap<String, SubMapStore>();
 	}
 
 	public Map2D() {
-		theGridMap = new Grid<MapComponent>();
+		constructInit();
 		range = new Range2D();
+	}
+	
+	public void constructInit() {
+		theGridMap = new Grid<MapComponent>();
 		subMapStorage = new HashMap<String, SubMapStore>();
+		listOfCarParkLocations = new List<Vector2>();
+		listOfMapEntryPoints = new List<Vector2>();
 	}
 
 	public void init(Vector2 gridDims) {
@@ -342,7 +348,7 @@ public class Map2D {
 		}
 
 		if (isNoGo(intendedPos)) {
-			System.out.println("ENTITY " + e.getEntityID().toString() + " IS IN A NOGO");
+			System.out.println("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
 			return Outcome.INVALID;
 		}
 
@@ -350,18 +356,10 @@ public class Map2D {
 		MapComponent mc = getMapComponent(intendedPos);
 		MapComponent oldMC = getMapComponent(oldPos);
 		if (oldMC.isValidExit(intendedPos)) {
-
-			// Track road between curr pos and intended pos
-
-			// Surely there are some more bad cases here
-
-			// This will be slow
-			
 			boolean removeSuccess = oldMC.removeEntity(e.getID());
 			if (!removeSuccess) {
 				System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
 			}
-			// TODO: What the heck is this meant to do?
 
 			mc.addEntity(e);
 		} else {
@@ -375,7 +373,6 @@ public class Map2D {
 
 	}
 
-	// TODO
 	public boolean hasValidExit(Vector2 currPos, Vector2 intendedPos) {
 		MapComponent mc = getMapComponent(currPos);
 		return mc.isValidExit(intendedPos);
@@ -607,9 +604,22 @@ public class Map2D {
 	}
 
 	// Map building functions
-	public void addMapComponent(Vector2 pos, Type t) {
+	public void addMapComponent(Vector2 pos, Type t){
+		if (t == Type.PARK) {
+			addCarPark(pos);
+		} else if (t == Type.ENTRY) {
+			addEntryPoint(pos);
+		}
 		MapComponent mc = new MapComponent(pos, t);
 		theGridMap.addCell(mc, pos);
+	}
+	
+	public void addCarPark(Vector2 pos) {
+		listOfCarParkLocations.add(pos);
+	}
+	
+	public void addEntryPoint(Vector2 pos) {
+		listOfMapEntryPoints.add(pos);
 	}
 
 	public void setName(String n) {
@@ -627,7 +637,6 @@ public class Map2D {
 	public void setDimensions(Vector2 v) {
 		this.size = new Vector2(v);
 		this.dimensions = new Vector2(v).subtract(new Vector2(1, 1));
-		// this.dimensions = new Vector2(v);
 	}
 
 	public boolean validateDimensions() {
@@ -707,8 +716,11 @@ public class Map2D {
 		// 2: Store existing section of the map
 		for (Vector2 v : allCoords) {
 			existingMap.setMapComponent(v, getMapComponent(v));
-			// mcc.setPosition(new Vector2(v));
-			// mcc.setType(getMapComponent(v).getType());
+			if (getMapComponent(v).getType() == Type.PARK) {
+				existingMap.addCarPark(v);
+			} else if (getMapComponent(v).getType() == Type.ENTRY) {
+				existingMap.addEntryPoint(v);
+			}
 		}
 		return existingMap;
 	}
@@ -784,6 +796,47 @@ public class Map2D {
 			}
 		}
 		return count;
+	}
+
+	public List<Entity> getEntitiesOfTypeAtPos(String type, Vector2 t1Pos) {
+		MapComponent mc = getMapComponent(t1Pos);
+		List<Entity> returningEnts = new List<Entity>();
+		List<Entity> ents = new List<Entity>(mc.getContainedEntitiesAsList());
+		for (Entity e : ents) {
+			if (e.getType().compareToIgnoreCase(type) == 0) {
+				returningEnts.add(e);
+			}
+		}
+		return returningEnts;
+	}
+	
+	//TODO: A general search
+	public Vector2 findNearestSegmentOfType(Vector2 v, Type type) {
+		Vector2 theLoca = Vector2.NULL;
+		if (type == Type.PARK) {
+			Vector2 minVec = new Vector2();
+			double minDist = Double.MAX_VALUE;
+			for (Vector2 v2 : listOfCarParkLocations) {
+				double cand = v.calculateDistance(v2);
+				if (cand < minDist) {
+					minDist = cand;
+					minVec = new Vector2(v2);
+				}
+			}
+			theLoca = new Vector2(minVec);
+		} else if (type == Type.ENTRY) {
+			Vector2 minVec = new Vector2();
+			double minDist = Double.MAX_VALUE;
+			for (Vector2 v2 : listOfMapEntryPoints) {
+				double cand = v.calculateDistance(v2);
+				if (cand < minDist) {
+					minDist = cand;
+					minVec = new Vector2(v2);
+				}
+			}
+		}
+		
+		return theLoca;
 	}
 }
 

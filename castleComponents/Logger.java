@@ -61,7 +61,7 @@ public class Logger {
 	}
 
 	public void newStep(int stepNumber) {
-		output.sendLogToConsole("Step " + stepNumber);
+		output.sendLogToConsole("\n***************\nStep " + stepNumber);
 		stringBuilder = new StringBuilder();
 		stringBuilder.append("Step " + stepNumber + "\n");
 	}
