@@ -31,7 +31,7 @@ public class Map2D {
 	HashMap<String, SubMapStore> subMapStorage;
 	
 	List<Vector2> listOfCarParkLocations;
-	List<Vector2> listOfMapEntryPoints;
+	List<Vector2> listOfMapTransitPoints;
 
 	public Map2D(String name, boolean isOpen, int scale) {
 		constructInit();
@@ -66,7 +66,7 @@ public class Map2D {
 		theGridMap = new Grid<MapComponent>();
 		subMapStorage = new HashMap<String, SubMapStore>();
 		listOfCarParkLocations = new List<Vector2>();
-		listOfMapEntryPoints = new List<Vector2>();
+		listOfMapTransitPoints = new List<Vector2>();
 	}
 
 	public void init(Vector2 gridDims) {
@@ -605,21 +605,22 @@ public class Map2D {
 
 	// Map building functions
 	public void addMapComponent(Vector2 pos, Type t){
+		MapComponent mc = new MapComponent(pos, t);
+		theGridMap.addCell(mc, pos);
 		if (t == Type.PARK) {
 			addCarPark(pos);
 		} else if (t == Type.ENTRY) {
-			addEntryPoint(pos);
+			addTransitPoint(pos);
 		}
-		MapComponent mc = new MapComponent(pos, t);
-		theGridMap.addCell(mc, pos);
 	}
 	
 	public void addCarPark(Vector2 pos) {
 		listOfCarParkLocations.add(pos);
 	}
 	
-	public void addEntryPoint(Vector2 pos) {
-		listOfMapEntryPoints.add(pos);
+	public void addTransitPoint(Vector2 pos) {
+		listOfMapTransitPoints.add(pos);
+		getMapComponent(pos).setExitPoint(true);
 	}
 
 	public void setName(String n) {
@@ -718,8 +719,8 @@ public class Map2D {
 			existingMap.setMapComponent(v, getMapComponent(v));
 			if (getMapComponent(v).getType() == Type.PARK) {
 				existingMap.addCarPark(v);
-			} else if (getMapComponent(v).getType() == Type.ENTRY) {
-				existingMap.addEntryPoint(v);
+			} else if (getMapComponent(v).isExitPoint()) {
+				existingMap.addTransitPoint(v);
 			}
 		}
 		return existingMap;
@@ -810,6 +811,20 @@ public class Map2D {
 		return returningEnts;
 	}
 	
+	public Vector2 findNearestExitPoint(Vector2 v) {
+		System.out.println("num exits: "+listOfMapTransitPoints.size());
+		Vector2 minVec = new Vector2();
+		double minDist = Double.MAX_VALUE;
+		for (Vector2 v2 : listOfMapTransitPoints) {
+			double cand = v.calculateDistance(v2);
+			if (cand < minDist) {
+				minDist = cand;
+				minVec = new Vector2(v2);
+			}
+		}
+		return minVec;
+	}
+	
 	//TODO: A general search
 	public Vector2 findNearestSegmentOfType(Vector2 v, Type type) {
 		Vector2 theLoca = Vector2.NULL;
@@ -825,15 +840,7 @@ public class Map2D {
 			}
 			theLoca = new Vector2(minVec);
 		} else if (type == Type.ENTRY) {
-			Vector2 minVec = new Vector2();
-			double minDist = Double.MAX_VALUE;
-			for (Vector2 v2 : listOfMapEntryPoints) {
-				double cand = v.calculateDistance(v2);
-				if (cand < minDist) {
-					minDist = cand;
-					minVec = new Vector2(v2);
-				}
-			}
+			theLoca = findNearestExitPoint(v);
 		}
 		
 		return theLoca;

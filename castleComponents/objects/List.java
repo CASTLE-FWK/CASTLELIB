@@ -3,6 +3,9 @@ package castleComponents.objects;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import stdSimLib.utilities.RandomGen;
+import stdSimLib.utilities.Utilities;
+
 public class List<T> extends ArrayList<T>{
 
 	/**
@@ -39,6 +42,10 @@ public class List<T> extends ArrayList<T>{
 	
 	public T peek() {
 		return super.get(0);
+	}
+	
+	public T getRandom() {
+		return get(RandomGen.generateRandomRangeInteger(0, size()-1));
 	}
 	
 }

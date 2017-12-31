@@ -45,6 +45,7 @@ public class MapComponent {
 		setPosition(mc.getPosition());
 		validExits = new ArrayList<Vector2>();
 		containedEntities = new HashMap<String, Entity>();
+		setExitPoint(mc.isExitPoint());
 		
 		HashMap<String, Entity> oldHashMap = mc.getContainedEntities();
 		Set<String> keys = oldHashMap.keySet();
