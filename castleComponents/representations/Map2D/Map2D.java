@@ -29,7 +29,7 @@ public class Map2D {
 	// Map changing
 	int changeCounter = 0;
 	HashMap<String, SubMapStore> subMapStorage;
-	
+
 	List<Vector2> listOfCarParkLocations;
 	List<Vector2> listOfMapTransitPoints;
 
@@ -61,7 +61,7 @@ public class Map2D {
 		constructInit();
 		range = new Range2D();
 	}
-	
+
 	public void constructInit() {
 		theGridMap = new Grid<MapComponent>();
 		subMapStorage = new HashMap<String, SubMapStore>();
@@ -363,15 +363,40 @@ public class Map2D {
 
 			mc.addEntity(e);
 		} else {
-			System.out.println("NOT VALID EXIT. CURRPOS: "+oldPos+" new pos: "+intendedPos);
-			System.out.println("ve: "+oldMC.validExitsToString());
+			System.out.println("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
+			System.out.println("ve: " + oldMC.validExitsToString());
 			// Turn the car around
 			return Outcome.DEADEND;
 		}
 
 		return Outcome.VALID;
-
 	}
+
+	public Outcome moveToFreely(Entity e, Vector2 oldPos, Vector2 intendedPos) {
+		if (!range.containsIndexPoint(intendedPos)) {
+			return Outcome.OUT_OF_BOUNDS;
+		}
+		boolean removeSuccess = moveEntityBetweenMapComponents(e, oldPos, intendedPos);
+
+//		boolean removeSuccess = oldMC.removeEntity(e.getID());
+		if (!removeSuccess) {
+			System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+		}
+//
+//		mc.addEntity(e);
+
+		return Outcome.VALID;
+	}
+	
+	public boolean moveEntityBetweenMapComponents(Entity e, Vector2 source, Vector2 dest) {
+		MapComponent sourceMC = getMapComponent(source);
+		MapComponent destMC = getMapComponent(dest);
+		
+		boolean b = sourceMC.removeEntity(e.getID());
+		destMC.addEntity(e);
+		return b;
+	}
+	
 
 	public boolean hasValidExit(Vector2 currPos, Vector2 intendedPos) {
 		MapComponent mc = getMapComponent(currPos);
@@ -399,6 +424,7 @@ public class Map2D {
 		return acheiveable;
 	}
 
+	
 	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
@@ -558,7 +584,7 @@ public class Map2D {
 	public MapComponent getMapComponent(Vector2 pos) {
 		return theGridMap.getEntityAtPos(pos);
 	}
-	
+
 	public Type getMapComponentType(Vector2 pos) {
 		if (theGridMap.isOutOfBounds(pos)) {
 			return Type.UNSET;
@@ -604,7 +630,7 @@ public class Map2D {
 	}
 
 	// Map building functions
-	public void addMapComponent(Vector2 pos, Type t){
+	public void addMapComponent(Vector2 pos, Type t) {
 		MapComponent mc = new MapComponent(pos, t);
 		theGridMap.addCell(mc, pos);
 		if (t == Type.PARK) {
@@ -613,11 +639,11 @@ public class Map2D {
 			addTransitPoint(pos);
 		}
 	}
-	
+
 	public void addCarPark(Vector2 pos) {
 		listOfCarParkLocations.add(pos);
 	}
-	
+
 	public void addTransitPoint(Vector2 pos) {
 		listOfMapTransitPoints.add(pos);
 		getMapComponent(pos).setExitPoint(true);
@@ -810,9 +836,9 @@ public class Map2D {
 		}
 		return returningEnts;
 	}
-	
+
 	public Vector2 findNearestExitPoint(Vector2 v) {
-		System.out.println("num exits: "+listOfMapTransitPoints.size());
+		System.out.println("num exits: " + listOfMapTransitPoints.size());
 		Vector2 minVec = new Vector2();
 		double minDist = Double.MAX_VALUE;
 		for (Vector2 v2 : listOfMapTransitPoints) {
@@ -824,8 +850,8 @@ public class Map2D {
 		}
 		return minVec;
 	}
-	
-	//TODO: A general search
+
+	// TODO: A general search
 	public Vector2 findNearestSegmentOfType(Vector2 v, Type type) {
 		Vector2 theLoca = Vector2.NULL;
 		if (type == Type.PARK) {
@@ -842,13 +868,9 @@ public class Map2D {
 		} else if (type == Type.ENTRY) {
 			theLoca = findNearestExitPoint(v);
 		}
-		
+
 		return theLoca;
 	}
-}
-
-enum Outcome {
-	OUT_OF_BOUNDS, INVALID, VALID, MOVED, DEADEND;
 }
 
 enum Heading {
