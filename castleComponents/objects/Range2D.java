@@ -8,6 +8,7 @@ public class Range2D {
 	Vector2 pointB;
 	Vector2 pointC;
 	Vector2 pointD;
+	Vector2 centre;
 	double minX;
 	double minY;
 	double maxX;
@@ -97,6 +98,10 @@ public class Range2D {
 		
 		this.minY = Utilities.calculateMin(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});		
 		this.maxY = Utilities.calculateMax(new double[]{pointA.getY(), pointB.getY(), pointC.getY(), pointD.getY()});
+		
+		double x = this.minX + ((this.maxX - this.minX)/2.0);
+		double y = this.minY + ((this.maxY - this.minY)/2.0);
+		centre = new Vector2(x,y);
 	}
 	
 	public List<Vector2> getAllCoordPairs(){
@@ -112,6 +117,10 @@ public class Range2D {
 		}
 		
 		return allCoordPairs;
+	}
+	
+	public Vector2 getCentre() {
+		return centre;
 	}
 	
 	public List<Vector2> getAllIndexCoordPairs(){
@@ -146,8 +155,8 @@ public class Range2D {
 				new Vector2(b.getX(), a.getY()),
 				new Vector2(b.getX(), b.getY()));
 		return nr;
-		
 	}
+	
 	
 	public static Range2D parseFromString(String str) {
 		//is of the form: <(0,0),(0,3),(3,0)(3,3)>

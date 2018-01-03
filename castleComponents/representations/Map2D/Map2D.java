@@ -106,7 +106,6 @@ public class Map2D {
 				theGridMap.getGrid()[j][i] = new MapComponent(oldGrid[j][i]);
 			}
 		}
-		// theGridMap.copy(MapComponent.class, theMap.theGridMap, lp);
 	}
 
 	public Vector2 getDimensions() {
@@ -308,12 +307,16 @@ public class Map2D {
 	public Entity getEntity() {
 		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
 		if (mapComponents.size() > 1) {
-			System.out.println("Map2D: More than 1 entity here");
+			System.out.println("Map2D: More than 1 MapComponent here");
 			return null;
 		}
 		HashMap<String, Entity> ents = mapComponents.get(0).getContainedEntities();
 		if (ents.size() > 1) {
 			System.out.println("Map2D: More than 1 entity in the component");
+			System.out.println("They are :");
+			for (Entity e : ents.values()) {
+				System.out.println(e.getEntityID());
+			}
 			return null;
 		}
 		return (Entity) mapComponents.get(0).getContainedEntities().values().toArray()[0];
@@ -378,25 +381,24 @@ public class Map2D {
 		}
 		boolean removeSuccess = moveEntityBetweenMapComponents(e, oldPos, intendedPos);
 
-//		boolean removeSuccess = oldMC.removeEntity(e.getID());
+		// boolean removeSuccess = oldMC.removeEntity(e.getID());
 		if (!removeSuccess) {
 			System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
 		}
-//
-//		mc.addEntity(e);
+		//
+		// mc.addEntity(e);
 
 		return Outcome.VALID;
 	}
-	
+
 	public boolean moveEntityBetweenMapComponents(Entity e, Vector2 source, Vector2 dest) {
 		MapComponent sourceMC = getMapComponent(source);
 		MapComponent destMC = getMapComponent(dest);
-		
+
 		boolean b = sourceMC.removeEntity(e.getID());
 		destMC.addEntity(e);
 		return b;
 	}
-	
 
 	public boolean hasValidExit(Vector2 currPos, Vector2 intendedPos) {
 		MapComponent mc = getMapComponent(currPos);
@@ -424,7 +426,6 @@ public class Map2D {
 		return acheiveable;
 	}
 
-	
 	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
@@ -507,7 +508,6 @@ public class Map2D {
 				for (Entity e : cEnt) {
 					if (e.getType().compareToIgnoreCase(theType) == 0) {
 						ents.add(e);
-						System.out.println("irt: " + e.getEntityID() + " at " + mc.getPosition());
 					}
 				}
 			}
@@ -881,11 +881,16 @@ class SubMapStore {
 	Map2D map;
 	String name;
 	Range2D r2d;
+	Vector2 offset = new Vector2();
 
 	public SubMapStore(Map2D map, String name, Range2D r2d) {
 		this.map = map;
 		this.name = name;
 		this.r2d = r2d;
+		
+		//TODO calculate offset
+		offset = r2d.getPoints()[0];
+		
 	}
 
 	public Map2D getMap() {
@@ -914,5 +919,9 @@ class SubMapStore {
 
 	public boolean containsPoint(Vector2 v) {
 		return r2d.containsPoint(v);
+	}
+	
+	public Vector2 getOffset() {
+		return offset;
 	}
 }
