@@ -97,6 +97,7 @@ public class Map2D {
 		scale = theMap.getScale();
 		open = theMap.isOpen();
 		range = new Range2D(theMap.getRange());
+		listOfMapTransitPoints = theMap.getListOfMapTransitPoints();
 
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
@@ -598,7 +599,7 @@ public class Map2D {
 	}
 
 	public void addEntityOverRange(Entity e, Range2D r2d) {
-		List<Vector2> allCoordPairs = r2d.getAllIndexCoordPairs();
+		List<Vector2> allCoordPairs = r2d.getAllCoordPairs();
 		for (Vector2 v : allCoordPairs) {
 			addEntity(e, v);
 		}
