@@ -871,6 +871,10 @@ public class Map2D {
 
 		return theLoca;
 	}
+	
+	public List<Vector2> getListOfMapTransitPoints(){
+		return listOfMapTransitPoints;
+	}
 }
 
 enum Heading {

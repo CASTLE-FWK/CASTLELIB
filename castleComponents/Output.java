@@ -72,13 +72,15 @@ public class Output {
 		writingModelDataToDB = wddb;
 		
 		
-		forceToConsole("logging to console: "+ltc
-				+"\nlogging to file: "+ltf
-				+"\nlogging to database: "+ltd
-				+"\nwriting execution data to console: "+wdc
-				+"\nwriting execution data to file: "+wdf
-				+"\nwriting execution data to database: "+wddb
-				+"\nwriting to file path: "+logFilePath
+		forceToConsole("********SETTING UP LOGGING********"
+				+ "\n* logging to console: "+ltc
+				+"\n* logging to file: "+ltf
+				+"\n* logging to database: "+ltd
+				+"\n* writing execution data to console: "+wdc
+				+"\n* writing execution data to file: "+wdf
+				+"\n* writing execution data to database: "+wddb
+				+"\n* writing to file path: "+logFilePath
+				+"\n********FINISHED LOGGING SETUP********"
 		);
 		
 		

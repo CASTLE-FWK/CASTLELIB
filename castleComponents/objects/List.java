@@ -45,6 +45,9 @@ public class List<T> extends ArrayList<T>{
 	}
 	
 	public T getRandom() {
+		if (size() == 0) {
+			return null;
+		}
 		return get(RandomGen.generateRandomRangeInteger(0, size()-1));
 	}
 	
