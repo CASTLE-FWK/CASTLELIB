@@ -286,8 +286,7 @@ public class Map2DParser {
 			int patternTime = Integer.parseInt(noColon[1]);
 			patternPairs.add(new Vector2(patternNum, patternTime));
 		}
-		
-		
+		theMapToStore.addTrafficLight(pos, patternPairs);
 	}
 
 	public void parseExit(String str) {

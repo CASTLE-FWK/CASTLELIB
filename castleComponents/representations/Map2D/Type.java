@@ -16,10 +16,8 @@ public enum Type {
 	public boolean isVert() {
 		return (this == ROAD_V || this == ONEWAY_N || this == ONEWAY_S);
 	}
+	
+	public boolean isJunction() {
+		return (this == Type.FOUR_WAY || this == T_SEC);
+	}
 }
-
-
-
-//ROAD_H, ROAD_V, 4WAY, ONEWAY_L, ONEWAY_R, 
-	//ONEWAY_U, ONEWAY_D, T-SEC, NOGO, PARK, MAP, UNSET, EVENT_LOCATION
-//-, |, +, <, >, ;, :, T, *, P, M, U, E

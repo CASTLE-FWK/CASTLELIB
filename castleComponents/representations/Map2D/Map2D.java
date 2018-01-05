@@ -32,6 +32,7 @@ public class Map2D {
 
 	List<Vector2> listOfCarParkLocations;
 	List<Vector2> listOfMapTransitPoints;
+	List<TrafficLight> listOfTrafficLights;
 
 	public Map2D(String name, boolean isOpen, int scale) {
 		constructInit();
@@ -67,6 +68,7 @@ public class Map2D {
 		subMapStorage = new HashMap<String, SubMapStore>();
 		listOfCarParkLocations = new List<Vector2>();
 		listOfMapTransitPoints = new List<Vector2>();
+		listOfTrafficLights = new List<TrafficLight>();
 	}
 
 	public void init(Vector2 gridDims) {
@@ -88,7 +90,7 @@ public class Map2D {
 		setDimensions(gridDims);
 		theGridMap.init(gridDims, MapComponent.class);
 		importMap(pathToMapFile);
-		System.out.println("Map2D file initialized with name " + name + " and dims " + dimensions.toString());
+		log("Map2D file initialized with name " + name + " and dims " + dimensions.toString());
 		System.out.println(printMap());
 	}
 
@@ -109,8 +111,11 @@ public class Map2D {
 		}
 	}
 
+	public ArrayList<TrafficLight> getListOfTrafficLights(){
+		return listOfTrafficLights;
+	}
 	public Vector2 getDimensions() {
-		return dimensions; // TODO Make sure this gets set
+		return dimensions;
 	}
 
 	public void setRange(Range2D r) {
@@ -190,7 +195,7 @@ public class Map2D {
 				if (W.isHoriz() && E.isHoriz()) {
 					if (N.isVert() && !S.isVert()) {
 						if (N == Type.ONEWAY_S) {
-							// Yay TODO
+							// Yay
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 						} else {
@@ -201,7 +206,7 @@ public class Map2D {
 						}
 					} else if (!N.isVert() && S.isVert()) {
 						if (S == Type.ONEWAY_N) {
-							// Yay TODO
+							// Yay
 							mc.addValidExit(Wp);
 							mc.addValidExit(Ep);
 						} else {
@@ -214,7 +219,7 @@ public class Map2D {
 				} else if (N.isVert() && S.isVert()) {
 					if (W.isHoriz() && !E.isHoriz()) {
 						if (W == Type.ONEWAY_E) {
-							// Yay TODO
+							// Yay
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 						} else {
@@ -225,7 +230,7 @@ public class Map2D {
 						}
 					} else if (!W.isHoriz() && E.isHoriz()) {
 						if (E == Type.ONEWAY_W) {
-							// Yay TODO
+							// Yay
 							mc.addValidExit(Np);
 							mc.addValidExit(Sp);
 						} else {
@@ -308,15 +313,15 @@ public class Map2D {
 	public Entity getEntity() {
 		List<MapComponent> mapComponents = new List<MapComponent>(theGridMap.getEntities());
 		if (mapComponents.size() > 1) {
-			System.out.println("Map2D: More than 1 MapComponent here");
+			log("Map2D: More than 1 MapComponent here");
 			return null;
 		}
 		HashMap<String, Entity> ents = mapComponents.get(0).getContainedEntities();
 		if (ents.size() > 1) {
-			System.out.println("Map2D: More than 1 entity in the component");
-			System.out.println("They are :");
+			log("Map2D: More than 1 entity in the component");
+			log("They are :");
 			for (Entity e : ents.values()) {
-				System.out.println(e.getEntityID());
+				log(e.getEntityID());
 			}
 			return null;
 		}
@@ -346,13 +351,13 @@ public class Map2D {
 	// Heading?
 	public Outcome moveTo(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		// Move an entity to a particular location
-		// System.out.println("intendedPos: " + intendedPos.toString());
+		// log("intendedPos: " + intendedPos.toString());
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
 
 		if (isNoGo(intendedPos)) {
-			System.out.println("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
+			log("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
 			return Outcome.INVALID;
 		}
 
@@ -362,13 +367,12 @@ public class Map2D {
 		if (oldMC.isValidExit(intendedPos)) {
 			boolean removeSuccess = oldMC.removeEntity(e.getID());
 			if (!removeSuccess) {
-				System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+				log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
 			}
 
 			mc.addEntity(e);
 		} else {
-			System.out.println("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
-			System.out.println("ve: " + oldMC.validExitsToString());
+			log("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
 			// Turn the car around
 			return Outcome.DEADEND;
 		}
@@ -384,7 +388,7 @@ public class Map2D {
 
 		// boolean removeSuccess = oldMC.removeEntity(e.getID());
 		if (!removeSuccess) {
-			System.out.println("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+			log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
 		}
 		//
 		// mc.addEntity(e);
@@ -537,10 +541,6 @@ public class Map2D {
 	// How do we add Maps in Maps and still be able to retrieve these submaps
 	public void addSubMap(Vector2 topLeft, Map2D theSubMap) {
 		Vector2 size = theSubMap.getSize();
-		// Is the subMap + its setting position to big for the current map?
-		// TODO
-		// Place the submap in
-
 		// What is the actual range of this submap now that it's contained
 		Range2D nr2d = new Range2D(theSubMap.getRange());
 		nr2d.shiftByVector(topLeft);
@@ -635,9 +635,10 @@ public class Map2D {
 		MapComponent mc = new MapComponent(pos, t);
 		theGridMap.addCell(mc, pos);
 		if (t == Type.PARK) {
-			addCarPark(pos);
+			log("adding car park to "+pos);
+			addCarPark(new Vector2(pos));
 		} else if (t == Type.ENTRY) {
-			addTransitPoint(pos);
+			addTransitPoint(new Vector2(pos));
 		}
 	}
 
@@ -648,6 +649,19 @@ public class Map2D {
 	public void addTransitPoint(Vector2 pos) {
 		listOfMapTransitPoints.add(pos);
 		getMapComponent(pos).setExitPoint(true);
+	}
+	
+	public void addTrafficLight(Vector2 pos, ArrayList<Vector2> patterns) {
+		if (getMapComponent(pos).getType().isJunction()) {
+			listOfTrafficLights.add(new TrafficLight(pos, patterns));
+		} else {
+			log("Traffic light being added not at a junction");
+		}
+		
+	}
+	
+	public void log(Object str) {
+		System.out.println("Map2D Warning: "+str);
 	}
 
 	public void setName(String n) {
@@ -668,8 +682,8 @@ public class Map2D {
 	}
 
 	public boolean validateDimensions() {
-		System.out.println(dimensions.toString());
-		System.out.println(theGridMap.getDimensions().toString());
+		log(dimensions.toString());
+		log(theGridMap.getDimensions().toString());
 		return dimensions.compare(theGridMap.getDimensions());
 	}
 
@@ -726,7 +740,7 @@ public class Map2D {
 					str += Map2DParser.EVENT;
 					break;
 				default:
-					System.out.println("aosjhdilajsd");
+					log("aosjhdilajsd");
 					break;
 				}
 			}
@@ -776,8 +790,8 @@ public class Map2D {
 		for (Vector2 v : allCoords) {
 			changeMapComponentType(v, newSection.getMapComponent(v).getType());
 		}
-		System.out.println("MAGICS: " + allCoords.size());
-		System.out.println(printMap());
+		log("MAGICS: " + allCoords.size());
+		log(printMap());
 
 		return changeOccured;
 	}
@@ -839,7 +853,7 @@ public class Map2D {
 	}
 
 	public Vector2 findNearestExitPoint(Vector2 v) {
-		System.out.println("num exits: " + listOfMapTransitPoints.size());
+		log("num exits: " + listOfMapTransitPoints.size());
 		Vector2 minVec = new Vector2();
 		double minDist = Double.MAX_VALUE;
 		for (Vector2 v2 : listOfMapTransitPoints) {
@@ -852,7 +866,6 @@ public class Map2D {
 		return minVec;
 	}
 
-	// TODO: A general search
 	public Vector2 findNearestSegmentOfType(Vector2 v, Type type) {
 		Vector2 theLoca = Vector2.NULL;
 		if (type == Type.PARK) {
@@ -872,9 +885,13 @@ public class Map2D {
 
 		return theLoca;
 	}
-	
-	public List<Vector2> getListOfMapTransitPoints(){
+
+	public List<Vector2> getListOfMapTransitPoints() {
 		return listOfMapTransitPoints;
+	}
+	
+	public List<Vector2> getListOfCarParkLocations(){
+		return listOfCarParkLocations;
 	}
 }
 
@@ -892,10 +909,10 @@ class SubMapStore {
 		this.map = map;
 		this.name = name;
 		this.r2d = r2d;
-		
-		//TODO calculate offset
+
+		// TODO calculate offset
 		offset = r2d.getPoints()[0];
-		
+
 	}
 
 	public Map2D getMap() {
@@ -925,7 +942,7 @@ class SubMapStore {
 	public boolean containsPoint(Vector2 v) {
 		return r2d.containsPoint(v);
 	}
-	
+
 	public Vector2 getOffset() {
 		return offset;
 	}
