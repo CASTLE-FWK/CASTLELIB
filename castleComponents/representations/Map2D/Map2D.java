@@ -99,7 +99,14 @@ public class Map2D {
 		scale = theMap.getScale();
 		open = theMap.isOpen();
 		range = new Range2D(theMap.getRange());
-		listOfMapTransitPoints = theMap.getListOfMapTransitPoints();
+		listOfMapTransitPoints = new List<Vector2>();
+		for (Vector2 v : theMap.getListOfMapTransitPoints()) {
+			listOfMapTransitPoints.add(new Vector2(v));
+		}
+		listOfTrafficLights = new List<TrafficLight>();
+		for (TrafficLight tl : theMap.getListOfTrafficLights()) {
+			listOfTrafficLights.add(new TrafficLight(tl.getLocation(), tl.getLightPatterns()));
+		}
 
 		Grid<MapComponent> oldMap = theMap.theGridMap;
 		theGridMap.init(oldMap.getDimensions(), MapComponent.class);
@@ -111,8 +118,28 @@ public class Map2D {
 		}
 	}
 
-	public ArrayList<TrafficLight> getListOfTrafficLights(){
+	public List<TrafficLight> getListOfTrafficLights(){
 		return listOfTrafficLights;
+	}
+	
+	public TrafficLight getLightAtPosition(Vector2 pos) {
+		for (TrafficLight tl : listOfTrafficLights) {
+			if (tl.getLocation().compare(pos)) {
+				return tl;
+			}
+		}
+		log("no traffic light was found at location "+pos);
+		return null;
+	}
+	
+	public List<TrafficLight> getTrafficLightsInRange(Range2D r2d) {
+		List<TrafficLight> tlList = new List<TrafficLight>();
+		for (TrafficLight tl : listOfTrafficLights) {
+			if (r2d.containsPoint(tl.getLocation())) {
+				tlList.add(tl);
+			}
+		}
+		return tlList;
 	}
 	public Vector2 getDimensions() {
 		return dimensions;
@@ -120,12 +147,10 @@ public class Map2D {
 
 	public void setRange(Range2D r) {
 		this.range = new Range2D(r);
-		// Apply this to Grid
 	}
 
 	public void setRange(Vector2 a, Vector2 b, Vector2 c, Vector2 d) {
 		range = new Range2D(a, b, c, d);
-		// Apply this to Grid
 	}
 
 	public Grid<MapComponent> getTheGridMap() {
@@ -603,7 +628,6 @@ public class Map2D {
 		for (Vector2 v : allCoordPairs) {
 			addEntity(e, v);
 		}
-
 	}
 
 	public Park getParkAtPosition(Vector2 pos) {
@@ -654,10 +678,11 @@ public class Map2D {
 	public void addTrafficLight(Vector2 pos, ArrayList<Vector2> patterns) {
 		if (getMapComponent(pos).getType().isJunction()) {
 			listOfTrafficLights.add(new TrafficLight(pos, patterns));
+			getMapComponent(pos).setTrafficLightPresent(true);
+//			log("adding light at "+pos+" and is set to "+getMapComponent(pos).isTrafficLightPresent());
 		} else {
-			log("Traffic light being added not at a junction");
+			log("Traffic light being added not at a junction. Check position "+pos);
 		}
-		
 	}
 	
 	public void log(Object str) {
@@ -757,11 +782,17 @@ public class Map2D {
 		List<Vector2> allCoords = coords.getAllCoordPairs();
 		// 2: Store existing section of the map
 		for (Vector2 v : allCoords) {
-			existingMap.setMapComponent(v, getMapComponent(v));
-			if (getMapComponent(v).getType() == Type.PARK) {
+			MapComponent mc = getMapComponent(v);
+			existingMap.setMapComponent(v, mc);
+			if (mc.getType() == Type.PARK) {
 				existingMap.addCarPark(v);
-			} else if (getMapComponent(v).isExitPoint()) {
+			}
+			if (mc.isExitPoint()) {
 				existingMap.addTransitPoint(v);
+			} 
+			if (mc.isTrafficLightPresent()) {
+				TrafficLight tl = getLightAtPosition(v);
+				existingMap.addTrafficLight(tl.getLocation(), tl.getLightPatterns());
 			}
 		}
 		return existingMap;

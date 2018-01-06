@@ -22,6 +22,7 @@ public class MapComponent {
 	Map2D map;
 	Park park;
 	boolean exitPoint = false;
+	boolean trafficLightPresent = false;
 	
 	public MapComponent(){
 		position = Vector2.NULL;
@@ -46,6 +47,7 @@ public class MapComponent {
 		validExits = new ArrayList<Vector2>();
 		containedEntities = new HashMap<String, Entity>();
 		setExitPoint(mc.isExitPoint());
+		setTrafficLightPresent(mc.isTrafficLightPresent());
 		
 		HashMap<String, Entity> oldHashMap = mc.getContainedEntities();
 		Set<String> keys = oldHashMap.keySet();
@@ -57,7 +59,6 @@ public class MapComponent {
 		for (Vector2 v : oldVE) {
 			addValidExit(new Vector2(v));
 		}
-		
 	}
 	
 	public void setPosition(Vector2 p){
@@ -154,5 +155,11 @@ public class MapComponent {
 	}
 	public void setExitPoint(boolean b) {
 		exitPoint = b;
+	}
+	public boolean isTrafficLightPresent() {
+		return trafficLightPresent;
+	}
+	public void setTrafficLightPresent(boolean b) {
+		trafficLightPresent = b;
 	}
 }

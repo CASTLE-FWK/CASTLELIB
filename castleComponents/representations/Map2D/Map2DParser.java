@@ -103,6 +103,7 @@ public class Map2DParser {
 						scale = Integer.parseInt(line.split(":")[1].trim().split("x")[0]);
 						currState = ParseState.BEGIN_MAP;
 						theMapToStore.setScale(scale);
+						System.out.println("Note: Scaling is not yet implemented.");
 					} else {
 						// error
 					}
@@ -131,11 +132,11 @@ public class Map2DParser {
 						// Uh-oh
 						System.out.println("Dimensions stated and ones parsed do not match!");
 					}
-					// if (line.startsWith("BEGIN LIGHT PLACEMENT")) {
-					// currState = ParseState.BEGIN_LIGHT_PLACEMENT;
-					// } else if (line.startsWith("BEGIN TRANSITS")) {
-					// currState = ParseState.BEGIN_TRANSITS;
-					// }
+					//Do the scaling
+					if (scale > 1) {
+						
+					}
+					
 
 					break;
 				case BEGIN_TRANSITS:
@@ -153,15 +154,11 @@ public class Map2DParser {
 					break;
 				case END_TRANSITS:
 					currState = ParseState.BEGIN_LIGHT_PLACEMENT;
-					// if (line.startsWith("BEGIN LIGHT PLACEMENT")) {
-					// currState = ParseState.BEGIN_LIGHT_PLACEMENT;
-					// }
 					break;
 				case BEGIN_LIGHT_PLACEMENT:
+					currState = ParseState.READING_LIGHT_PLACEMENT;
 					if (line.startsWith("BEGIN LIGHT PLACEMENT")) {
-						currState = ParseState.READING_LIGHT_PLACEMENT;
 					}
-
 					break;
 				case READING_LIGHT_PLACEMENT:
 					if (line.startsWith("END LIGHT PLACEMENT")) {
@@ -272,18 +269,17 @@ public class Map2DParser {
 	}
 
 	public void parseLightContent(String str) {
-		String[] half = str.split("(");
+		String[] half = str.split("\\(");
 		double x = Double.parseDouble(str.split("<")[1].split(",")[0]);
 		double y = Double.parseDouble(str.split("<")[1].split(",")[1].split(">")[0]);
 		Vector2 pos = new Vector2(x, y);
-		String noBrace = half[1].replaceAll("", "").replaceAll("+\\s", "");
+		String noBrace = half[1].replaceAll("", "").replaceAll("\\s+", "");
 		String[] patterns = noBrace.split(",");
-		// TODO use this to configure the traffic light placements
 		ArrayList<Vector2> patternPairs = new ArrayList<Vector2>();
 		for (String s : patterns) {
 			String[] noColon = s.split(":");
 			int patternNum = Integer.parseInt(noColon[0]);
-			int patternTime = Integer.parseInt(noColon[1]);
+			int patternTime = Integer.parseInt(noColon[1].replaceAll("\\)",""));
 			patternPairs.add(new Vector2(patternNum, patternTime));
 		}
 		theMapToStore.addTrafficLight(pos, patternPairs);

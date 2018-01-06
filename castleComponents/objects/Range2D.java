@@ -167,18 +167,14 @@ public class Range2D {
 				new Vector2(noCommas[1]),
 				new Vector2(noCommas[2]),
 				new Vector2(noCommas[3]));
-		
 	}
 
 	public List<Range2D> chunkRange(int numberOfFogs) {
-		// TODO Auto-generated method stub
-		
 		List<Range2D> chunks = new List<Range2D>();
 		if (numberOfFogs == 1) {
 			chunks.add(this);
 			return chunks;
 		}
-		
 		
 		this.minX = Utilities.calculateMin(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
 		this.maxX = Utilities.calculateMax(new double[]{pointA.getX(), pointB.getX(), pointC.getX(), pointD.getX()});
@@ -191,8 +187,6 @@ public class Range2D {
 		
 		double xChunkSize = xDist / (double)numberOfFogs;
 		double yChunkSize = yDist / (double)numberOfFogs;
-		
-		
 		
 		return chunks;
 	}
