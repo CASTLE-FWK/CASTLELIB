@@ -207,6 +207,10 @@ public class Entity implements Runnable {
 	public void sendMessage() {
 
 	}
+	
+	public void errLog(Object o) {
+		System.out.println(getType()+" Warning: "+o.toString());
+	}
 
 	// Logging
 	public void muteLogger() {

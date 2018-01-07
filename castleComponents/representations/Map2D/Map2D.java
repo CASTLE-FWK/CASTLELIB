@@ -65,6 +65,7 @@ public class Map2D {
 
 	public void constructInit() {
 		theGridMap = new Grid<MapComponent>();
+		theGridMap.setWrap(false);
 		subMapStorage = new HashMap<String, SubMapStore>();
 		listOfCarParkLocations = new List<Vector2>();
 		listOfMapTransitPoints = new List<Vector2>();
@@ -376,7 +377,6 @@ public class Map2D {
 	// Heading?
 	public Outcome moveTo(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		// Move an entity to a particular location
-		// log("intendedPos: " + intendedPos.toString());
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
 		}
@@ -410,13 +410,9 @@ public class Map2D {
 			return Outcome.OUT_OF_BOUNDS;
 		}
 		boolean removeSuccess = moveEntityBetweenMapComponents(e, oldPos, intendedPos);
-
-		// boolean removeSuccess = oldMC.removeEntity(e.getID());
 		if (!removeSuccess) {
 			log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
 		}
-		//
-		// mc.addEntity(e);
 
 		return Outcome.VALID;
 	}
@@ -538,6 +534,7 @@ public class Map2D {
 				for (Entity e : cEnt) {
 					if (e.getType().compareToIgnoreCase(theType) == 0) {
 						ents.add(e);
+						log(e.getEntityID()+ " has been found as a neighbour candidate");
 					}
 				}
 			}

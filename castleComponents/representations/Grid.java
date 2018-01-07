@@ -20,6 +20,7 @@ public class Grid<E> implements Representation<E> {
 	LayoutParameters layoutParameters;
 
 	boolean allowPhantoms = false;
+	boolean wraps = true;
 	E[] phantoms_U;
 	E[] phantoms_UR;
 	E[] phantoms_R;
@@ -31,16 +32,14 @@ public class Grid<E> implements Representation<E> {
 
 	List<E> allContainedEntities;
 
-	// Neighbors<E> phantoms_U;
-	// Neighbors<E> phantoms_UR;
-	// Neighbors<E> phantoms_R;
-	// Neighbors<E> phantoms_DR;
-	// Neighbors<E> phantoms_D;
-	// Neighbors<E> phantoms_DL;
-	// Neighbors<E> phantoms_L;
-	// Neighbors<E> phantoms_UL;
-
 	Class<E> theClass;
+	
+	public void setWrap(boolean b) {
+		wraps = b;
+	}
+	public boolean isWrapped() {
+		return wraps;
+	}
 
 	public Grid(Class<E> c, int X, int Y) {
 		if (X == 0) {
@@ -362,12 +361,13 @@ public class Grid<E> implements Representation<E> {
 			if (y >= Y || y < 0 || x >= X || x < 0) {
 				return null;
 			}
-
+			
 			if (y == 0) {
-				return grid[x][Y - 1];
+				if (wraps)
+					return grid[x][Y - 1];
+				else
+					return null;
 			} else {
-//				System.out.println("x: " + x +" y-1: "+(y-1));
-//				System.out.println(((MapComponent)grid[x][y - 1]).getPosition());
 				return grid[x][y - 1];
 			}
 		}
@@ -378,9 +378,15 @@ public class Grid<E> implements Representation<E> {
 		int gy = y - 1;
 		if (gx == X) {
 			gx = 0;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (gy == -1) {
 			gy = Y - 1;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (y >= Y || y < 0 || x >= X || x < 0) {
 			return null;
@@ -416,7 +422,10 @@ public class Grid<E> implements Representation<E> {
 				return null;
 			}
 			if (x == X - 1) {
-				return grid[0][y];
+				if (wraps)
+					return grid[0][y];
+				else 
+					return null;
 			} else {
 				return grid[x + 1][y];
 			}
@@ -428,9 +437,15 @@ public class Grid<E> implements Representation<E> {
 		int gy = y + 1;
 		if (gx == X) {
 			gx = 0;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (gy == Y) {
 			gy = 0;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (y >= Y || y < 0 || x >= X || x < 0) {
 			return null;
@@ -464,6 +479,9 @@ public class Grid<E> implements Representation<E> {
 				return null;
 			}
 			if (y == Y - 1) {
+				if (!wraps) {
+					return null;
+				}
 				return grid[x][0];
 			} else {
 				return grid[x][y + 1];
@@ -476,9 +494,15 @@ public class Grid<E> implements Representation<E> {
 		int gy = y + 1;
 		if (gx == -1) {
 			gx = X - 1;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (gy == Y) {
 			gy = 0;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (y >= Y || y < 0 || x >= X || x < 0) {
 			return null;
@@ -502,12 +526,6 @@ public class Grid<E> implements Representation<E> {
 	public E getNeighbour_L(int x, int y) {
 		if (allowPhantoms) {
 			if (x == 0) {
-				// System.out.println("pos y: "+y);
-				// for (int i = 0; i < X; i++){
-				// System.out.println(phantoms_L[i] + " | "+grid[X-1][i]);
-				// }
-				// System.out.println("orig: "+grid[0][y]);
-				// System.out.println("");
 				return phantoms_L[y];
 			} else {
 				return grid[x - 1][y];
@@ -517,6 +535,9 @@ public class Grid<E> implements Representation<E> {
 				return null;
 			}
 			if (x == 0) {
+				if (!wraps) {
+					return null;
+				}
 				return grid[X - 1][y];
 			} else {
 				return grid[x - 1][y];
@@ -529,9 +550,15 @@ public class Grid<E> implements Representation<E> {
 		int gy = y - 1;
 		if (gx == -1) {
 			gx = X - 1;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (gy == -1) {
 			gy = Y - 1;
+			if (!wraps) {
+				return null;
+			}
 		}
 		if (y >= Y || y < 0 || x >= X || x < 0) {
 			return null;

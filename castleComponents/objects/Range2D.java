@@ -159,14 +159,20 @@ public class Range2D {
 	
 	
 	public static Range2D parseFromString(String str) {
-		//is of the form: <(0,0),(0,3),(3,0)(3,3)>
-		String noArrows = str.replaceAll(">", "").replaceAll("<", "");
-		String[] noCommas = noArrows.split(",");
-		return new Range2D(
-				new Vector2(noCommas[0]),
-				new Vector2(noCommas[1]),
-				new Vector2(noCommas[2]),
-				new Vector2(noCommas[3]));
+		//is of the form:(<0,0><0,3><3,0><3,3>)
+		String noArrows = str;
+		noArrows = noArrows.replaceAll("\\(", "").replaceAll("\\)", "");
+		noArrows = noArrows.replaceAll("<", "");
+		String[] rangeStr = noArrows.split(">");
+		Vector2 a = new Vector2(Double.parseDouble(rangeStr[0].split(",")[0]),
+				Double.parseDouble(rangeStr[0].split(",")[1]));
+		Vector2 b = new Vector2(Double.parseDouble(rangeStr[1].split(",")[0]),
+				Double.parseDouble(rangeStr[1].split(",")[1]));
+		Vector2 c = new Vector2(Double.parseDouble(rangeStr[2].split(",")[0]),
+				Double.parseDouble(rangeStr[2].split(",")[1]));
+		Vector2 d = new Vector2(Double.parseDouble(rangeStr[3].split(",")[0]),
+				Double.parseDouble(rangeStr[3].split(",")[1]));
+		return new Range2D(a, b, c, d);
 	}
 
 	public List<Range2D> chunkRange(int numberOfFogs) {
