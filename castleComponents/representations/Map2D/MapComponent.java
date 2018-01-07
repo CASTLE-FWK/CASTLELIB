@@ -48,6 +48,9 @@ public class MapComponent {
 		containedEntities = new HashMap<String, Entity>();
 		setExitPoint(mc.isExitPoint());
 		setTrafficLightPresent(mc.isTrafficLightPresent());
+		if (mc.getPark() != null) {
+			setPark(mc.getPark());
+		}
 		
 		HashMap<String, Entity> oldHashMap = mc.getContainedEntities();
 		Set<String> keys = oldHashMap.keySet();

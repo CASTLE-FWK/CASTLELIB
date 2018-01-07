@@ -106,7 +106,7 @@ public class Map2D {
 		}
 		listOfTrafficLights = new List<TrafficLight>();
 		for (TrafficLight tl : theMap.getListOfTrafficLights()) {
-			listOfTrafficLights.add(new TrafficLight(tl.getLocation(), tl.getLightPatterns()));
+			listOfTrafficLights.add(new TrafficLight(tl.getLocation(), tl.getLightPatterns(), tl.getType()));
 		}
 
 		Grid<MapComponent> oldMap = theMap.theGridMap;
@@ -123,7 +123,7 @@ public class Map2D {
 		return listOfTrafficLights;
 	}
 	
-	public TrafficLight getLightAtPosition(Vector2 pos) {
+	public TrafficLight getTrafficLightAtPosition(Vector2 pos) {
 		for (TrafficLight tl : listOfTrafficLights) {
 			if (tl.getLocation().compare(pos)) {
 				return tl;
@@ -386,7 +386,6 @@ public class Map2D {
 			return Outcome.INVALID;
 		}
 
-		// Type of road (validity check) this is going to be bigsssssss
 		MapComponent mc = getMapComponent(intendedPos);
 		MapComponent oldMC = getMapComponent(oldPos);
 		if (oldMC.isValidExit(intendedPos)) {
@@ -405,6 +404,33 @@ public class Map2D {
 		return Outcome.VALID;
 	}
 
+	public Outcome isIntendedDestinationValid(Entity e, Vector2 oldPos, Vector2 intendedPos) {
+			if (!range.containsIndexPoint(intendedPos)) {
+				return Outcome.OUT_OF_BOUNDS;
+			}
+
+			if (isNoGo(intendedPos)) {
+				log("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
+				return Outcome.INVALID;
+			}
+
+			MapComponent oldMC = getMapComponent(oldPos);
+			boolean ePresent = oldMC.checkForEntity(e.getEntityID());
+			if (!ePresent) {
+				log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+				return Outcome.INVALID;
+			}
+			
+			if (!oldMC.isValidExit(intendedPos)) {
+				log("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
+				// Turn the car around
+				return Outcome.DEADEND;
+			} 
+
+			return Outcome.VALID;
+	}
+	
+	
 	public Outcome moveToFreely(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
@@ -452,10 +478,10 @@ public class Map2D {
 		return acheiveable;
 	}
 
-	public Type getNextSegmentFromHeading(Vector2 currPos, Vector2 vh) {
+	public Type getNextSegmentTypeFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
-
+	
 	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
 		MapComponent mc = getMapComponent(currPos);
 		Type currType = mc.getType();
@@ -494,16 +520,12 @@ public class Map2D {
 		}
 		return Heading.O;
 	}
-
-	public String moveAlongWithSpeed(Entity e, Vector2 pos, float speed, Vector2 heading) {
-		return moveToWithVelocity(e, pos, new Vector2(heading).multiply(speed));
+	
+	public Vector2 intendedDestination(Entity e, Vector2 pos, float speed, Vector2 heading) {
+		Vector2 newPos = new Vector2(pos).add(new Vector2(heading).multiply(speed));
+		return newPos;
 	}
 
-	public String moveToWithVelocity(Entity e, Vector2 pos, Vector2 vel) {
-		Vector2 unitVector = vel.getUnitVector();
-		Vector2 newPos = new Vector2(pos).add(vel);
-		return moveTo(e, pos, newPos).toString();
-	}
 
 	// TODO
 	// This is a standard range
@@ -664,6 +686,10 @@ public class Map2D {
 	}
 
 	public void addCarPark(Vector2 pos) {
+		MapComponent mc = getMapComponent(pos);
+		Park p = new Park();
+		p.setMaxCapacity(100);
+		mc.setPark(p);
 		listOfCarParkLocations.add(pos);
 	}
 
@@ -673,8 +699,11 @@ public class Map2D {
 	}
 	
 	public void addTrafficLight(Vector2 pos, ArrayList<Vector2> patterns) {
+		log("adding light at "+pos);
 		if (getMapComponent(pos).getType().isJunction()) {
-			listOfTrafficLights.add(new TrafficLight(pos, patterns));
+			TrafficLight tl = new TrafficLight(pos, patterns, getMapComponent(pos).getType());
+			tl.addExits(getMapComponent(pos).getValidExits());
+			listOfTrafficLights.add(tl);
 			getMapComponent(pos).setTrafficLightPresent(true);
 //			log("adding light at "+pos+" and is set to "+getMapComponent(pos).isTrafficLightPresent());
 		} else {
@@ -788,7 +817,7 @@ public class Map2D {
 				existingMap.addTransitPoint(v);
 			} 
 			if (mc.isTrafficLightPresent()) {
-				TrafficLight tl = getLightAtPosition(v);
+				TrafficLight tl = getTrafficLightAtPosition(v);
 				existingMap.addTrafficLight(tl.getLocation(), tl.getLightPatterns());
 			}
 		}

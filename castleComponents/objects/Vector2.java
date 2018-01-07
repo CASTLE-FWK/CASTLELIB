@@ -209,6 +209,14 @@ public class Vector2 implements java.io.Serializable {
 		return (b.getY() - getY()) / (b.getX() - getX());
 	}
 	
+	public boolean sameX(Vector2 v) {
+		return (v.getX() == x);
+	}
+	
+	public boolean sameY(Vector2 v) {
+		return (v.getY() == y);
+	}
+	
 	//TODO: Seriously this is simple, why cant you think?
 //	public static List<Vector2> getAllPointsBetweenTwoVectors(Vector2 v1, Vector2 v2){
 //		double minX = Utilities.calculateMin(new double[]{v1.getX(), v2.getX()});

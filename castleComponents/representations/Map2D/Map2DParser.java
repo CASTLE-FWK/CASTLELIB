@@ -103,7 +103,7 @@ public class Map2DParser {
 						scale = Integer.parseInt(line.split(":")[1].trim().split("x")[0]);
 						currState = ParseState.BEGIN_MAP;
 						theMapToStore.setScale(scale);
-						System.out.println("Note: Scaling is not yet implemented.");
+						System.out.println("Map2DParser Warning: Note: Scaling is not yet implemented.");
 					} else {
 						// error
 					}
@@ -130,14 +130,12 @@ public class Map2DParser {
 					}
 					if (yCounter != (int) dimensions.getY()) {
 						// Uh-oh
-						System.out.println("Dimensions stated and ones parsed do not match!");
+						System.out.println("Map2DParser Warning: Dimensions stated and ones parsed do not match!");
 					}
 					//Do the scaling
 					if (scale > 1) {
 						
 					}
-					
-
 					break;
 				case BEGIN_TRANSITS:
 					currState = ParseState.READING_TRANSITS;
