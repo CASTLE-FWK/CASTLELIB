@@ -12,7 +12,7 @@ import org.xml.sax.SAXException;
 import castleComponents.objects.Vector2;
 import stdSimLib.utilities.Utilities;
 import info.pavie.basicosmparser.controller.*;
-import info.pavie.basicosmparser.model.*;
+import info.pavie.basicosmparser.model.Element;
 
 public class MapGraphParser {
 	public static final String MOTORWAY = "MOTORWAY";
@@ -46,9 +46,9 @@ public class MapGraphParser {
 				long idl = Long.parseLong(id);
 				// Get Tags
 				Map<String, String> tags = e.getTags();
-				if (e instanceof Node) {
+				if (e instanceof info.pavie.basicosmparser.model.Node) {
 					// Cast to node
-					Node n = (Node) e;
+					info.pavie.basicosmparser.model.Node n = (info.pavie.basicosmparser.model.Node) e;
 					// Get lat & lon
 					double lat = n.getLat();
 					double lon = n.getLon();
@@ -64,9 +64,9 @@ public class MapGraphParser {
 						}
 					}
 
-				} else if (e instanceof Way) {
-					Way w = (Way) e;
-					List<Node> nodes = w.getNodes();
+				} else if (e instanceof info.pavie.basicosmparser.model.Way) {
+					info.pavie.basicosmparser.model.Way w = (info.pavie.basicosmparser.model.Way) e;
+					List<info.pavie.basicosmparser.model.Node> nodes = w.getNodes();
 					if (tags.size() > 0) {
 						if (tags.containsKey("highway")) {
 							String highwayV = tags.get("highway");
