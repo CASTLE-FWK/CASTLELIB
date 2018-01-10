@@ -6,6 +6,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import castleComponents.Entity;
+import castleComponents.EntityID;
+import castleComponents.objects.Range2D;
+import castleComponents.objects.Vector2;
+import castleComponents.objects.List;
+import castleComponents.representations.LayoutParameters;
+import stdSimLib.utilities.Utilities;
 import castleComponents.objects.Vector2;
 
 public class MapGraph {
@@ -16,22 +23,27 @@ public class MapGraph {
 		links = new ArrayList<Link>();
 		nodesMap = new HashMap<Long, Node>();
 	}
-
-	public void normalise() {
-		Vector2 agg = new Vector2();
-		HashSet<Node> nodes = new HashSet<Node>(nodesMap.values());
-		for (Node n : nodes) {
-			agg.add(n.getCoords());
-		}
-		agg.divide(nodes.size());
-		for (Node n : nodes) {
-			n.normalise(agg);
-		}
+	
+	public void initialize(String pathToMapFile, LayoutParameters lp) {
+		importMap(pathToMapFile);
 	}
-
-	public void sortLinks() {
-		Collections.sort(links);
+	
+	public void importMap(String path) {
+		MapGraphParser mgp = new MapGraphParser(this);
+		mgp.parseMapGraph(path);
 	}
+	
+	/**How to move Entities around**/
+	public Outcome moveTo(Entity e, Vector2 source, Vector2 dest) {
+		
+		return null;
+	}
+	
+	public Outcome freeMove(Entity e, Vector2 source, Vector2 dest) {
+		
+		return null;
+	}
+	
 
 	// todo change
 	public ArrayList<Node> sortNodesOnLinkCount() {
@@ -89,4 +101,21 @@ public class MapGraph {
 	public String toString() {
 		return "MapGraph [ size of nodesMap: " + nodesMap.size() + ", size of links: " + links.size() + " ]";
 	}
+
+	public void normalise() {
+		Vector2 agg = new Vector2();
+		HashSet<Node> nodes = new HashSet<Node>(nodesMap.values());
+		for (Node n : nodes) {
+			agg.add(n.getCoords());
+		}
+		agg.divide(nodes.size());
+		for (Node n : nodes) {
+			n.normalise(agg);
+		}
+	}
+
+	public void sortLinks() {
+		Collections.sort(links);
+	}
+
 }
