@@ -89,7 +89,7 @@ public class Agent implements java.io.Serializable{
 	/**
 	 * 
 	 * @param ID
-	 * @param position
+	 * @param coords
 	 */
 	public Agent(String ID, Vector2 initialPosition){
 		position = new Vector2(initialPosition);

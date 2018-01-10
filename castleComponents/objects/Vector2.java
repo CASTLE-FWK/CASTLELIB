@@ -77,6 +77,10 @@ public class Vector2 implements java.io.Serializable {
 		this.y = 0;
 	}
 	
+	public double length() {
+		return Math.abs(x - y);
+	}
+	
 	public double distance(Vector2 vec){
 		double x = Math.pow((vec.getX() - getX()),2);
 		double y = Math.pow((vec.getY() - getY()),2);
