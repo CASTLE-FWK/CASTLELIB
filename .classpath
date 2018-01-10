@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/minimal-json-0.9.5.jar"/>
 	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/mongo-java-driver-3.4.2.jar"/>
 	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/libs/unirest-java-1.4.9.jar"/>
+	<classpathentry kind="lib" path="/home/lachlan/repos/CASTLELIB/castleComponents/representations/MapGraph/libs/BasicOSMParser.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
