@@ -5,11 +5,11 @@ import java.util.List;
 
 import castleComponents.objects.Vector2;
 
-public class Edge implements Comparable<Edge> {
+public class Link implements Comparable<Link> {
 	private double weight;
 	ArrayList<Node> wayPoints;
-	
-	//OSM Extra features
+
+	// OSM Extra features
 	boolean bicycle = false;
 	String cycleWay = "";
 	String roadType = "";
@@ -20,19 +20,14 @@ public class Edge implements Comparable<Edge> {
 	int lanes = 0;
 	long id;
 
-	public Edge() {
+	public Link() {
 		init();
 	}
-	
+
 	public void init() {
 		wayPoints = new ArrayList<Node>();
 	}
-	public Edge(Node start, Node end, String type, double weight) {
 
-		this.setWeight(weight);
-		init();
-	}
-	
 	public double calculateLength() {
 		double length = 0.0;
 		for (int i = 0; i < wayPoints.size() - 1; i++) {
@@ -42,7 +37,7 @@ public class Edge implements Comparable<Edge> {
 		weight = length;
 		return length;
 	}
-	
+
 	public double calculateCoordinateDistance(Vector2 a, Vector2 b) {
 		int earthRad = 6371; // TODO
 		double lat1 = a.getX();
@@ -66,23 +61,24 @@ public class Edge implements Comparable<Edge> {
 	public void setID(long id) {
 		this.id = id;
 	}
-	
+
 	public long getID() {
 		return id;
 	}
-	
-	public List<Node> getWayPoints(){
+
+	public List<Node> getWayPoints() {
 		return wayPoints;
 	}
-	
+
 	public void addWayPoint(Node n) {
 		wayPoints.add(n);
 	}
-	
+
 	public void setWayPoints(List<Node> e) {
 		wayPoints.clear();
 		wayPoints.addAll(e);
 	}
+
 	public double getWeight() {
 		return weight;
 	}
@@ -151,11 +147,9 @@ public class Edge implements Comparable<Edge> {
 		this.lanes = lanes;
 	}
 
-//	@Override
-//	public String toString() {
-//		String out = start.getName() + "\t" + end.getName() + "\tType: " + type + "\tWeight: " + getWeight();
-//		return out;
-//	}
+	public boolean isBiDirectional() {
+		return !oneWay;
+	}
 
 	@Override
 	public String toString() {
@@ -164,25 +158,12 @@ public class Edge implements Comparable<Edge> {
 				+ oneWay + ", lanes=" + lanes + ", wayPoints=" + wayPoints + "]";
 	}
 
-//	public String toMedusaString() {
-//		String out = start.getName() + "\t" + end.getName() + "\ti " + type + "\tc " + getWeight();
-//		return out;
-//	}
-
-//	public boolean containsNode(Node n) {
-//		return (start.getName().equals(n.getName()) || end.getName().equals(n.getName()));
-//	}
-
-//	public boolean containsNodes(Node n1, Node n2) {
-//		return (containsNode(n1) && containsNode(n2));
-//	}
-
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 
 	@Override
-	public int compareTo(Edge o) {
+	public int compareTo(Link o) {
 		double diff = getWeight() - o.getWeight();
 		if (diff < 0.0) {
 			return -1;

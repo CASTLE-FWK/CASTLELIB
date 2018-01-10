@@ -16,8 +16,8 @@ public class Node {
 	int incomingInteraction;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
-	ArrayList<Edge> incomingEdges;
-	ArrayList<Edge> outgoingEdges;
+	ArrayList<Link> incomingEdges;
+	ArrayList<Link> outgoingEdges;
 	HashSet<Node> connectedNodes;
 	
 	//OSM Extra features
@@ -25,27 +25,6 @@ public class Node {
 	String nodeType = "";
 	boolean outOfBounds = false;
 	
-	
-	
-	/**
-	 * Creates a new Node with name at position (x,y)
-	 * Automatically determines the type from the name.
-	 * @param  name Name of the Node
-	 * @param  x    The x
-	 * @param  y    The y
-	 */
-	public Node(String name, double x, double y){
-		this.name = name;
-		type = name.replaceAll("[0-9]", "");
-		this.setX(x);
-		this.setY(y);
-		coords = new Vector2(this.getX(),this.getY());
-		outgoingInteraction = 0;
-		incomingInteraction = 0;
-		outgoingTotalWeight = 0;
-		incomingTotalWeight = 0;
-		init();
-	}
 	
 	public Node(String name, Vector2 position){
 		this.name = name;
@@ -72,8 +51,8 @@ public class Node {
 	}
 	
 	public void init() {
-		incomingEdges = new ArrayList<Edge>();
-		outgoingEdges = new ArrayList<Edge>();
+		incomingEdges = new ArrayList<Link>();
+		outgoingEdges = new ArrayList<Link>();
 		connectedNodes = new HashSet<Node>();
 	}
 	
@@ -188,20 +167,6 @@ public class Node {
 		this.y = y;
 	}
 	
-	//Lots of stuff. 10/08/16
-	
-//	public void addIncomingEdge(Edge e){
-//		incomingEdges.add(e);
-//		connectedNodes.add(e.getStart());
-//		addIncomingWeight(e.getWeight());
-//	}
-//	
-//	public void addOutgoingEdge(Edge e){
-//		outgoingEdges.add(e);
-//		connectedNodes.add(e.getEnd());
-//		addOutgoingWeight(e.getWeight());
-//	}
-	
 	public void incrementOutgoingInteractions(){
 		outgoingInteraction++;
 	}
@@ -241,10 +206,6 @@ public class Node {
 	
 	public int totalInteractions(){
 		return outGoingInteractions() + incomingInteractions();
-	}
-	
-	public void merge(Node n){
-		
 	}
 	
 	public static Comparator<Node> sortByX(){

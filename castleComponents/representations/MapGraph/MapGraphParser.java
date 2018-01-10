@@ -17,29 +17,32 @@ import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Relation;
 
 public class MapGraphParser {
-	public static final String MOTORWAY = "MOTORWAY";
-	public static final String TRUNK = "TRUNK";
-	public static final String PRIMARY = "PRIMARY";
-	public static final String SECONDARY = "SECONDARY";
-	public static final String TERTIARY = "TERTIARY";
-	public static final String RESIDENTIAL = "RESIDENTIAL";
-	public static final String TRAFFIC_SIGNALS = "TRAFFIC_SIGNALS";
+	public final String MOTORWAY = "MOTORWAY";
+	public final String TRUNK = "TRUNK";
+	public final String PRIMARY = "PRIMARY";
+	public final String SECONDARY = "SECONDARY";
+	public final String TERTIARY = "TERTIARY";
+	public final String RESIDENTIAL = "RESIDENTIAL";
+	public final String TRAFFIC_SIGNALS = "TRAFFIC_SIGNALS";
 
+	public MapGraph mapGraph;
 	public static void main(String[] args) {
-		parseMapGraph(args[0]);
+		MapGraphParser mgp = new MapGraphParser(new MapGraph());
+		mgp.parseMapGraph(args[0]);
 	}
 
-	public static void parseMapGraph(String pathToFile) {
+	public MapGraphParser(MapGraph mg) {
+		mapGraph = mg;
+	}
+	
+	public void parseMapGraph(String pathToFile) {
 		OSMParser p = new OSMParser();
 		File osmFile = new File(pathToFile);
 		try {
-			int nodeCounter = 0;
-			int wayCounter = 0;
 			HashMap<Long, Node> storedNodes = new HashMap<Long, Node>();
 			Map<String, Element> parsedMap = p.parse(osmFile);
 			p.printStatistics(parsedMap); // Lets check things
 			
-//			System.exit(0);
 			// Get Keys as Set
 			Set<String> keys = parsedMap.keySet();
 			ArrayList<String> sortedKeys = new ArrayList<String>(keys);
@@ -65,6 +68,7 @@ public class MapGraphParser {
 					nd.setCoords(coords);
 					// Store this in our graph
 					storedNodes.put(nd.getID(), nd);
+					mapGraph.addNode(nd);
 					// If tags are present, figure them out
 					if (tags.size() > 0) {
 						if (tags.containsKey("highway")) {
@@ -77,7 +81,7 @@ public class MapGraphParser {
 					info.pavie.basicosmparser.model.Way w = (info.pavie.basicosmparser.model.Way) e;
 					List<info.pavie.basicosmparser.model.Node> nodes = w.getNodes();
 					// Need to find nodes above first
-					Edge ed = new Edge();
+					Link ed = new Link();
 					ed.setID(idl);
 					for (info.pavie.basicosmparser.model.Node n : nodes) {
 						if (n == null) {
@@ -127,7 +131,8 @@ public class MapGraphParser {
 						}
 					}
 					ed.calculateLength();
-					System.out.println(ed.toString());
+					mapGraph.addLink(ed);
+//					System.out.println(ed.toString());
 
 				} else if (e instanceof Relation) {
 					//Not sure what to do with this yet
@@ -146,24 +151,19 @@ public class MapGraphParser {
 								storedNodes.put(n.getID(), n);
 							}
 						} else if (mem instanceof info.pavie.basicosmparser.model.Way) {
-							
+							// TODO no idea
 						}
 					}
-					
 				}
 			}
-
-			System.out.println("nc: " + nodeCounter);
-			System.out.println("wc: " + wayCounter);
-
+			
+			
+			
+			
+			System.out.println(mapGraph.toString());
+			System.out.println("Finished parsing: "+pathToFile);
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		}
-
 	}
-
-}
-
-enum ParseState {
-	NODE, WAY, NONE
 }
