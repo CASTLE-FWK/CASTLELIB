@@ -27,9 +27,10 @@ public class MapGraph {
 	List<Node> transitPoints;
 	List<TrafficLight> trafficLightLocations;
 	List<Node> carParkNodes;
-	long id;
+	long id = -1;
 	List<MapGraph> subMaps;
 	Range2D range;
+	Range2D geoRange;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -43,8 +44,17 @@ public class MapGraph {
 		id = -1;
 		subMaps = new List<MapGraph>();
 	}
+	
+	public MapGraph(MapGraph mg) {
+		clone(mg);
+	}
+	
+	// TODO
+	public void clone(MapGraph mg) {
+		errLog("clone is incomplete");
+	}
 
-	public void setID(long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -170,12 +180,14 @@ public class MapGraph {
 		range = new Range2D(boundingBox_Min, new Vector2(boundingBox_Min.getX(), boundingBox_Max.getY()),
 				new Vector2(boundingBox_Max.getX(), boundingBox_Min.getY()),
 				new Vector2(boundingBox_Max.getX(), boundingBox_Max.getY()));
+		
+		geoRange = new Range2D(geoBoundingBox_Min, new Vector2(geoBoundingBox_Min.getX(), geoBoundingBox_Max.getY()),
+				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()),
+				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
+		errLog(range);
 	}
 
-	// TODO
-	public void clone(MapGraph mg, LayoutParameters lp) {
 
-	}
 
 	// TODO SubGraphs
 	public void createSubMaps(int num) {
@@ -341,5 +353,12 @@ public class MapGraph {
 
 	public void errLog(Object o) {
 		System.err.println("MapGraph Warning: " + o.toString());
+	}
+	
+	public boolean containsPoint(Vector2 v) {
+		if (range == null) {
+			errLog("range is null");
+		}
+		return (range.containsPoint(v));
 	}
 }

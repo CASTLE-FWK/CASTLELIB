@@ -32,18 +32,18 @@ public class Entity implements Runnable {
 
 	protected ArrayList<Trigger> actionTriggers;
 	protected ArrayList<Trigger> actionTriggersToAdd;
-	
+
 	String entitySuperType = "";
 	final String GROUP = "group";
 	final String AGENT = "agent";
 	final String ENVIRONMENT = "environment";
-	
+
 	final char COMMA = ',';
 
 	boolean ready = false;
 
 	Vector2 position;
-	
+
 	protected Output output;
 
 	HashMap<String, Interaction> interactionsInLastInterval;
@@ -84,20 +84,19 @@ public class Entity implements Runnable {
 	public void setLogger(Logger l) {
 		logger = l;
 	}
-	
-	public void setDBOut(OutputToJSON_Mongo d){
+
+	public void setDBOut(OutputToJSON_Mongo d) {
 		dbOut = d;
 	}
 
 	public boolean loggerIsNull() {
 		return (logger == null);
 	}
-	
-	public boolean dbIsNull(){
+
+	public boolean dbIsNull() {
 		return (dbOut == null);
 	}
 
-	
 	protected EntityID entityID;
 
 	public EntityID getEntityID() {
@@ -172,7 +171,7 @@ public class Entity implements Runnable {
 	}
 
 	public void phase_Setup() {
-		
+
 	}
 
 	public void phase_Action() {
@@ -207,9 +206,9 @@ public class Entity implements Runnable {
 	public void sendMessage() {
 
 	}
-	
+
 	public void errLog(Object o) {
-		System.out.println(getType()+" Warning: "+o.toString());
+		System.err.println(getType() + " Warning: " + o.toString());
 	}
 
 	// Logging
@@ -271,7 +270,7 @@ public class Entity implements Runnable {
 	}
 
 	public void updateFeature(String nameOfFeatureCall, FeatureTypes featureType) {
-		if (!featuresInLastInterval.containsKey(nameOfFeatureCall)){
+		if (!featuresInLastInterval.containsKey(nameOfFeatureCall)) {
 			featuresInLastInterval.put(nameOfFeatureCall, new Feature(nameOfFeatureCall, featureType));
 		} else {
 			featuresInLastInterval.get(nameOfFeatureCall).incrementOccurrence();
@@ -298,58 +297,54 @@ public class Entity implements Runnable {
 	public void setPosition(Vector2 p) {
 		position = new Vector2(p);
 	}
-	
-	
-	
-	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange){
+
+	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange) {
 		ArrayList<Vector2> points = new ArrayList<Vector2>();
 		double halfTheta = theta / 0.5;
 		double lastAngle = 180 - 90 - halfTheta;
 		double slope = pos.calculateSlope(vRange);
 
-		
-		//Boy this is some baaaad year 8 maths
-		//Calcs for 1 half of triangle
+		// Boy this is some baaaad year 8 maths
+		// Calcs for 1 half of triangle
 		double adj = pos.calculateDistance(vRange.add((pos)));
-		double opp = Math.tan(halfTheta) * adj;		
-		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); //√
-		double wideSide = opp * 2.0; //√
-		
+		double opp = Math.tan(halfTheta) * adj;
+		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); // √
+		double wideSide = opp * 2.0; // √
+
 		double cY = Math.pow(adj, 2) + Math.pow(hypot, 2) - Math.pow(opp, 2);
-		double cX = Math.sqrt((Math.pow(hypot,2) - (Math.pow(cY, 2))));
+		double cX = Math.sqrt((Math.pow(hypot, 2) - (Math.pow(cY, 2))));
 		Vector2 point1 = new Vector2(cY, cX);
 		Vector2 point2 = pos.getDifference(point1).negate();
-		
-		//Now we have the 3 points, we can iterate through to find each valid point
-		//Root to p1
-		double minX = Utilities.calculateMin(new double[]{pos.getX(), point1.getX()});
-		double maxX = Utilities.calculateMax(new double[]{pos.getX(), point1.getX()});
-		double minY = Utilities.calculateMin(new double[]{pos.getY(), point1.getY()});
-		double maxY = Utilities.calculateMax(new double[]{pos.getY(), point1.getY()});
 
-		//Root to p2
-		
-		
+		// Now we have the 3 points, we can iterate through to find each valid point
+		// Root to p1
+		double minX = Utilities.calculateMin(new double[] { pos.getX(), point1.getX() });
+		double maxX = Utilities.calculateMax(new double[] { pos.getX(), point1.getX() });
+		double minY = Utilities.calculateMin(new double[] { pos.getY(), point1.getY() });
+		double maxY = Utilities.calculateMax(new double[] { pos.getY(), point1.getY() });
+
+		// Root to p2
+
 		return points;
 	}
-	
-	public void setOutput(Output out){
+
+	public void setOutput(Output out) {
 		output = out;
 	}
-	
-	public Output getOutput(){
+
+	public Output getOutput() {
 		return output;
 	}
-	
-	public void writeModelData(){
+
+	public void writeModelData() {
 		output.writeModelData(this);
 	}
-	
-	public void log(String str){
-		if (output == null){
-			System.out.println("8881717");
+
+	public void log(String str) {
+		if (output == null) {
+			errLog("output is null");
 		}
-		output.log(this, str);
+		output.log(this, getID()+": "+str);
 	}
 
 	// Trigger pulling
@@ -366,37 +361,37 @@ public class Entity implements Runnable {
 	public void throwCASTLEError(String desc, String location, String clazz) {
 		System.out.println("CASTLE ERROR: " + desc + " at method: " + location + " in class: " + clazz);
 	}
-	
-	public StringBuilder writeEntityData(){
+
+	public StringBuilder writeEntityData() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(entityType+"-ID"+COMMA+getID());
-		sb.append(entityType+"-type"+COMMA+getType());
-		sb.append(entityType+"-name"+COMMA+getID());
-		sb.append("lifetime"+COMMA+ "-1");
-		
+		sb.append(entityType + "-ID" + COMMA + getID());
+		sb.append(entityType + "-type" + COMMA + getType());
+		sb.append(entityType + "-name" + COMMA + getID());
+		sb.append("lifetime" + COMMA + "-1");
+
 		Iterator<Entry<String, Parameter<?>>> it = getParameters().entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>)it.next();
-			Parameter<?> param = pair.getValue();			
-			sb.append("parameter-name"+COMMA+param.getName());
-			sb.append("parameter-type"+COMMA+param.getType());
-			sb.append("parameter-value"+COMMA+param.getCurrentValue());			
+		while (it.hasNext()) {
+			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>) it.next();
+			Parameter<?> param = pair.getValue();
+			sb.append("parameter-name" + COMMA + param.getName());
+			sb.append("parameter-type" + COMMA + param.getType());
+			sb.append("parameter-value" + COMMA + param.getCurrentValue());
 		}
-		
+
 		List<Interaction> entityInteractions = publishInteractions();
-		if (entityInteractions != null){
-			for (Interaction inter : entityInteractions){
-				sb.append("interaction-from"+COMMA+inter.getEntityFrom().getID());
-				sb.append("interaction-to"+COMMA+inter.getEntityTo().getID());
-				sb.append("interaction-type"+COMMA+inter.getType());
+		if (entityInteractions != null) {
+			for (Interaction inter : entityInteractions) {
+				sb.append("interaction-from" + COMMA + inter.getEntityFrom().getID());
+				sb.append("interaction-to" + COMMA + inter.getEntityTo().getID());
+				sb.append("interaction-type" + COMMA + inter.getType());
 			}
 		}
-		
+
 		return sb;
 	}
-	
-	public void logToConsole(String str){
-		System.out.println(str);
+
+	public void logToConsole(String str) {
+		System.out.println(getID() + ": " + str);
 	}
 }
 
@@ -410,8 +405,6 @@ class Feature {
 		this.ft = ft;
 		occurrence = 1;
 	}
-	
-	
 
 	public String getName() {
 		return n;
@@ -428,11 +421,12 @@ class Feature {
 	public void setFeatureType(FeatureTypes ft) {
 		this.ft = ft;
 	}
-	
-	public void incrementOccurrence(){
+
+	public void incrementOccurrence() {
 		occurrence++;
 	}
-	public int getOccurrence(){
+
+	public int getOccurrence() {
 		return occurrence;
 	}
 }

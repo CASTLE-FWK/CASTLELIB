@@ -33,7 +33,7 @@ public class MapGraphParser {
 
 	public MapGraphParser(MapGraph mg) {
 		mapGraph = mg;
-		mapGraph.setID(0);
+		mapGraph.setId(0);
 	}
 	
 	public void parseMapGraph(String pathToFile) {
