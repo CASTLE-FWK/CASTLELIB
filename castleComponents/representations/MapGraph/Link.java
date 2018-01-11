@@ -277,7 +277,7 @@ public class Link implements Comparable<Link> {
 			// TODO Need to tell the next node about it
 		}
 	}
-	
+
 	public void errLog(Object o) {
 		System.err.println("Link Warning: " + o.toString());
 	}
