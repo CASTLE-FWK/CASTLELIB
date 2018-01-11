@@ -119,20 +119,20 @@ public class Map2D {
 		}
 	}
 
-	public List<TrafficLight> getListOfTrafficLights(){
+	public List<TrafficLight> getListOfTrafficLights() {
 		return listOfTrafficLights;
 	}
-	
+
 	public TrafficLight getTrafficLightAtPosition(Vector2 pos) {
 		for (TrafficLight tl : listOfTrafficLights) {
 			if (tl.getLocation().compare(pos)) {
 				return tl;
 			}
 		}
-		log("no traffic light was found at location "+pos);
+		log("no traffic light was found at location " + pos);
 		return null;
 	}
-	
+
 	public List<TrafficLight> getTrafficLightsInRange(Range2D r2d) {
 		List<TrafficLight> tlList = new List<TrafficLight>();
 		for (TrafficLight tl : listOfTrafficLights) {
@@ -142,6 +142,7 @@ public class Map2D {
 		}
 		return tlList;
 	}
+
 	public Vector2 getDimensions() {
 		return dimensions;
 	}
@@ -405,32 +406,31 @@ public class Map2D {
 	}
 
 	public Outcome isIntendedDestinationValid(Entity e, Vector2 oldPos, Vector2 intendedPos) {
-			if (!range.containsIndexPoint(intendedPos)) {
-				return Outcome.OUT_OF_BOUNDS;
-			}
+		if (!range.containsIndexPoint(intendedPos)) {
+			return Outcome.OUT_OF_BOUNDS;
+		}
 
-			if (isNoGo(intendedPos)) {
-				log("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
-				return Outcome.INVALID;
-			}
+		if (isNoGo(intendedPos)) {
+			log("ENTITY " + e.getEntityID().toString() + " IS TRYING TO ENTER A NOGO");
+			return Outcome.INVALID;
+		}
 
-			MapComponent oldMC = getMapComponent(oldPos);
-			boolean ePresent = oldMC.checkForEntity(e.getEntityID());
-			if (!ePresent) {
-				log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
-				return Outcome.INVALID;
-			}
-			
-			if (!oldMC.isValidExit(intendedPos)) {
-				log("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
-				// Turn the car around
-				return Outcome.DEADEND;
-			} 
+		MapComponent oldMC = getMapComponent(oldPos);
+		boolean ePresent = oldMC.checkForEntity(e.getEntityID());
+		if (!ePresent) {
+			log("ENTITY " + e.getEntityID().toString() + " WAS NOT IN THIS LOCATION OF " + oldPos);
+			return Outcome.INVALID;
+		}
 
-			return Outcome.VALID;
+		if (!oldMC.isValidExit(intendedPos)) {
+			log("NOT VALID EXIT. CURRPOS: " + oldPos + " new pos: " + intendedPos);
+			// Turn the car around
+			return Outcome.DEADEND;
+		}
+
+		return Outcome.VALID;
 	}
-	
-	
+
 	public Outcome moveToFreely(Entity e, Vector2 oldPos, Vector2 intendedPos) {
 		if (!range.containsIndexPoint(intendedPos)) {
 			return Outcome.OUT_OF_BOUNDS;
@@ -481,7 +481,7 @@ public class Map2D {
 	public Type getNextSegmentTypeFromHeading(Vector2 currPos, Vector2 vh) {
 		return getMapComponent(getNextSegmentPosition(currPos, vh)).getType();
 	}
-	
+
 	public Vector2 getNextSegmentPosition(Vector2 currPos, Vector2 vh) {
 		MapComponent mc = getMapComponent(currPos);
 		Type currType = mc.getType();
@@ -520,12 +520,11 @@ public class Map2D {
 		}
 		return Heading.O;
 	}
-	
+
 	public Vector2 intendedDestination(Entity e, Vector2 pos, float speed, Vector2 heading) {
 		Vector2 newPos = new Vector2(pos).add(new Vector2(heading).multiply(speed));
 		return newPos;
 	}
-
 
 	// TODO
 	// This is a standard range
@@ -556,7 +555,7 @@ public class Map2D {
 				for (Entity e : cEnt) {
 					if (e.getType().compareToIgnoreCase(theType) == 0) {
 						ents.add(e);
-						log(e.getEntityID()+ " has been found as a neighbour candidate");
+						log(e.getEntityID() + " has been found as a neighbour candidate");
 					}
 				}
 			}
@@ -678,7 +677,7 @@ public class Map2D {
 		MapComponent mc = new MapComponent(pos, t);
 		theGridMap.addCell(mc, pos);
 		if (t == Type.PARK) {
-			log("adding car park to "+pos);
+			log("adding car park to " + pos);
 			addCarPark(new Vector2(pos));
 		} else if (t == Type.ENTRY) {
 			addTransitPoint(new Vector2(pos));
@@ -697,22 +696,23 @@ public class Map2D {
 		listOfMapTransitPoints.add(pos);
 		getMapComponent(pos).setExitPoint(true);
 	}
-	
+
 	public void addTrafficLight(Vector2 pos, ArrayList<Vector2> patterns) {
-		log("adding light at "+pos);
+		log("adding light at " + pos);
 		if (getMapComponent(pos).getType().isJunction()) {
 			TrafficLight tl = new TrafficLight(pos, patterns, getMapComponent(pos).getType());
 			tl.addExits(getMapComponent(pos).getValidExits());
 			listOfTrafficLights.add(tl);
 			getMapComponent(pos).setTrafficLightPresent(true);
-//			log("adding light at "+pos+" and is set to "+getMapComponent(pos).isTrafficLightPresent());
+			// log("adding light at "+pos+" and is set to
+			// "+getMapComponent(pos).isTrafficLightPresent());
 		} else {
-			log("Traffic light being added not at a junction. Check position "+pos);
+			log("Traffic light being added not at a junction. Check position " + pos);
 		}
 	}
-	
+
 	public void log(Object str) {
-		System.out.println("Map2D Warning: "+str);
+		System.out.println("Map2D Warning: " + str);
 	}
 
 	public void setName(String n) {
@@ -815,7 +815,7 @@ public class Map2D {
 			}
 			if (mc.isExitPoint()) {
 				existingMap.addTransitPoint(v);
-			} 
+			}
 			if (mc.isTrafficLightPresent()) {
 				TrafficLight tl = getTrafficLightAtPosition(v);
 				existingMap.addTrafficLight(tl.getLocation(), tl.getLightPatterns());
@@ -946,8 +946,8 @@ public class Map2D {
 	public List<Vector2> getListOfMapTransitPoints() {
 		return listOfMapTransitPoints;
 	}
-	
-	public List<Vector2> getListOfCarParkLocations(){
+
+	public List<Vector2> getListOfCarParkLocations() {
 		return listOfCarParkLocations;
 	}
 }

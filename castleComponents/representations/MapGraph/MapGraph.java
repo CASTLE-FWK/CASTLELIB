@@ -19,6 +19,8 @@ public class MapGraph {
 	HashMap<Vector2, Node> nodesMap;
 	HashMap<Long, Link> links;
 	HashMap<String, Edge> edges;
+	Vector2 geoBoundingBox_Min;
+	Vector2 geoBoundingBox_Max;
 	Vector2 boundingBox_Min;
 	Vector2 boundingBox_Max;
 	HashMap<String, Entity> entitiesInMap;
@@ -26,6 +28,8 @@ public class MapGraph {
 	List<TrafficLight> trafficLightLocations;
 	List<Node> carParkNodes;
 	long id;
+	List<MapGraph> subMaps;
+	Range2D range;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -37,6 +41,7 @@ public class MapGraph {
 		trafficLightLocations = new List<TrafficLight>(); // TODO populate this list
 		carParkNodes = new List<Node>(); // TODO Populate this list
 		id = -1;
+		subMaps = new List<MapGraph>();
 	}
 
 	public void setID(long id) {
@@ -45,6 +50,10 @@ public class MapGraph {
 
 	public long getID() {
 		return this.id;
+	}
+
+	public Range2D getRange() {
+		return range;
 	}
 
 	public void initialize(String pathToMapFile, LayoutParameters lp) {
@@ -131,31 +140,36 @@ public class MapGraph {
 				max.setY(coords.getY());
 			}
 		}
-		boundingBox_Min = new Vector2(min);
-		boundingBox_Max = new Vector2(max);
+		geoBoundingBox_Min = new Vector2(min);
+		geoBoundingBox_Max = new Vector2(max);
 		printBounds();
 
 	}
 
 	public void normalise() {
 		HashSet<Node> theNodes = new HashSet<Node>(nodes.values());
-		double geoBBWidth = boundingBox_Max.getX() - boundingBox_Min.getX();
-		double geoBBHeight = boundingBox_Max.getY() - boundingBox_Min.getY();
-		double bbWidth = Link.calculateCoordinateDistance(new Vector2(boundingBox_Min.getX(), boundingBox_Max.getY()),
-				boundingBox_Max);
-		double bbHeight = Link.calculateCoordinateDistance(new Vector2(boundingBox_Max.getX(), boundingBox_Min.getY()),
-				boundingBox_Max);
-		System.out.println("bbwi: " + bbWidth + "km, bbHe: " + bbHeight + "km");
+		double geoBBWidth = geoBoundingBox_Max.getX() - geoBoundingBox_Min.getX();
+		double geoBBHeight = geoBoundingBox_Max.getY() - geoBoundingBox_Min.getY();
+		double bbWidth = Link.calculateCoordinateDistance(
+				new Vector2(geoBoundingBox_Min.getX(), geoBoundingBox_Max.getY()), geoBoundingBox_Max);
+		double bbHeight = Link.calculateCoordinateDistance(
+				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()), geoBoundingBox_Max);
 
 		for (Node n : theNodes) {
 			Vector2 coords = n.getGeoCoords();
-			double xPerc = (coords.getX() - boundingBox_Min.getX()) / geoBBWidth;
-			double yPerc = (coords.getY() - boundingBox_Min.getY()) / geoBBHeight;
+			double xPerc = (coords.getX() - geoBoundingBox_Min.getX()) / geoBBWidth;
+			double yPerc = (coords.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
 			xPerc = bbWidth * xPerc;
 			yPerc = bbHeight * yPerc;
 			n.setCoords(new Vector2(xPerc, yPerc));
 			nodesMap.put(n.getCoords(), n);
 		}
+
+		boundingBox_Min = new Vector2(0, 0);
+		boundingBox_Max = new Vector2(bbWidth, bbHeight);
+		range = new Range2D(boundingBox_Min, new Vector2(boundingBox_Min.getX(), boundingBox_Max.getY()),
+				new Vector2(boundingBox_Max.getX(), boundingBox_Min.getY()),
+				new Vector2(boundingBox_Max.getX(), boundingBox_Max.getY()));
 	}
 
 	// TODO
@@ -166,17 +180,23 @@ public class MapGraph {
 	// TODO SubGraphs
 	public void createSubMaps(int num) {
 		errLog("createSubMaps is incomplete");
+		if (num == 1) {
+			subMaps.add(this);
+		}
 	}
 
-	// TODO After SubGraphs
 	public List<MapGraph> getSubMapsAsList() {
-		errLog("getSubMapsAsList is incomplete");
-		return null;
+		return subMaps;
 	}
 
+	// TODO
 	public List<Range2D> getSubMapRangesAsList() {
 		errLog("getSubMapRangesAsList is incomplete");
-		return null;
+		List<Range2D> ranges = new List<Range2D>();
+		for (MapGraph mg : subMaps) {
+			ranges.add(mg.getRange());
+		}
+		return ranges;
 	}
 
 	// TODO
@@ -246,7 +266,7 @@ public class MapGraph {
 	}
 
 	public void printBounds() {
-		System.out.println("MapGraph Bounds [ min=" + boundingBox_Min + ", max=" + boundingBox_Max + " ]");
+		System.out.println("MapGraph Bounds [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
 	}
 
 	public List<Node> getTransitPoints() {
@@ -315,7 +335,8 @@ public class MapGraph {
 
 	@Override
 	public String toString() {
-		return "MapGraph [ size of nodesMap: " + nodes.size() + ", size of links: " + links.size() + " ]";
+		return "MapGraph [ size of nodesMap: " + nodes.size() + ", size of links: " + links.size() + ", size in km: "
+				+ boundingBox_Max + "]";
 	}
 
 	public void errLog(Object o) {

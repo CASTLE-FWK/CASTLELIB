@@ -33,9 +33,11 @@ public class MapGraphParser {
 
 	public MapGraphParser(MapGraph mg) {
 		mapGraph = mg;
+		mapGraph.setID(0);
 	}
 	
 	public void parseMapGraph(String pathToFile) {
+		System.out.println("********PARSING MAPGRAPH*******");
 		OSMParser p = new OSMParser();
 		File osmFile = new File(pathToFile);
 		try {
@@ -160,7 +162,7 @@ public class MapGraphParser {
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
 			System.out.println(mapGraph.toString());
-			System.out.println("Finished parsing: "+pathToFile);
+			System.out.println("********FINISHED PARSING: "+pathToFile+"*******");
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		}
