@@ -5,11 +5,13 @@ public class Outcome{
 	double distanceAlongEdge;
 	Node destNode;
 	MapGraph mapGraph;
-	public Outcome(OutcomeResult r, double distAlongEdge, Node destNode, MapGraph mapGraph) {
+	Edge edge;
+	public Outcome(OutcomeResult r, double distAlongEdge, Node destNode, MapGraph mapGraph, Edge edge) {
 		this.result = r;
 		this.distanceAlongEdge = distAlongEdge;
 		this.destNode = destNode;
 		this.mapGraph = mapGraph;
+		this.edge = edge;
 	}
 	public OutcomeResult getResult() {
 		return result;
@@ -34,6 +36,12 @@ public class Outcome{
 	}
 	public void setMapGraph(MapGraph mapGraph) {
 		this.mapGraph = mapGraph;
+	}
+	public Edge getEdge() {
+		return edge;
+	}
+	public void setEdge(Edge edge) {
+		this.edge = edge;
 	}
 	
 

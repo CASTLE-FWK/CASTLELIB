@@ -44,11 +44,11 @@ public class MapGraph {
 		id = -1;
 		subMaps = new List<MapGraph>();
 	}
-	
+
 	public MapGraph(MapGraph mg) {
 		clone(mg);
 	}
-	
+
 	// TODO
 	public void clone(MapGraph mg) {
 		errLog("clone is incomplete");
@@ -86,21 +86,31 @@ public class MapGraph {
 
 	/** How to move Entities around **/
 	// TODO HERE
-	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Node destNode) {
+	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Node destNode, Vector2 finalDestination) {
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist;
 		Outcome outcome = null;
 		if (newDist > currEdge.getDistanceInKM()) {
 			// TODO Needs to move to new node and update the destNode
-
+			Node n = determineNextNode(destNode, finalDestination);
 		} else if (newDist > 1001209) {
-
+			// TODO going way out of bounds
 		} else {
-			outcome = new Outcome(OutcomeResult.VALID, newDist, destNode, this);
+			
+			outcome = new Outcome(OutcomeResult.VALID, newDist, destNode, this, currEdge);
 		}
 
 		return outcome;
 
+	}
+	
+	// TODO
+	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos){
+		Node currNode = getNodeAtPosition(currPos);
+		Node destNode = getNodeAtPosition(destPos);
+		
+		List<Node> nodes = new List<Node>();
+		return nodes;
 	}
 
 	// TODO
@@ -112,7 +122,17 @@ public class MapGraph {
 
 	// TODO
 	public Node determineNextNode(Node currNode, Vector2 finalDestination) {
+		
 		errLog("determineNextNode is incomplete");
+		
+		//1: Get nearest Node to final
+		Node theFinalNode = getNodeAtPosition(finalDestination);
+		
+		//2: Find route from currNode to theFinalNode
+		
+		//3: Return the next node
+		
+		
 		return null;
 	}
 
@@ -180,20 +200,21 @@ public class MapGraph {
 		range = new Range2D(boundingBox_Min, new Vector2(boundingBox_Min.getX(), boundingBox_Max.getY()),
 				new Vector2(boundingBox_Max.getX(), boundingBox_Min.getY()),
 				new Vector2(boundingBox_Max.getX(), boundingBox_Max.getY()));
-		
+
 		geoRange = new Range2D(geoBoundingBox_Min, new Vector2(geoBoundingBox_Min.getX(), geoBoundingBox_Max.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
+
+		// TODO Need a translation function
 		errLog(range);
 	}
 
-
-
-	// TODO SubGraphs
+	// TODO SubGraphs > 1
 	public void createSubMaps(int num) {
-		errLog("createSubMaps is incomplete");
 		if (num == 1) {
 			subMaps.add(this);
+		} else {
+			errLog("createSubMaps is incomplete");
 		}
 	}
 
@@ -201,9 +222,7 @@ public class MapGraph {
 		return subMaps;
 	}
 
-	// TODO
 	public List<Range2D> getSubMapRangesAsList() {
-		errLog("getSubMapRangesAsList is incomplete");
 		List<Range2D> ranges = new List<Range2D>();
 		for (MapGraph mg : subMaps) {
 			ranges.add(mg.getRange());
@@ -354,7 +373,7 @@ public class MapGraph {
 	public void errLog(Object o) {
 		System.err.println("MapGraph Warning: " + o.toString());
 	}
-	
+
 	public boolean containsPoint(Vector2 v) {
 		if (range == null) {
 			errLog("range is null");
