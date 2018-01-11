@@ -1,15 +1,18 @@
 package castleComponents.representations.MapGraph;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import castleComponents.objects.Vector2;
+
+import java.util.HashSet;
+
+import castleComponents.Entity;
+import castleComponents.objects.List;
 
 public class Link implements Comparable<Link> {
 	private double weight;
-	ArrayList<Node> wayPoints;
+	List<Node> wayPoints;
+	List<Edge> edges;
 
-	// OSM Extra features
+	// OpenStreetMap Extra features
 	boolean bicycle = false;
 	String cycleWay = "";
 	String roadType = "";
@@ -20,50 +23,71 @@ public class Link implements Comparable<Link> {
 	int lanes = 0;
 	long id;
 
+	HashSet<Entity> currentEntities;
+
 	public Link() {
 		init();
 	}
 
 	public void init() {
-		wayPoints = new ArrayList<Node>();
+		wayPoints = new List<Node>();
+		currentEntities = new HashSet<Entity>();
+		edges = new List<Edge>();
 	}
 
-	public double calculateLength() {
-		double length = 0.0;
-		for (int i = 0; i < wayPoints.size() - 1; i++) {
-			int j = i + 1;
-			length += calculateCoordinateDistance(wayPoints.get(i).getCoords(), wayPoints.get(j).getCoords());
+	public boolean isNodeInLink(Node n) {
+		for (Node ns : wayPoints) {
+			if (ns.getID() == n.getID()) {
+				return true;
+			}
 		}
-		weight = length;
-		return length;
+		return false;
 	}
 
-	public double calculateCoordinateDistance(Vector2 a, Vector2 b) {
-		int earthRad = 6371; // TODO
-		double lat1 = a.getX();
-		double lat2 = b.getX();
-		double lon1 = a.getY();
-		double lon2 = b.getY();
+	public Node[] findClosestNodePair(Vector2 pos) {
+		Node[] pair = new Node[2];
+		for (int i = 0; i < wayPoints.size() - 1; i++) {
+			Vector2 coordA = wayPoints.get(i).getGeoCoords();
+			Vector2 coordB = wayPoints.get(i + 1).getGeoCoords();
 
-		double dLat = Math.toRadians(lat2 - lat1);
-		double dLon = Math.toRadians(lon2 - lon1);
+			// Check if point lies on line
+			if (pointIsOnLine(pos, coordA, coordB)) {
+				pair[0] = wayPoints.get(i);
+				pair[1] = wayPoints.get(i + 1);
+				return pair;
+			}
 
-		lat1 = Math.toRadians(lat1);
-		lat2 = Math.toRadians(lat2);
-
-		double q = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0)
-				+ Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0) * Math.cos(lat1) * Math.cos(lat2);
-
-		double c = 2 * Math.atan2(Math.sqrt(q), Math.sqrt(1.0 - q));
-		return c * earthRad;
+		}
+		return null;
 	}
 
-	public void setID(long id) {
-		this.id = id;
+	// Pinched from:
+	// https://stackoverflow.com/questions/11907947/how-to-check-if-a-point-lies-on-a-line-between-2-other-points
+	public boolean pointIsOnLine(Vector2 currPoint, Vector2 point1, Vector2 point2) {
+		double dxc = currPoint.getX() - point1.getX();
+		double dyc = currPoint.getY() - point1.getY();
+
+		double dxl = point2.getX() - point1.getX();
+		double dyl = point2.getY() - point1.getY();
+
+		double cross = (dxc * dyl) - (dyc * dxl);
+
+		if (Math.abs(dxl) >= Math.abs(dyl))
+			return dxl > 0 ? point1.getX() <= currPoint.getX() && currPoint.getX() <= point2.getX()
+					: point2.getX() <= currPoint.getX() && currPoint.getX() <= point1.getX();
+		else
+			return dyl > 0 ? point1.getY() <= currPoint.getY() && currPoint.getY() <= point2.getY()
+					: point2.getY() <= currPoint.getY() && currPoint.getY() <= point1.getY();
+
 	}
 
-	public long getID() {
-		return id;
+	// **Getters and other helper things **//
+	public void addEntity(Entity e) {
+		currentEntities.add(e);
+	}
+
+	public void removeEntity(Entity e) {
+		currentEntities.remove(e);
 	}
 
 	public List<Node> getWayPoints() {
@@ -151,6 +175,50 @@ public class Link implements Comparable<Link> {
 		return !oneWay;
 	}
 
+	public void setID(long id) {
+		this.id = id;
+	}
+
+	public long getID() {
+		return id;
+	}
+
+	public List<Edge> getEdges() {
+		return edges;
+	}
+
+	public double setup() {
+		double length = 0.0;
+		for (int i = 0; i < wayPoints.size() - 1; i++) {
+			int j = i + 1;
+			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
+			// Build edges at same time
+			edges.add(new Edge(wayPoints.get(i), wayPoints.get(j)));
+		}
+		weight = length;
+		return length;
+	}
+
+	public static double calculateCoordinateDistance(Vector2 a, Vector2 b) {
+		int earthRad = 6371; // TODO
+		double lat1 = a.getX();
+		double lat2 = b.getX();
+		double lon1 = a.getY();
+		double lon2 = b.getY();
+
+		double dLat = Math.toRadians(lat2 - lat1);
+		double dLon = Math.toRadians(lon2 - lon1);
+
+		lat1 = Math.toRadians(lat1);
+		lat2 = Math.toRadians(lat2);
+
+		double q = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0)
+				+ Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0) * Math.cos(lat1) * Math.cos(lat2);
+
+		double c = 2 * Math.atan2(Math.sqrt(q), Math.sqrt(1.0 - q));
+		return c * earthRad;
+	}
+
 	@Override
 	public String toString() {
 		return "Edge [id=" + id + ", weight=" + weight + ", bicycle=" + bicycle + ", cycleWay=" + cycleWay
@@ -172,6 +240,45 @@ public class Link implements Comparable<Link> {
 		}
 
 		return 0;
+	}
 
+	// TODO
+	public void moveEntity_BAD(Entity e, Vector2 pos, float moveDist, Vector2 nextNode) {
+		// Determine which pair of nodes Entity is sitting between
+		Node[] nodes = findClosestNodePair(pos);
+		if (nodes == null) {
+			System.err.println("LINK: null nodes");
+		}
+		Node a = nodes[0];
+		Vector2 coordsA = a.getGeoCoords();
+		Node b = nodes[1];
+		Vector2 coordsB = b.getGeoCoords();
+		double distanceInKM = calculateCoordinateDistance(coordsA, coordsB);
+
+		// Calculate the length and slope of the Link segment
+		double length = distanceInKM;
+		double percentageOfMove = moveDist / length;
+		double slope = coordsA.calculateSlope(coordsB);
+
+		// Calculate current movement percentage
+		double entityDistFromNode = calculateCoordinateDistance(pos, nextNode);
+		double percentage = entityDistFromNode / length;
+
+		// Calculate link percentage of move
+		double proposedPercentage = percentage + percentageOfMove;
+
+		// If less that 100%, do a simple shift
+		if (proposedPercentage < 100) {
+			// TODO Should return a VALID or something nice
+		}
+		// Else if geq 100%, move to next node and add percentage from there
+		// unless Node is a traffic-light or other
+		else if (proposedPercentage > 100) {
+			// TODO Need to tell the next node about it
+		}
+	}
+	
+	public void errLog(Object o) {
+		System.err.println("Link Warning: "+o.toString());
 	}
 }

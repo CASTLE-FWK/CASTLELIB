@@ -1,34 +1,31 @@
 package castleComponents.representations.MapGraph;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
 import castleComponents.objects.Vector2;
+import castleComponents.objects.List;
 
 public class Node {
-	String name;
-	Vector2 coords;
-	int outgoingInteraction;
-	int incomingInteraction;
+	Vector2 geoCoords;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
-	ArrayList<Link> incomingEdges;
-	ArrayList<Link> outgoingEdges;
+	List<Link> incomingEdges;
+	List<Link> outgoingEdges;
 	HashSet<Node> connectedNodes;
+	Vector2 coords;
 
-	// OSM Extra features
+	HashSet<Link> links;
+
+	// OpenStreetMap Extra features
 	long id = 0;
 	String nodeType = "";
 	boolean outOfBounds = false;
+	boolean transitNode = false;
 
-	public Node(String name, Vector2 position) {
-		this.name = name;
-		this.coords = new Vector2(position);
-		outgoingInteraction = 0;
-		incomingInteraction = 0;
-		outgoingTotalWeight = 0;
-		incomingTotalWeight = 0;
+	public Node(long id, Vector2 coord) {
+		this.id = id;
+		this.geoCoords = new Vector2(coord);
 		init();
 	}
 
@@ -45,9 +42,12 @@ public class Node {
 	}
 
 	public void init() {
-		incomingEdges = new ArrayList<Link>();
-		outgoingEdges = new ArrayList<Link>();
+		incomingEdges = new List<Link>();
+		outgoingEdges = new List<Link>();
 		connectedNodes = new HashSet<Node>();
+		links = new HashSet<Link>();
+		outgoingTotalWeight = 0;
+		incomingTotalWeight = 0;
 	}
 
 	public void setID(long id) {
@@ -72,10 +72,9 @@ public class Node {
 	 * @param cloneNode
 	 *            The node to copy.
 	 */
-
+	// TODO
 	public Node(Node cloneNode) {
-		this.name = cloneNode.getName();
-		this.coords = new Vector2(cloneNode.getCoords());
+		this.geoCoords = new Vector2(cloneNode.getGeoCoords());
 	}
 
 	/**
@@ -86,16 +85,7 @@ public class Node {
 	 *            [description]
 	 */
 	public void normalise(Vector2 normVector) {
-		coords.subtract(normVector);
-	}
-
-	/**
-	 * Returns the name of the Node.
-	 * 
-	 * @return [description]
-	 */
-	public String getName() {
-		return name;
+		geoCoords.subtract(normVector);
 	}
 
 	/**
@@ -105,8 +95,8 @@ public class Node {
 	 *            A scalar.
 	 */
 	public void multiplyCoords(double multiplier) {
-		coords.setX(coords.getX() * multiplier);
-		coords.setY(coords.getY() * multiplier);
+		geoCoords.setX(geoCoords.getX() * multiplier);
+		geoCoords.setY(geoCoords.getY() * multiplier);
 	}
 
 	/**
@@ -114,29 +104,30 @@ public class Node {
 	 * 
 	 * @return [description]
 	 */
-	public Vector2 getCoords() {
-		return coords;
+	public Vector2 getGeoCoords() {
+		return geoCoords;
 	}
 
-	public void setCoords(Vector2 v) {
-		coords = new Vector2(v);
+	public void setGeoCoords(Vector2 v) {
+		geoCoords = new Vector2(v);
+	}
+
+	public void addLink(Link l) {
+		links.add(l);
+	}
+
+	public HashSet<Link> getLinks() {
+		return links;
 	}
 
 	@Override
 	public String toString() {
-		return "Node [id=" + id + ", coords=" + coords + ", nodeType=" + nodeType + "]";
+		return "Node [id=" + id + ", coords= " + coords + ", geoCoords=" + geoCoords + ", nodeType=" + nodeType
+				+ ", number of links=" + links.size() + "]";
 	}
 
 	public void newCoords(double newX, double newY) {
-		coords = new Vector2(newX, newY);
-	}
-
-	public void incrementOutgoingInteractions() {
-		outgoingInteraction++;
-	}
-
-	public void incrementIncomingInteractions() {
-		incomingInteraction++;
+		geoCoords = new Vector2(newX, newY);
 	}
 
 	public void addOutgoingWeight(double weight) {
@@ -159,24 +150,12 @@ public class Node {
 		return outgoingTotalWeight + incomingTotalWeight;
 	}
 
-	public int outGoingInteractions() {
-		return outgoingInteraction;
-	}
-
-	public int incomingInteractions() {
-		return incomingInteraction;
-	}
-
-	public int totalInteractions() {
-		return outGoingInteractions() + incomingInteractions();
-	}
-
 	public static Comparator<Node> sortByX() {
 		return new Comparator<Node>() {
 			@Override
 			public int compare(Node n1, Node n2) {
-				Vector2 o1 = n1.getCoords();
-				Vector2 o2 = n2.getCoords();
+				Vector2 o1 = n1.getGeoCoords();
+				Vector2 o2 = n2.getGeoCoords();
 				if (o1.getX() > o2.getX()) {
 					return 1;
 				} else if (o1.getX() < o2.getX()) {
@@ -192,8 +171,8 @@ public class Node {
 		return new Comparator<Node>() {
 			@Override
 			public int compare(Node n1, Node n2) {
-				Vector2 o1 = n1.getCoords();
-				Vector2 o2 = n2.getCoords();
+				Vector2 o1 = n1.getGeoCoords();
+				Vector2 o2 = n2.getGeoCoords();
 				if (o1.getY() > o2.getY()) {
 					return 1;
 				} else if (o1.getY() < o2.getY()) {
@@ -205,7 +184,27 @@ public class Node {
 		};
 	}
 
+	public void setCoords(Vector2 v) {
+		this.coords = new Vector2(v);
+	}
+
+	public Vector2 getCoords() {
+		return this.coords;
+	}
+
 	public HashSet<Node> getConnectedNodes() {
 		return connectedNodes;
+	}
+
+	public boolean isTransitNode() {
+		return transitNode;
+	}
+
+	public void setTransitNode(boolean transitNode) {
+		this.transitNode = transitNode;
+	}
+	
+	public void errLog(Object o) {
+		System.err.println("Edge Warning: "+o.toString());
 	}
 }

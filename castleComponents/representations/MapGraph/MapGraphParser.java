@@ -65,7 +65,7 @@ public class MapGraphParser {
 					Vector2 coords = new Vector2(lat, lon);
 					Node nd = new Node();
 					nd.setID(idl);
-					nd.setCoords(coords);
+					nd.setGeoCoords(coords);
 					// Store this in our graph
 					storedNodes.put(nd.getID(), nd);
 					mapGraph.addNode(nd);
@@ -93,6 +93,7 @@ public class MapGraphParser {
 							System.err.println("Node "+n.getId()+" has not been seen");
 						} else {
 							ed.addWayPoint(nd);
+							nd.addLink(ed);
 						}
 					}
 
@@ -130,7 +131,7 @@ public class MapGraphParser {
 							ed.setLit(Boolean.parseBoolean(value));
 						}
 					}
-					ed.calculateLength();
+					ed.setup();
 					mapGraph.addLink(ed);
 //					System.out.println(ed.toString());
 
@@ -146,7 +147,7 @@ public class MapGraphParser {
 							} else {
 								Node n = new Node();
 								n.setID(Long.parseLong(mem.getId().substring(1)));
-								n.setCoords(Vector2.NULL);
+								n.setGeoCoords(Vector2.NULL);
 								n.setOutOfBounds(true);
 								storedNodes.put(n.getID(), n);
 							}
@@ -156,10 +157,8 @@ public class MapGraphParser {
 					}
 				}
 			}
-			
-			
-			
-			
+			mapGraph.calculateBounds();
+			mapGraph.normalise();
 			System.out.println(mapGraph.toString());
 			System.out.println("Finished parsing: "+pathToFile);
 		} catch (IOException | SAXException e) {

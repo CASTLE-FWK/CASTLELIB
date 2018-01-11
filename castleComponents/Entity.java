@@ -109,7 +109,7 @@ public class Entity implements Runnable {
 	}
 
 	public String getID() {
-		return entityID.toString();
+		return getEntityID().toString();
 	}
 
 	private Phase currentPhase;
