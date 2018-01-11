@@ -203,8 +203,8 @@ public class Node {
 	public void setTransitNode(boolean transitNode) {
 		this.transitNode = transitNode;
 	}
-	
+
 	public void errLog(Object o) {
-		System.err.println("Edge Warning: "+o.toString());
+		System.err.println("Edge Warning: " + o.toString());
 	}
 }

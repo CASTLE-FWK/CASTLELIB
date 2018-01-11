@@ -206,36 +206,36 @@ public class MapGraph {
 
 		return null;
 	}
-	
+
 	// TODO
 	public MapGraph extractMapSection(Range2D range) {
 		errLog("extractMapSection is incomplete");
 		return null;
 	}
-	
+
 	// TODO
 	public void changeSectionOfMapToType(String eventName, String type) {
 		errLog("changeSectionOfMapToType is incomplete");
 	}
-	
+
 	// TODO
 	public void replaceSectionOfMap(Range2D r, MapGraph oldMapData) {
 		errLog("replaceSectionOfMap is incomplete");
 	}
 
-	//TODO
+	// TODO
 	public int countEntitiesInRangeWithType(Entity e, double range, String theType) {
 		errLog("countEntitiesInRangeWithType is incomplete");
-		
+
 		return -1;
 	}
-	
-	//TODO
+
+	// TODO
 	public Park getCarParkAtPosition(Vector2 pos) {
 		errLog("getCarParkAtPosition is incomplete");
 		return null;
 	}
-	
+
 	public Vector2 getPositionOfEntity(Entity e) {
 		return null;
 	}

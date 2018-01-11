@@ -279,6 +279,6 @@ public class Link implements Comparable<Link> {
 	}
 	
 	public void errLog(Object o) {
-		System.err.println("Link Warning: "+o.toString());
+		System.err.println("Link Warning: " + o.toString());
 	}
 }
