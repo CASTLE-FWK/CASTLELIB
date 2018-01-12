@@ -13,7 +13,7 @@ public class Node {
 	List<Link> incomingEdges;
 	List<Link> outgoingEdges;
 	List<Edge> edges;
-	HashSet<Node> connectedNodes;
+	HashSet<Node> adjacentNodes;
 	Vector2 coords;
 
 	HashSet<Link> links;
@@ -45,7 +45,7 @@ public class Node {
 	public void init() {
 		incomingEdges = new List<Link>();
 		outgoingEdges = new List<Link>();
-		connectedNodes = new HashSet<Node>();
+		adjacentNodes = new HashSet<Node>();
 		edges = new List<Edge>();
 		links = new HashSet<Link>();
 		outgoingTotalWeight = 0;
@@ -208,8 +208,12 @@ public class Node {
 		return this.coords;
 	}
 
-	public HashSet<Node> getConnectedNodes() {
-		return connectedNodes;
+	public HashSet<Node> getAdjacentNodes() {
+		return adjacentNodes;
+	}
+	
+	public void addAdjacentNode(Node n) {
+		adjacentNodes.add(n);
 	}
 
 	public boolean isTransitNode() {

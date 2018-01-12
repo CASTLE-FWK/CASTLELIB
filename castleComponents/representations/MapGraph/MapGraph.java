@@ -11,6 +11,7 @@ import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
 import castleComponents.representations.LayoutParameters;
+import stdSimLib.utilities.Dijkstra;
 import stdSimLib.utilities.Utilities;
 
 public class MapGraph {
@@ -31,6 +32,8 @@ public class MapGraph {
 	List<MapGraph> subMaps;
 	Range2D range;
 	Range2D geoRange;
+	//Dijkstra's wow
+	Dijkstra dksa;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -43,6 +46,7 @@ public class MapGraph {
 		carParkNodes = new List<Node>(); // TODO Populate this list
 		id = -1;
 		subMaps = new List<MapGraph>();
+		dksa = new Dijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 	}
 
 	public MapGraph(MapGraph mg) {
@@ -88,17 +92,16 @@ public class MapGraph {
 	// TODO HERE
 	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
 		Node nextNode = route.getNextNode();
-		
+
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
-		
-		
+
 		Outcome outcome = null;
 		if (newDist > currEdge.getDistanceInKM()) {
 			double overMove = newDist - currEdge.getDistanceInKM();
 			route.nodeVisted();
 			Node next = route.getNextNode();
-			//Find edge that connects to next
+			// Find edge that connects to next
 			Node nextNext = route.getFollowingNode(next);
 			currEdge = null;
 			for (Edge ed : next.getEdges()) {
@@ -110,26 +113,32 @@ public class MapGraph {
 			if (currEdge == null) {
 				errLog("No new Edge found. Route generation was bad");
 			}
-			distanceAlongEdge = overMove;
-			
+			newDist = overMove;
+
 		} else if (newDist > 1001209) {
 			// TODO going way out of bounds
 		} else {
-			
 			outcome = new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 		}
 
-		return outcome;
+		return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 
 	}
-	
+
 	// TODO
-	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos){
+	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos) {
+		errLog("calculateRoute is incomplete");
 		Node currNode = getNodeAtPosition(currPos);
+		errLog("currNode pos: "+currPos);
 		Node destNode = getNodeAtPosition(destPos);
 		
-		List<Node> nodes = new List<Node>();
-		return nodes;
+		dksa.execute(currNode);
+		List<Node> path = dksa.getPath(destNode);
+		if (path == null) {
+			errLog("path is null");
+			System.exit(0);
+		}
+		return path;
 	}
 
 	// TODO
@@ -141,17 +150,16 @@ public class MapGraph {
 
 	// TODO
 	public Node determineNextNode(Node currNode, Vector2 finalDestination) {
-		
+
 		errLog("determineNextNode is incomplete");
-		
-		//1: Get nearest Node to final
+
+		// 1: Get nearest Node to final
 		Node theFinalNode = getNodeAtPosition(finalDestination);
-		
-		//2: Find route from currNode to theFinalNode
-		
-		//3: Return the next node
-		
-		
+
+		// 2: Find route from currNode to theFinalNode
+
+		// 3: Return the next node
+
 		return null;
 	}
 
@@ -165,9 +173,14 @@ public class MapGraph {
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
+		errLog("cant add entity to "+pos);
 
 		return false;
 	}
+	
+//	public Node getNodeNearestPosition(Vector2 pos) {
+//		
+//	}
 
 	public void calculateBounds() {
 		HashSet<Node> theNodes = new HashSet<Node>(nodes.values());
@@ -226,6 +239,12 @@ public class MapGraph {
 
 		// TODO Need a translation function
 		errLog(range);
+		dksa = new Dijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
+		
+		//This is weird - print random node
+		errLog(getNodeFromID(1016136212));
+		errLog(getNodeFromID(253085762));		
+//		System.exit(0);
 	}
 
 	// TODO SubGraphs > 1
@@ -255,7 +274,7 @@ public class MapGraph {
 		return null;
 	}
 
-	// TODO This might return funky nulls
+	// Note: This might return funky nulls
 	public Node getNodeAtPosition(Vector2 pos) {
 		return nodesMap.get(pos);
 	}
@@ -275,6 +294,10 @@ public class MapGraph {
 		}
 
 		return null;
+	}
+	
+	public Node getNodeFromID(long id) {
+		return nodes.get(id);
 	}
 
 	// TODO
@@ -398,5 +421,22 @@ public class MapGraph {
 			errLog("range is null");
 		}
 		return (range.containsPoint(v));
+	}
+
+	public void assignEdges() {
+		for (Edge e : edges.values()) {
+			e.getNodeA().addAdjacentNode(e.getNodeB());
+			e.getNodeB().addAdjacentNode(e.getNodeA());
+		}
+	}
+
+	public void extractEdges() {
+		for (Link l : links.values()) {
+			List<Edge> lEdges = l.getEdges();
+			for (Edge e : lEdges) {
+				edges.put(e.getID(), e);
+			}
+		}
+		
 	}
 }

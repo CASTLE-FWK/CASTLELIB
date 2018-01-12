@@ -33,6 +33,9 @@ public class Route {
 	}
 
 	public void addNodes(List<Node> n) {
+		if (nodesToVisit == null) {
+			nodesToVisit = new List<Node>();
+		}
 		nodesToVisit.addAll(n);
 	}
 
@@ -42,5 +45,14 @@ public class Route {
 
 	public void setLeavingSimulation(boolean leavingSimulation) {
 		this.leavingSimulation = leavingSimulation;
+	}
+	
+	public String toString() {
+		String str = "Route = [";
+		for (Node n : nodesToVisit) {
+			str += n.toString() +",";
+		}
+		str += " ]";
+		return str;
 	}
 }

@@ -21,6 +21,10 @@ public class Edge {
 		return n.hasSameID(nodeA) || n.hasSameID(nodeB);
 	}
 
+	public boolean containsBothNodes(Node a, Node b) {
+		return (a.hasSameID(nodeA) && b.hasSameID(nodeB)) || (b.hasSameID(nodeA) && a.hasSameID(nodeB));
+	}
+
 	public Node getNodeA() {
 		return nodeA;
 	}

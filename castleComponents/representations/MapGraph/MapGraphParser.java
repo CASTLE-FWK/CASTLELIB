@@ -159,8 +159,11 @@ public class MapGraphParser {
 					}
 				}
 			}
+			
+			mapGraph.extractEdges();
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
+			mapGraph.assignEdges();
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: "+pathToFile+"*******");
 		} catch (IOException | SAXException e) {
