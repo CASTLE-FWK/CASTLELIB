@@ -1,8 +1,6 @@
 package castleComponents.representations.MapGraph;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,7 +10,6 @@ import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
 import castleComponents.representations.LayoutParameters;
 import stdSimLib.utilities.Dijkstra;
-import stdSimLib.utilities.Utilities;
 
 public class MapGraph {
 	// Look at all the stuff I have to clone
@@ -32,7 +29,7 @@ public class MapGraph {
 	List<MapGraph> subMaps;
 	Range2D range;
 	Range2D geoRange;
-	//Dijkstra's wow
+	// Dijkstra's wow
 	Dijkstra dksa;
 
 	public MapGraph() {
@@ -93,14 +90,31 @@ public class MapGraph {
 	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
 		Node nextNode = route.getNextNode();
 
+		// Which distance are we looking at?
+
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
-
 		Outcome outcome = null;
+		if (currEdge == null) {
+			Node thisNode = route.getPrevNode();
+			errLog("test: " + thisNode.getEdges().size());
+			for (Edge ed : thisNode.getEdges()) {
+				errLog("test ID: " + ed.getID());
+				if (ed.isNodeConnected(nextNode)) {
+					currEdge = ed;
+					break;
+				}
+			}
+		}
+
 		if (newDist > currEdge.getDistanceInKM()) {
 			double overMove = newDist - currEdge.getDistanceInKM();
 			route.nodeVisted();
 			Node next = route.getNextNode();
+			if (next == null) {
+				// Entity is at it's destination
+				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
+			}
 			// Find edge that connects to next
 			Node nextNext = route.getFollowingNode(next);
 			currEdge = null;
@@ -125,13 +139,12 @@ public class MapGraph {
 
 	}
 
-	// TODO
 	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos) {
 		errLog("calculateRoute is incomplete");
 		Node currNode = getNodeAtPosition(currPos);
-		errLog("currNode pos: "+currPos);
+		errLog("currNode pos: " + currPos);
 		Node destNode = getNodeAtPosition(destPos);
-		
+
 		dksa.execute(currNode);
 		List<Node> path = dksa.getPath(destNode);
 		if (path == null) {
@@ -142,25 +155,15 @@ public class MapGraph {
 	}
 
 	// TODO
-	public Vector2 calculateEntitiesPosition(Edge currEdge, double distanceAlongEdge, Node destNode) {
+	public Vector2 calculateEntitiesPosition(Edge currEdge, double distanceAlongEdge, Node prevNode, Node destNode) {
 		errLog("calculateEntitiesPosition is incomplete");
-
-		return null;
-	}
-
-	// TODO
-	public Node determineNextNode(Node currNode, Vector2 finalDestination) {
-
-		errLog("determineNextNode is incomplete");
-
-		// 1: Get nearest Node to final
-		Node theFinalNode = getNodeAtPosition(finalDestination);
-
-		// 2: Find route from currNode to theFinalNode
-
-		// 3: Return the next node
-
-		return null;
+		Vector2 prevPos = prevNode.getCoords();
+		Vector2 destPos = destNode.getCoords();
+		double edgeLen = currEdge.getDistanceInKM();
+		double t = distanceAlongEdge / edgeLen;
+		double x = ((1 - t) * prevPos.getX() + (t * destPos.getX()));
+		double y = ((1 - t) * prevPos.getY() + (t * destPos.getY()));
+		return new Vector2(x, y);
 	}
 
 	public boolean addEntity(Entity e, Vector2 pos) {
@@ -169,18 +172,19 @@ public class MapGraph {
 		Node cand = getNodeAtPosition(pos);
 		if (cand != null) {
 			// TODO Add here some how
-
+			errLog("Need to be able to place on some Edge at init");
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
-		errLog("cant add entity to "+pos);
+		errLog("cant add entity to " + pos);
 
 		return false;
 	}
-	
-//	public Node getNodeNearestPosition(Vector2 pos) {
-//		
-//	}
+
+	// TODO Need a translation function
+	public boolean addEntityFromGeoCoords(Entity e, Vector2 gPos) {
+		return false;
+	}
 
 	public void calculateBounds() {
 		HashSet<Node> theNodes = new HashSet<Node>(nodes.values());
@@ -237,14 +241,13 @@ public class MapGraph {
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
 
-		// TODO Need a translation function
 		errLog(range);
 		dksa = new Dijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
-		
-		//This is weird - print random node
-		errLog(getNodeFromID(1016136212));
-		errLog(getNodeFromID(253085762));		
-//		System.exit(0);
+
+		// This is weird - print random node
+		// errLog(getNodeFromID(1016136212));
+		// errLog(getNodeFromID(253085762));
+		// System.exit(0);
 	}
 
 	// TODO SubGraphs > 1
@@ -295,7 +298,7 @@ public class MapGraph {
 
 		return null;
 	}
-	
+
 	public Node getNodeFromID(long id) {
 		return nodes.get(id);
 	}
@@ -435,8 +438,12 @@ public class MapGraph {
 			List<Edge> lEdges = l.getEdges();
 			for (Edge e : lEdges) {
 				edges.put(e.getID(), e);
+				Node a = e.getNodeA();
+				Node b = e.getNodeB();
+				a.addEdge(e);
+				b.addEdge(e);
 			}
 		}
-		
+
 	}
 }

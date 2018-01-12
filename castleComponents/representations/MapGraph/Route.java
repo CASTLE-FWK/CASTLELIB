@@ -5,14 +5,23 @@ import castleComponents.representations.MapGraph.Node;
 
 public class Route {
 	List<Node> nodesToVisit;
+	Node prevNode;
 	boolean leavingSimulation = false;
 
 	public Route() {
 		nodesToVisit = new List<Node>();
+		prevNode = null;
 	}
 
 	public Node getNextNode() {
+		if (isEmpty()) {
+			return null;
+		}
 		return nodesToVisit.get(0);
+	}
+	
+	public boolean isEmpty() {
+		return nodesToVisit.size() <= 0;
 	}
 
 	public Node getFinalNode() {
@@ -20,7 +29,7 @@ public class Route {
 	}
 
 	public void nodeVisted() {
-		nodesToVisit.remove(0);
+		prevNode = nodesToVisit.remove(0);
 	}
 
 	public void addNode(Node n) {
@@ -29,7 +38,12 @@ public class Route {
 
 	public Node getFollowingNode(Node n) {
 		int currIndex = nodesToVisit.indexOf(n);
-		return nodesToVisit.get(currIndex + 1);
+		if (currIndex == nodesToVisit.size()) {
+			return nodesToVisit.get(currIndex + 1);
+		} else {
+			return nodesToVisit.get(currIndex);
+		}
+		
 	}
 
 	public void addNodes(List<Node> n) {
@@ -46,13 +60,21 @@ public class Route {
 	public void setLeavingSimulation(boolean leavingSimulation) {
 		this.leavingSimulation = leavingSimulation;
 	}
-	
+
 	public String toString() {
 		String str = "Route = [";
 		for (Node n : nodesToVisit) {
-			str += n.toString() +",";
+			str += n.toString() + ",";
 		}
 		str += " ]";
 		return str;
+	}
+
+	public Node getPrevNode() {
+		return prevNode;
+	}
+
+	public void setPrevNode(Node prevNode) {
+		this.prevNode = prevNode;
 	}
 }
