@@ -23,6 +23,7 @@ public class Node {
 	String nodeType = "";
 	boolean outOfBounds = false;
 	boolean transitNode = false;
+	boolean trafficLight = false;
 
 	public Node(long id, Vector2 coord) {
 		this.id = id;
@@ -226,5 +227,12 @@ public class Node {
 
 	public void errLog(Object o) {
 		System.err.println("Edge Warning: " + o.toString());
+	}
+	
+	public void setTrafficLight(boolean b) {
+		trafficLight = b;
+	}
+	public boolean hasTrafficLight() {
+		return trafficLight;
 	}
 }

@@ -32,6 +32,8 @@ public class MapGraph {
 	// Dijkstra's wow
 	Dijkstra dksa;
 
+	public final String TRAFFIC_SIGNAL = "traffic_signals";
+
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
 		edges = new HashMap<String, Edge>();
@@ -97,9 +99,7 @@ public class MapGraph {
 		Outcome outcome = null;
 		if (currEdge == null) {
 			Node thisNode = route.getPrevNode();
-			errLog("test: " + thisNode.getEdges().size());
 			for (Edge ed : thisNode.getEdges()) {
-				errLog("test ID: " + ed.getID());
 				if (ed.isNodeConnected(nextNode)) {
 					currEdge = ed;
 					break;
@@ -154,9 +154,7 @@ public class MapGraph {
 		return path;
 	}
 
-	// TODO
 	public Vector2 calculateEntitiesPosition(Edge currEdge, double distanceAlongEdge, Node prevNode, Node destNode) {
-		errLog("calculateEntitiesPosition is incomplete");
 		Vector2 prevPos = prevNode.getCoords();
 		Vector2 destPos = destNode.getCoords();
 		double edgeLen = currEdge.getDistanceInKM();
@@ -172,7 +170,6 @@ public class MapGraph {
 		Node cand = getNodeAtPosition(pos);
 		if (cand != null) {
 			// TODO Add here some how
-			errLog("Need to be able to place on some Edge at init");
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
@@ -181,9 +178,23 @@ public class MapGraph {
 		return false;
 	}
 
-	// TODO Need a translation function
 	public boolean addEntityFromGeoCoords(Entity e, Vector2 gPos) {
-		return false;
+		Vector2 rPos = convertFromGeoToRelational(gPos);
+		return addEntity(e, rPos);
+	}
+
+	public Vector2 convertFromGeoToRelational(Vector2 gPos) {
+		double geoBBWidth = geoBoundingBox_Max.getX() - geoBoundingBox_Min.getX();
+		double geoBBHeight = geoBoundingBox_Max.getY() - geoBoundingBox_Min.getY();
+		double bbWidth = Link.calculateCoordinateDistance(
+				new Vector2(geoBoundingBox_Min.getX(), geoBoundingBox_Max.getY()), geoBoundingBox_Max);
+		double bbHeight = Link.calculateCoordinateDistance(
+				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()), geoBoundingBox_Max);
+		double xPerc = (gPos.getX() - geoBoundingBox_Min.getX()) / geoBBWidth;
+		double yPerc = (gPos.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
+		xPerc = bbWidth * xPerc;
+		yPerc = bbHeight * yPerc;
+		return new Vector2(xPerc, yPerc);
 	}
 
 	public void calculateBounds() {
@@ -320,8 +331,20 @@ public class MapGraph {
 	}
 
 	// TODO
-	public int countEntitiesInRangeWithType(Entity e, double range, String theType) {
-		errLog("countEntitiesInRangeWithType is incomplete");
+	public int countEntitiesInRangeWithType(Entity e, double speed, String type, Edge currEdge, Node prevNode,
+			Node destNode) {
+		errLog("countEntitiesInRangeWithType is incomplete. Is current task.");
+		if (currEdge == null) {
+			return 0;
+		}
+		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
+		for (Entity ent : entsOnSameEdge) {
+			if (e == ent) {
+				continue;
+			}
+			// How can we do this?
+
+		}
 
 		return -1;
 	}
@@ -411,8 +434,9 @@ public class MapGraph {
 
 	@Override
 	public String toString() {
-		return "MapGraph [ size of nodesMap: " + nodes.size() + ", size of links: " + links.size() + ", size in km: "
-				+ boundingBox_Max + "]";
+		return "MapGraph [ size of nodesMap: " + nodes.size() + ", size of links: " + links.size()
+				+ ", number of traffic lights: " + trafficLightLocations.size() + ", size in km: " + boundingBox_Max
+				+ "]";
 	}
 
 	public void errLog(Object o) {
@@ -444,6 +468,15 @@ public class MapGraph {
 				b.addEdge(e);
 			}
 		}
+	}
 
+	public void buildLights() {
+		for (Node n : nodes.values()) {
+			if (n.getNodeType().compareToIgnoreCase(TRAFFIC_SIGNAL) == 0) {
+				// Build a traffic light here
+				n.setTrafficLight(true);
+				trafficLightLocations.add(new TrafficLight(n.getCoords()));
+			}
+		}
 	}
 }

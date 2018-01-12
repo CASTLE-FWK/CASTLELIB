@@ -23,6 +23,14 @@ public class TrafficLight {
 	String activeSetState = "";
 	int nextCounter = 0;
 
+	public TrafficLight(Vector2 loc) {
+		this.location = new Vector2(loc);
+		lightPatterns = new ArrayList<Vector2>();
+		listOfExits = new ArrayList<Vector2>();
+		setOne = new HashSet<Vector2>();
+		setTwo = new HashSet<Vector2>();
+	}
+	
 	public TrafficLight(Vector2 loc, ArrayList<Vector2> lp) {
 		this.location = new Vector2(loc);
 		lightPatterns = new ArrayList<Vector2>();
@@ -78,16 +86,17 @@ public class TrafficLight {
 	}
 
 	public void start() {
-		boolean initActiveSet = RandomGen.generateCoinFlip();
-		if (initActiveSet) {
-			activeSetState = SETONE;
-			activeSet = setOne;
-		} else {
-			activeSetState = SETTWO;
-			activeSet = setTwo;
-		}
-		currPattern = getNextPattern();
-		timeLeftGreen = (int) currPattern.getY();
+		errLog("traffic lights cannot start");
+//		boolean initActiveSet = RandomGen.generateCoinFlip();
+//		if (initActiveSet) {
+//			activeSetState = SETONE;
+//			activeSet = setOne;
+//		} else {
+//			activeSetState = SETTWO;
+//			activeSet = setTwo;
+//		}
+//		currPattern = getNextPattern();
+//		timeLeftGreen = (int) currPattern.getY();
 	}
 
 	// TODO

@@ -26,6 +26,7 @@ public class MapGraphParser {
 	public final String TRAFFIC_SIGNALS = "TRAFFIC_SIGNALS";
 
 	public MapGraph mapGraph;
+
 	public static void main(String[] args) {
 		MapGraphParser mgp = new MapGraphParser(new MapGraph());
 		mgp.parseMapGraph(args[0]);
@@ -35,7 +36,7 @@ public class MapGraphParser {
 		mapGraph = mg;
 		mapGraph.setId(0);
 	}
-	
+
 	public void parseMapGraph(String pathToFile) {
 		System.out.println("********PARSING MAPGRAPH*******");
 		OSMParser p = new OSMParser();
@@ -44,7 +45,7 @@ public class MapGraphParser {
 			HashMap<Long, Node> storedNodes = new HashMap<Long, Node>();
 			Map<String, Element> parsedMap = p.parse(osmFile);
 			p.printStatistics(parsedMap); // Lets check things
-			
+
 			// Get Keys as Set
 			Set<String> keys = parsedMap.keySet();
 			ArrayList<String> sortedKeys = new ArrayList<String>(keys);
@@ -87,12 +88,12 @@ public class MapGraphParser {
 					ed.setID(idl);
 					for (info.pavie.basicosmparser.model.Node n : nodes) {
 						if (n == null) {
-							//Has to be ignored
+							// Has to be ignored
 							continue;
 						}
 						Node nd = storedNodes.get(Long.parseLong(n.getId().substring(1)));
 						if (nd == null) {
-							System.err.println("Node "+n.getId()+" has not been seen");
+							System.err.println("Node " + n.getId() + " has not been seen");
 						} else {
 							ed.addWayPoint(nd);
 							nd.addLink(ed);
@@ -135,17 +136,17 @@ public class MapGraphParser {
 					}
 					ed.setup();
 					mapGraph.addLink(ed);
-//					System.out.println(ed.toString());
+					// System.out.println(ed.toString());
 
 				} else if (e instanceof Relation) {
-					//Not sure what to do with this yet
-					Relation r = (Relation)e;
+					// Not sure what to do with this yet
+					Relation r = (Relation) e;
 					List<Element> members = r.getMembers();
 					for (Element mem : members) {
 						if (mem instanceof info.pavie.basicosmparser.model.Node) {
-							//Check to see if it exists
+							// Check to see if it exists
 							if (storedNodes.containsKey(Long.parseLong(mem.getId().substring(1)))) {
-								//YAY
+								// YAY
 							} else {
 								Node n = new Node();
 								n.setID(Long.parseLong(mem.getId().substring(1)));
@@ -159,13 +160,16 @@ public class MapGraphParser {
 					}
 				}
 			}
-			
+
+			// Order may be important here
 			mapGraph.extractEdges();
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
 			mapGraph.assignEdges();
+			mapGraph.buildLights();
+
 			System.out.println(mapGraph.toString());
-			System.out.println("********FINISHED PARSING: "+pathToFile+"*******");
+			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		}

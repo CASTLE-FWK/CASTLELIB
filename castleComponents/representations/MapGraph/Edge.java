@@ -1,6 +1,8 @@
 package castleComponents.representations.MapGraph;
 
-import castleComponents.objects.Vector2;
+import java.util.HashSet;
+
+import castleComponents.Entity;
 
 public class Edge {
 	Node nodeA;
@@ -8,6 +10,7 @@ public class Edge {
 	double weight;
 	double distanceInKM;
 	String id;
+	HashSet<Entity> entities;
 
 	public Edge(Node a, Node b) {
 		this.nodeA = a;
@@ -15,6 +18,7 @@ public class Edge {
 		id = a.getID() < b.getID() ? "" + a.getID() + b.getID() : "" + b.getID() + a.getID();
 		weight = this.nodeA.getGeoCoords().calculateDistance(this.nodeB.getGeoCoords());
 		distanceInKM = Link.calculateCoordinateDistance(this.nodeA.getGeoCoords(), this.nodeB.getGeoCoords());
+		entities = new HashSet<Entity>();
 	}
 
 	public boolean isNodeConnected(Node n) {
@@ -63,6 +67,17 @@ public class Edge {
 
 	public void errLog(Object o) {
 		System.err.println("Edge Warning: " + o.toString());
+	}
+	
+	public HashSet<Entity> getEntities(){
+		return entities;
+	}
+	public void addEntity(Entity e) {
+		entities.add(e);
+	}
+	
+	public void removeEntity(Entity e) {
+		entities.remove(e);
 	}
 
 }
