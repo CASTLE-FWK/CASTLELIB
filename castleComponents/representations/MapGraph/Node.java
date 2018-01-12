@@ -12,13 +12,14 @@ public class Node {
 	double incomingTotalWeight;
 	List<Link> incomingEdges;
 	List<Link> outgoingEdges;
+	List<Edge> edges;
 	HashSet<Node> connectedNodes;
 	Vector2 coords;
 
 	HashSet<Link> links;
 
 	// OpenStreetMap Extra features
-	long id = 0;
+	long id = -1;
 	String nodeType = "";
 	boolean outOfBounds = false;
 	boolean transitNode = false;
@@ -45,11 +46,18 @@ public class Node {
 		incomingEdges = new List<Link>();
 		outgoingEdges = new List<Link>();
 		connectedNodes = new HashSet<Node>();
+		edges = new List<Edge>();
 		links = new HashSet<Link>();
 		outgoingTotalWeight = 0;
 		incomingTotalWeight = 0;
 	}
 
+	public void addEdge(Edge e) {
+		edges.add(e);
+	}
+	
+	
+	
 	public void setID(long id) {
 		this.id = id;
 	}
@@ -184,6 +192,14 @@ public class Node {
 		};
 	}
 
+	public List<Edge> getEdges(){
+		return edges;
+	}
+	
+	public boolean hasSameID(Node n) {
+		return (n.getID() == getID());
+	}
+	
 	public void setCoords(Vector2 v) {
 		this.coords = new Vector2(v);
 	}

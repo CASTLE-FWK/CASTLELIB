@@ -86,18 +86,37 @@ public class MapGraph {
 
 	/** How to move Entities around **/
 	// TODO HERE
-	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Node destNode, Vector2 finalDestination) {
+	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
+		Node nextNode = route.getNextNode();
+		
 		// How do we update the position along the edge?
-		double newDist = distanceAlongEdge + moveDist;
+		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
+		
+		
 		Outcome outcome = null;
 		if (newDist > currEdge.getDistanceInKM()) {
-			// TODO Needs to move to new node and update the destNode
-			Node n = determineNextNode(destNode, finalDestination);
+			double overMove = newDist - currEdge.getDistanceInKM();
+			route.nodeVisted();
+			Node next = route.getNextNode();
+			//Find edge that connects to next
+			Node nextNext = route.getFollowingNode(next);
+			currEdge = null;
+			for (Edge ed : next.getEdges()) {
+				if (ed.isNodeConnected(nextNext)) {
+					currEdge = ed;
+					break;
+				}
+			}
+			if (currEdge == null) {
+				errLog("No new Edge found. Route generation was bad");
+			}
+			distanceAlongEdge = overMove;
+			
 		} else if (newDist > 1001209) {
 			// TODO going way out of bounds
 		} else {
 			
-			outcome = new Outcome(OutcomeResult.VALID, newDist, destNode, this, currEdge);
+			outcome = new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 		}
 
 		return outcome;

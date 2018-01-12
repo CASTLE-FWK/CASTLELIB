@@ -50,6 +50,10 @@ public class List<T> extends ArrayList<T> {
 		}
 		return get(RandomGen.generateRandomRangeInteger(0, size() - 1));
 	}
+	
+	public T getLast() {
+		return get(size() -1);
+	}
 
 	@Override
 	public String toString() {
