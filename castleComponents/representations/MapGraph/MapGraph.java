@@ -108,12 +108,17 @@ public class MapGraph {
 		}
 
 		if (newDist > currEdge.getDistanceInKM()) {
+			errLog("edge length: " + currEdge.getDistanceInKM());
 			double overMove = newDist - currEdge.getDistanceInKM();
 			route.nodeVisted();
 			Node next = route.getNextNode();
 			if (next == null) {
 				// Entity is at it's destination
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
+			}
+			errLog("updated node");
+			if (next.hasTrafficLight()) {
+				errLog("THERES A TRAFFIC LIGHT HERE");
 			}
 			// Find edge that connects to next
 			Node nextNext = route.getFollowingNode(next);
@@ -331,8 +336,7 @@ public class MapGraph {
 	}
 
 	// TODO
-	public int countEntitiesInRangeWithType(Entity e, double speed, String type, Edge currEdge, Node prevNode,
-			Node destNode) {
+	public int countEntitiesInRangeWithType(Entity e, double speed, String type, Edge currEdge, Heading h) {
 		errLog("countEntitiesInRangeWithType is incomplete. Is current task.");
 		if (currEdge == null) {
 			return 0;
