@@ -95,13 +95,6 @@ public class MapGraph {
 	// TODO HERE
 	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
 		Node nextNode = route.getNextNode();
-
-		// Which distance are we looking at?
-
-		// How do we update the position along the edge?
-		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
-		Outcome outcome = null;
-
 		// Find the correct edge to be on
 		if (currEdge == null) {
 			Node thisNode = route.getPrevNode();
@@ -112,8 +105,25 @@ public class MapGraph {
 				}
 			}
 		}
+		// How do we update the position along the edge?
+		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
+		Outcome outcome = null;
 
-		if (newDist > currEdge.getDistanceInKM()) {
+		//I think this logic is correct
+		double distFromEnd = currEdge.getDistanceInKM() - distanceAlongEdge;
+		if (moveDist >= distFromEnd) {
+			if (nextNode.hasTrafficLight()) {
+				errLog("THERES A TRAFFIC LIGHT HERE");
+				if(nextNode.getTheTrafficLight().haveToStop(currEdge)) {
+					newDist = distanceAlongEdge + distFromEnd; //Yes, I know what this does Clem Fandango
+					route.setCurrentEdge(currEdge);
+					route.setDistanceAlongEdge(newDist);
+					route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
+					errLog("Honk"+nextNode.getTheTrafficLight().getNumberOfPatterns());
+					errLog("Honk"+nextNode.getTheTrafficLight().getTimeLeft());
+					return new Outcome(OutcomeResult.STOPPED, newDist, nextNode, this, currEdge);
+				}
+			}
 			double overMove = newDist - currEdge.getDistanceInKM();
 			route.nodeVisted();
 			Node next = route.getNextNode();
@@ -125,11 +135,7 @@ public class MapGraph {
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
-			if (next.hasTrafficLight()) {
-				errLog("THERES A TRAFFIC LIGHT HERE");
-			}
 			// Find edge that connects to next
-			// Node nextNext = route.getFollowingNode(next);
 			Node prevNode = route.getPrevNode();
 			currEdge = null;
 			for (Edge ed : next.getEdges()) {
@@ -142,8 +148,36 @@ public class MapGraph {
 				errLog("No new Edge found. Route generation was bad");
 			}
 			newDist = overMove;
+		}
 
-		} else if (newDist > 1001209) {
+//		if (newDist > currEdge.getDistanceInKM()) {
+//			double overMove = newDist - currEdge.getDistanceInKM();
+//			route.nodeVisted();
+//			Node next = route.getNextNode();
+//			if (next == null) {
+//				// Entity is at it's destination
+//				route.setCurrentEdge(currEdge);
+//				route.setDistanceAlongEdge(overMove);
+//				// route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
+//				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
+//			}
+//			nextNode = next;
+//			// Find edge that connects to next
+//			Node prevNode = route.getPrevNode();
+//			currEdge = null;
+//			for (Edge ed : next.getEdges()) {
+//				if (ed.isNodeConnected(prevNode)) {
+//					currEdge = ed;
+//					break;
+//				}
+//			}
+//			if (currEdge == null) {
+//				errLog("No new Edge found. Route generation was bad");
+//			}
+//			newDist = overMove;
+//
+//		} 
+		else if (newDist > 1001209) {
 			// TODO going way out of bounds
 		} else {
 			outcome = new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
@@ -170,11 +204,11 @@ public class MapGraph {
 		currPos.round(DECIMAL_PLACES);
 		destPos.round(DECIMAL_PLACES);
 		Node currNode = getNodeAtPosition(currPos);
-		errLog("currNode pos: " + currPos +" is null "+(currNode == null));
+		errLog("currNode pos: " + currPos + " is null " + (currNode == null));
 		Node destNode = getNodeAtPosition(destPos);
-		errLog("destNode pos: " + destPos +" is null "+(destNode == null));
+		errLog("destNode pos: " + destPos + " is null " + (destNode == null));
 		if (currPos.compare(destPos)) {
-			//We have no destination
+			// We have no destination
 			return new List<Node>();
 		} else {
 			dksa.execute(currNode);
@@ -292,8 +326,8 @@ public class MapGraph {
 			yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
 
 			n.setCoords(new Vector2(xPerc, yPerc));
-//			errLog(n);
-//			System.exit(0);
+			// errLog(n);
+			// System.exit(0);
 			nodesMap.put(n.getCoords(), n);
 		}
 
@@ -429,7 +463,7 @@ public class MapGraph {
 		errLog("getCarParkAtPosition is incomplete");
 		return null;
 	}
-	
+
 	public String printMap() {
 		String str = "";
 		return str;
@@ -555,11 +589,17 @@ public class MapGraph {
 	}
 
 	public void buildLights() {
+		long idCounter = 0;
 		for (Node n : nodes.values()) {
 			if (n.getNodeType().compareToIgnoreCase(TRAFFIC_SIGNAL) == 0) {
 				// Build a traffic light here
+				TrafficLight tl = new TrafficLight(n.getCoords(), idCounter);
 				n.setTrafficLight(true);
-				trafficLightLocations.add(new TrafficLight(n.getCoords()));
+				n.setTheTrafficLight(tl);
+				tl.setParentNode(n);
+				tl.createRandomPatterns();
+				trafficLightLocations.add(tl);
+				idCounter++;
 			}
 		}
 	}

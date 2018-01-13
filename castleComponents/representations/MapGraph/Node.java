@@ -24,6 +24,7 @@ public class Node implements Comparable<Node> {
 	boolean outOfBounds = false;
 	boolean transitNode = false;
 	boolean trafficLight = false;
+	TrafficLight theTrafficLight = null;
 	
 	//Purely for Dijkstra speed up
 	double minDistance = Double.POSITIVE_INFINITY;
@@ -253,6 +254,14 @@ public class Node implements Comparable<Node> {
 
 	public boolean hasTrafficLight() {
 		return trafficLight;
+	}
+	
+	public void setTheTrafficLight(TrafficLight tl) {
+		theTrafficLight = tl;
+	}
+	
+	public TrafficLight getTheTrafficLight() {
+		return theTrafficLight;
 	}
 	
 	public double getDijkstraMinDistance() {

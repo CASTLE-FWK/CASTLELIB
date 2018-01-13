@@ -29,6 +29,26 @@ public class Link implements Comparable<Link> {
 	public Link() {
 		init();
 	}
+	
+	public Node[] findAdjacentNodes(Node n) {
+		Node prev = null;
+		Node aft = null;
+		for(int i = 0; i < wayPoints.size() - 1; i++) {
+			if (wayPoints.get(i) == n) {
+				if (i == 0) {
+					prev = null;
+				} else {
+					prev = wayPoints.get(i-1);
+				}
+				if (i > wayPoints.size() - 2) {
+					aft = null;
+				} else {
+					aft = wayPoints.get(i+1);
+				}
+			}
+		}
+		return new Node[] {prev, aft};
+	}
 
 	public void init() {
 		wayPoints = new List<Node>();
