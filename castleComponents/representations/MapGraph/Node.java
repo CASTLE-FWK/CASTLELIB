@@ -10,8 +10,8 @@ public class Node {
 	Vector2 geoCoords;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
-	List<Link> incomingEdges;
-	List<Link> outgoingEdges;
+	List<Edge> incomingEdges;
+	List<Edge> outgoingEdges;
 	List<Edge> edges;
 	HashSet<Node> adjacentNodes;
 	Vector2 coords;
@@ -30,7 +30,7 @@ public class Node {
 		this.geoCoords = new Vector2(coord);
 		init();
 	}
-	
+
 	public Edge findEdgeWithNode(Node n) {
 		for (Edge e : edges) {
 			if (e.containsBothNodes(this, n)) {
@@ -53,8 +53,8 @@ public class Node {
 	}
 
 	public void init() {
-		incomingEdges = new List<Link>();
-		outgoingEdges = new List<Link>();
+		incomingEdges = new List<Edge>();
+		outgoingEdges = new List<Edge>();
 		adjacentNodes = new HashSet<Node>();
 		edges = new List<Edge>();
 		links = new HashSet<Link>();
@@ -62,12 +62,18 @@ public class Node {
 		incomingTotalWeight = 0;
 	}
 
+	public void addIncomingEdge(Edge e) {
+		incomingEdges.add(e);
+	}
+
+	public void addOutgoingEdge(Edge e) {
+		outgoingEdges.add(e);
+	}
+
 	public void addEdge(Edge e) {
 		edges.add(e);
 	}
-	
-	
-	
+
 	public void setID(long id) {
 		this.id = id;
 	}
@@ -202,14 +208,14 @@ public class Node {
 		};
 	}
 
-	public List<Edge> getEdges(){
+	public List<Edge> getEdges() {
 		return edges;
 	}
-	
+
 	public boolean hasSameID(Node n) {
 		return (n.getID() == getID());
 	}
-	
+
 	public void setCoords(Vector2 v) {
 		this.coords = new Vector2(v);
 	}
@@ -221,7 +227,7 @@ public class Node {
 	public HashSet<Node> getAdjacentNodes() {
 		return adjacentNodes;
 	}
-	
+
 	public void addAdjacentNode(Node n) {
 		adjacentNodes.add(n);
 	}
@@ -237,10 +243,11 @@ public class Node {
 	public void errLog(Object o) {
 		System.err.println("Edge Warning: " + o.toString());
 	}
-	
+
 	public void setTrafficLight(boolean b) {
 		trafficLight = b;
 	}
+
 	public boolean hasTrafficLight() {
 		return trafficLight;
 	}

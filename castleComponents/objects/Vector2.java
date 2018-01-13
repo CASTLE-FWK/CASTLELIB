@@ -179,6 +179,12 @@ public class Vector2 implements java.io.Serializable {
 		return out;
 	}
 	
+	public Vector2 round(int dp) {
+		this.x = Utilities.roundDoubleToXDP(this.x, dp);
+		this.y = Utilities.roundDoubleToXDP(this.y, dp);
+		return this;
+	}
+	
 	@Override
 	public boolean equals(Object o){
 		return compare((Vector2)o);

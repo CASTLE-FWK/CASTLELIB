@@ -36,7 +36,7 @@ public class MapGraph {
 	Dijkstra dksa;
 
 	public final String TRAFFIC_SIGNAL = "traffic_signals";
-	public final int DECIMAL_PLACES = 6;
+	public final int DECIMAL_PLACES = 7;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -114,7 +114,6 @@ public class MapGraph {
 		}
 
 		if (newDist > currEdge.getDistanceInKM()) {
-			errLog("edge length: " + currEdge.getDistanceInKM());
 			double overMove = newDist - currEdge.getDistanceInKM();
 			route.nodeVisted();
 			Node next = route.getNextNode();
@@ -126,7 +125,6 @@ public class MapGraph {
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
-			errLog("updated node");
 			if (next.hasTrafficLight()) {
 				errLog("THERES A TRAFFIC LIGHT HERE");
 			}
@@ -158,7 +156,6 @@ public class MapGraph {
 	}
 
 	public Heading calculateHeading(Node prevNode, Node nextNode) {
-		Heading h = Heading.NONE;
 		Vector2 nextPos = nextNode.getCoords();
 		Vector2 prevPos = prevNode.getCoords();
 		double xDiff = nextPos.getX() - prevPos.getX();
@@ -170,18 +167,24 @@ public class MapGraph {
 	}
 
 	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos) {
-		errLog("calculateRoute is incomplete");
+		currPos.round(DECIMAL_PLACES);
+		destPos.round(DECIMAL_PLACES);
 		Node currNode = getNodeAtPosition(currPos);
-		errLog("currNode pos: " + currPos);
+		errLog("currNode pos: " + currPos +" is null "+(currNode == null));
 		Node destNode = getNodeAtPosition(destPos);
-
-		dksa.execute(currNode);
-		List<Node> path = dksa.getPath(destNode);
-		if (path == null) {
-			errLog("path is null");
-			System.exit(0);
+		errLog("destNode pos: " + destPos +" is null "+(destNode == null));
+		if (currPos.compare(destPos)) {
+			//We have no destination
+			return new List<Node>();
+		} else {
+			dksa.execute(currNode);
+			List<Node> path = dksa.getPath(destNode);
+			if (path == null) {
+				errLog("path is null");
+				System.exit(0);
+			}
+			return path;
 		}
-		return path;
 	}
 
 	public Vector2 calculateEntitiesPosition(Edge currEdge, double distanceAlongEdge, Node prevNode, Node destNode) {
@@ -202,6 +205,8 @@ public class MapGraph {
 		double t = distanceAlongEdge / edgeLen;
 		double x = ((1 - t) * prevPos.getX() + (t * destPos.getX()));
 		double y = ((1 - t) * prevPos.getY() + (t * destPos.getY()));
+		x = Utilities.roundDoubleToXDP(x, DECIMAL_PLACES);
+		y = Utilities.roundDoubleToXDP(y, DECIMAL_PLACES);
 		return new Vector2(x, y);
 	}
 
@@ -269,6 +274,7 @@ public class MapGraph {
 
 	public void normalise() {
 		HashSet<Node> theNodes = new HashSet<Node>(nodes.values());
+		nodesMap.clear();
 		double geoBBWidth = geoBoundingBox_Max.getX() - geoBoundingBox_Min.getX();
 		double geoBBHeight = geoBoundingBox_Max.getY() - geoBoundingBox_Min.getY();
 		double bbWidth = Link.calculateCoordinateDistance(
@@ -282,10 +288,12 @@ public class MapGraph {
 			double yPerc = (coords.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
 			xPerc = bbWidth * xPerc;
 			yPerc = bbHeight * yPerc;
-			// xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
-			// yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
+			xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
+			yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
 
 			n.setCoords(new Vector2(xPerc, yPerc));
+//			errLog(n);
+//			System.exit(0);
 			nodesMap.put(n.getCoords(), n);
 		}
 
@@ -380,7 +388,7 @@ public class MapGraph {
 	// TODO
 	public List<Entity> getEntitiesInRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
 			Route route) {
-		
+
 		if (currEdge == null) {
 			return null;
 		}
@@ -399,10 +407,10 @@ public class MapGraph {
 		}
 
 		if (rangeSpan > currEdge.getDistanceInKM()) {
-//			Node followingNode = route.getFollowingNode(route.getNextNode());
-//			Edge followingEdge = route.getFollowingEdge(route.getCurrentEdge());
+			// Node followingNode = route.getFollowingNode(route.getNextNode());
+			// Edge followingEdge = route.getFollowingEdge(route.getCurrentEdge());
 			// TODO handle going across nodes
-			errLog("getEntitiesInRangeOfType is incomplete. Is current task.");
+			errLog("getEntitiesInRangeOfType is incomplete. Especially here");
 			// what if the node has a traffic light
 
 			// neighbours.add(ent);
@@ -421,11 +429,7 @@ public class MapGraph {
 		errLog("getCarParkAtPosition is incomplete");
 		return null;
 	}
-
-	public Vector2 getPositionOfEntity(Entity e) {
-		return null;
-	}
-
+	
 	public String printMap() {
 		String str = "";
 		return str;
@@ -524,6 +528,15 @@ public class MapGraph {
 				Node nb = e.getNodeB();
 				na.addAdjacentNode(nb);
 				nb.addAdjacentNode(na);
+				if (l.isOneWay()) {
+					na.addOutgoingEdge(e);
+					nb.addIncomingEdge(e);
+				} else {
+					na.addOutgoingEdge(e);
+					na.addIncomingEdge(e);
+					nb.addIncomingEdge(e);
+					nb.addOutgoingEdge(e);
+				}
 			}
 		}
 	}

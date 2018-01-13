@@ -19,6 +19,23 @@ public class Route {
 		nodesToVisit = new List<Node>();
 		prevNode = null;
 	}
+	
+	public Route(Route r) {
+		nodesToVisit = new List<Node>();
+		prevNode = null;
+		edgesToTraverse = new List<Edge>();
+		clone(r);
+	}
+	
+	public void clone(Route r) {
+		nodesToVisit.addAll(r.getNodesToVisit());
+		edgesToTraverse.addAll(r.getEdgesToTraverse());
+		prevNode = r.getPrevNode();
+		prevEdge = r.getPrevEdge();
+		distanceAlongEdge = r.getDistanceAlongEdge();
+		currentEdge = r.getCurrentEdge();
+		heading = r.getHeading();
+	}
 
 	public Node getNextNode() {
 		if (noMoreNodes()) {
@@ -45,7 +62,7 @@ public class Route {
 	public Node getFinalNode() {
 		return nodesToVisit.getLast();
 	}
-	public Edge getLastEdge() {
+	public Edge getFinalEdge() {
 		return edgesToTraverse.getLast();
 	}
 
@@ -136,5 +153,29 @@ public class Route {
 
 	public void setHeading(Heading heading) {
 		this.heading = heading;
+	}
+
+	public List<Node> getNodesToVisit() {
+		return nodesToVisit;
+	}
+
+	public void setNodesToVisit(List<Node> nodesToVisit) {
+		this.nodesToVisit = nodesToVisit;
+	}
+
+	public List<Edge> getEdgesToTraverse() {
+		return edgesToTraverse;
+	}
+
+	public void setEdgesToTraverse(List<Edge> edgesToTraverse) {
+		this.edgesToTraverse = edgesToTraverse;
+	}
+
+	public Edge getPrevEdge() {
+		return prevEdge;
+	}
+
+	public void setPrevEdge(Edge prevEdge) {
+		this.prevEdge = prevEdge;
 	}
 }

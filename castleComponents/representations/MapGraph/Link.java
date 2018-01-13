@@ -22,6 +22,7 @@ public class Link implements Comparable<Link> {
 	boolean oneWay = false;
 	int lanes = 0;
 	long id;
+	boolean humanAccessible = false;
 
 	HashSet<Entity> currentEntities;
 
@@ -181,6 +182,14 @@ public class Link implements Comparable<Link> {
 
 	public long getID() {
 		return id;
+	}
+
+	public boolean isHumanAccessible() {
+		return humanAccessible;
+	}
+
+	public void setHumanAccessible(boolean humanAccessible) {
+		this.humanAccessible = humanAccessible;
 	}
 
 	public List<Edge> getEdges() {

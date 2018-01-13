@@ -17,13 +17,7 @@ import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Relation;
 
 public class MapGraphParser {
-	public final String MOTORWAY = "MOTORWAY";
-	public final String TRUNK = "TRUNK";
-	public final String PRIMARY = "PRIMARY";
-	public final String SECONDARY = "SECONDARY";
-	public final String TERTIARY = "TERTIARY";
-	public final String RESIDENTIAL = "RESIDENTIAL";
-	public final String TRAFFIC_SIGNALS = "TRAFFIC_SIGNALS";
+	public final String LIT = "lit";
 
 	public MapGraph mapGraph;
 
@@ -104,6 +98,13 @@ public class MapGraphParser {
 						if (tags.containsKey("highway")) {
 							String highwayV = tags.get("highway");
 							ed.setRoadType(highwayV);
+							if (highwayV.compareToIgnoreCase("footway") == 0) {
+								ed.setHumanAccessible(true);
+							}
+							if (highwayV.compareToIgnoreCase("pedestrian") == 0) {
+								ed.setHumanAccessible(true);
+							}
+							
 						}
 						if (tags.containsKey("name")) {
 							String value = tags.get("name");
@@ -128,10 +129,17 @@ public class MapGraphParser {
 						if (tags.containsKey("cycleway")) {
 							String value = tags.get("cycleway");
 							ed.setCycleWay(value);
+							if (value.compareToIgnoreCase("*") != 0) {
+								ed.setHumanAccessible(true);
+							}
 						}
-						if (tags.containsKey("lit")) {
-							String value = tags.get("lit");
+						if (tags.containsKey(LIT)) {
+							String value = tags.get(LIT);
 							ed.setLit(Boolean.parseBoolean(value));
+						}
+						if (tags.containsKey("foot")) {
+							String value = tags.get("foot");
+							ed.setHumanAccessible(Boolean.parseBoolean(value));
 						}
 					}
 					ed.setup();
