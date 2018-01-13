@@ -114,6 +114,17 @@ public class Route {
 		this.leavingSimulation = leavingSimulation;
 	}
 
+	public String toShortString() {
+		String str = "Route = [ ";
+		str +="number of nodes: "+nodesToVisit.size();
+		str += ", path: (";
+		for (Node n : nodesToVisit) {
+			str +="<"+n.getID()+n.getCoords()+">";
+		}
+		str += " ]";
+		return str;
+	}
+	
 	public String toString() {
 		String str = "Route = [";
 		for (Node n : nodesToVisit) {

@@ -49,7 +49,7 @@ public class MapGraph {
 		carParkNodes = new List<Node>(); // TODO Populate this list
 		id = -1;
 		subMaps = new List<MapGraph>();
-		dksa = new Dijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
+		dksa = new Dijkstra();
 	}
 
 	public MapGraph(MapGraph mg) {
@@ -308,7 +308,7 @@ public class MapGraph {
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
 
 		errLog(range);
-		dksa = new Dijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
+		dksa = new Dijkstra();
 
 		// This is weird - print random node
 		// errLog(getNodeFromID(1016136212));

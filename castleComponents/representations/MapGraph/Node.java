@@ -6,7 +6,7 @@ import java.util.HashSet;
 import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
 
-public class Node {
+public class Node implements Comparable<Node> {
 	Vector2 geoCoords;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
@@ -24,6 +24,9 @@ public class Node {
 	boolean outOfBounds = false;
 	boolean transitNode = false;
 	boolean trafficLight = false;
+	
+	//Purely for Dijkstra speed up
+	double minDistance = Double.POSITIVE_INFINITY;
 
 	public Node(long id, Vector2 coord) {
 		this.id = id;
@@ -250,5 +253,17 @@ public class Node {
 
 	public boolean hasTrafficLight() {
 		return trafficLight;
+	}
+	
+	public double getDijkstraMinDistance() {
+		return minDistance;
+	}
+	public void setDikstraMinDistance(double d) {
+		minDistance = d;
+	}
+	
+	@Override
+	public int compareTo(Node o) {
+		return Double.compare(minDistance, o.getDijkstraMinDistance());
 	}
 }
