@@ -34,7 +34,6 @@ public class MapGraph {
 	Range2D geoRange;
 	// Dijkstra's wow
 	Dijkstra dksa;
-	
 
 	public final String TRAFFIC_SIGNAL = "traffic_signals";
 	public final int DECIMAL_PLACES = 6;
@@ -102,8 +101,8 @@ public class MapGraph {
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
 		Outcome outcome = null;
-		
-		//Find the correct edge to be on
+
+		// Find the correct edge to be on
 		if (currEdge == null) {
 			Node thisNode = route.getPrevNode();
 			for (Edge ed : thisNode.getEdges()) {
@@ -123,7 +122,7 @@ public class MapGraph {
 				// Entity is at it's destination
 				route.setCurrentEdge(currEdge);
 				route.setDistanceAlongEdge(overMove);
-//				route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
+				// route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
@@ -132,7 +131,7 @@ public class MapGraph {
 				errLog("THERES A TRAFFIC LIGHT HERE");
 			}
 			// Find edge that connects to next
-//			Node nextNext = route.getFollowingNode(next);
+			// Node nextNext = route.getFollowingNode(next);
 			Node prevNode = route.getPrevNode();
 			currEdge = null;
 			for (Edge ed : next.getEdges()) {
@@ -157,17 +156,17 @@ public class MapGraph {
 		return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 
 	}
-	
+
 	public Heading calculateHeading(Node prevNode, Node nextNode) {
 		Heading h = Heading.NONE;
 		Vector2 nextPos = nextNode.getCoords();
 		Vector2 prevPos = prevNode.getCoords();
 		double xDiff = nextPos.getX() - prevPos.getX();
 		double yDiff = nextPos.getY() - prevPos.getY();
-		int xH = (int)(xDiff/Math.abs(xDiff));
-		int yH = (int)(yDiff/Math.abs(yDiff));
+		int xH = (int) (xDiff / Math.abs(xDiff));
+		int yH = (int) (yDiff / Math.abs(yDiff));
 		return Heading.getHeadingFromInts(xH, yH);
-		
+
 	}
 
 	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos) {
@@ -198,7 +197,7 @@ public class MapGraph {
 		} else {
 			destPos = destNode.getCoords();
 		}
-		
+
 		double edgeLen = currEdge.getDistanceInKM();
 		double t = distanceAlongEdge / edgeLen;
 		double x = ((1 - t) * prevPos.getX() + (t * destPos.getX()));
@@ -225,7 +224,7 @@ public class MapGraph {
 		return addEntity(e, rPos);
 	}
 
-	//TODO Do reverse
+	// TODO Do reverse
 	public Vector2 convertFromGeoToRelational(Vector2 gPos) {
 		double geoBBWidth = geoBoundingBox_Max.getX() - geoBoundingBox_Min.getX();
 		double geoBBHeight = geoBoundingBox_Max.getY() - geoBoundingBox_Min.getY();
@@ -237,8 +236,8 @@ public class MapGraph {
 		double yPerc = (gPos.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
 		xPerc = bbWidth * xPerc;
 		yPerc = bbHeight * yPerc;
-//		xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
-//		yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
+		// xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
+		// yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
 		return new Vector2(xPerc, yPerc);
 	}
 
@@ -283,9 +282,9 @@ public class MapGraph {
 			double yPerc = (coords.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
 			xPerc = bbWidth * xPerc;
 			yPerc = bbHeight * yPerc;
-//			xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
-//			yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
-			
+			// xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
+			// yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
+
 			n.setCoords(new Vector2(xPerc, yPerc));
 			nodesMap.put(n.getCoords(), n);
 		}
@@ -378,33 +377,42 @@ public class MapGraph {
 		errLog("replaceSectionOfMap is incomplete");
 	}
 
-	
-	
 	// TODO
-	public int countEntitiesInRangeWithType(Entity e, double dist, double range, String type, Edge currEdge, Route route) {
-		errLog("countEntitiesInRangeWithType is incomplete. Is current task.");
+	public List<Entity> getEntitiesInRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
+			Route route) {
+		
 		if (currEdge == null) {
-			return 0;
+			return null;
 		}
-		
+		List<Entity> neighbours = new List<Entity>();
 		double rangeSpan = dist + range;
-		if (rangeSpan > currEdge.getDistanceInKM()) {
-			
-		}
-		
+		double remainDist = currEdge.getDistanceInKM() - rangeSpan;
 		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
 		for (Entity ent : entsOnSameEdge) {
 			if (e == ent) {
 				continue;
 			}
-			// How can we do this?
+
+			if (ent.getType().compareToIgnoreCase(type) == 0) {
+				neighbours.add(ent);
+			}
+		}
+
+		if (rangeSpan > currEdge.getDistanceInKM()) {
+//			Node followingNode = route.getFollowingNode(route.getNextNode());
+//			Edge followingEdge = route.getFollowingEdge(route.getCurrentEdge());
+			// TODO handle going across nodes
+			errLog("getEntitiesInRangeOfType is incomplete. Is current task.");
+			// what if the node has a traffic light
+
+			// neighbours.add(ent);
 
 		}
 
-		return -1;
+		return neighbours;
 	}
-	
-	public List<Entity> getEntitiesFromEdge(Edge e){
+
+	public List<Entity> getEntitiesFromEdge(Edge e) {
 		return new List<Entity>(e.getEntities());
 	}
 
@@ -510,9 +518,13 @@ public class MapGraph {
 	}
 
 	public void assignEdges() {
-		for (Edge e : edges.values()) {
-			e.getNodeA().addAdjacentNode(e.getNodeB());
-			e.getNodeB().addAdjacentNode(e.getNodeA());
+		for (Link l : links.values()) {
+			for (Edge e : l.getEdges()) {
+				Node na = e.getNodeA();
+				Node nb = e.getNodeB();
+				na.addAdjacentNode(nb);
+				nb.addAdjacentNode(na);
+			}
 		}
 	}
 

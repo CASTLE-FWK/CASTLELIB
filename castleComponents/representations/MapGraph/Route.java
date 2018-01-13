@@ -67,7 +67,14 @@ public class Route {
 		} else {
 			return nodesToVisit.get(currIndex);
 		}
-		
+	}
+	public Edge getFollowingEdge(Edge e) {
+		int currIndex = edgesToTraverse.indexOf(e);
+		if (currIndex == edgesToTraverse.size()) {
+			return edgesToTraverse.get(currIndex + 1);
+		} else {
+			return edgesToTraverse.get(currIndex);
+		}
 	}
 
 	public void addNodes(List<Node> n) {

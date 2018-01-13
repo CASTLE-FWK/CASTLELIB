@@ -11,6 +11,32 @@ public class Edge {
 	double distanceInKM;
 	String id;
 	HashSet<Entity> entities;
+	
+	//Map Graph specifics
+	boolean bicycle = false;
+	String cycleWay = "";
+	String roadType = "";
+	boolean lit = false;
+	int maxSpeed = 0;
+	String name = "";
+	boolean oneWay = false;
+	int lanes = 0;
+	
+	public void takeStatsFromLink(boolean b, String c, String r, boolean l, int m, String n, boolean o, int la) {
+		setBicycle(b);
+		setCycleWay(c);
+		setRoadType(r);
+		setLit(l);
+		if (m == 0) {
+			setMaxSpeed(50);
+		} else {
+			setMaxSpeed(m);
+		}
+		
+		setName(n);
+		setOneWay(o);
+		setLanes(la);
+	}
 
 	public Edge(Node a, Node b) {
 		this.nodeA = a;
@@ -78,6 +104,70 @@ public class Edge {
 	
 	public void removeEntity(Entity e) {
 		entities.remove(e);
+	}
+
+	public boolean isBicycle() {
+		return bicycle;
+	}
+
+	public void setBicycle(boolean bicycle) {
+		this.bicycle = bicycle;
+	}
+
+	public String getCycleWay() {
+		return cycleWay;
+	}
+
+	public void setCycleWay(String cycleWay) {
+		this.cycleWay = cycleWay;
+	}
+
+	public String getRoadType() {
+		return roadType;
+	}
+
+	public void setRoadType(String roadType) {
+		this.roadType = roadType;
+	}
+
+	public boolean isLit() {
+		return lit;
+	}
+
+	public void setLit(boolean lit) {
+		this.lit = lit;
+	}
+
+	public int getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isOneWay() {
+		return oneWay;
+	}
+
+	public void setOneWay(boolean oneWay) {
+		this.oneWay = oneWay;
+	}
+
+	public int getLanes() {
+		return lanes;
+	}
+
+	public void setLanes(int lanes) {
+		this.lanes = lanes;
 	}
 
 }

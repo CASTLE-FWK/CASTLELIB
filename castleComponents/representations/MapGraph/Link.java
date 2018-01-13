@@ -192,8 +192,11 @@ public class Link implements Comparable<Link> {
 		for (int i = 0; i < wayPoints.size() - 1; i++) {
 			int j = i + 1;
 			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
+			
 			// Build edges at same time
-			edges.add(new Edge(wayPoints.get(i), wayPoints.get(j)));
+			Edge newEdge = new Edge(wayPoints.get(i), wayPoints.get(j));
+			newEdge.takeStatsFromLink(bicycle, cycleWay, roadType, lit, maxSpeed, name, oneWay, lanes);
+			edges.add(newEdge);
 		}
 		weight = length;
 		return length;
