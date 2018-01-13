@@ -5,8 +5,15 @@ import castleComponents.representations.MapGraph.Node;
 
 public class Route {
 	List<Node> nodesToVisit;
+	List<Edge> edgesToTraverse;
 	Node prevNode;
+	Edge prevEdge;
 	boolean leavingSimulation = false;
+	
+	//Route status
+	double distanceAlongEdge = 0.0;
+	Edge currentEdge;
+	Heading heading = Heading.NONE;
 
 	public Route() {
 		nodesToVisit = new List<Node>();
@@ -14,22 +21,39 @@ public class Route {
 	}
 
 	public Node getNextNode() {
-		if (isEmpty()) {
+		if (noMoreNodes()) {
 			return null;
 		}
 		return nodesToVisit.get(0);
 	}
 	
-	public boolean isEmpty() {
+	public Edge getNextEdge() {
+		if (noMoreEdges()) {
+			return null;
+		}
+		return edgesToTraverse.get(0);
+	}
+	
+	public boolean noMoreNodes() {
 		return nodesToVisit.size() <= 0;
+	}
+	
+	public boolean noMoreEdges() {
+		return edgesToTraverse.size() <= 0;
 	}
 
 	public Node getFinalNode() {
 		return nodesToVisit.getLast();
 	}
+	public Edge getLastEdge() {
+		return edgesToTraverse.getLast();
+	}
 
 	public void nodeVisted() {
-		prevNode = nodesToVisit.remove(0);
+		if (!noMoreNodes())
+			prevNode = nodesToVisit.remove(0);
+		if (!noMoreEdges())
+			prevEdge = edgesToTraverse.remove(0);
 	}
 
 	public void addNode(Node n) {
@@ -51,6 +75,11 @@ public class Route {
 			nodesToVisit = new List<Node>();
 		}
 		nodesToVisit.addAll(n);
+		edgesToTraverse = new List<Edge>();
+		//Build the edge path
+		for (int i = 0; i < nodesToVisit.size() - 1; i++) {
+			edgesToTraverse.add(nodesToVisit.get(i).findEdgeWithNode(nodesToVisit.get(i+1)));
+		}
 	}
 
 	public boolean isLeavingSimulation() {
@@ -76,5 +105,29 @@ public class Route {
 
 	public void setPrevNode(Node prevNode) {
 		this.prevNode = prevNode;
+	}
+
+	public double getDistanceAlongEdge() {
+		return distanceAlongEdge;
+	}
+
+	public void setDistanceAlongEdge(double distanceAlongEdge) {
+		this.distanceAlongEdge = distanceAlongEdge;
+	}
+
+	public Edge getCurrentEdge() {
+		return currentEdge;
+	}
+
+	public void setCurrentEdge(Edge currentEdge) {
+		this.currentEdge = currentEdge;
+	}
+
+	public Heading getHeading() {
+		return heading;
+	}
+
+	public void setHeading(Heading heading) {
+		this.heading = heading;
 	}
 }

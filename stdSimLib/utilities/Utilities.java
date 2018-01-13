@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -19,7 +20,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import castleComponents.objects.Vector2;
 
@@ -215,6 +215,12 @@ public class Utilities {
 	@SuppressWarnings("unchecked")
 	public static ArrayList<?> getMapAsList(HashMap<?,?> theMap){
 		return new ArrayList(theMap.values());
+	}
+	
+	public static double roundDoubleToXDP(Double num, int dp) {
+		BigDecimal a = new BigDecimal(num);
+		BigDecimal b = a.setScale(dp, BigDecimal.ROUND_HALF_EVEN);
+		return b.doubleValue();
 	}
 	
 }

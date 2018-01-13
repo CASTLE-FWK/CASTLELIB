@@ -30,6 +30,15 @@ public class Node {
 		this.geoCoords = new Vector2(coord);
 		init();
 	}
+	
+	public Edge findEdgeWithNode(Node n) {
+		for (Edge e : edges) {
+			if (e.containsBothNodes(this, n)) {
+				return e;
+			}
+		}
+		return null;
+	}
 
 	public Node() {
 		init();
