@@ -23,6 +23,10 @@ public class List<T> extends ArrayList<T> {
 		}
 		return get(currNext);
 	}
+	
+	public void resetNext() {
+		nextCounter = 0;
+	}
 
 	public List(Collection<? extends T> x) {
 		super(x);

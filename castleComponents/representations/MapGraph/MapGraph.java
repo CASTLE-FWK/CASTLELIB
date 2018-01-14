@@ -1,5 +1,6 @@
 package castleComponents.representations.MapGraph;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -9,6 +10,7 @@ import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
 import castleComponents.representations.LayoutParameters;
 import stdSimLib.utilities.Dijkstra;
+import stdSimLib.utilities.RandomGen;
 import stdSimLib.utilities.Utilities;
 
 public class MapGraph {
@@ -22,7 +24,7 @@ public class MapGraph {
 	Vector2 boundingBox_Min;
 	Vector2 boundingBox_Max;
 	HashMap<String, Entity> entitiesInMap;
-	List<Node> transitPoints;
+	HashSet<Node> transitPoints;
 	List<TrafficLight> trafficLightLocations;
 	List<Node> carParkNodes;
 	long id = -1;
@@ -41,7 +43,7 @@ public class MapGraph {
 		nodes = new HashMap<Long, Node>();
 		nodesMap = new HashMap<Vector2, Node>();
 		entitiesInMap = new HashMap<String, Entity>();
-		transitPoints = new List<Node>(); // TODO Populate this list
+		transitPoints = new HashSet<Node>();
 		trafficLightLocations = new List<TrafficLight>();
 		carParkNodes = new List<Node>(); // TODO Populate this list
 		id = -1;
@@ -487,7 +489,7 @@ public class MapGraph {
 		System.out.println("MapGraph Bounds [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
 	}
 
-	public List<Node> getTransitPoints() {
+	public HashSet<Node> getTransitPoints() {
 		return transitPoints;
 	}
 
@@ -650,6 +652,72 @@ public class MapGraph {
 			}
 		}
 		return false;
+	}
+
+	public void generateTransitPoints(int number) {
+		List<Node> theNodes = new List<Node>(nodes.values());
+		for (int i = 0; i < number; i++) {
+			int randDirection = RandomGen.generateRandomRangeInteger(0, 3);
+			if (randDirection == 0) {
+				// Sort by x Min
+				theNodes.sort(new Comparator<Node>() {
+					@Override
+					public int compare(Node a, Node b) {
+						return (int) a.getCoords().getX() - (int) b.getCoords().getX();
+					}
+				});
+				theNodes.resetNext();
+				Node cand = theNodes.next();
+				if (!transitPoints.add(cand)) {
+					cand = theNodes.next();
+				}
+			} else if (randDirection == 1) {
+				theNodes.sort(new Comparator<Node>() {
+					@Override
+					public int compare(Node a, Node b) {
+						return -(int) a.getCoords().getX() - (int) b.getCoords().getX();
+					}
+				});
+				theNodes.resetNext();
+				Node cand = theNodes.next();
+				if (!transitPoints.add(cand)) {
+					cand = theNodes.next();
+				}
+			} else if (randDirection == 3) {
+				theNodes.sort(new Comparator<Node>() {
+					@Override
+					public int compare(Node a, Node b) {
+						return (int) a.getCoords().getY() - (int) b.getCoords().getY();
+					}
+				});
+				theNodes.resetNext();
+				Node cand = theNodes.next();
+				if (!transitPoints.add(cand)) {
+					cand = theNodes.next();
+				}
+			} else if (randDirection == 2) {
+				theNodes.sort(new Comparator<Node>() {
+					@Override
+					public int compare(Node a, Node b) {
+						return -(int) a.getCoords().getY() - (int) b.getCoords().getY();
+					}
+				});
+				theNodes.resetNext();
+				Node cand = theNodes.next();
+				if (!transitPoints.add(cand)) {
+					cand = theNodes.next();
+				}
+			}
+		}
+	}
+	
+	public String getTransitNodesAsString() {
+		String str = "TransitNodes [";
+		for(Node n : transitPoints) {
+			str += n.toString() +",";
+		}
+		str += " ]";
+		return str;
 	}
 
 }
