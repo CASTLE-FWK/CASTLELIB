@@ -103,6 +103,12 @@ public class MapGraph {
 	// TODO HERE
 	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
 		Node nextNode = route.getNextNode();
+		OutcomeResult or;
+		if (nextNode.getNodeState().compareToIgnoreCase("NOGO") == 0){
+			or = OutcomeResult.NOGO;
+			//No point continuing
+			return new Outcome(or, distanceAlongEdge, nextNode, this, currEdge);
+		}
 		// Find the correct edge to be on
 		Edge oldEdge = currEdge;
 		if (currEdge == null) {
@@ -131,7 +137,8 @@ public class MapGraph {
 					route.setDistanceAlongEdge(newDist);
 					route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
 					edgeSwap(e, oldEdge, currEdge);
-					return new Outcome(OutcomeResult.STOPPED, newDist, nextNode, this, currEdge);
+					or = OutcomeResult.STOPPED;
+					return new Outcome(or, newDist, nextNode, this, currEdge);
 				}
 			}
 			double overMove = newDist - currEdge.getDistanceInKM();
@@ -142,7 +149,8 @@ public class MapGraph {
 				route.setCurrentEdge(currEdge);
 				edgeSwap(e, oldEdge, currEdge);
 				route.setDistanceAlongEdge(overMove);
-				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
+				or = OutcomeResult.FINISHED;
+				return new Outcome(or, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
 			// Find edge that connects to next
@@ -165,14 +173,16 @@ public class MapGraph {
 			edgeSwap(e, oldEdge, currEdge);
 			route.setDistanceAlongEdge(newDist);
 			route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-			return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
+			or = OutcomeResult.VALID;
+			return new Outcome(or, newDist, nextNode, this, currEdge);
 		}
 
 		route.setCurrentEdge(currEdge);
 		edgeSwap(e, oldEdge, currEdge);
 		route.setDistanceAlongEdge(newDist);
 		route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-		return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
+		or = OutcomeResult.VALID;
+		return new Outcome(or, newDist, nextNode, this, currEdge);
 
 	}
 

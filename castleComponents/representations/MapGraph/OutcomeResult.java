@@ -1,5 +1,5 @@
 package castleComponents.representations.MapGraph;
 
 public enum OutcomeResult {
-	OUT_OF_BOUNDS, INVALID, VALID, MOVED, DEADEND, FINISHED, STOPPED;
+	OUT_OF_BOUNDS, INVALID, VALID, MOVED, DEADEND, FINISHED, STOPPED, NOGO;
 }

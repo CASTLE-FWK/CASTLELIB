@@ -37,6 +37,9 @@ public class Dijkstra {
 			Node n = nodeQueue.poll();
 			for (Edge e : n.getEdges()) {
 				Node v = e.getOtherEnd(n);
+				if (v.getNodeType().compareToIgnoreCase("NOGO") == 0) {
+					continue;
+				}
 				double weight = e.getDistanceInKM();
 				double distThroughN = n.getDijkstraMinDistance() + weight;
 				if (distThroughN < v.getDijkstraMinDistance()) {
