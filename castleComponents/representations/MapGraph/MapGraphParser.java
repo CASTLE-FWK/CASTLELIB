@@ -72,14 +72,21 @@ public class MapGraphParser {
 							String value = tags.get("highway");
 							nd.setNodeType(value);
 						}
+						if (tags.containsKey("amenity")) {
+							String val = tags.get("amenity");
+							nd.setNodeType(val);
+							nd.setCarPark(true);
+							nd.createCarPark();
+							mapGraph.addCarParkLocation(nd);
+						}
 					}
 
 				} else if (e instanceof info.pavie.basicosmparser.model.Way) {
 					info.pavie.basicosmparser.model.Way w = (info.pavie.basicosmparser.model.Way) e;
 					List<info.pavie.basicosmparser.model.Node> nodes = w.getNodes();
 					// Need to find nodes above first
-					Link ed = new Link();
-					ed.setID(idl);
+					Link ln = new Link();
+					ln.setID(idl);
 					for (info.pavie.basicosmparser.model.Node n : nodes) {
 						if (n == null) {
 							// Has to be ignored
@@ -89,62 +96,75 @@ public class MapGraphParser {
 						if (nd == null) {
 							System.err.println("Node " + n.getId() + " has not been seen");
 						} else {
-							ed.addWayPoint(nd);
-							nd.addLink(ed);
+							ln.addWayPoint(nd);
+							nd.addLink(ln);
 						}
 					}
-
+					boolean isService = false;
+					boolean isParking = false;
 					if (tags.size() > 0) {
 						if (tags.containsKey("highway")) {
 							String highwayV = tags.get("highway");
-							ed.setRoadType(highwayV);
+							ln.setRoadType(highwayV);
 							if (highwayV.compareToIgnoreCase("footway") == 0) {
-								ed.setHumanAccessible(true);
+								ln.setHumanAccessible(true);
 							}
 							if (highwayV.compareToIgnoreCase("pedestrian") == 0) {
-								ed.setHumanAccessible(true);
+								ln.setHumanAccessible(true);
 							}
-							
+							if (highwayV.compareToIgnoreCase("service") == 0) {
+								// TODO Something should happen here?
+								isService = true;
+							}
+
 						}
+
 						if (tags.containsKey("name")) {
 							String value = tags.get("name");
-							ed.setName(value);
+							ln.setName(value);
 						}
 						if (tags.containsKey("lanes")) {
 							String value = tags.get("lanes");
-							ed.setLanes(Integer.parseInt(value));
+							ln.setLanes(Integer.parseInt(value));
 						}
 						if (tags.containsKey("oneway")) {
 							String value = tags.get("oneway");
-							ed.setOneWay(Boolean.parseBoolean(value));
+							ln.setOneWay(Boolean.parseBoolean(value));
 						}
 						if (tags.containsKey("maxspeed")) {
 							String value = tags.get("maxspeed");
-							ed.setMaxSpeed(Integer.parseInt(value));
+							ln.setMaxSpeed(Integer.parseInt(value));
 						}
 						if (tags.containsKey("bicycle")) {
 							String value = tags.get("bicycle");
-							ed.setBicycle(Boolean.parseBoolean(value));
+							ln.setBicycle(Boolean.parseBoolean(value));
 						}
 						if (tags.containsKey("cycleway")) {
 							String value = tags.get("cycleway");
-							ed.setCycleWay(value);
+							ln.setCycleWay(value);
 							if (value.compareToIgnoreCase("*") != 0) {
-								ed.setHumanAccessible(true);
+								ln.setHumanAccessible(true);
 							}
 						}
 						if (tags.containsKey(LIT)) {
 							String value = tags.get(LIT);
-							ed.setLit(Boolean.parseBoolean(value));
+							ln.setLit(Boolean.parseBoolean(value));
 						}
 						if (tags.containsKey("foot")) {
 							String value = tags.get("foot");
-							ed.setHumanAccessible(Boolean.parseBoolean(value));
+							ln.setHumanAccessible(Boolean.parseBoolean(value));
+						}
+						if (tags.containsKey("amenity")) {
+							String value = tags.get("amenity");
+							if (value.compareToIgnoreCase("parking") == 0) {
+								isParking = true;
+							}
 						}
 					}
-					ed.setup();
-					mapGraph.addLink(ed);
-					// System.out.println(ed.toString());
+					ln.setup();
+					ln.setCarParkArea(isService && isParking);
+					mapGraph.addLink(ln);
+					// System.out.println(ln.toString());
 
 				} else if (e instanceof Relation) {
 					// Not sure what to do with this yet
@@ -175,11 +195,16 @@ public class MapGraphParser {
 			mapGraph.normalise();
 			mapGraph.assignEdges();
 			mapGraph.buildLights();
+			mapGraph.buildCarParks();
 
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void errLog(Object o) {
+		System.err.println("MapGraphParser Warning: " + o.toString());
 	}
 }

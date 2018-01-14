@@ -74,7 +74,7 @@ public class TrafficLight {
 
 	public void start() {
 		if (patterns.size() == 0) {
-			errLog("no patterns");
+//			errLog("no patterns");
 		} else {
 			currentPattern = RandomGen.generateRandomRangeInteger(0, patterns.size() - 1);
 			activePattern = patterns.get(currentPattern);

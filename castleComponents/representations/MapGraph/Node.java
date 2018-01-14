@@ -25,9 +25,14 @@ public class Node implements Comparable<Node> {
 	boolean transitNode = false;
 	boolean trafficLight = false;
 	TrafficLight theTrafficLight = null;
-	
-	//Purely for Dijkstra speed up
+	boolean carPark = false;
+	Park theCarPark = null;
+
+	// Purely for Dijkstra speed up
 	double minDistance = Double.POSITIVE_INFINITY;
+
+	public static final String FREE_STATE = "FREE";
+	public String nodeState = FREE_STATE;
 
 	public Node(long id, Vector2 coord) {
 		this.id = id;
@@ -154,6 +159,26 @@ public class Node implements Comparable<Node> {
 				+ ", number of links=" + links.size() + "]";
 	}
 
+	public boolean isCarPark() {
+		return carPark;
+	}
+
+	public void setCarPark(boolean carPark) {
+		this.carPark = carPark;
+	}
+
+	public Park getTheCarPark() {
+		return theCarPark;
+	}
+
+	public void setTheCarPark(Park theCarPark) {
+		this.theCarPark = theCarPark;
+	}
+	
+	public void createCarPark() {
+		this.theCarPark = new Park();
+	}
+
 	public void newCoords(double newX, double newY) {
 		geoCoords = new Vector2(newX, newY);
 	}
@@ -255,24 +280,33 @@ public class Node implements Comparable<Node> {
 	public boolean hasTrafficLight() {
 		return trafficLight;
 	}
-	
+
 	public void setTheTrafficLight(TrafficLight tl) {
 		theTrafficLight = tl;
 	}
-	
+
 	public TrafficLight getTheTrafficLight() {
 		return theTrafficLight;
 	}
-	
+
 	public double getDijkstraMinDistance() {
 		return minDistance;
 	}
+
 	public void setDikstraMinDistance(double d) {
 		minDistance = d;
 	}
-	
+
 	@Override
 	public int compareTo(Node o) {
 		return Double.compare(minDistance, o.getDijkstraMinDistance());
+	}
+
+	public String getNodeState() {
+		return nodeState;
+	}
+
+	public void setNodeState(String nodeState) {
+		this.nodeState = nodeState;
 	}
 }

@@ -1,8 +1,5 @@
 package castleComponents.representations.MapGraph;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -45,7 +42,7 @@ public class MapGraph {
 		nodesMap = new HashMap<Vector2, Node>();
 		entitiesInMap = new HashMap<String, Entity>();
 		transitPoints = new List<Node>(); // TODO Populate this list
-		trafficLightLocations = new List<TrafficLight>(); // TODO populate this list
+		trafficLightLocations = new List<TrafficLight>();
 		carParkNodes = new List<Node>(); // TODO Populate this list
 		id = -1;
 		subMaps = new List<MapGraph>();
@@ -105,22 +102,24 @@ public class MapGraph {
 				}
 			}
 		}
+		if (currEdge == null) {
+			errLog("currEdge remained null. theres an error**************");
+		}
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
-		Outcome outcome = null;
 
-		//I think this logic is correct
+		// I think this logic is correct
 		double distFromEnd = currEdge.getDistanceInKM() - distanceAlongEdge;
 		if (moveDist >= distFromEnd) {
 			if (nextNode.hasTrafficLight()) {
 				errLog("THERES A TRAFFIC LIGHT HERE");
-				if(nextNode.getTheTrafficLight().haveToStop(currEdge)) {
-					newDist = distanceAlongEdge + distFromEnd; //Yes, I know what this does Clem Fandango
+				if (nextNode.getTheTrafficLight().haveToStop(currEdge)) {
+					newDist = distanceAlongEdge + distFromEnd; // Yes, I know what this does Clem Fandango
 					route.setCurrentEdge(currEdge);
 					route.setDistanceAlongEdge(newDist);
 					route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-					errLog("Honk"+nextNode.getTheTrafficLight().getNumberOfPatterns());
-					errLog("Honk"+nextNode.getTheTrafficLight().getTimeLeft());
+					errLog("Honk" + nextNode.getTheTrafficLight().getNumberOfPatterns());
+					errLog("Honk" + nextNode.getTheTrafficLight().getTimeLeft());
 					return new Outcome(OutcomeResult.STOPPED, newDist, nextNode, this, currEdge);
 				}
 			}
@@ -131,7 +130,6 @@ public class MapGraph {
 				// Entity is at it's destination
 				route.setCurrentEdge(currEdge);
 				route.setDistanceAlongEdge(overMove);
-				// route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
@@ -148,43 +146,18 @@ public class MapGraph {
 				errLog("No new Edge found. Route generation was bad");
 			}
 			newDist = overMove;
-		}
-
-//		if (newDist > currEdge.getDistanceInKM()) {
-//			double overMove = newDist - currEdge.getDistanceInKM();
-//			route.nodeVisted();
-//			Node next = route.getNextNode();
-//			if (next == null) {
-//				// Entity is at it's destination
-//				route.setCurrentEdge(currEdge);
-//				route.setDistanceAlongEdge(overMove);
-//				// route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-//				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
-//			}
-//			nextNode = next;
-//			// Find edge that connects to next
-//			Node prevNode = route.getPrevNode();
-//			currEdge = null;
-//			for (Edge ed : next.getEdges()) {
-//				if (ed.isNodeConnected(prevNode)) {
-//					currEdge = ed;
-//					break;
-//				}
-//			}
-//			if (currEdge == null) {
-//				errLog("No new Edge found. Route generation was bad");
-//			}
-//			newDist = overMove;
-//
-//		} 
-		else if (newDist > 1001209) {
+		} else if (newDist > 1001209) {
 			// TODO going way out of bounds
 		} else {
-			outcome = new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
+			route.setCurrentEdge(currEdge);
+			route.setDistanceAlongEdge(newDist);
+			route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
+			return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 		}
 		route.setCurrentEdge(currEdge);
 		route.setDistanceAlongEdge(newDist);
 		route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
+		
 		return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 
 	}
@@ -275,8 +248,6 @@ public class MapGraph {
 		double yPerc = (gPos.getY() - geoBoundingBox_Min.getY()) / geoBBHeight;
 		xPerc = bbWidth * xPerc;
 		yPerc = bbHeight * yPerc;
-		// xPerc = Utilities.roundDoubleToXDP(xPerc, DECIMAL_PLACES);
-		// yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
 		return new Vector2(xPerc, yPerc);
 	}
 
@@ -326,8 +297,6 @@ public class MapGraph {
 			yPerc = Utilities.roundDoubleToXDP(yPerc, DECIMAL_PLACES);
 
 			n.setCoords(new Vector2(xPerc, yPerc));
-			// errLog(n);
-			// System.exit(0);
 			nodesMap.put(n.getCoords(), n);
 		}
 
@@ -345,9 +314,10 @@ public class MapGraph {
 		dksa = new Dijkstra();
 
 		// This is weird - print random node
+//		errLog(getNodeFromID(544503325));
 		// errLog(getNodeFromID(1016136212));
 		// errLog(getNodeFromID(253085762));
-		// System.exit(0);
+//		 System.exit(0);
 	}
 
 	// TODO SubGraphs > 1
@@ -371,52 +341,78 @@ public class MapGraph {
 		return ranges;
 	}
 
-	// TODO
-	public List<Entity> getEntitiesOfTypeAtPos(String type, Vector2 pos) {
-		errLog("getEntitiesOfTypeAtPos is incomplete");
-		return null;
-	}
-
 	// Note: This might return funky nulls
 	public Node getNodeAtPosition(Vector2 pos) {
 		return nodesMap.get(pos);
 	}
 
-	// TODO
-	public void changeNodeType(Vector2 pos, String type) {
-		errLog("changeNodeType is incomplete");
+	public Node findClosestCarPark(Vector2 v) {
+		Node minNode = null;
+		double minDist = Double.MAX_VALUE;
+		for (Node n : carParkNodes) {
+			double cand = v.calculateDistance(n.getCoords());
+			if (cand < minDist) {
+				minNode = n;
+				minDist = cand;
+			}
+		}
+		return minNode;
 	}
 
-	// TODO
-	public Node findNearestNodeOfType(Vector2 pos, String type) {
-		errLog("findNearestNodeOfType is incomplete");
-		switch (type) {
-
-		default:
-			break;
+	public Node findNearestTransitPoint(Vector2 v) {
+		Node minNode = null;
+		double minDist = Double.MAX_VALUE;
+		for (Node n : transitPoints) {
+			double cand = v.calculateDistance(n.getCoords());
+			if (cand < minDist) {
+				minNode = n;
+				minDist = cand;
+			}
 		}
-
-		return null;
+		return minNode;
 	}
 
 	public Node getNodeFromID(long id) {
 		return nodes.get(id);
 	}
 
-	// TODO
-	public MapGraph extractMapSection(Range2D range) {
-		errLog("extractMapSection is incomplete");
-		return null;
+	// Event stuff
+	public List<Node> extractNodesInRange(Range2D range) {
+		// This is slow as heck. Should be done at a pre-process stage if possible
+		List<Node> newNodes = new List<Node>();
+		HashSet<Node> oldNodes = new HashSet<Node>(nodes.values());
+		for (Node on : oldNodes) {
+			if (range.containsPoint(on.getCoords())) {
+				newNodes.add(on);
+			}
+		}
+
+		return newNodes;
 	}
 
 	// TODO
+	public MapGraph extractMapSectionShallow(Range2D range) {
+		errLog("extractMapSection is incomplete. is task");
+		// Plan: Extract submap
+		// 1: Extract nodes in range
+		List<Node> oldNodes = extractNodesInRange(range);
+		// 2: Get all their edges
+		List<Edge> edges = new List<Edge>();
+		for (Node n : oldNodes) {
+			edges.addAll(n.getEdges());
+		}
+		// 3: Contain in a new MapGraph
+		MapGraph subGraph = new MapGraph();
+		// TODO how much do we clone?
+
+		return subGraph;
+	}
+
 	public void changeSectionOfMapToType(String eventName, String type) {
-		errLog("changeSectionOfMapToType is incomplete");
-	}
-
-	// TODO
-	public void replaceSectionOfMap(Range2D r, MapGraph oldMapData) {
-		errLog("replaceSectionOfMap is incomplete");
+		HashSet<Node> oldNodes = new HashSet<Node>(nodes.values());
+		for (Node on : oldNodes) {
+			on.setNodeState(type);
+		}
 	}
 
 	// TODO
@@ -458,10 +454,14 @@ public class MapGraph {
 		return new List<Entity>(e.getEntities());
 	}
 
-	// TODO
 	public Park getCarParkAtPosition(Vector2 pos) {
-		errLog("getCarParkAtPosition is incomplete");
-		return null;
+		Node n = getNodeAtPosition(pos);
+		if (n.isCarPark()) {
+			return n.getTheCarPark();
+		} else {
+			errLog("CarPark not found at " + pos);
+			return null;
+		}
 	}
 
 	public String printMap() {
@@ -510,8 +510,8 @@ public class MapGraph {
 	/**
 	 * @return the nodes
 	 */
-	public ArrayList<Node> getNodesAsList() {
-		return new ArrayList<Node>(nodes.values());
+	public List<Node> getNodesAsList() {
+		return new List<Node>(nodes.values());
 	}
 
 	/**
@@ -603,4 +603,39 @@ public class MapGraph {
 			}
 		}
 	}
+
+	public void buildCarParks() {
+		for (Link l : links.values()) {
+			boolean found = false;
+			if (l.isCarParkArea()) {
+				//Set each node in this link to car park?
+				//No, find that exists in another non-parking way
+				for (Node ns : l.getWayPoints()) {
+					found = findNodeInWay(ns, l);
+					if (found) {
+						ns.setCarPark(true);
+						ns.createCarPark();
+						addCarParkLocation(ns);
+						errLog("found an accesible car park");
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	public boolean findNodeInWay(Node n, Link selfLink) {
+		for (Link l : links.values()) {
+			if (l == selfLink) {
+				continue;
+			}
+			for (Node ns : l.getWayPoints()) {
+				if (ns.getID() == n.getID()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 }

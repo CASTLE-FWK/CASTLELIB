@@ -257,6 +257,10 @@ public class CASSystem{
 		return out;
 	}
 	
+	public void errLog(Object o) {
+		System.err.println(systemName+" Warning: "+ o.toString());
+	}
+	
 	
 /*	Context<Environment> build(Context<Environment> context){
 		//Create environments

@@ -23,6 +23,15 @@ public class Link implements Comparable<Link> {
 	int lanes = 0;
 	long id;
 	boolean humanAccessible = false;
+	boolean carParkArea = false;
+
+	public boolean isCarParkArea() {
+		return carParkArea;
+	}
+
+	public void setCarParkArea(boolean carParkArea) {
+		this.carParkArea = carParkArea;
+	}
 
 	HashSet<Entity> currentEntities;
 
