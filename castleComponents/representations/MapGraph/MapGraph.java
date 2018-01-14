@@ -375,6 +375,9 @@ public class MapGraph {
 		double minDist = Double.MAX_VALUE;
 		for (Node n : carParkNodes) {
 			double cand = v.calculateDistance(n.getCoords());
+			if (n.getNodeState().compareToIgnoreCase("NOGO") == 0) {
+				continue;
+			}
 			if (cand < minDist) {
 				minNode = n;
 				minDist = cand;
