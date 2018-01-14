@@ -197,8 +197,7 @@ public class MapGraphParser {
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
-			System.out.println(mapGraph.getTransitNodesAsString());
-
+			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
 		} catch (IOException | SAXException e) {

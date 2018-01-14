@@ -131,8 +131,6 @@ public class MapGraph {
 					route.setDistanceAlongEdge(newDist);
 					route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
 					edgeSwap(e, oldEdge, currEdge);
-					// errLog("Honk" + nextNode.getTheTrafficLight().getNumberOfPatterns());
-					// errLog("Honk" + nextNode.getTheTrafficLight().getTimeLeft());
 					return new Outcome(OutcomeResult.STOPPED, newDist, nextNode, this, currEdge);
 				}
 			}
@@ -414,12 +412,14 @@ public class MapGraph {
 		List<Node> oldNodes = extractNodesInRange(range);
 		// 2: Get all their edges
 		List<Edge> edges = new List<Edge>();
-		for (Node n : oldNodes) {
-			edges.addAll(n.getEdges());
-		}
 		// 3: Contain in a new MapGraph
 		MapGraph subGraph = new MapGraph();
+		for (Node n : oldNodes) {
+			edges.addAll(n.getEdges());
+			subGraph.addNode(n);
+		}
 		// TODO how much do we clone?
+		
 
 		return subGraph;
 	}
@@ -710,11 +710,15 @@ public class MapGraph {
 			}
 		}
 	}
-	
+
+	public Node getRandomTransitNode() {
+		return transitPoints.iterator().next();
+	}
+
 	public String getTransitNodesAsString() {
 		String str = "TransitNodes [";
-		for(Node n : transitPoints) {
-			str += n.toString() +",";
+		for (Node n : transitPoints) {
+			str += n.toString() + ",";
 		}
 		str += " ]";
 		return str;

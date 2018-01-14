@@ -14,6 +14,10 @@ public class Range2D {
 	double maxX;
 	double maxY;
 	
+	public boolean isNull() {
+		return (pointA == null && pointB == null && pointC == null && pointD == null);
+	}
+	
 	public Range2D(){}
 	
 	public Range2D(Vector2 a, Vector2 b, Vector2 c, Vector2 d){
