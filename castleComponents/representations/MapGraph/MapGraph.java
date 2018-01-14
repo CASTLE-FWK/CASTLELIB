@@ -88,11 +88,21 @@ public class MapGraph {
 		mgp.parseMapGraph(path);
 	}
 
+	public void edgeSwap(Entity e, Edge oldEdge, Edge newEdge) {
+		if (oldEdge != null) {
+			if (oldEdge.getID() != newEdge.getID()) {
+				oldEdge.removeEntity(e);
+				newEdge.addEntity(e);
+			}
+		}
+	}
+
 	/** How to move Entities around **/
 	// TODO HERE
 	public Outcome moveEntity(Entity e, Edge currEdge, double moveDist, double distanceAlongEdge, Route route) {
 		Node nextNode = route.getNextNode();
 		// Find the correct edge to be on
+		Edge oldEdge = currEdge;
 		if (currEdge == null) {
 			Node thisNode = route.getPrevNode();
 			for (Edge ed : thisNode.getEdges()) {
@@ -118,8 +128,9 @@ public class MapGraph {
 					route.setCurrentEdge(currEdge);
 					route.setDistanceAlongEdge(newDist);
 					route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-					errLog("Honk" + nextNode.getTheTrafficLight().getNumberOfPatterns());
-					errLog("Honk" + nextNode.getTheTrafficLight().getTimeLeft());
+					edgeSwap(e, oldEdge, currEdge);
+					// errLog("Honk" + nextNode.getTheTrafficLight().getNumberOfPatterns());
+					// errLog("Honk" + nextNode.getTheTrafficLight().getTimeLeft());
 					return new Outcome(OutcomeResult.STOPPED, newDist, nextNode, this, currEdge);
 				}
 			}
@@ -129,6 +140,7 @@ public class MapGraph {
 			if (next == null) {
 				// Entity is at it's destination
 				route.setCurrentEdge(currEdge);
+				edgeSwap(e, oldEdge, currEdge);
 				route.setDistanceAlongEdge(overMove);
 				return new Outcome(OutcomeResult.FINISHED, overMove, nextNode, this, currEdge);
 			}
@@ -150,14 +162,16 @@ public class MapGraph {
 			// TODO going way out of bounds
 		} else {
 			route.setCurrentEdge(currEdge);
+			edgeSwap(e, oldEdge, currEdge);
 			route.setDistanceAlongEdge(newDist);
 			route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
 			return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 		}
+
 		route.setCurrentEdge(currEdge);
+		edgeSwap(e, oldEdge, currEdge);
 		route.setDistanceAlongEdge(newDist);
 		route.setHeading(calculateHeading(route.getPrevNode(), route.getNextNode()));
-		
 		return new Outcome(OutcomeResult.VALID, newDist, nextNode, this, currEdge);
 
 	}
@@ -314,10 +328,10 @@ public class MapGraph {
 		dksa = new Dijkstra();
 
 		// This is weird - print random node
-//		errLog(getNodeFromID(544503325));
+		// errLog(getNodeFromID(544503325));
 		// errLog(getNodeFromID(1016136212));
 		// errLog(getNodeFromID(253085762));
-//		 System.exit(0);
+		// System.exit(0);
 	}
 
 	// TODO SubGraphs > 1
@@ -608,8 +622,8 @@ public class MapGraph {
 		for (Link l : links.values()) {
 			boolean found = false;
 			if (l.isCarParkArea()) {
-				//Set each node in this link to car park?
-				//No, find that exists in another non-parking way
+				// Set each node in this link to car park?
+				// No, find that exists in another non-parking way
 				for (Node ns : l.getWayPoints()) {
 					found = findNodeInWay(ns, l);
 					if (found) {
