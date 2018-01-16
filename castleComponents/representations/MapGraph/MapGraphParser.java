@@ -195,13 +195,14 @@ public class MapGraphParser {
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
 			mapGraph.assignEdges();
+			mapGraph.clean();
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
 			
 			//Dump that map as a csv
-			String out = mapGraph.exportGraphAsGEXF();
-			Utilities.writeToFile(out, pathToFile+".gexf", false);
+			String out = mapGraph.exportGraphAsJSON();
+			Utilities.writeToFile(out, pathToFile+".json", false);
 			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
