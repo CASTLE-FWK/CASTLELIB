@@ -633,6 +633,7 @@ public class MapGraph {
 		}
 	}
 
+	//TODO Build human walking links from these
 	public void buildCarParks() {
 		for (Link l : links.values()) {
 			boolean found = false;
@@ -735,6 +736,81 @@ public class MapGraph {
 		}
 		str += " ]";
 		return str;
+	}
+	
+	public final double SCALER = 200.0;
+	public String exportGraphAsGEXF() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<gexf xmlns=\"http://www.gexf.net/1.2draft\" version=\"1.2\" xmlns:viz=\"http://www.gexf.net/1.2draft/viz\" >\n");
+		sb.append("\t<meta lastmodifieddate=\"2009-03-20\">\n");
+		sb.append("\t\t<creator>Gexf.net</creator>\n");
+		sb.append("\t\t<description>MapGraph</description>\n");
+		sb.append("\t</meta>\n");
+
+		sb.append("\t<graph mode=\"static\" defaultedgetype=\"mixed\">");
+		
+		sb.append("\n");
+		sb.append("\t\t<nodes>");
+		sb.append("\n");
+		for (Node n : nodes.values()) {
+			sb.append("\t\t\t<node id=\""+n.getID()+"\" label=\""+n.getID()+"\">\n");
+			Vector2 pos = n.getCoords();
+			sb.append("\t\t\t\t<viz:position x=\""+pos.getX()*SCALER+"\" y=\""+pos.getY()*SCALER+"\" z=\"0.0\"/>\n");
+			sb.append("\t\t\t\t<viz:size value=\"0.5\"/>\n");
+			sb.append("\t\t\t</node>\n");
+		}
+		
+		sb.append("\t\t</nodes>");
+		sb.append("\n");
+		sb.append("\t\t<edges>");
+		sb.append("\n");
+		int edgeIDCounter = 0;
+		for (Link l : links.values()) {
+			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
+				Node a = l.getWayPoints().get(i);
+				Node b = l.getWayPoints().get(i+1);
+				boolean isOneWay = l.isOneWay();
+				boolean isHumanAccessible = l.isHumanAccessible();
+				String type = "undirected";
+				if (isOneWay) {
+					type = "directed";
+				}
+//				 
+				sb.append("\t\t\t<edge id=\""+edgeIDCounter+"\" source=\""+a.getID()+"\" target=\""+b.getID()+"\" type=\""+type+"\">\n");
+				sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
+				if (isHumanAccessible) {
+					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\"/>\n");
+				}
+				sb.append("\t\t</edge>\n");
+				edgeIDCounter++;				
+			}
+		}
+		
+//		
+//		for (Edge e : edges.values()) {
+//			sb.append("\t\t\t<edge id=\""+e.getID()+"\" source=\""+e.getNodeA().getID()+"\" target=\""+e.getNodeB().getID()+"\">\n");
+//			sb.append("\t\t\t\t<viz:thickness value=\"0.5\"/>\n");
+////			sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\"/>\n");
+//			sb.append("\t\t</edge>\n");
+//		}
+		
+		sb.append("\t\t</edges>");
+		sb.append("\n");
+		sb.append("\t</graph>\n");
+		sb.append("</gexf>");
+		return sb.toString();
+	}
+	
+	public String exportGraphAsCSVString() {
+		StringBuilder sb = new StringBuilder();
+		for (Link l : links.values()) {
+			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
+				sb.append(l.getWayPoints().get(i).getID() + ";");
+			}
+			sb.append(l.getWayPoints().getLast().getID());
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 }

@@ -15,6 +15,7 @@ import castleComponents.objects.Vector2;
 import info.pavie.basicosmparser.controller.*;
 import info.pavie.basicosmparser.model.Element;
 import info.pavie.basicosmparser.model.Relation;
+import stdSimLib.utilities.Utilities;
 
 public class MapGraphParser {
 	public final String LIT = "lit";
@@ -197,6 +198,11 @@ public class MapGraphParser {
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
+			
+			//Dump that map as a csv
+			String out = mapGraph.exportGraphAsGEXF();
+			Utilities.writeToFile(out, pathToFile+".gexf", false);
+			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
