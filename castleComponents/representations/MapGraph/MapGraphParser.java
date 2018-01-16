@@ -208,7 +208,7 @@ public class MapGraphParser {
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
 			
-			System.out.println("STREAMING TO GEPHI");
+//			System.out.println("STREAMING TO GEPHI");
 			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
 			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
 			for (String s : testOut) {

@@ -813,11 +813,13 @@ public class MapGraph {
 		// Nodes
 		for (Node n : nodes.values()) {
 			Vector2 pos = n.getCoords();
-//			String nodePos = "\"position\":\"x=" + pos.getX() * SCALER + " y=" + pos.getY() * SCALER+" z=0.0";
-			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER+",\"z\":0.0";
-					
-				sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5,"+nodePos+"}}}");
-				sb.append("\n");
+			// String nodePos = "\"position\":\"x=" + pos.getX() * SCALER + " y=" +
+			// pos.getY() * SCALER+" z=0.0";
+			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER + ",\"z\":0.0";
+			String color = "\"r\":0, \"g\":0.0, \"b\":0";
+//			String color = "\"color\":142";
+			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5," + nodePos + ","+color+"}}}");
+			sb.append("\n");
 		}
 		long edgeCounter = 0;
 		for (Link l : links.values()) {
@@ -826,16 +828,19 @@ public class MapGraph {
 				Node b = l.getWayPoints().get(i + 1);
 				boolean isOneWay = l.isOneWay();
 				boolean isHumanAccessible = l.isHumanAccessible();
-				String color = "\"viz:color\":\"r=\\\"XX\\\" g=\\\"YY\\\" b=\\\"ZZ\\\"\"";
-				if (!isHumanAccessible) {
-					color = color.replace("XX", "" + 00);
-					color = color.replace("YY", "" + 00);
-					color = color.replace("ZZ", "" + 00);
-				} else {
-					color = color.replace("XX", "" + 157);
-					color = color.replace("YY", "" + 213);
-					color = color.replace("ZZ", "" + 78);
-				}
+				// String color = "\"viz:color\":\"r=\\\"XX\\\" g=\\\"YY\\\" b=\\\"ZZ\\\"\"";
+				// String color = "\"r\":XX,\"g\":YY,\"b\":ZZ";
+				String color = "\"r\":XX, \"g\":YY, \"b\":ZZ";
+				
+				 if (!isHumanAccessible) {
+				 color = color.replace("XX", "" + 0.0);
+				 color = color.replace("YY", "" + 0.0);
+				 color = color.replace("ZZ", "" + 0.0);
+				 } else {
+				 color = color.replace("XX", "" + 0.5);
+				 color = color.replace("YY", "" + 0.5);
+				 color = color.replace("ZZ", "" + 0.1);
+				 }
 
 				sb.append("{\"ae\":{\"" + a.getID() + "" + b.getID() + "\":{\"source\":\"" + a.getID()
 						+ "\",\"target\": \"" + b.getID() + "\",\"directed\":" + isOneWay + "," + color + "}}}");
