@@ -76,13 +76,13 @@ public class MapGraph {
 		importMap(pathToMapFile);
 
 		// Populate edges list
-		HashSet<Link> theLinks = new HashSet<Link>(links.values());
-		for (Link l : theLinks) {
-			List<Edge> lEdges = l.getEdges();
-			for (Edge e : lEdges) {
-				edges.put(e.getID(), e);
-			}
-		}
+//		HashSet<Link> theLinks = new HashSet<Link>(links.values());
+//		for (Link l : theLinks) {
+//			List<Edge> lEdges = l.getEdges();
+//			for (Edge e : lEdges) {
+//				edges.put(e.getID(), e);
+//			}
+//		}
 	}
 
 	public void importMap(String path) {
@@ -153,6 +153,7 @@ public class MapGraph {
 				return new Outcome(or, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
+			// TODO recursion somewhere
 			// Find edge that connects to next
 			Node prevNode = route.getPrevNode();
 			currEdge = null;
@@ -166,6 +167,7 @@ public class MapGraph {
 				errLog("No new Edge found. Route generation was bad");
 			}
 			newDist = overMove;
+			return moveEntity(e, currEdge, moveDist, newDist, route);
 		} else if (newDist > 1001209) {
 			// TODO going way out of bounds
 		} else {
@@ -250,7 +252,7 @@ public class MapGraph {
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
-		errLog("cant add entity to " + pos);
+		errLog("cant add entity: "+e.getID()+" to " + pos);
 
 		return false;
 	}
@@ -758,7 +760,10 @@ public class MapGraph {
 			Vector2 pos = n.getCoords();
 			sb.append("\t\t\t\t<viz:position x=\"" + pos.getX() * SCALER + "\" y=\"" + pos.getY() * SCALER
 					+ "\" z=\"0.0\"/>\n");
-			sb.append("\t\t\t\t<viz:size value=\"0.5\"/>\n");
+			sb.append("\t\t\t\t<viz:size value=\"0.2\"/>\n");
+			if (n.getEdges().size() <= 2) {
+				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"0.0\"/>)\n");
+			}
 			sb.append("\t\t\t</node>\n");
 		}
 
@@ -768,6 +773,7 @@ public class MapGraph {
 		sb.append("\n");
 		int edgeIDCounter = 0;
 		for (Link l : links.values()) {
+			int prevI = 0;
 			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
 				Node a = l.getWayPoints().get(i);
 				Node b = l.getWayPoints().get(i + 1);
@@ -782,7 +788,9 @@ public class MapGraph {
 						+ "\" type=\"" + type + "\">\n");
 				sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
 				if (isHumanAccessible) {
-					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\"/>\n");
+					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
+				} else {
+					sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
 				}
 				sb.append("\t\t</edge>\n");
 				edgeIDCounter++;
@@ -817,8 +825,8 @@ public class MapGraph {
 			// pos.getY() * SCALER+" z=0.0";
 			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER + ",\"z\":0.0";
 			String color = "\"r\":0, \"g\":0.0, \"b\":0";
-//			String color = "\"color\":142";
-			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5," + nodePos + ","+color+"}}}");
+			// String color = "\"color\":142";
+			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5," + nodePos + "," + color + "}}}");
 			sb.append("\n");
 		}
 		long edgeCounter = 0;
@@ -831,16 +839,16 @@ public class MapGraph {
 				// String color = "\"viz:color\":\"r=\\\"XX\\\" g=\\\"YY\\\" b=\\\"ZZ\\\"\"";
 				// String color = "\"r\":XX,\"g\":YY,\"b\":ZZ";
 				String color = "\"r\":XX, \"g\":YY, \"b\":ZZ";
-				
-				 if (!isHumanAccessible) {
-				 color = color.replace("XX", "" + 0.0);
-				 color = color.replace("YY", "" + 0.0);
-				 color = color.replace("ZZ", "" + 0.0);
-				 } else {
-				 color = color.replace("XX", "" + 0.5);
-				 color = color.replace("YY", "" + 0.5);
-				 color = color.replace("ZZ", "" + 0.1);
-				 }
+
+				if (!isHumanAccessible) {
+					color = color.replace("XX", "" + 0.0);
+					color = color.replace("YY", "" + 0.0);
+					color = color.replace("ZZ", "" + 0.0);
+				} else {
+					color = color.replace("XX", "" + 0.5);
+					color = color.replace("YY", "" + 0.5);
+					color = color.replace("ZZ", "" + 0.1);
+				}
 
 				sb.append("{\"ae\":{\"" + a.getID() + "" + b.getID() + "\":{\"source\":\"" + a.getID()
 						+ "\",\"target\": \"" + b.getID() + "\",\"directed\":" + isOneWay + "," + color + "}}}");
@@ -863,6 +871,31 @@ public class MapGraph {
 		}
 		for (Long l : deadNodes) {
 			nodes.remove(l);
+		}
+	}
+
+	public void removePointlessNodes(boolean strict) {
+		HashSet<Long> deadNodes = new HashSet<Long>();
+		// int strictness = strict ? 2 : 3;
+		for (Long l : nodes.keySet()) {
+			Node n = nodes.get(l);
+			if (n.getEdges().size() <= 2) {
+				deadNodes.add(l);
+			}
+		}
+		for (Long l : deadNodes) {
+			nodes.remove(l);
+		}
+		List<String> edgesToRemove = new List<String>();
+		for (Edge e : edges.values()) {
+			long a = e.getNodeA().getID();
+			long b = e.getNodeB().getID();
+			if (deadNodes.contains(a) || deadNodes.contains(b)) {
+				edgesToRemove.add(e.getID());
+			}
+		}
+		for (String str : edgesToRemove) {
+			edges.remove(str);
 		}
 	}
 

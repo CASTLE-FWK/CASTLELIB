@@ -33,7 +33,7 @@ public class MapGraphParser {
 	}
 
 	public void parseMapGraph(String pathToFile) {
-		System.out.println("********PARSING MAPGRAPH*******");
+		System.out.println("********PARSING MAPGRAPH from "+pathToFile+"*******");
 		OSMParser p = new OSMParser();
 		File osmFile = new File(pathToFile);
 		try {
@@ -196,13 +196,14 @@ public class MapGraphParser {
 			mapGraph.normalise();
 			mapGraph.assignEdges();
 			mapGraph.clean();
+//			mapGraph.removePointlessNodes(true);
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
 			
 			//Dump that map as a csv
-			String out = mapGraph.exportGraphAsJSON();
-			Utilities.writeToFile(out, pathToFile+".json", false);
+//			String out = mapGraph.exportGraphAsGEXF();
+//			Utilities.writeToFile(out, pathToFile+".gexf", false);
 			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
@@ -210,10 +211,10 @@ public class MapGraphParser {
 			
 //			System.out.println("STREAMING TO GEPHI");
 			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
-			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
-			for (String s : testOut) {
-				stg.sendAction(s);
-			}
+//			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
+//			for (String s : testOut) {
+//				stg.sendAction(s);
+//			}
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

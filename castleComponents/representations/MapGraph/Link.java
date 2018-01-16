@@ -38,25 +38,25 @@ public class Link implements Comparable<Link> {
 	public Link() {
 		init();
 	}
-	
+
 	public Node[] findAdjacentNodes(Node n) {
 		Node prev = null;
 		Node aft = null;
-		for(int i = 0; i < wayPoints.size() - 1; i++) {
+		for (int i = 0; i < wayPoints.size() - 1; i++) {
 			if (wayPoints.get(i) == n) {
 				if (i == 0) {
 					prev = null;
 				} else {
-					prev = wayPoints.get(i-1);
+					prev = wayPoints.get(i - 1);
 				}
 				if (i > wayPoints.size() - 2) {
 					aft = null;
 				} else {
-					aft = wayPoints.get(i+1);
+					aft = wayPoints.get(i + 1);
 				}
 			}
 		}
-		return new Node[] {prev, aft};
+		return new Node[] { prev, aft };
 	}
 
 	public void init() {
@@ -230,7 +230,7 @@ public class Link implements Comparable<Link> {
 		for (int i = 0; i < wayPoints.size() - 1; i++) {
 			int j = i + 1;
 			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
-			
+
 			// Build edges at same time
 			Edge newEdge = new Edge(wayPoints.get(i), wayPoints.get(j));
 			newEdge.takeStatsFromLink(bicycle, cycleWay, roadType, lit, maxSpeed, name, oneWay, lanes);

@@ -115,6 +115,12 @@ public class TrafficLight {
 	public void errLog(Object o) {
 		System.err.println("TrafficLight Warning: " + o.toString());
 	}
+	
+	public String gephiUpdateString() {
+		//Ah this won't work
+		
+		return "";
+	}
 }
 
 class TrafficLightPattern {
