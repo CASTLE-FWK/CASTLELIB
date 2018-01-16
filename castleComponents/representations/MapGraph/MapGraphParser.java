@@ -207,7 +207,17 @@ public class MapGraphParser {
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
+			
+			System.out.println("STREAMING TO GEPHI");
+			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
+			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
+			for (String s : testOut) {
+				stg.sendAction(s);
+			}
 		} catch (IOException | SAXException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

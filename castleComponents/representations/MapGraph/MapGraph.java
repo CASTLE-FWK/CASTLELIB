@@ -789,15 +789,6 @@ public class MapGraph {
 			}
 		}
 
-		//
-		// for (Edge e : edges.values()) {
-		// sb.append("\t\t\t<edge id=\""+e.getID()+"\"
-		// source=\""+e.getNodeA().getID()+"\" target=\""+e.getNodeB().getID()+"\">\n");
-		// sb.append("\t\t\t\t<viz:thickness value=\"0.5\"/>\n");
-		//// sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\"/>\n");
-		// sb.append("\t\t</edge>\n");
-		// }
-
 		sb.append("\t\t</edges>");
 		sb.append("\n");
 		sb.append("\t</graph>\n");
@@ -821,7 +812,11 @@ public class MapGraph {
 		StringBuilder sb = new StringBuilder();
 		// Nodes
 		for (Node n : nodes.values()) {
-				sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5}}}");
+			Vector2 pos = n.getCoords();
+//			String nodePos = "\"position\":\"x=" + pos.getX() * SCALER + " y=" + pos.getY() * SCALER+" z=0.0";
+			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER+",\"z\":0.0";
+					
+				sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5,"+nodePos+"}}}");
 				sb.append("\n");
 		}
 		long edgeCounter = 0;
