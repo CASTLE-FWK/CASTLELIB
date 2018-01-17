@@ -214,6 +214,7 @@ public class MapGraph {
 			List<Node> path = dksa.getPath(destNode);
 			if (path == null) {
 				errLog("path is null");
+				errLog("currNode stats: "+currNode);
 				System.exit(0);
 			}
 			return path;
@@ -688,7 +689,7 @@ public class MapGraph {
 				if (!transitPoints.add(cand)) {
 					cand = theNodes.next();
 				}
-			} else if (randDirection == 3) {
+			} else if (randDirection == 2) {
 				theNodes.sort(new Comparator<Node>() {
 					@Override
 					public int compare(Node a, Node b) {
@@ -700,7 +701,7 @@ public class MapGraph {
 				if (!transitPoints.add(cand)) {
 					cand = theNodes.next();
 				}
-			} else if (randDirection == 2) {
+			} else if (randDirection == 3) {
 				theNodes.sort(new Comparator<Node>() {
 					@Override
 					public int compare(Node a, Node b) {
@@ -714,9 +715,9 @@ public class MapGraph {
 				}
 			}
 		}
-		for (Node n : transitPoints) {
-			errLog("tp: " + n.getCoords());
-		}
+//		for (Node n : transitPoints) {
+//			errLog("tp: " + n.getCoords());
+//		}
 	}
 
 	public Node getRandomTransitNode() {
@@ -754,8 +755,12 @@ public class MapGraph {
 			sb.append("\t\t\t\t<viz:position x=\"" + pos.getX() * SCALER + "\" y=\"" + pos.getY() * SCALER
 					+ "\" z=\"0.0\"/>\n");
 			sb.append("\t\t\t\t<viz:size value=\"0.2\"/>\n");
-			if (n.getEdges().size() <= 2) {
+			if (n.isCarPark()) {
+				sb.append("\t\t\t\t<viz:color r=\"255\" g=\"0\" b=\"255\" a=\"0.99\"/>)\n");
+			} else if (n.getEdges().size() <= 2) {
 				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"0.0\"/>)\n");
+			} else {
+				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"0.99\"/>)\n");
 			}
 			sb.append("\t\t\t</node>\n");
 		}
@@ -800,14 +805,13 @@ public class MapGraph {
 			if (isOneWay) {
 				type = "directed";
 			}
-			//
 			sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() + "\" target=\"" + b.getID()
 					+ "\" type=\"" + type + "\">\n");
-			sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
+			sb.append("\t\t\t\t<viz:thickness value=\"0.99\"/>\n");
 			if (isHumanAccessible) {
-				sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
+				sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"0.99\"/>\n");
 			} else {
-				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
+				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"0.99\"/>\n");
 			}
 			sb.append("\t\t</edge>\n");
 			edgeIDCounter++;
@@ -960,15 +964,37 @@ public class MapGraph {
 		return str;
 	}
 
+	HashSet<String> edgeIDsToRemove;
+	HashSet<Edge> edgesToRemove;
 	public void prune() {
+		edgeIDsToRemove = new HashSet<String>();
+		edgesToRemove = new HashSet<Edge>();
 		errLog("Pruning: nodes-pre: " + nodes.size() + " edges-pre: " + edges.size());
 		for (Long l : pruneSet) {
-			List<Edge> edgesToRemove = nodes.get(l).getEdges();
+			HashSet<Edge> edgesToRemove = nodes.get(l).getEdges();
 			nodes.remove(l);
 			for (Edge e : edgesToRemove) {
 				edges.remove(e.getID());
+				edgeIDsToRemove.add(e.getID());
+				edgesToRemove.add(e);
 			}
 		}
 		errLog("Pruning: nodes-pos: " + nodes.size() + " edges-pos: " + edges.size());
+	}
+	
+	public void prunePhase2() {
+		errLog("Pruning: phase 2: removing stray edges");
+		for (Edge e : edgesToRemove) {
+			Node a = e.getNodeA();
+			Node b = e.getNodeB();
+			a.removeEdgeWithID(e.getID());
+			b.removeEdgeWithID(e.getID());
+		}
+		errLog("Pruning: phase 2: complete");
+	}
+	
+	public Node getRandomNode() {
+		Object[] n = nodes.values().toArray();
+		return (Node)n[RandomGen.generateRandomRangeInteger(0, n.length -1)];
 	}
 }

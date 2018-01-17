@@ -198,23 +198,29 @@ public class MapGraphParser {
 			mapGraph.connectedComponents();
 			System.out.println(mapGraph.ccStats());
 			mapGraph.prune();
-			mapGraph.clean();
-//			mapGraph.removePointlessNodes(true);
+			
+			
+			//Map Infrastructure building
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
+			String out = mapGraph.exportGraphAsGEXF();
+			Utilities.writeToFile(out, pathToFile+".gexf", false);
+			mapGraph.prunePhase2();
 			
-			
+			//Print some random points to set events at
+//			System.out.println(mapGraph.getRandomNode().getCoords());
+//			System.out.println(mapGraph.getRandomNode().getCoords());
+//			System.out.println(mapGraph.getRandomNode().getCoords());
 			
 	
 			//Dump that map as a csv
-			String out = mapGraph.exportGraphAsGEXF();
-			Utilities.writeToFile(out, pathToFile+".gexf", false);
+			
 			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
-			System.exit(0);
+//			System.exit(0);
 			
 //			System.out.println("STREAMING TO GEPHI");
 			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");

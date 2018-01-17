@@ -1,6 +1,7 @@
 package castleComponents.representations.MapGraph;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import castleComponents.objects.Vector2;
@@ -10,9 +11,9 @@ public class Node implements Comparable<Node> {
 	Vector2 geoCoords;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
-	List<Edge> incomingEdges;
-	List<Edge> outgoingEdges;
-	List<Edge> edges;
+	HashMap<String, Edge> incomingEdges;
+	HashMap<String, Edge> outgoingEdges;
+	HashMap<String, Edge> edges;
 	HashSet<Node> adjacentNodes;
 	Vector2 coords;
 
@@ -41,12 +42,18 @@ public class Node implements Comparable<Node> {
 	}
 
 	public Edge findEdgeWithNode(Node n) {
-		for (Edge e : edges) {
+		for (Edge e : edges.values()) {
 			if (e.containsBothNodes(this, n)) {
 				return e;
 			}
 		}
 		return null;
+	}
+
+	public void removeEdgeWithID(String id) {
+		incomingEdges.remove(id);
+		outgoingEdges.remove(id);
+		edges.remove(id);
 	}
 
 	public Node() {
@@ -62,25 +69,25 @@ public class Node implements Comparable<Node> {
 	}
 
 	public void init() {
-		incomingEdges = new List<Edge>();
-		outgoingEdges = new List<Edge>();
+		incomingEdges = new HashMap<String, Edge>();
+		outgoingEdges = new HashMap<String, Edge>();
 		adjacentNodes = new HashSet<Node>();
-		edges = new List<Edge>();
+		edges = new HashMap<String, Edge>();
 		links = new HashSet<Link>();
 		outgoingTotalWeight = 0;
 		incomingTotalWeight = 0;
 	}
 
 	public void addIncomingEdge(Edge e) {
-		incomingEdges.add(e);
+		incomingEdges.put(e.getID(), e);
 	}
 
 	public void addOutgoingEdge(Edge e) {
-		outgoingEdges.add(e);
+		outgoingEdges.put(e.getID(), e);
 	}
 
 	public void addEdge(Edge e) {
-		edges.add(e);
+		edges.put(e.getID(), e);
 	}
 
 	public void setID(long id) {
@@ -174,7 +181,7 @@ public class Node implements Comparable<Node> {
 	public void setTheCarPark(Park theCarPark) {
 		this.theCarPark = theCarPark;
 	}
-	
+
 	public void createCarPark() {
 		this.theCarPark = new Park();
 	}
@@ -237,8 +244,8 @@ public class Node implements Comparable<Node> {
 		};
 	}
 
-	public List<Edge> getEdges() {
-		return edges;
+	public HashSet<Edge> getEdges() {
+		return new HashSet<Edge>(edges.values());
 	}
 
 	public boolean hasSameID(Node n) {
