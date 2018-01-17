@@ -76,13 +76,13 @@ public class MapGraph {
 		importMap(pathToMapFile);
 
 		// Populate edges list
-//		HashSet<Link> theLinks = new HashSet<Link>(links.values());
-//		for (Link l : theLinks) {
-//			List<Edge> lEdges = l.getEdges();
-//			for (Edge e : lEdges) {
-//				edges.put(e.getID(), e);
-//			}
-//		}
+		// HashSet<Link> theLinks = new HashSet<Link>(links.values());
+		// for (Link l : theLinks) {
+		// List<Edge> lEdges = l.getEdges();
+		// for (Edge e : lEdges) {
+		// edges.put(e.getID(), e);
+		// }
+		// }
 	}
 
 	public void importMap(String path) {
@@ -252,7 +252,7 @@ public class MapGraph {
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
-		errLog("cant add entity: "+e.getID()+" to " + pos);
+		errLog("cant add entity: " + e.getID() + " to " + pos);
 
 		return false;
 	}
@@ -588,8 +588,11 @@ public class MapGraph {
 	public void assignEdges() {
 		for (Link l : links.values()) {
 			for (Edge e : l.getEdges()) {
+				edges.put(e.getID(), e);
 				Node na = e.getNodeA();
 				Node nb = e.getNodeB();
+				na.addEdge(e);
+				nb.addEdge(e);
 				na.addAdjacentNode(nb);
 				nb.addAdjacentNode(na);
 				if (l.isOneWay()) {
@@ -601,19 +604,6 @@ public class MapGraph {
 					nb.addIncomingEdge(e);
 					nb.addOutgoingEdge(e);
 				}
-			}
-		}
-	}
-
-	public void extractEdges() {
-		for (Link l : links.values()) {
-			List<Edge> lEdges = l.getEdges();
-			for (Edge e : lEdges) {
-				edges.put(e.getID(), e);
-				Node a = e.getNodeA();
-				Node b = e.getNodeB();
-				a.addEdge(e);
-				b.addEdge(e);
 			}
 		}
 	}
@@ -724,6 +714,9 @@ public class MapGraph {
 				}
 			}
 		}
+		for (Node n : transitPoints) {
+			errLog("tp: " + n.getCoords());
+		}
 	}
 
 	public Node getRandomTransitNode() {
@@ -772,29 +765,52 @@ public class MapGraph {
 		sb.append("\t\t<edges>");
 		sb.append("\n");
 		int edgeIDCounter = 0;
-		for (Link l : links.values()) {
+//		for (Link l : links.values()) {
+//			int prevI = 0;
+//			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
+//				Node a = l.getWayPoints().get(i);
+//				Node b = l.getWayPoints().get(i + 1);
+//				boolean isOneWay = l.isOneWay();
+//				boolean isHumanAccessible = l.isHumanAccessible();
+//				String type = "undirected";
+//				if (isOneWay) {
+//					type = "directed";
+//				}
+//				//
+//				sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() + "\" target=\"" + b.getID()
+//						+ "\" type=\"" + type + "\">\n");
+//				sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
+//				if (isHumanAccessible) {
+//					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
+//				} else {
+//					sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
+//				}
+//				sb.append("\t\t</edge>\n");
+//				edgeIDCounter++;
+//			}
+//		}
+		edgeIDCounter = 0;
+		for (Edge e : edges.values()) {
 			int prevI = 0;
-			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
-				Node a = l.getWayPoints().get(i);
-				Node b = l.getWayPoints().get(i + 1);
-				boolean isOneWay = l.isOneWay();
-				boolean isHumanAccessible = l.isHumanAccessible();
-				String type = "undirected";
-				if (isOneWay) {
-					type = "directed";
-				}
-				//
-				sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() + "\" target=\"" + b.getID()
-						+ "\" type=\"" + type + "\">\n");
-				sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
-				if (isHumanAccessible) {
-					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
-				} else {
-					sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
-				}
-				sb.append("\t\t</edge>\n");
-				edgeIDCounter++;
+			Node a = e.getNodeA();
+			Node b = e.getNodeB();
+			boolean isOneWay = e.isOneWay();
+			boolean isHumanAccessible = e.isHumanAccessible();
+			String type = "undirected";
+			if (isOneWay) {
+				type = "directed";
 			}
+			//
+			sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() + "\" target=\"" + b.getID()
+					+ "\" type=\"" + type + "\">\n");
+			sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
+			if (isHumanAccessible) {
+				sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
+			} else {
+				sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
+			}
+			sb.append("\t\t</edge>\n");
+			edgeIDCounter++;
 		}
 
 		sb.append("\t\t</edges>");
@@ -874,29 +890,85 @@ public class MapGraph {
 		}
 	}
 
-	public void removePointlessNodes(boolean strict) {
-		HashSet<Long> deadNodes = new HashSet<Long>();
-		// int strictness = strict ? 2 : 3;
-		for (Long l : nodes.keySet()) {
-			Node n = nodes.get(l);
-			if (n.getEdges().size() <= 2) {
-				deadNodes.add(l);
-			}
-		}
-		for (Long l : deadNodes) {
-			nodes.remove(l);
-		}
-		List<String> edgesToRemove = new List<String>();
-		for (Edge e : edges.values()) {
-			long a = e.getNodeA().getID();
-			long b = e.getNodeB().getID();
-			if (deadNodes.contains(a) || deadNodes.contains(b)) {
-				edgesToRemove.add(e.getID());
-			}
-		}
-		for (String str : edgesToRemove) {
-			edges.remove(str);
+	HashMap<Long, Integer> componentChecker;
+	HashSet<Long> pruneSet;
+	int ccCounter = 0;
+
+	public int nodeHasBeenSeen(Node n) {
+		Integer i = componentChecker.get(n.getID());
+		if (i == null) {
+			return -1;
+		} else {
+			return i;
 		}
 	}
 
+	public void connectedComponents() {
+		componentChecker = new HashMap<Long, Integer>();
+		ccCounter = -1;
+		for (Node n : nodes.values()) {
+			// If N hasn't been seen
+			if (nodeHasBeenSeen(n) == -1) {
+				ccCounter++;
+				componentChecker.put(n.getID(), ccCounter);
+				dfs(n);
+			}
+		}
+	}
+
+	public void dfs(Node n) {
+		for (Node a : n.getAdjacentNodes()) {
+			if (nodeHasBeenSeen(a) == -1) {
+				componentChecker.put(a.getID(), ccCounter);
+				dfs(a);
+			}
+		}
+	}
+
+	public String ccStats() {
+		HashMap<Integer, Integer> ccCount = new HashMap<Integer, Integer>();
+		for (Long l : componentChecker.keySet()) {
+			int i = componentChecker.get(l);
+			Integer ccCountRes = ccCount.get(i);
+			if (ccCountRes == null) {
+				ccCount.put(i, 1);
+			} else {
+				ccCount.put(i, ccCountRes + 1);
+			}
+		}
+		int largestKey = -1;
+		int largestAmount = -Integer.MAX_VALUE;
+		String str = "CC Stats [";
+		for (Integer hsn : ccCount.keySet()) {
+			if (ccCount.get(hsn) > largestAmount) {
+				largestAmount = ccCount.get(hsn);
+				largestKey = hsn;
+			}
+			// str += "key " + hsn + ", number of nodes: " + ccCount.get(hsn) + "\n";
+		}
+		str += "total_number_of_nodes: " + nodes.size() + ", max_key: " + largestKey + ", number_of_nodes: "
+				+ largestAmount;
+		pruneSet = new HashSet<Long>();
+		for (Long l : componentChecker.keySet()) {
+			int v = componentChecker.get(l);
+			if (v != largestKey) {
+				pruneSet.add(l);
+			}
+		}
+		str += ", nodes to prune: " + pruneSet.size();
+		str += "]";
+		return str;
+	}
+
+	public void prune() {
+		errLog("Pruning: nodes-pre: " + nodes.size() + " edges-pre: " + edges.size());
+		for (Long l : pruneSet) {
+			List<Edge> edgesToRemove = nodes.get(l).getEdges();
+			nodes.remove(l);
+			for (Edge e : edgesToRemove) {
+				edges.remove(e.getID());
+			}
+		}
+		errLog("Pruning: nodes-pos: " + nodes.size() + " edges-pos: " + edges.size());
+	}
 }

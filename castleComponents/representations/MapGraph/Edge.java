@@ -21,8 +21,9 @@ public class Edge {
 	String name = "";
 	boolean oneWay = false;
 	int lanes = 0;
+	boolean humanAccessible = false;
 	
-	public void takeStatsFromLink(boolean b, String c, String r, boolean l, int m, String n, boolean o, int la) {
+	public void takeStatsFromLink(boolean b, String c, String r, boolean l, int m, String n, boolean o, int la, boolean hu) {
 		setBicycle(b);
 		setCycleWay(c);
 		setRoadType(r);
@@ -36,6 +37,7 @@ public class Edge {
 		setName(n);
 		setOneWay(o);
 		setLanes(la);
+		setHumanAccessible(hu);
 	}
 
 	public Edge(Node a, Node b) {
@@ -53,6 +55,10 @@ public class Edge {
 
 	public boolean containsBothNodes(Node a, Node b) {
 		return (a.hasSameID(nodeA) && b.hasSameID(nodeB)) || (b.hasSameID(nodeA) && a.hasSameID(nodeB));
+	}
+	
+	public boolean containsNodeID(long id) {
+		return (nodeA.getID() == id || nodeB.getID() == id);
 	}
 	
 	public Node getOtherEnd(Node n) {
@@ -125,6 +131,14 @@ public class Edge {
 
 	public String getCycleWay() {
 		return cycleWay;
+	}
+
+	public boolean isHumanAccessible() {
+		return humanAccessible;
+	}
+
+	public void setHumanAccessible(boolean humanAccessible) {
+		this.humanAccessible = humanAccessible;
 	}
 
 	public void setCycleWay(String cycleWay) {

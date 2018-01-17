@@ -189,25 +189,32 @@ public class MapGraphParser {
 					}
 				}
 			}
-
+			
 			// Order may be important here
-			mapGraph.extractEdges();
+//			mapGraph.extractEdges();
+			mapGraph.assignEdges();
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
-			mapGraph.assignEdges();
+			mapGraph.connectedComponents();
+			System.out.println(mapGraph.ccStats());
+			mapGraph.prune();
 			mapGraph.clean();
 //			mapGraph.removePointlessNodes(true);
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
 			
+			
+			
+	
 			//Dump that map as a csv
-//			String out = mapGraph.exportGraphAsGEXF();
-//			Utilities.writeToFile(out, pathToFile+".gexf", false);
+			String out = mapGraph.exportGraphAsGEXF();
+			Utilities.writeToFile(out, pathToFile+".gexf", false);
 			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
+			System.exit(0);
 			
 //			System.out.println("STREAMING TO GEPHI");
 			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
@@ -215,6 +222,7 @@ public class MapGraphParser {
 //			for (String s : testOut) {
 //				stg.sendAction(s);
 //			}
+			
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

@@ -233,7 +233,7 @@ public class Link implements Comparable<Link> {
 
 			// Build edges at same time
 			Edge newEdge = new Edge(wayPoints.get(i), wayPoints.get(j));
-			newEdge.takeStatsFromLink(bicycle, cycleWay, roadType, lit, maxSpeed, name, oneWay, lanes);
+			newEdge.takeStatsFromLink(bicycle, cycleWay, roadType, lit, maxSpeed, name, oneWay, lanes, humanAccessible);
 			edges.add(newEdge);
 		}
 		weight = length;
