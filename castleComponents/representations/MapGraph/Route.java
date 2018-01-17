@@ -17,7 +17,13 @@ public class Route {
 
 	public Route() {
 		nodesToVisit = new List<Node>();
+		edgesToTraverse = new List<Edge>();
 		prevNode = null;
+		distanceAlongEdge = 0.0;
+		leavingSimulation = false;
+		currentEdge = null;
+		heading = Heading.NONE;
+		prevEdge = null;
 	}
 	
 	public Route(Route r) {

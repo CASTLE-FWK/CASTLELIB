@@ -2,10 +2,8 @@ package stdSimLib.utilities;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 import castleComponents.objects.List;
 import castleComponents.representations.MapGraph.Edge;
@@ -13,22 +11,15 @@ import castleComponents.representations.MapGraph.Node;
 
 public class Dijkstra {
 
-	private Set<Node> unSettledNodes;
 	private Map<Node, Node> predecessors;
-	private Map<Node, Double> distance;
 	private PriorityQueue<Node> nodeQueue;
 
 	public Dijkstra() {
-
 	}
 
 	public void execute(Node source) {
-		unSettledNodes = new HashSet<Node>();
-		distance = new HashMap<Node, Double>();
 		predecessors = new HashMap<Node, Node>();
 		nodeQueue = new PriorityQueue<Node>();
-		distance.put(source, 0.0);
-		unSettledNodes.add(source);
 
 		// Optimisation
 		source.setDikstraMinDistance(0.0);
@@ -50,7 +41,6 @@ public class Dijkstra {
 				}
 			}
 		}
-
 	}
 
 	public List<Node> getPath(Node target) {
@@ -65,7 +55,6 @@ public class Dijkstra {
 		while (predecessors.get(step) != null) {
 			step = predecessors.get(step);
 			path.add(step);
-
 		}
 		// Put it into the correct order
 		Collections.reverse(path);

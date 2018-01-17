@@ -1,5 +1,6 @@
 package castleComponents.representations.MapGraph;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import castleComponents.objects.List;
 import castleComponents.representations.LayoutParameters;
 import stdSimLib.utilities.Dijkstra;
 import stdSimLib.utilities.RandomGen;
+import stdSimLib.utilities.SlowDijkstra;
 import stdSimLib.utilities.Utilities;
 
 public class MapGraph {
@@ -26,13 +28,14 @@ public class MapGraph {
 	HashMap<String, Entity> entitiesInMap;
 	HashSet<Node> transitPoints;
 	List<TrafficLight> trafficLightLocations;
-	List<Node> carParkNodes;
+	HashMap<Long, Node> carParkNodes;
 	long id = -1;
 	List<MapGraph> subMaps;
 	Range2D range;
 	Range2D geoRange;
 	// Dijkstra's wow
-	Dijkstra dksa;
+	// Dijkstra dksa;
+	SlowDijkstra dksa;
 
 	public final String TRAFFIC_SIGNAL = "traffic_signals";
 	public final int DECIMAL_PLACES = 7;
@@ -45,10 +48,10 @@ public class MapGraph {
 		entitiesInMap = new HashMap<String, Entity>();
 		transitPoints = new HashSet<Node>();
 		trafficLightLocations = new List<TrafficLight>();
-		carParkNodes = new List<Node>(); // TODO Populate this list
+		carParkNodes = new HashMap<Long, Node>();
 		id = -1;
 		subMaps = new List<MapGraph>();
-		dksa = new Dijkstra();
+		dksa = null;
 	}
 
 	public MapGraph(MapGraph mg) {
@@ -112,8 +115,11 @@ public class MapGraph {
 		// Find the correct edge to be on
 		Edge oldEdge = currEdge;
 		if (currEdge == null) {
+//			errLog("trying to find a new edge");
 			Node thisNode = route.getPrevNode();
+//			errLog(thisNode);
 			for (Edge ed : thisNode.getEdges()) {
+				errLog(ed);
 				if (ed.isNodeConnected(nextNode)) {
 					currEdge = ed;
 					break;
@@ -122,7 +128,9 @@ public class MapGraph {
 		}
 		if (currEdge == null) {
 			errLog("currEdge remained null. theres an error**************");
+			System.exit(0);
 		}
+		
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
 
@@ -203,9 +211,9 @@ public class MapGraph {
 		currPos.round(DECIMAL_PLACES);
 		destPos.round(DECIMAL_PLACES);
 		Node currNode = getNodeAtPosition(currPos);
-		errLog("currNode pos: " + currPos + " is null " + (currNode == null));
+		 errLog("currNode pos: " + currPos + " is null " + (currNode == null));
 		Node destNode = getNodeAtPosition(destPos);
-		errLog("destNode pos: " + destPos + " is null " + (destNode == null));
+		 errLog("destNode pos: " + destPos + " is null " + (destNode == null));
 		if (currPos.compare(destPos)) {
 			// We have no destination
 			return new List<Node>();
@@ -213,9 +221,9 @@ public class MapGraph {
 			dksa.execute(currNode);
 			List<Node> path = dksa.getPath(destNode);
 			if (path == null) {
-				errLog("path is null");
-				errLog("currNode stats: "+currNode);
-				System.exit(0);
+				 errLog("path is null");
+				 errLog("currNode stats: " + currNode);
+				// System.exit(0);
 			}
 			return path;
 		}
@@ -233,6 +241,11 @@ public class MapGraph {
 			destPos = new Vector2(prevPos);
 		} else {
 			destPos = destNode.getCoords();
+		}
+		if (currEdge == null) {
+			if (prevNode != null) {
+				return prevNode.getCoords();
+			}
 		}
 
 		double edgeLen = currEdge.getDistanceInKM();
@@ -337,8 +350,9 @@ public class MapGraph {
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
 
-		errLog(range);
-		dksa = new Dijkstra();
+		// errLog(range);
+		// dksa = new Dijkstra();
+		dksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 
 		// This is weird - print random node
 		// errLog(getNodeFromID(544503325));
@@ -376,7 +390,7 @@ public class MapGraph {
 	public Node findClosestCarPark(Vector2 v) {
 		Node minNode = null;
 		double minDist = Double.MAX_VALUE;
-		for (Node n : carParkNodes) {
+		for (Node n : carParkNodes.values()) {
 			double cand = v.calculateDistance(n.getCoords());
 			if (n.getNodeState().compareToIgnoreCase("NOGO") == 0) {
 				continue;
@@ -487,6 +501,7 @@ public class MapGraph {
 
 	public Park getCarParkAtPosition(Vector2 pos) {
 		Node n = getNodeAtPosition(pos);
+//		errLog("pos looking for car park: "+pos);
 		if (n.isCarPark()) {
 			return n.getTheCarPark();
 		} else {
@@ -495,6 +510,8 @@ public class MapGraph {
 		}
 	}
 
+	// TODO
+	// Just take flags and return from below
 	public String printMap() {
 		String str = "";
 		return str;
@@ -522,20 +539,20 @@ public class MapGraph {
 		trafficLightLocations.add(null);
 	}
 
-	public List<Node> getCarParkNodes() {
-		return carParkNodes;
+	public HashSet<Node> getCarParkNodes() {
+		return new HashSet<Node>(carParkNodes.values());
 	}
 
 	public List<Vector2> getCarParkLocations() {
 		List<Vector2> v = new List<Vector2>();
-		for (Node n : carParkNodes) {
+		for (Node n : carParkNodes.values()) {
 			v.add(n.getCoords());
 		}
 		return v;
 	}
 
 	public void addCarParkLocation(Node n) {
-		carParkNodes.add(n);
+		carParkNodes.put(n.getID(), n);
 	}
 
 	/**
@@ -585,6 +602,20 @@ public class MapGraph {
 		}
 		return (range.containsPoint(v));
 	}
+	
+	//TODO at some point. binary-ish search
+//	public Node findNearestNode(Vector2 pos) {
+//		List<Vector2> nodePos = new List<Vector2>(nodesMap.keySet());
+//		nodePos.sort(Vector2.sort());
+//		return findNearestNodeHelper(pos, nodePos);
+//	}
+//	
+//	public Node findNearestNodeHelper(Vector2 pos, List<Vector2> list) {
+//		int mid = list.size() / 2;
+//		findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
+//		findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
+//		
+//	}
 
 	public void assignEdges() {
 		for (Link l : links.values()) {
@@ -633,12 +664,12 @@ public class MapGraph {
 				// Set each node in this link to car park?
 				// No, find that exists in another non-parking way
 				for (Node ns : l.getWayPoints()) {
-					found = findNodeInWay(ns, l);
+					found = findNodeExistsInWay(ns, l);
 					if (found) {
 						ns.setCarPark(true);
 						ns.createCarPark();
 						addCarParkLocation(ns);
-						errLog("found an accesible car park");
+						errLog("found an accessible car park");
 						break;
 					}
 				}
@@ -646,7 +677,7 @@ public class MapGraph {
 		}
 	}
 
-	public boolean findNodeInWay(Node n, Link selfLink) {
+	public boolean findNodeExistsInWay(Node n, Link selfLink) {
 		for (Link l : links.values()) {
 			if (l == selfLink) {
 				continue;
@@ -715,9 +746,6 @@ public class MapGraph {
 				}
 			}
 		}
-//		for (Node n : transitPoints) {
-//			errLog("tp: " + n.getCoords());
-//		}
 	}
 
 	public Node getRandomTransitNode() {
@@ -770,30 +798,31 @@ public class MapGraph {
 		sb.append("\t\t<edges>");
 		sb.append("\n");
 		int edgeIDCounter = 0;
-//		for (Link l : links.values()) {
-//			int prevI = 0;
-//			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
-//				Node a = l.getWayPoints().get(i);
-//				Node b = l.getWayPoints().get(i + 1);
-//				boolean isOneWay = l.isOneWay();
-//				boolean isHumanAccessible = l.isHumanAccessible();
-//				String type = "undirected";
-//				if (isOneWay) {
-//					type = "directed";
-//				}
-//				//
-//				sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() + "\" target=\"" + b.getID()
-//						+ "\" type=\"" + type + "\">\n");
-//				sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
-//				if (isHumanAccessible) {
-//					sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
-//				} else {
-//					sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
-//				}
-//				sb.append("\t\t</edge>\n");
-//				edgeIDCounter++;
-//			}
-//		}
+		// for (Link l : links.values()) {
+		// int prevI = 0;
+		// for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
+		// Node a = l.getWayPoints().get(i);
+		// Node b = l.getWayPoints().get(i + 1);
+		// boolean isOneWay = l.isOneWay();
+		// boolean isHumanAccessible = l.isHumanAccessible();
+		// String type = "undirected";
+		// if (isOneWay) {
+		// type = "directed";
+		// }
+		// //
+		// sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() +
+		// "\" target=\"" + b.getID()
+		// + "\" type=\"" + type + "\">\n");
+		// sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
+		// if (isHumanAccessible) {
+		// sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
+		// } else {
+		// sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
+		// }
+		// sb.append("\t\t</edge>\n");
+		// edgeIDCounter++;
+		// }
+		// }
 		edgeIDCounter = 0;
 		for (Edge e : edges.values()) {
 			int prevI = 0;
@@ -841,41 +870,43 @@ public class MapGraph {
 		// Nodes
 		for (Node n : nodes.values()) {
 			Vector2 pos = n.getCoords();
-			// String nodePos = "\"position\":\"x=" + pos.getX() * SCALER + " y=" +
-			// pos.getY() * SCALER+" z=0.0";
 			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER + ",\"z\":0.0";
-			String color = "\"r\":0, \"g\":0.0, \"b\":0";
-			// String color = "\"color\":142";
-			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":0.5," + nodePos + "," + color + "}}}");
+			String color;
+			double size = 0.5;
+			if (n.isCarPark()) {
+				color = "\"r\":0.99, \"g\":0.0, \"b\":0.99";
+				size = 1.0;
+			} else {
+				color = "\"r\":0, \"g\":0.0, \"b\":0";
+			}
+			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":" + size + "," + nodePos + "," + color
+					+ "}}}");
 			sb.append("\n");
 		}
 		long edgeCounter = 0;
-		for (Link l : links.values()) {
-			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
-				Node a = l.getWayPoints().get(i);
-				Node b = l.getWayPoints().get(i + 1);
-				boolean isOneWay = l.isOneWay();
-				boolean isHumanAccessible = l.isHumanAccessible();
-				// String color = "\"viz:color\":\"r=\\\"XX\\\" g=\\\"YY\\\" b=\\\"ZZ\\\"\"";
-				// String color = "\"r\":XX,\"g\":YY,\"b\":ZZ";
-				String color = "\"r\":XX, \"g\":YY, \"b\":ZZ";
 
-				if (!isHumanAccessible) {
-					color = color.replace("XX", "" + 0.0);
-					color = color.replace("YY", "" + 0.0);
-					color = color.replace("ZZ", "" + 0.0);
-				} else {
-					color = color.replace("XX", "" + 0.5);
-					color = color.replace("YY", "" + 0.5);
-					color = color.replace("ZZ", "" + 0.1);
-				}
+		for (Edge e : edges.values()) {
+			Node a = e.getNodeA();
+			Node b = e.getNodeB();
+			boolean isOneWay = e.isOneWay();
+			boolean isHumanAccessible = e.isHumanAccessible();
+			String color = "\"r\":XX, \"g\":YY, \"b\":ZZ";
 
-				sb.append("{\"ae\":{\"" + a.getID() + "" + b.getID() + "\":{\"source\":\"" + a.getID()
-						+ "\",\"target\": \"" + b.getID() + "\",\"directed\":" + isOneWay + "," + color + "}}}");
-				sb.append("\n");
-
-				edgeCounter++;
+			if (!isHumanAccessible) {
+				color = color.replace("XX", "" + 0.0);
+				color = color.replace("YY", "" + 0.0);
+				color = color.replace("ZZ", "" + 0.0);
+			} else {
+				color = color.replace("XX", "" + 0.5);
+				color = color.replace("YY", "" + 0.5);
+				color = color.replace("ZZ", "" + 0.1);
 			}
+
+			sb.append("{\"ae\":{\"" + a.getID() + "" + b.getID() + "\":{\"source\":\"" + a.getID() + "\",\"target\": \""
+					+ b.getID() + "\",\"directed\":" + isOneWay + "," + color + "}}}");
+			sb.append("\n");
+
+			edgeCounter++;
 		}
 
 		return sb.toString();
@@ -948,15 +979,18 @@ public class MapGraph {
 				largestAmount = ccCount.get(hsn);
 				largestKey = hsn;
 			}
-			// str += "key " + hsn + ", number of nodes: " + ccCount.get(hsn) + "\n";
 		}
-		str += "total_number_of_nodes: " + nodes.size() + ", max_key: " + largestKey + ", number_of_nodes: "
-				+ largestAmount;
+		str += "total_number_of_nodes: " + nodes.size() + ", total_number_of_edges: " + edges.size() + ", max_key: "
+				+ largestKey + ", number_of_nodes: " + largestAmount;
 		pruneSet = new HashSet<Long>();
 		for (Long l : componentChecker.keySet()) {
 			int v = componentChecker.get(l);
 			if (v != largestKey) {
 				pruneSet.add(l);
+			}
+		}		for (Link l : links.values()) {
+			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
+				
 			}
 		}
 		str += ", nodes to prune: " + pruneSet.size();
@@ -964,27 +998,25 @@ public class MapGraph {
 		return str;
 	}
 
-	HashSet<String> edgeIDsToRemove;
-	HashSet<Edge> edgesToRemove;
+	HashSet<Edge> edgesToRemoveOver;
+
 	public void prune() {
-		edgeIDsToRemove = new HashSet<String>();
-		edgesToRemove = new HashSet<Edge>();
+		edgesToRemoveOver = new HashSet<Edge>();
 		errLog("Pruning: nodes-pre: " + nodes.size() + " edges-pre: " + edges.size());
 		for (Long l : pruneSet) {
-			HashSet<Edge> edgesToRemove = nodes.get(l).getEdges();
+			List<Edge> edgesToRemove = nodes.get(l).getEdges();
 			nodes.remove(l);
 			for (Edge e : edgesToRemove) {
 				edges.remove(e.getID());
-				edgeIDsToRemove.add(e.getID());
-				edgesToRemove.add(e);
+				edgesToRemoveOver.add(e);
 			}
 		}
 		errLog("Pruning: nodes-pos: " + nodes.size() + " edges-pos: " + edges.size());
 	}
-	
+
 	public void prunePhase2() {
 		errLog("Pruning: phase 2: removing stray edges");
-		for (Edge e : edgesToRemove) {
+		for (Edge e : edgesToRemoveOver) {
 			Node a = e.getNodeA();
 			Node b = e.getNodeB();
 			a.removeEdgeWithID(e.getID());
@@ -992,9 +1024,57 @@ public class MapGraph {
 		}
 		errLog("Pruning: phase 2: complete");
 	}
-	
+
 	public Node getRandomNode() {
 		Object[] n = nodes.values().toArray();
-		return (Node)n[RandomGen.generateRandomRangeInteger(0, n.length -1)];
+		return (Node) n[RandomGen.generateRandomRangeInteger(0, n.length - 1)];
+	}
+
+	public void nodeValidation() {
+		nodesMap.clear();
+		for (Node n : nodes.values()) {
+			nodesMap.put(n.getCoords(), n);
+			if (n.getEdges().size() <= 0) {
+				errLog(n.getID() + " has no edges");
+			}
+			for (Edge e : n.getEdges()) {
+				Node a = e.getNodeA();
+				Node b = e.getNodeB();
+				if (!nodes.containsKey(a.getID()) || !nodes.containsKey(b.getID())) {
+					errLog("missing node");
+				}
+			}
+			for (Edge e : n.getIncomingEdges()) {
+				Node a = e.getNodeA();
+				Node b = e.getNodeB();
+				if (!nodes.containsKey(a.getID()) || !nodes.containsKey(b.getID())) {
+					errLog("missing node");
+				}
+			}
+			for (Edge e : n.getEdges()) {
+				Node a = e.getNodeA();
+				Node b = e.getNodeB();
+				if (!nodes.containsKey(a.getID()) || !nodes.containsKey(b.getID())) {
+					errLog("missing node");
+				}
+			}
+			if (n.getCoords() == null) {
+				errLog(n.getID() + " has null coords");
+			}
+		}
+
+		List<Long> keysToRemove = new List<Long>();
+		for (Long l : carParkNodes.keySet()) {
+			if (!nodes.containsKey(l)) {
+				keysToRemove.add(l);
+			}
+		}
+
+		for (Long l : keysToRemove) {
+			carParkNodes.remove(l);
+		}
+
+		errLog("remaining car parks: " + carParkNodes.size());
+		dksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 	}
 }

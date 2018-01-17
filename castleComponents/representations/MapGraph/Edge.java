@@ -62,12 +62,16 @@ public class Edge {
 	}
 	
 	public Node getOtherEnd(Node n) {
-		if (n == nodeA) {
+		if (n.getID() == nodeA.getID()) {
 			return nodeB;
-		} else if (n == nodeB) {
+		} else if (n.getID() == nodeB.getID()) {
 			return nodeA;
 		}
 		return null;
+	}
+	
+	public String toString(){
+		return "Edge [ "+getID()+"src: "+nodeA.getID()+", dest: "+nodeB.getID()+"]";
 	}
 
 	public Node getNodeA() {

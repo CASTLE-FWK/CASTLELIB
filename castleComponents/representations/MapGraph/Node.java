@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import castleComponents.objects.Vector2;
 import castleComponents.objects.List;
+import castleComponents.objects.Vector2;
 
 public class Node implements Comparable<Node> {
 	Vector2 geoCoords;
@@ -30,7 +30,7 @@ public class Node implements Comparable<Node> {
 	Park theCarPark = null;
 
 	// Purely for Dijkstra speed up
-	double minDistance = Double.POSITIVE_INFINITY;
+	double minDistance = Double.MAX_VALUE;
 
 	public static final String FREE_STATE = "FREE";
 	public String nodeState = FREE_STATE;
@@ -48,6 +48,11 @@ public class Node implements Comparable<Node> {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) id;
 	}
 
 	public void removeEdgeWithID(String id) {
@@ -163,7 +168,7 @@ public class Node implements Comparable<Node> {
 	@Override
 	public String toString() {
 		return "Node [id=" + id + ", coords= " + coords + ", geoCoords=" + geoCoords + ", nodeType=" + nodeType
-				+ ", number of links=" + links.size() + "]";
+				+ ", number of edges=" + edges.size() + "]";
 	}
 
 	public boolean isCarPark() {
@@ -244,9 +249,17 @@ public class Node implements Comparable<Node> {
 		};
 	}
 
-	public HashSet<Edge> getEdges() {
-		return new HashSet<Edge>(edges.values());
+	public List<Edge> getEdges() {
+		return new List<Edge>(edges.values());
 	}
+
+	// public List<Edge> getEdges(){
+	// List<Edge> es = new List<Edge>();
+	// for (Edge e : edges.values()) {
+	// es.add(e);
+	// }
+	// return es;
+	// }
 
 	public boolean hasSameID(Node n) {
 		return (n.getID() == getID());
@@ -315,5 +328,21 @@ public class Node implements Comparable<Node> {
 
 	public void setNodeState(String nodeState) {
 		this.nodeState = nodeState;
+	}
+
+	public List<Edge> getIncomingEdges() {
+		return new List<Edge>(incomingEdges.values());
+	}
+
+	public void setIncomingEdges(HashMap<String, Edge> incomingEdges) {
+		this.incomingEdges = incomingEdges;
+	}
+
+	public List<Edge> getOutgoingEdges() {
+		return new List<Edge>(outgoingEdges.values());
+	}
+
+	public void setOutgoingEdges(HashMap<String, Edge> outgoingEdges) {
+		this.outgoingEdges = outgoingEdges;
 	}
 }
