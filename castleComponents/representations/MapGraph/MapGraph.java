@@ -115,9 +115,9 @@ public class MapGraph {
 		// Find the correct edge to be on
 		Edge oldEdge = currEdge;
 		if (currEdge == null) {
-//			errLog("trying to find a new edge");
+			// errLog("trying to find a new edge");
 			Node thisNode = route.getPrevNode();
-//			errLog(thisNode);
+			// errLog(thisNode);
 			for (Edge ed : thisNode.getEdges()) {
 				errLog(ed);
 				if (ed.isNodeConnected(nextNode)) {
@@ -130,7 +130,7 @@ public class MapGraph {
 			errLog("currEdge remained null. theres an error**************");
 			System.exit(0);
 		}
-		
+
 		// How do we update the position along the edge?
 		double newDist = distanceAlongEdge + moveDist; // TODO Determine which direction this should be done in
 
@@ -207,13 +207,16 @@ public class MapGraph {
 
 	}
 
+	// TODO add other pathfinders and use a strnig switch
 	public List<Node> calculateRoute(Vector2 currPos, Vector2 destPos) {
 		currPos.round(DECIMAL_PLACES);
 		destPos.round(DECIMAL_PLACES);
 		Node currNode = getNodeAtPosition(currPos);
-		 errLog("currNode pos: " + currPos + " is null " + (currNode == null));
 		Node destNode = getNodeAtPosition(destPos);
-		 errLog("destNode pos: " + destPos + " is null " + (destNode == null));
+		if (destNode == null || currNode == null) {
+			errLog("calculateRoute: destNode pos: " + destPos + " is null " + (destNode == null));
+			errLog("calculateRoute: currNode pos: " + currPos + " is null " + (currNode == null));
+		}
 		if (currPos.compare(destPos)) {
 			// We have no destination
 			return new List<Node>();
@@ -221,8 +224,8 @@ public class MapGraph {
 			dksa.execute(currNode);
 			List<Node> path = dksa.getPath(destNode);
 			if (path == null) {
-				 errLog("path is null");
-				 errLog("currNode stats: " + currNode);
+				errLog("path is null");
+				errLog("currNode stats: " + currNode);
 				// System.exit(0);
 			}
 			return path;
@@ -501,7 +504,7 @@ public class MapGraph {
 
 	public Park getCarParkAtPosition(Vector2 pos) {
 		Node n = getNodeAtPosition(pos);
-//		errLog("pos looking for car park: "+pos);
+		// errLog("pos looking for car park: "+pos);
 		if (n.isCarPark()) {
 			return n.getTheCarPark();
 		} else {
@@ -602,20 +605,20 @@ public class MapGraph {
 		}
 		return (range.containsPoint(v));
 	}
-	
-	//TODO at some point. binary-ish search
-//	public Node findNearestNode(Vector2 pos) {
-//		List<Vector2> nodePos = new List<Vector2>(nodesMap.keySet());
-//		nodePos.sort(Vector2.sort());
-//		return findNearestNodeHelper(pos, nodePos);
-//	}
-//	
-//	public Node findNearestNodeHelper(Vector2 pos, List<Vector2> list) {
-//		int mid = list.size() / 2;
-//		findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
-//		findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
-//		
-//	}
+
+	// TODO at some point. binary-ish search
+	// public Node findNearestNode(Vector2 pos) {
+	// List<Vector2> nodePos = new List<Vector2>(nodesMap.keySet());
+	// nodePos.sort(Vector2.sort());
+	// return findNearestNodeHelper(pos, nodePos);
+	// }
+	//
+	// public Node findNearestNodeHelper(Vector2 pos, List<Vector2> list) {
+	// int mid = list.size() / 2;
+	// findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
+	// findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
+	//
+	// }
 
 	public void assignEdges() {
 		for (Link l : links.values()) {
@@ -749,7 +752,7 @@ public class MapGraph {
 	}
 
 	public Node getRandomTransitNode() {
-		return transitPoints.iterator().next();
+		return (Node)transitPoints.toArray()[RandomGen.generateRandomRangeInteger(0, transitPoints.size() -1)];
 	}
 
 	public String getTransitNodesAsString() {
@@ -988,9 +991,10 @@ public class MapGraph {
 			if (v != largestKey) {
 				pruneSet.add(l);
 			}
-		}		for (Link l : links.values()) {
+		}
+		for (Link l : links.values()) {
 			for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
-				
+
 			}
 		}
 		str += ", nodes to prune: " + pruneSet.size();
