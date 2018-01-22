@@ -233,9 +233,6 @@ public class MapGraphParser {
 //			System.out.println(mapGraph.getRandomNode());
 			
 	
-			//Dump that map as a csv
-			
-			
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");

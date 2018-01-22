@@ -382,6 +382,10 @@ public class MapGraph {
 	public Node findClosestCarPark(Vector2 v) {
 		Node minNode = null;
 		double minDist = Double.MAX_VALUE;
+		if (carParkNodes.size() == 0) {
+			errLog("no car parks");
+			System.exit(0);
+		}
 		for (Node n : carParkNodes.values()) {
 			double cand = v.calculateDistance(n.getCoords());
 			if (n.getNodeState().compareToIgnoreCase("NOGO") == 0) {
@@ -837,7 +841,8 @@ public class MapGraph {
 		// Nodes
 		for (Node n : nodes.values()) {
 			Vector2 pos = n.getCoords();
-			String nodePos = "\"x\":" + pos.getX() * SCALER + ",\"y\":" + pos.getY() * SCALER + ",\"z\":0.0";
+			StringBuilder nodePos = new StringBuilder("\"x\":").append(pos.getX() * SCALER).append(",\"y\":")
+					.append(pos.getY() * SCALER).append(",\"z\":0.0");
 			String color;
 			double size = 0.5;
 			if (n.isCarPark()) {
@@ -846,11 +851,10 @@ public class MapGraph {
 			} else {
 				color = "\"r\":0, \"g\":0.0, \"b\":0";
 			}
-			sb.append("{\"an\":{\"" + n.getID() + "\":{\"label\":null,\"size\":" + size + "," + nodePos + "," + color
-					+ "}}}");
+			sb.append("{\"an\":{\"").append(n.getID()).append("\":{\"label\":null,\"size\":").append(size).append(",")
+					.append(nodePos).append(",").append(color + "}}}");
 			sb.append("\n");
 		}
-		long edgeCounter = 0;
 
 		for (Edge e : edges.values()) {
 			Node a = e.getNodeA();
@@ -860,20 +864,15 @@ public class MapGraph {
 			String color = "\"r\":XX, \"g\":YY, \"b\":ZZ";
 
 			if (!isHumanAccessible) {
-				color = color.replace("XX", "" + 0.0);
-				color = color.replace("YY", "" + 0.0);
-				color = color.replace("ZZ", "" + 0.0);
+				color = color.replace("XX", "" + 0.0).replace("YY", "" + 0.0).replace("ZZ", "" + 0.0);
 			} else {
-				color = color.replace("XX", "" + 0.5);
-				color = color.replace("YY", "" + 0.5);
-				color = color.replace("ZZ", "" + 0.1);
+				color = color.replace("XX", "" + 0.5).replace("YY", "" + 0.1).replace("ZZ", "" + 0.9);
 			}
 
-			sb.append("{\"ae\":{\"" + a.getID() + "" + b.getID() + "\":{\"source\":\"" + a.getID() + "\",\"target\": \""
-					+ b.getID() + "\",\"directed\":" + isOneWay + "," + color + "}}}");
+			sb.append("{\"ae\":{\"").append(a.getID()).append("").append(b.getID()).append("\":{\"source\":\"")
+					.append(a.getID()).append("\",\"target\": \"" + b.getID()).append("\",\"directed\":")
+					.append(isOneWay).append(",").append(color).append("}}}");
 			sb.append("\n");
-
-			edgeCounter++;
 		}
 
 		return sb.toString();
