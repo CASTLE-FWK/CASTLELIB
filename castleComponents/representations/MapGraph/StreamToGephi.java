@@ -14,15 +14,15 @@ public class StreamToGephi {
 	}
 
 	public void sendAction(String action) throws Exception {
-		OutputStreamWriter writer = null;
-		URL url = new URL("http://localhost:8080/workspace1?operation=updateGraph");
-		URLConnection conn = url.openConnection();
-		conn.setDoOutput(true);
-		writer = new OutputStreamWriter(conn.getOutputStream());
-		writer.write(action);
-		writer.flush();
-
-		conn.getInputStream();
+//		OutputStreamWriter writer = null;
+//		URL url = new URL("http://localhost:8080/workspace1?operation=updateGraph");
+//		URLConnection conn = url.openConnection();
+//		conn.setDoOutput(true);
+//		writer = new OutputStreamWriter(conn.getOutputStream());
+//		writer.write(action);
+//		writer.flush();
+//
+//		conn.getInputStream();
 
 	}
 
