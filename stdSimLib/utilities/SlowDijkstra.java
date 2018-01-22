@@ -61,7 +61,7 @@ public class SlowDijkstra {
 	private double getDistance(Node node, Node target) {
 		for (Edge edge : edges) {
 			if (edge.containsBothNodes(node, target)) {
-				return edge.getWeight();
+				return edge.getDistanceInKM();
 			}
 		}
 		throw new RuntimeException("Should not happen");
@@ -96,7 +96,6 @@ public class SlowDijkstra {
 
 	public List<Node> getPath(Node target) {
 		List<Node> path = new List<Node>();
-		List<Edge> edgePath = new List<Edge>();
 		Node step = target;
 		// check if a path exists
 		if (predecessors.get(step) == null) {

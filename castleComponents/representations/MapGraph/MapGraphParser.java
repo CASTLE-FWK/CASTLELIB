@@ -204,35 +204,30 @@ public class MapGraphParser {
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
-//			String out = mapGraph.exportGraphAsGEXF();
-//			Utilities.writeToFile(out, pathToFile+".gexf", false);
 			mapGraph.prunePhase2();
 			
-//			mapGraph.connectedComponents();
-//			System.out.println(mapGraph.ccStats());
 			mapGraph.nodeValidation();
 			
 			System.out.println(mapGraph.getTransitNodesAsString());
-//			System.exit(0);
-			//Print some random points to set events at
-//			int trials = 7000;
-//			int failures = 0;
-//			for (int i = 0; i < trials; i++) {
-//				errLog("Trial "+i);
-//				Vector2 a = mapGraph.getRandomNode().getCoords();
-//				Vector2 b = mapGraph.getRandomNode().getCoords();
-//				while (a.compare(b)) {
-//					b = mapGraph.getRandomNode().getCoords();
-//				}
-//				List<Node> route = mapGraph.calculateRoute(a,b);
-//				if (route == null) {
-//					failures++;
-//				} else {
-//					errLog("Path Finding Success: "+a+" to "+b +" with "+route.size()+" hops");
-//				}
-//			}
-//			errLog("From "+trials+" trials, there were "+failures+" path failures");
-//			System.exit(0);
+			int trials = 7000;
+			int failures = 0;
+			for (int i = 0; i < trials; i++) {
+				errLog("Trial "+i);
+				Vector2 a = mapGraph.getRandomNode().getCoords();
+				Vector2 b = mapGraph.getRandomNode().getCoords();
+				while (a.compare(b)) {
+					b = mapGraph.getRandomNode().getCoords();
+				}
+				List<Node> route = mapGraph.calculateRoute(a,b);
+				if (route == null) {
+					failures++;
+					System.exit(0);
+				} else {
+					errLog("Path Finding Success: "+a+" to "+b +" with "+route.size()+" hops");
+				}
+			}
+			errLog("From "+trials+" trials, there were "+failures+" path failures");
+			System.exit(0);
 			System.out.println(mapGraph.getRandomNode());
 			System.out.println(mapGraph.getRandomNode());
 			System.out.println(mapGraph.getRandomNode());

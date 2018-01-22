@@ -34,11 +34,15 @@ public class MapGraph {
 	Range2D range;
 	Range2D geoRange;
 	// Dijkstra's wow
-	// Dijkstra dksa;
-	SlowDijkstra dksa;
+	Dijkstra dksa;
+	SlowDijkstra slowdksa;
 
 	public final String TRAFFIC_SIGNAL = "traffic_signals";
 	public final int DECIMAL_PLACES = 7;
+
+	// Pathfinding flags
+	public final int DIJKSTRA_SLOW = 0;
+	public final int DIKSTRA_FAST = 1;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -51,7 +55,7 @@ public class MapGraph {
 		carParkNodes = new HashMap<Long, Node>();
 		id = -1;
 		subMaps = new List<MapGraph>();
-		dksa = null;
+		slowdksa = null;
 	}
 
 	public MapGraph(MapGraph mg) {
@@ -77,15 +81,6 @@ public class MapGraph {
 
 	public void initialize(String pathToMapFile, LayoutParameters lp) {
 		importMap(pathToMapFile);
-
-		// Populate edges list
-		// HashSet<Link> theLinks = new HashSet<Link>(links.values());
-		// for (Link l : theLinks) {
-		// List<Edge> lEdges = l.getEdges();
-		// for (Edge e : lEdges) {
-		// edges.put(e.getID(), e);
-		// }
-		// }
 	}
 
 	public void importMap(String path) {
@@ -354,14 +349,8 @@ public class MapGraph {
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
 
 		// errLog(range);
-		// dksa = new Dijkstra();
-		dksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
-
-		// This is weird - print random node
-		// errLog(getNodeFromID(544503325));
-		// errLog(getNodeFromID(1016136212));
-		// errLog(getNodeFromID(253085762));
-		// System.exit(0);
+		dksa = new Dijkstra();
+		slowdksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 	}
 
 	// TODO SubGraphs > 1
@@ -752,7 +741,7 @@ public class MapGraph {
 	}
 
 	public Node getRandomTransitNode() {
-		return (Node)transitPoints.toArray()[RandomGen.generateRandomRangeInteger(0, transitPoints.size() -1)];
+		return (Node) transitPoints.toArray()[RandomGen.generateRandomRangeInteger(0, transitPoints.size() - 1)];
 	}
 
 	public String getTransitNodesAsString() {
@@ -801,31 +790,6 @@ public class MapGraph {
 		sb.append("\t\t<edges>");
 		sb.append("\n");
 		int edgeIDCounter = 0;
-		// for (Link l : links.values()) {
-		// int prevI = 0;
-		// for (int i = 0; i < l.getWayPoints().size() - 1; i++) {
-		// Node a = l.getWayPoints().get(i);
-		// Node b = l.getWayPoints().get(i + 1);
-		// boolean isOneWay = l.isOneWay();
-		// boolean isHumanAccessible = l.isHumanAccessible();
-		// String type = "undirected";
-		// if (isOneWay) {
-		// type = "directed";
-		// }
-		// //
-		// sb.append("\t\t\t<edge id=\"" + edgeIDCounter + "\" source=\"" + a.getID() +
-		// "\" target=\"" + b.getID()
-		// + "\" type=\"" + type + "\">\n");
-		// sb.append("\t\t\t\t<viz:thickness value=\"1.0\"/>\n");
-		// if (isHumanAccessible) {
-		// sb.append("\t\t\t\t<viz:color r=\"157\" g=\"213\" b=\"78\" a=\"1.0\"/>\n");
-		// } else {
-		// sb.append("\t\t\t\t<viz:color r=\"0\" g=\"0\" b=\"0\" a=\"1.0\"/>\n");
-		// }
-		// sb.append("\t\t</edge>\n");
-		// edgeIDCounter++;
-		// }
-		// }
 		edgeIDCounter = 0;
 		for (Edge e : edges.values()) {
 			int prevI = 0;
@@ -1079,6 +1043,6 @@ public class MapGraph {
 		}
 
 		errLog("remaining car parks: " + carParkNodes.size());
-		dksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
+		slowdksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 	}
 }

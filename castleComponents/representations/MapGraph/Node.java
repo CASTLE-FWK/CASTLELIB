@@ -7,7 +7,7 @@ import java.util.HashSet;
 import castleComponents.objects.List;
 import castleComponents.objects.Vector2;
 
-public class Node implements Comparable<Node> {
+public class Node {
 	Vector2 geoCoords;
 	double outgoingTotalWeight;
 	double incomingTotalWeight;
@@ -30,7 +30,7 @@ public class Node implements Comparable<Node> {
 	Park theCarPark = null;
 
 	// Purely for Dijkstra speed up
-	double minDistance = Double.MAX_VALUE;
+	double dijkMinDistance = Double.POSITIVE_INFINITY;
 
 	public static final String FREE_STATE = "FREE";
 	public String nodeState = FREE_STATE;
@@ -81,6 +81,7 @@ public class Node implements Comparable<Node> {
 		links = new HashSet<Link>();
 		outgoingTotalWeight = 0;
 		incomingTotalWeight = 0;
+		dijkMinDistance = Double.POSITIVE_INFINITY;
 	}
 
 	public void addIncomingEdge(Edge e) {
@@ -310,16 +311,11 @@ public class Node implements Comparable<Node> {
 	}
 
 	public double getDijkstraMinDistance() {
-		return minDistance;
+		return dijkMinDistance;
 	}
 
-	public void setDikstraMinDistance(double d) {
-		minDistance = d;
-	}
-
-	@Override
-	public int compareTo(Node o) {
-		return Double.compare(minDistance, o.getDijkstraMinDistance());
+	public void setDijkstraMinDistance(double d) {
+		dijkMinDistance = d;
 	}
 
 	public String getNodeState() {
