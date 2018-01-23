@@ -33,7 +33,7 @@ public class MapGraphParser {
 	}
 
 	public void parseMapGraph(String pathToFile) {
-		System.out.println("********PARSING MAPGRAPH from "+pathToFile+"*******");
+		System.out.println("********PARSING MAPGRAPH from " + pathToFile + "*******");
 		OSMParser p = new OSMParser();
 		File osmFile = new File(pathToFile);
 		try {
@@ -191,60 +191,40 @@ public class MapGraphParser {
 			}
 			p = null;
 			// Order may be important here
-//			mapGraph.extractEdges();
+			// mapGraph.extractEdges();
 			mapGraph.assignEdges();
 			mapGraph.connectedComponents();
 			System.out.println(mapGraph.ccStats());
 			mapGraph.prune();
 			mapGraph.clean();
-			
-			//Map Infrastructure building
+
+			// Map Infrastructure building
 			mapGraph.calculateBounds();
 			mapGraph.normalise();
 			mapGraph.buildLights();
 			mapGraph.buildCarParks();
 			mapGraph.generateTransitPoints(5);
 			mapGraph.prunePhase2();
-			
+
 			mapGraph.nodeValidation();
-			
+
 			System.out.println(mapGraph.getTransitNodesAsString());
-//			int trials = 7000;
-//			int failures = 0;
-//			for (int i = 0; i < trials; i++) {
-//				errLog("Trial "+i);
-//				Vector2 a = mapGraph.getRandomNode().getCoords();
-//				Vector2 b = mapGraph.getRandomNode().getCoords();
-//				while (a.compare(b)) {
-//					b = mapGraph.getRandomNode().getCoords();
-//				}
-//				List<Node> route = mapGraph.calculateRoute(a,b);
-//				if (route == null) {
-//					failures++;
-//					System.exit(0);
-//				} else {
-//					errLog("Path Finding Success: "+a+" to "+b +" with "+route.size()+" hops");
-//				}
-//			}
-//			errLog("From "+trials+" trials, there were "+failures+" path failures");
-//			System.exit(0);
-//			System.out.println(mapGraph.getRandomNode());
-//			System.out.println(mapGraph.getRandomNode());
-//			System.out.println(mapGraph.getRandomNode());
-			
-	
+			// System.out.println(mapGraph.getRandomNode());
+			// System.out.println(mapGraph.getRandomNode());
+			// System.out.println(mapGraph.getRandomNode());
+
 			System.out.println(mapGraph.range);
 			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
-//			System.exit(0);
-			
-//			System.out.println("STREAMING TO GEPHI");
+			// System.exit(0);
+
+			// System.out.println("STREAMING TO GEPHI");
 			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
 			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
 			for (String s : testOut) {
 				stg.sendAction(s);
 			}
-			
+
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

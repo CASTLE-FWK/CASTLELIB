@@ -258,13 +258,15 @@ public class MapGraph {
 	public boolean addEntity(Entity e, Vector2 pos) {
 		// Is pos oob?
 		// Find the Node closest to pos and add there
-		Node cand = getNodeAtPosition(pos);
+		Node cand = findNearestNode(pos);
 		if (cand != null) {
 			// TODO Add here some how
 			entitiesInMap.put(e.getID(), e);
 			return true;
+		} else {
+			//This should now never happen
 		}
-		errLog("cant add entity: " + e.getID() + " to " + pos);
+		errLog("can't add entity: " + e.getID() + " to " + pos);
 
 		return false;
 	}
@@ -311,7 +313,6 @@ public class MapGraph {
 		}
 		geoBoundingBox_Min = new Vector2(min);
 		geoBoundingBox_Max = new Vector2(max);
-		printBounds();
 
 	}
 
@@ -347,6 +348,8 @@ public class MapGraph {
 		geoRange = new Range2D(geoBoundingBox_Min, new Vector2(geoBoundingBox_Min.getX(), geoBoundingBox_Max.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Min.getY()),
 				new Vector2(geoBoundingBox_Max.getX(), geoBoundingBox_Max.getY()));
+
+		printBounds();
 
 		// errLog(range);
 		dksa = new Dijkstra();
@@ -514,7 +517,10 @@ public class MapGraph {
 	}
 
 	public void printBounds() {
-		System.out.println("MapGraph Bounds = [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
+		System.out.println(
+				"MapGraph Geo-Bounds      = [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
+		System.out.println("MapGraph Relative Bounds = [ min=" + boundingBox_Min.round(7) + ", max="
+				+ boundingBox_Max.round(7) + " ]");
 	}
 
 	public HashSet<Node> getTransitPoints() {
@@ -530,7 +536,6 @@ public class MapGraph {
 	}
 
 	public void addTrafficLight(Node n) {
-		// TODO something about adding traffic lights
 		errLog("addTrafficLight is incomplete");
 		trafficLightLocations.add(null);
 	}
@@ -599,19 +604,30 @@ public class MapGraph {
 		return (range.containsPoint(v));
 	}
 
-	// TODO at some point. binary-ish search
-	// public Node findNearestNode(Vector2 pos) {
-	// List<Vector2> nodePos = new List<Vector2>(nodesMap.keySet());
-	// nodePos.sort(Vector2.sort());
-	// return findNearestNodeHelper(pos, nodePos);
-	// }
-	//
-	// public Node findNearestNodeHelper(Vector2 pos, List<Vector2> list) {
-	// int mid = list.size() / 2;
-	// findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
-	// findNearestNodeHelper(pos, (List<Vector2>)list.subList(0, mid));
-	//
-	// }
+	public Node findNearestNode(Vector2 pos) {
+		if (getNodeAtPosition(pos) != null) {
+			return getNodeAtPosition(pos);
+		}
+		List<Vector2> nodePos = new List<Vector2>(nodesMap.keySet());
+		nodePos.sort(Vector2.sort());
+		double minDist = Double.POSITIVE_INFINITY;
+		Vector2 minVector = null;
+		for (Vector2 v : nodePos) {
+			double dist = v.calculateDistance(pos);
+			if (dist > minDist) {
+				break;
+			}
+			if (dist < minDist) {
+				minDist = dist;
+				minVector = new Vector2(v);
+			}
+		}
+		return getNodeAtPosition(minVector);
+	}
+	
+	public Vector2 findNearestValidPosition(Vector2 pos) {
+		return findNearestNode(pos).getCoords();
+	}
 
 	public void assignEdges() {
 		for (Link l : links.values()) {
