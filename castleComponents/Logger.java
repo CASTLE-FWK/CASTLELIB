@@ -22,7 +22,6 @@ public class Logger {
 
 	private SimulationInfo simInfo;
 
-
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
 		this.simInfo = simInfo;
@@ -41,9 +40,9 @@ public class Logger {
 	}
 
 	public void setup(String filePath, String sysName) {
-//		muted = isMuted;
-//		output.setLoggingToConsole(toConsole);
-//		output.setLoggingToFile(toFile);
+		// muted = isMuted;
+		// output.setLoggingToConsole(toConsole);
+		// output.setLoggingToFile(toFile);
 		systemLogPath = filePath;
 		this.sysName = sysName;
 
@@ -52,10 +51,10 @@ public class Logger {
 			setUpLog(systemLogPath);
 		}
 	}
-	
-	public void setupFromOutput(){
-		if (output == null){
-			System.out.println("Output is null, please fix the generator."); 
+
+	public void setupFromOutput() {
+		if (output == null) {
+			System.out.println("Output is null, please fix the generator.");
 			return;
 		}
 	}
@@ -80,7 +79,6 @@ public class Logger {
 	public void systemLog(String str) {
 
 	}
-	
 
 	// Prints to file
 	public void log(String str) {
@@ -91,8 +89,8 @@ public class Logger {
 			logToConsole(str);
 		}
 	}
-	
-	public void logWithOptionalWrite(String str){
+
+	public void logWithOptionalWrite(String str) {
 		if (output.isLoggingToFile()) {
 			logToFile(str + "\n");
 		}
@@ -121,12 +119,12 @@ public class Logger {
 	public void logToFile(String str) {
 		stringBuilder.append(str + "\n");
 	}
-	
-	public void writeModelData(StringBuilder sb){
-		if (output.isWritingModelDataToConsole()){
+
+	public void writeModelData(StringBuilder sb) {
+		if (output.isWritingModelDataToConsole()) {
 			logToConsole(sb.toString());
 		}
-		if (output.isWritingModelDataToFile()){
+		if (output.isWritingModelDataToFile()) {
 			logToFile(sb);
 		}
 	}

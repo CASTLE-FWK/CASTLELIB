@@ -1,11 +1,5 @@
 package castleComponents;
 
-import org.bson.Document;
-
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
 import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.utilities.Utilities;
 
@@ -14,7 +8,7 @@ public class Output {
 	private boolean loggingToFile;
 	private boolean loggingToConsole;
 	private boolean loggingToDB;
-	
+
 	private boolean writingModelDataToFile;
 	private boolean writingModelDataToConsole;
 	private boolean writingModelDataToDB;
@@ -27,14 +21,12 @@ public class Output {
 	String executionID = "";
 	int currentStep = 0;
 	String currentPath = "";
-	
-	
-	
+
 	SimulationInfo simInfo;
-	
+
 	OutputToJSON_Mongo dbOutput;
 	boolean dbOutputMuted = false;
-	
+
 	private Logger logger;
 	boolean loggerMuted = false;
 
@@ -42,110 +34,103 @@ public class Output {
 		setSimulationInfo(si);
 	}
 
-
-	public void setSimulationInfo(SimulationInfo si){
+	public void setSimulationInfo(SimulationInfo si) {
 		simInfo = si;
 	}
-	
-	public void setLoggerMuted(boolean m){
+
+	public void setLoggerMuted(boolean m) {
 		loggerMuted = m;
 	}
-	
-	public boolean getLoggerMuted(){
+
+	public boolean getLoggerMuted() {
 		return loggerMuted;
 	}
-	
-	public void setDBOutputMuted(boolean m){
+
+	public void setDBOutputMuted(boolean m) {
 		dbOutputMuted = m;
 	}
-	
-	public boolean getDBOutputMuted(){
+
+	public boolean getDBOutputMuted() {
 		return dbOutputMuted;
 	}
-	
-	public void setup(boolean ltf, boolean ltc, boolean ltd, String logFilePath, boolean wdf, boolean wdc, boolean wddb){
+
+	public void setup(boolean ltf, boolean ltc, boolean ltd, String logFilePath, boolean wdf, boolean wdc,
+			boolean wddb) {
 		loggingToFile = ltf;
 		loggingToConsole = ltc;
 		loggingToDB = ltd;
 		writingModelDataToFile = wdf;
 		writingModelDataToConsole = wdc;
 		writingModelDataToDB = wddb;
-		
-		
-		forceToConsole("********SETTING UP LOGGING********"
-				+ "\n* logging to console: "+ltc
-				+"\n* logging to file: "+ltf
-				+"\n* logging to database: "+ltd
-				+"\n* writing execution data to console: "+wdc
-				+"\n* writing execution data to file: "+wdf
-				+"\n* writing execution data to database: "+wddb
-				+"\n* writing to file path: "+logFilePath
-				+"\n********FINISHED LOGGING SETUP********"
-		);
-		
-		
+
+		forceToConsole("********SETTING UP LOGGING********" + "\n* logging to console: " + ltc + "\n* logging to file: "
+				+ ltf + "\n* logging to database: " + ltd + "\n* writing execution data to console: " + wdc
+				+ "\n* writing execution data to file: " + wdf + "\n* writing execution data to database: " + wddb
+				+ "\n* writing to file path: " + logFilePath + "\n********FINISHED LOGGING SETUP********");
+
 		logger.setup(logFilePath, simInfo.getSystemName());
+		
 	}
-	
-	public void setLogger(Logger l){
+
+	public void setLogger(Logger l) {
 		logger = l;
 	}
-	
-	public Logger getLogger(){
+
+	public Logger getLogger() {
 		return logger;
 	}
-	
-	public void setDatabaseOutput(OutputToJSON_Mongo o){
+
+	public void setDatabaseOutput(OutputToJSON_Mongo o) {
 		dbOutput = o;
 	}
-	
-	public OutputToJSON_Mongo getDatabaseOutput(){
+
+	public OutputToJSON_Mongo getDatabaseOutput() {
 		return dbOutput;
 	}
 
 	public void initialiseLoggingPath(String str, boolean isDir) {
 		Utilities.createFile(str, isDir);
 	}
-	
-	public void log(Entity e, String str){
-		if (!loggerMuted){
-			if (loggingToConsole){
+
+	public void log(Entity e, String str) {
+		if (!loggerMuted) {
+			if (loggingToConsole) {
 				logger.logToConsole(str);
 			}
-			if (loggingToFile){
+			if (loggingToFile) {
 				logger.logToFile(str);
 			}
 		}
-		if (!dbOutputMuted){
-			if (loggingToDB){
+		if (!dbOutputMuted) {
+			if (loggingToDB) {
 				dbOutput.exportEntity(e);
 			}
 		}
 	}
-	
-	public void logWithOptionalWrite(String str){
+
+	public void logWithOptionalWrite(String str) {
 		logger.logWithOptionalWrite(str);
 	}
-	
-	public void forceToConsole(String str){
+
+	public void forceToConsole(String str) {
 		logger.logToConsole(str);
 	}
-	
-	public void writeModelData(Entity e){
-		if (!loggerMuted){
-			if (writingModelDataToConsole){
+
+	public void writeModelData(Entity e) {
+		if (!loggerMuted) {
+			if (writingModelDataToConsole) {
 				logger.logToConsole(e.writeEntityData().toString());
 			}
-			if (writingModelDataToFile){
+			if (writingModelDataToFile) {
 				logger.logToFile(e.writeEntityData());
 			}
 		}
-		if (!dbOutputMuted){
-			if (writingModelDataToDB){
+		if (!dbOutputMuted) {
+			if (writingModelDataToDB) {
 				dbOutput.exportEntity(e);
 			}
 		}
-		
+
 	}
 
 	public void sendLogToFile(String filePath, String log, boolean append) {
@@ -154,9 +139,9 @@ public class Output {
 		}
 	}
 
-	public void setUpDB(String systemName, String executionID, String databaseName) {
-		if (loggingToDB || writingModelDataToDB){
-			if (dbOutput != null){
+	public void setupDB(String systemName, String executionID, String databaseName) {
+		if (loggingToDB || writingModelDataToDB) {
+			if (dbOutput != null) {
 				dbOutput.setupDB(systemName, executionID, databaseName);
 				this.executionID = executionID;
 				DBName = systemName;
@@ -172,46 +157,52 @@ public class Output {
 		}
 	}
 
-	
-
 	public void sendLogToConsole(String log) {
 		System.out.println(log);
 	}
-	
-	public void newStep(int ticks){
-		if (dbOutput != null){
-			if (!dbOutputMuted){
+
+	public void newStep(int ticks) {
+		if (dbOutput != null) {
+			if (!dbOutputMuted) {
 				dbOutput.newStep();
 			}
 		}
-		if (logger != null){
-			if (!loggerMuted){
+		if (logger != null) {
+			if (!loggerMuted) {
 				logger.newStep(ticks);
 			}
 		}
 	}
-	
-	public void endOfStep(int ticks){
-		if (dbOutput != null){
-			if (!dbOutputMuted){
+
+	public void endOfStep(int ticks) {
+		if (dbOutput != null) {
+			if (!dbOutputMuted) {
 				dbOutput.endOfStep();
 			}
 		}
-		if (logger != null){
-			if (!loggerMuted){
+		if (logger != null) {
+			if (!loggerMuted) {
 				logger.endOfStep(ticks);
 			}
 		}
 	}
 	
-	public void endOfSimulation(int ticks, long elapsedTime, int desiredTotalTicks){
-		if (dbOutput != null){
-			if (!dbOutputMuted){
+	public void sendEndOfStepStats(int stepNumber, int totalSteps, long timeSinceLastStep, long elapsedTime) {
+		if (dbOutput != null) {
+			if (!dbOutputMuted) {
+				dbOutput.exportSystemStep(stepNumber, totalSteps, timeSinceLastStep, elapsedTime);
+			}
+		}
+	}
+
+	public void endOfSimulation(int ticks, long elapsedTime, int desiredTotalTicks) {
+		if (dbOutput != null) {
+			if (!dbOutputMuted) {
 				dbOutput.endOfSimulation(ticks, elapsedTime, desiredTotalTicks);
 			}
 		}
-		if (logger != null){
-			if (!loggerMuted){
+		if (logger != null) {
+			if (!loggerMuted) {
 				logger.endOfStep(ticks);
 			}
 		}
@@ -296,6 +287,9 @@ public class Output {
 
 	public void setWritingModelDataToDB(boolean writingModelDataToDB) {
 		this.writingModelDataToDB = writingModelDataToDB;
+	}
+	public void errLog(Object o) {
+		System.err.println("Output Warning: "+o.toString());
 	}
 }
 

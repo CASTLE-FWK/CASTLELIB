@@ -514,7 +514,7 @@ public class MapGraph {
 	}
 
 	public void printBounds() {
-		System.out.println("MapGraph Bounds [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
+		System.out.println("MapGraph Bounds = [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
 	}
 
 	public HashSet<Node> getTransitPoints() {
@@ -665,7 +665,7 @@ public class MapGraph {
 						ns.setCarPark(true);
 						ns.createCarPark();
 						addCarParkLocation(ns);
-						errLog("found an accessible car park");
+						// errLog("found an accessible car park");
 						break;
 					}
 				}
@@ -969,7 +969,7 @@ public class MapGraph {
 
 	public void prune() {
 		edgesToRemoveOver = new HashSet<Edge>();
-		errLog("Pruning: nodes-pre: " + nodes.size() + " edges-pre: " + edges.size());
+		errLog("Pruning (phase 1): nodes-pre: " + nodes.size() + " edges-pre: " + edges.size());
 		for (Long l : pruneSet) {
 			List<Edge> edgesToRemove = nodes.get(l).getEdges();
 			nodes.remove(l);
@@ -978,18 +978,18 @@ public class MapGraph {
 				edgesToRemoveOver.add(e);
 			}
 		}
-		errLog("Pruning: nodes-pos: " + nodes.size() + " edges-pos: " + edges.size());
+		errLog("Pruning (phase 2): nodes-pos: " + nodes.size() + " edges-pos: " + edges.size());
 	}
 
 	public void prunePhase2() {
-		errLog("Pruning: phase 2: removing stray edges");
+		errLog("Pruning (phase 2): removing stray edges");
 		for (Edge e : edgesToRemoveOver) {
 			Node a = e.getNodeA();
 			Node b = e.getNodeB();
 			a.removeEdgeWithID(e.getID());
 			b.removeEdgeWithID(e.getID());
 		}
-		errLog("Pruning: phase 2: complete");
+		errLog("Pruning (phase 2): complete");
 	}
 
 	public Node getRandomNode() {
@@ -1041,7 +1041,7 @@ public class MapGraph {
 			carParkNodes.remove(l);
 		}
 
-		errLog("remaining car parks: " + carParkNodes.size());
+		errLog("car parks: " + carParkNodes.size());
 		slowdksa = new SlowDijkstra(new List<Node>(nodes.values()), new List<Edge>(edges.values()));
 	}
 }
