@@ -117,6 +117,8 @@ public class MapGraph {
 				errLog(ed);
 				if (ed.isNodeConnected(nextNode)) {
 					currEdge = ed;
+					//Place on edge
+					currEdge.addEntity(e);
 					break;
 				}
 			}
@@ -156,13 +158,13 @@ public class MapGraph {
 				return new Outcome(or, overMove, nextNode, this, currEdge);
 			}
 			nextNode = next;
-			// TODO recursion somewhere
 			// Find edge that connects to next
 			Node prevNode = route.getPrevNode();
 			currEdge = null;
 			for (Edge ed : next.getEdges()) {
 				if (ed.isNodeConnected(prevNode)) {
 					currEdge = ed;
+					currEdge.addEntity(e);
 					break;
 				}
 			}
@@ -170,9 +172,11 @@ public class MapGraph {
 				errLog("No new Edge found. Route generation was bad");
 			}
 			newDist = overMove;
+			edgeSwap(e, oldEdge, currEdge);
 			return moveEntity(e, currEdge, moveDist, newDist, route);
-		} else if (newDist > 1001209) {
+		} else if (newDist > 10013209) {
 			// TODO going way out of bounds
+			errLog("This should NEVER happend.");
 		} else {
 			route.setCurrentEdge(currEdge);
 			edgeSwap(e, oldEdge, currEdge);
@@ -462,16 +466,17 @@ public class MapGraph {
 	// TODO
 	public List<Entity> getEntitiesInRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
 			Route route) {
-
+		
 		if (currEdge == null) {
 			return null;
 		}
+		errLog("getEntitiesInRangeOfType: "+e.getID()+" "+dist+" "+range+" "+type + " "+currEdge.getID());
 		List<Entity> neighbours = new List<Entity>();
 		double rangeSpan = dist + range;
 		double remainDist = currEdge.getDistanceInKM() - rangeSpan;
 		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
 		for (Entity ent : entsOnSameEdge) {
-			if (e == ent) {
+			if (e.getID().compareToIgnoreCase(ent.getID()) == 0) {
 				continue;
 			}
 
