@@ -374,6 +374,10 @@ public class MapGraph {
 		}
 	}
 
+	public boolean outOfGeoRange(Vector2 pos) {
+		return !geoRange.containsPoint(pos);
+	}
+	
 	public List<MapGraph> getSubMapsAsList() {
 		return subMaps;
 	}

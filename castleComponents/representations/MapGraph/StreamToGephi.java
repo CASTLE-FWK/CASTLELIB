@@ -1,5 +1,6 @@
 package castleComponents.representations.MapGraph;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,15 +27,23 @@ public class StreamToGephi {
 
 	public void sendAction(String action) throws Exception {
 		if (active) {
-			OutputStreamWriter writer = null;
-			URL url = new URL(gephiOp);
-			URLConnection conn = url.openConnection();
-			conn.setDoOutput(true);
-			writer = new OutputStreamWriter(conn.getOutputStream());
-			writer.write(action);
-			writer.flush();
-
-			conn.getInputStream();
+			try {
+				OutputStreamWriter writer = null;
+				URL url = new URL(gephiOp);
+				URLConnection conn = url.openConnection();
+				conn.setDoOutput(true);
+				writer = new OutputStreamWriter(conn.getOutputStream());
+				writer.write(action);
+				writer.flush();
+	
+				conn.getInputStream();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println("continuing...");
+				active = false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
