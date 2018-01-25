@@ -3,7 +3,7 @@ package castleComponents.representations.MapGraph;
 public enum Heading {
 	N, S, E, W, SE, SW, NE, NW, NONE;
 
-	public static Heading getHeadingFromInts(int x, int y) {
+	public static Heading getHeadingFromDoubles(double x, double y) {
 		Heading h = null;
 		if (x > 0) {
 			if (y > 0) {

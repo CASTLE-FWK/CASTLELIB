@@ -117,7 +117,7 @@ public class MapGraph {
 				errLog(ed);
 				if (ed.isNodeConnected(nextNode)) {
 					currEdge = ed;
-					//Place on edge
+					// Place on edge
 					currEdge.addEntity(e);
 					break;
 				}
@@ -200,9 +200,9 @@ public class MapGraph {
 		Vector2 prevPos = prevNode.getCoords();
 		double xDiff = nextPos.getX() - prevPos.getX();
 		double yDiff = nextPos.getY() - prevPos.getY();
-		int xH = (int) (xDiff / Math.abs(xDiff));
-		int yH = (int) (yDiff / Math.abs(yDiff));
-		return Heading.getHeadingFromInts(xH, yH);
+		double xH = (xDiff / Math.abs(xDiff));
+		double yH =  (yDiff / Math.abs(yDiff));
+		return Heading.getHeadingFromDoubles(xH, yH);
 
 	}
 
@@ -268,7 +268,7 @@ public class MapGraph {
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		} else {
-			//This should now never happen
+			// This should now never happen
 		}
 		errLog("can't add entity: " + e.getID() + " to " + pos);
 
@@ -466,20 +466,26 @@ public class MapGraph {
 	// TODO
 	public List<Entity> getEntitiesInRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
 			Route route) {
-		
+
 		if (currEdge == null) {
+			errLog(e.getID() + " is not on edge");
 			return null;
 		}
-		
+
 		List<Entity> neighbours = new List<Entity>();
-		//dist should approach 0 over successive calls
+		if (range <=  0) {
+			return neighbours;
+		}
+		// dist should approach 0 over successive calls
 		double rangeSpan = dist + range;
+		//What is the overhang?
 		double remainDist = rangeSpan - currEdge.getDistanceInKM();
-		
-		errLog("getEntitiesInRangeOfType: "+e.getID()+" "+dist+" "+range+" "+type + " "+remainDist+" " +rangeSpan+" "+currEdge.getDistanceInKM()+" "+currEdge.getID());
-		
+
+		errLog("getEntitiesInRangeOfType: " + e.getID() + " " + dist + " " + range + " " + type + " " + remainDist + " "
+				+ rangeSpan + " " + currEdge.getDistanceInKM() + " " + currEdge.getID());
+
 		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
-//		errLog("ents on same edge: "+entsOnSameEdge.size());
+		errLog("entities on this edge: " + entsOnSameEdge.size());
 		for (Entity ent : entsOnSameEdge) {
 			if (e.getID().compareToIgnoreCase(ent.getID()) == 0) {
 				continue;
@@ -490,22 +496,23 @@ public class MapGraph {
 			}
 		}
 
-		if (remainDist > 0 && dist < range) {
-			errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: "+remainDist);
-			errLog(e.getID()+" route stats: "+route.stats());
+		if (remainDist > 0 && remainDist <= range) {
+//			errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: " + remainDist);
+//			errLog(e.getID() + " route stats: " + route.stats());
 			if (remainDist > 5) {
 				System.exit(0);
 			}
-			//Get the next edge in the route
+			// Get the next edge in the route
 			Edge nextEdge = route.getFollowingEdge(currEdge);
-			//Range has to decrease
-			
+			if (nextEdge.getID() == currEdge.getID()) {
+				errLog("8hasd8aishdoasd");
+			}
+			// Range has to decrease
+
 			// TODO handle going across nodes
-			neighbours.addAll(getEntitiesInRangeOfType(e, remainDist, range, type, nextEdge, route));
-			
-			
-			
-			// what if the node has a traffic light
+			neighbours.addAll(getEntitiesInRangeOfType(e, remainDist, range - remainDist, type, nextEdge, route));
+
+			// what if the node has a traffic light: Then stop iff can't pass
 
 			// neighbours.add(ent);
 
@@ -644,7 +651,7 @@ public class MapGraph {
 		}
 		return getNodeAtPosition(minVector);
 	}
-	
+
 	public Vector2 findNearestValidPosition(Vector2 pos) {
 		return findNearestNode(pos).getCoords();
 	}

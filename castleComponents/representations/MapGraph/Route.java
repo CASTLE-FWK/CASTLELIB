@@ -1,6 +1,7 @@
 package castleComponents.representations.MapGraph;
 
 import castleComponents.objects.List;
+import castleComponents.objects.Vector2;
 import castleComponents.representations.MapGraph.Node;
 
 public class Route {
@@ -9,6 +10,8 @@ public class Route {
 	Node prevNode;
 	Edge prevEdge;
 	boolean leavingSimulation = false;
+	int edgePointer = 0;
+	int nodePointer = 0;
 
 	public double totalDistance = 0.0;
 
@@ -26,6 +29,8 @@ public class Route {
 		currentEdge = null;
 		heading = Heading.NONE;
 		prevEdge = null;
+		edgePointer = 0;
+		nodePointer = 0;
 	}
 
 	public Route(Route r) {
@@ -43,41 +48,41 @@ public class Route {
 		distanceAlongEdge = r.getDistanceAlongEdge();
 		currentEdge = r.getCurrentEdge();
 		heading = r.getHeading();
+		edgePointer = r.getEdgePointer();
+		nodePointer = r.getNodePointer();
 	}
 
 	public Node getNextNode() {
 		if (noMoreNodes()) {
 			return null;
 		}
-		return nodesToVisit.get(0);
+		return nodesToVisit.get(nodePointer);
 	}
 
 	public Edge getNextEdge() {
 		if (noMoreEdges()) {
 			return null;
 		}
-		return edgesToTraverse.get(0);
+		return edgesToTraverse.get(edgePointer);
 	}
 
-	public Edge getFollowingEdge(Edge te) {
-		for (int i = 0; i < edgesToTraverse.size(); i++) {
-			if (edgesToTraverse.get(i).getID().compareToIgnoreCase(te.getID()) == 0) {
-				if (i + 1 < edgesToTraverse.size()) {
-					return edgesToTraverse.get(i + 1);
-				} else {
-					break;
-				}
-			}
-		}
-		return te;
-	}
+	// public Edge getFollowingEdge(Edge te) {
+	// for (int i = 0; i < edgesToTraverse.size(); i++) {
+	// if (edgesToTraverse.get(i).getID().compareToIgnoreCase(te.getID()) == 0) {
+	// if (i + 1 < edgesToTraverse.size()) {
+	// return edgesToTraverse.get(i + 1);
+	// }
+	// }
+	// }
+	// return te;
+	// }
 
 	public boolean noMoreNodes() {
-		return nodesToVisit.size() <= 0;
+		return nodesToVisit.size() <= nodePointer;
 	}
 
 	public boolean noMoreEdges() {
-		return edgesToTraverse.size() <= 0;
+		return edgesToTraverse.size() <= edgePointer;
 	}
 
 	public Node getFinalNode() {
@@ -89,10 +94,14 @@ public class Route {
 	}
 
 	public void nodeVisted() {
-		if (!noMoreNodes())
-			prevNode = nodesToVisit.remove(0);
-		if (!noMoreEdges())
-			prevEdge = edgesToTraverse.remove(0);
+		if (!noMoreNodes()) {
+			prevNode = nodesToVisit.get(nodePointer);
+			nodePointer++;
+		}
+		if (!noMoreEdges()) {
+			prevEdge = edgesToTraverse.get(edgePointer);
+			edgePointer++;
+		}
 	}
 
 	public void addNode(Node n) {
@@ -101,21 +110,21 @@ public class Route {
 
 	public Node getFollowingNode(Node n) {
 		int currIndex = nodesToVisit.indexOf(n);
-		if (currIndex == nodesToVisit.size()) {
+		if (currIndex < nodesToVisit.size()) {
 			return nodesToVisit.get(currIndex + 1);
 		} else {
 			return nodesToVisit.get(currIndex);
 		}
 	}
 
-//	public Edge getFollowingEdge(Edge e) {
-//		int currIndex = edgesToTraverse.indexOf(e);
-//		if (currIndex == edgesToTraverse.size()) {
-//			return edgesToTraverse.get(currIndex + 1);
-//		} else {
-//			return edgesToTraverse.get(currIndex);
-//		}
-//	}
+	public Edge getFollowingEdge(Edge e) {
+		int currIndex = edgesToTraverse.indexOf(e);
+		if (currIndex < edgesToTraverse.size()) {
+			return edgesToTraverse.get(currIndex + 1);
+		} else {
+			return edgesToTraverse.get(currIndex);
+		}
+	}
 
 	public void addNodes(List<Node> n) {
 		if (nodesToVisit == null) {
@@ -129,6 +138,8 @@ public class Route {
 			edgesToTraverse.add(e);
 			totalDistance += e.getDistanceInKM();
 		}
+		heading = getHeading();
+
 	}
 
 	public boolean isLeavingSimulation() {
@@ -143,6 +154,8 @@ public class Route {
 		String str = "Route Stats = [";
 		str += "number of nodes: " + nodesToVisit.size();
 		str += ", distance (km): " + totalDistance;
+		str += ", current node #: " + nodePointer;
+		str += ", current edge #: " + edgePointer;
 		str += " ]";
 		return str;
 	}
@@ -196,7 +209,11 @@ public class Route {
 	}
 
 	public Heading getHeading() {
-		return heading;
+		Node a = nodesToVisit.get(nodePointer);
+		Node b = nodesToVisit.get(nodePointer + 1);
+		Vector2 diffs = new Vector2(a.getCoords()).subtract(b.getCoords());
+		this.heading = Heading.getHeadingFromDoubles(diffs.getX(), diffs.getY());
+		return this.heading;
 	}
 
 	public void setHeading(Heading heading) {
@@ -221,6 +238,22 @@ public class Route {
 
 	public Edge getPrevEdge() {
 		return prevEdge;
+	}
+
+	public int getEdgePointer() {
+		return edgePointer;
+	}
+
+	public void setEdgePointer(int edgePointer) {
+		this.edgePointer = edgePointer;
+	}
+
+	public int getNodePointer() {
+		return nodePointer;
+	}
+
+	public void setNodePointer(int nodePointer) {
+		this.nodePointer = nodePointer;
 	}
 
 	public void setPrevEdge(Edge prevEdge) {
