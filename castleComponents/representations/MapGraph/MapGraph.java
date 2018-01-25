@@ -462,9 +462,17 @@ public class MapGraph {
 			on.setNodeState(type);
 		}
 	}
-
-	// TODO
-	public List<Entity> getEntitiesInRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
+	//	TODO this;
+	public List<Entity> getEntitiesInRangeFromNode(Node n, double range){
+		List<Entity> ents = new List<Entity>();
+		for (Edge e : n.getEdges()) {
+			
+		}
+		
+		return ents;
+	}
+	
+	public List<Entity> getEntitiesInMovingRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
 			Route route) {
 
 		if (currEdge == null) {
@@ -505,12 +513,12 @@ public class MapGraph {
 			// Get the next edge in the route
 			Edge nextEdge = route.getFollowingEdge(currEdge);
 			if (nextEdge.getID() == currEdge.getID()) {
-				errLog("8hasd8aishdoasd");
+				errLog("large error");
 			}
 			// Range has to decrease
 
 			// TODO handle going across nodes
-			neighbours.addAll(getEntitiesInRangeOfType(e, remainDist, range - remainDist, type, nextEdge, route));
+			neighbours.addAll(getEntitiesInMovingRangeOfType(e, remainDist, range - remainDist, type, nextEdge, route));
 
 			// what if the node has a traffic light: Then stop iff can't pass
 

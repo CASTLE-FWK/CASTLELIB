@@ -223,4 +223,18 @@ public class Utilities {
 		return b.doubleValue();
 	}
 	
+	public static List<String> parseFileLineXLine(String fp){
+		List<String> l = new ArrayList<String>();
+		BufferedReader br = Utilities.getFileAsBufferedReader(fp);
+		String line = null;
+		try {
+			while ((line = br.readLine()) != null) {
+				l.add(line);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return l;
+	}
+	
 }
