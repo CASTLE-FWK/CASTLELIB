@@ -9,8 +9,10 @@ public class Route {
 	Node prevNode;
 	Edge prevEdge;
 	boolean leavingSimulation = false;
-	
-	//Route status
+
+	public double totalDistance = 0.0;
+
+	// Route status
 	double distanceAlongEdge = 0.0;
 	Edge currentEdge;
 	Heading heading = Heading.NONE;
@@ -25,14 +27,14 @@ public class Route {
 		heading = Heading.NONE;
 		prevEdge = null;
 	}
-	
+
 	public Route(Route r) {
 		nodesToVisit = new List<Node>();
 		prevNode = null;
 		edgesToTraverse = new List<Edge>();
 		clone(r);
 	}
-	
+
 	public void clone(Route r) {
 		nodesToVisit.addAll(r.getNodesToVisit());
 		edgesToTraverse.addAll(r.getEdgesToTraverse());
@@ -49,18 +51,31 @@ public class Route {
 		}
 		return nodesToVisit.get(0);
 	}
-	
+
 	public Edge getNextEdge() {
 		if (noMoreEdges()) {
 			return null;
 		}
 		return edgesToTraverse.get(0);
 	}
-	
+
+	public Edge getFollowingEdge(Edge te) {
+		for (int i = 0; i < edgesToTraverse.size(); i++) {
+			if (edgesToTraverse.get(i).getID().compareToIgnoreCase(te.getID()) == 0) {
+				if (i + 1 < edgesToTraverse.size()) {
+					return edgesToTraverse.get(i + 1);
+				} else {
+					break;
+				}
+			}
+		}
+		return te;
+	}
+
 	public boolean noMoreNodes() {
 		return nodesToVisit.size() <= 0;
 	}
-	
+
 	public boolean noMoreEdges() {
 		return edgesToTraverse.size() <= 0;
 	}
@@ -68,6 +83,7 @@ public class Route {
 	public Node getFinalNode() {
 		return nodesToVisit.getLast();
 	}
+
 	public Edge getFinalEdge() {
 		return edgesToTraverse.getLast();
 	}
@@ -91,14 +107,15 @@ public class Route {
 			return nodesToVisit.get(currIndex);
 		}
 	}
-	public Edge getFollowingEdge(Edge e) {
-		int currIndex = edgesToTraverse.indexOf(e);
-		if (currIndex == edgesToTraverse.size()) {
-			return edgesToTraverse.get(currIndex + 1);
-		} else {
-			return edgesToTraverse.get(currIndex);
-		}
-	}
+
+//	public Edge getFollowingEdge(Edge e) {
+//		int currIndex = edgesToTraverse.indexOf(e);
+//		if (currIndex == edgesToTraverse.size()) {
+//			return edgesToTraverse.get(currIndex + 1);
+//		} else {
+//			return edgesToTraverse.get(currIndex);
+//		}
+//	}
 
 	public void addNodes(List<Node> n) {
 		if (nodesToVisit == null) {
@@ -106,9 +123,11 @@ public class Route {
 		}
 		nodesToVisit.addAll(n);
 		edgesToTraverse = new List<Edge>();
-		//Build the edge path
+		// Build the edge path
 		for (int i = 0; i < nodesToVisit.size() - 1; i++) {
-			edgesToTraverse.add(nodesToVisit.get(i).findEdgeWithNode(nodesToVisit.get(i+1)));
+			Edge e = nodesToVisit.get(i).findEdgeWithNode(nodesToVisit.get(i + 1));
+			edgesToTraverse.add(e);
+			totalDistance += e.getDistanceInKM();
 		}
 	}
 
@@ -120,17 +139,29 @@ public class Route {
 		this.leavingSimulation = leavingSimulation;
 	}
 
+	public String stats() {
+		String str = "Route Stats = [";
+		str += "number of nodes: " + nodesToVisit.size();
+		str += ", distance (km): " + totalDistance;
+		str += " ]";
+		return str;
+	}
+
+	public double getTotalDistance() {
+		return totalDistance;
+	}
+
 	public String toShortString() {
 		String str = "Route = [ ";
-		str +="number of nodes: "+nodesToVisit.size();
+		str += "number of nodes: " + nodesToVisit.size();
 		str += ", path: (";
 		for (Node n : nodesToVisit) {
-			str +="<"+n.getID()+n.getCoords()+">";
+			str += "<" + n.getID() + n.getCoords() + ">";
 		}
 		str += " ]";
 		return str;
 	}
-	
+
 	public String toString() {
 		String str = "Route = [";
 		for (Node n : nodesToVisit) {
@@ -195,4 +226,5 @@ public class Route {
 	public void setPrevEdge(Edge prevEdge) {
 		this.prevEdge = prevEdge;
 	}
+
 }

@@ -470,11 +470,16 @@ public class MapGraph {
 		if (currEdge == null) {
 			return null;
 		}
-		errLog("getEntitiesInRangeOfType: "+e.getID()+" "+dist+" "+range+" "+type + " "+currEdge.getID());
+		
 		List<Entity> neighbours = new List<Entity>();
+		//dist should approach 0 over successive calls
 		double rangeSpan = dist + range;
-		double remainDist = currEdge.getDistanceInKM() - rangeSpan;
+		double remainDist = rangeSpan - currEdge.getDistanceInKM();
+		
+		errLog("getEntitiesInRangeOfType: "+e.getID()+" "+dist+" "+range+" "+type + " "+remainDist+" " +rangeSpan+" "+currEdge.getDistanceInKM()+" "+currEdge.getID());
+		
 		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
+//		errLog("ents on same edge: "+entsOnSameEdge.size());
 		for (Entity ent : entsOnSameEdge) {
 			if (e.getID().compareToIgnoreCase(ent.getID()) == 0) {
 				continue;
@@ -485,11 +490,21 @@ public class MapGraph {
 			}
 		}
 
-		if (rangeSpan > currEdge.getDistanceInKM()) {
-			// Node followingNode = route.getFollowingNode(route.getNextNode());
-			// Edge followingEdge = route.getFollowingEdge(route.getCurrentEdge());
+		if (remainDist > 0 && dist < range) {
+			errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: "+remainDist);
+			errLog(e.getID()+" route stats: "+route.stats());
+			if (remainDist > 5) {
+				System.exit(0);
+			}
+			//Get the next edge in the route
+			Edge nextEdge = route.getFollowingEdge(currEdge);
+			//Range has to decrease
+			
 			// TODO handle going across nodes
-			errLog("getEntitiesInRangeOfType is incomplete. Especially here");
+			neighbours.addAll(getEntitiesInRangeOfType(e, remainDist, range, type, nextEdge, route));
+			
+			
+			
 			// what if the node has a traffic light
 
 			// neighbours.add(ent);
