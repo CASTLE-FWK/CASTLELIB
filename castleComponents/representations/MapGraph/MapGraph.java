@@ -262,17 +262,22 @@ public class MapGraph {
 	public boolean addEntity(Entity e, Vector2 pos) {
 		// Is pos oob?
 		// Find the Node closest to pos and add there
-		Node cand = findNearestNode(pos);
+		
+		//TODO Double check what this is actually doing
+		Node cand = getNodeAtPosition(pos);
 		if (cand != null) {
 			// TODO Add here some how
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		} else {
-			// This should now never happen
+//			errLog("finding nearest position");
+			cand = findNearestNode(pos);
+			entitiesInMap.put(e.getID(), e);
+			return true;
 		}
-		errLog("can't add entity: " + e.getID() + " to " + pos);
-
-		return false;
+//		errLog("can't add entity: " + e.getID() + " to " + pos);
+//
+//		return false;
 	}
 
 	public boolean addEntityFromGeoCoords(Entity e, Vector2 gPos) {
