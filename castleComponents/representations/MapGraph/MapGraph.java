@@ -87,6 +87,42 @@ public class MapGraph {
 		MapGraphParser mgp = new MapGraphParser(this);
 		mgp.parseMapGraph(path);
 	}
+	
+	public void setupMap(int numTransitPoints) {
+		assignEdges();
+		connectedComponents();
+		System.out.println(ccStats());
+		prune();
+		clean();
+
+		// Map Infrastructure building
+		calculateBounds();
+		normalise();
+		buildLights();
+		buildCarParks();
+		generateTransitPoints(numTransitPoints);
+		prunePhase2();
+		
+		//Simple validation
+		nodeValidation();
+		
+		//Print some useful stats
+		System.out.println(getTransitNodesAsString());
+		System.out.println(range);
+		System.out.println(toString());
+	}
+	
+	public void streamToGephi(String url) {
+		StreamToGephi stg = new StreamToGephi(url);
+		String[] testOut = exportGraphAsJSON().split("\n");
+		for (String s : testOut) {
+			try {
+				stg.sendAction(s);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public void edgeSwap(Entity e, Edge oldEdge, Edge newEdge) {
 		if (oldEdge != null) {
@@ -201,7 +237,7 @@ public class MapGraph {
 		double xDiff = nextPos.getX() - prevPos.getX();
 		double yDiff = nextPos.getY() - prevPos.getY();
 		double xH = (xDiff / Math.abs(xDiff));
-		double yH =  (yDiff / Math.abs(yDiff));
+		double yH = (yDiff / Math.abs(yDiff));
 		return Heading.getHeadingFromDoubles(xH, yH);
 
 	}
@@ -262,22 +298,17 @@ public class MapGraph {
 	public boolean addEntity(Entity e, Vector2 pos) {
 		// Is pos oob?
 		// Find the Node closest to pos and add there
-		
-		//TODO Double check what this is actually doing
+		// TODO Double check what this is actually doing
 		Node cand = getNodeAtPosition(pos);
 		if (cand != null) {
 			// TODO Add here some how
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		} else {
-//			errLog("finding nearest position");
 			cand = findNearestNode(pos);
 			entitiesInMap.put(e.getID(), e);
 			return true;
 		}
-//		errLog("can't add entity: " + e.getID() + " to " + pos);
-//
-//		return false;
 	}
 
 	public boolean addEntityFromGeoCoords(Entity e, Vector2 gPos) {
@@ -377,7 +408,7 @@ public class MapGraph {
 	public boolean outOfGeoRange(Vector2 pos) {
 		return !geoRange.containsPoint(pos);
 	}
-	
+
 	public List<MapGraph> getSubMapsAsList() {
 		return subMaps;
 	}
@@ -471,16 +502,17 @@ public class MapGraph {
 			on.setNodeState(type);
 		}
 	}
-	//	TODO this;
-	public List<Entity> getEntitiesInRangeFromNode(Node n, double range){
+
+	// TODO this;
+	public List<Entity> getEntitiesInRangeFromNode(Node n, double range) {
 		List<Entity> ents = new List<Entity>();
 		for (Edge e : n.getEdges()) {
-			
+
 		}
-		
+
 		return ents;
 	}
-	
+
 	public List<Entity> getEntitiesInMovingRangeOfType(Entity e, double dist, double range, String type, Edge currEdge,
 			Route route) {
 
@@ -490,19 +522,20 @@ public class MapGraph {
 		}
 
 		List<Entity> neighbours = new List<Entity>();
-		if (range <=  0) {
+		if (range <= 0) {
 			return neighbours;
 		}
 		// dist should approach 0 over successive calls
 		double rangeSpan = dist + range;
-		//What is the overhang?
+		// What is the overhang?
 		double remainDist = rangeSpan - currEdge.getDistanceInKM();
 
-		errLog("getEntitiesInRangeOfType: " + e.getID() + " " + dist + " " + range + " " + type + " " + remainDist + " "
-				+ rangeSpan + " " + currEdge.getDistanceInKM() + " " + currEdge.getID());
+		// errLog("getEntitiesInRangeOfType: " + e.getID() + " " + dist + " " + range +
+		// " " + type + " " + remainDist + " "
+		// + rangeSpan + " " + currEdge.getDistanceInKM() + " " + currEdge.getID());
 
 		HashSet<Entity> entsOnSameEdge = currEdge.getEntities();
-		errLog("entities on this edge: " + entsOnSameEdge.size());
+		// errLog("entities on this edge: " + entsOnSameEdge.size());
 		for (Entity ent : entsOnSameEdge) {
 			if (e.getID().compareToIgnoreCase(ent.getID()) == 0) {
 				continue;
@@ -514,8 +547,9 @@ public class MapGraph {
 		}
 
 		if (remainDist > 0 && remainDist <= range) {
-//			errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: " + remainDist);
-//			errLog(e.getID() + " route stats: " + route.stats());
+			// errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: " +
+			// remainDist);
+			// errLog(e.getID() + " route stats: " + route.stats());
 			if (remainDist > 5) {
 				System.exit(0);
 			}

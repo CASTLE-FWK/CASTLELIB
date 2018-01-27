@@ -192,38 +192,38 @@ public class MapGraphParser {
 			p = null;
 			// Order may be important here
 			// mapGraph.extractEdges();
-			mapGraph.assignEdges();
-			mapGraph.connectedComponents();
-			System.out.println(mapGraph.ccStats());
-			mapGraph.prune();
-			mapGraph.clean();
+//			mapGraph.assignEdges();
+//			mapGraph.connectedComponents();
+//			System.out.println(mapGraph.ccStats());
+//			mapGraph.prune();
+//			mapGraph.clean();
+//
+//			// Map Infrastructure building
+//			mapGraph.calculateBounds();
+//			mapGraph.normalise();
+//			mapGraph.buildLights();
+//			mapGraph.buildCarParks();
+//			mapGraph.generateTransitPoints(20);
+//			mapGraph.prunePhase2();
+//
+//			mapGraph.nodeValidation();
 
-			// Map Infrastructure building
-			mapGraph.calculateBounds();
-			mapGraph.normalise();
-			mapGraph.buildLights();
-			mapGraph.buildCarParks();
-			mapGraph.generateTransitPoints(5);
-			mapGraph.prunePhase2();
-
-			mapGraph.nodeValidation();
-
-			System.out.println(mapGraph.getTransitNodesAsString());
+//			System.out.println(mapGraph.getTransitNodesAsString());
 			// System.out.println(mapGraph.getRandomNode());
 			// System.out.println(mapGraph.getRandomNode());
 			// System.out.println(mapGraph.getRandomNode());
 
-			System.out.println(mapGraph.range);
-			System.out.println(mapGraph.toString());
+//			System.out.println(mapGraph.range);
+//			System.out.println(mapGraph.toString());
 			System.out.println("********FINISHED PARSING: " + pathToFile + "*******");
 			// System.exit(0);
 
 			// System.out.println("STREAMING TO GEPHI");
-			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
-			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
-			for (String s : testOut) {
-				stg.sendAction(s);
-			}
+//			StreamToGephi stg = new StreamToGephi("http://localhost:8080/workspace0?");
+//			String[] testOut = mapGraph.exportGraphAsJSON().split("\n");
+//			for (String s : testOut) {
+//				stg.sendAction(s);
+//			}
 
 		} catch (IOException | SAXException e) {
 			e.printStackTrace();

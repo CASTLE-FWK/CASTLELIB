@@ -19,6 +19,9 @@ public class StreamToGephi {
 	public boolean active = true;
 
 	public StreamToGephi(String location) {
+		if (location.length() == 0) {
+			active = false;
+		}
 		workspaceNum = 1;
 		GEPHI_LOCATION = "http://localhost:8080/";
 		workspace = "workspace" + workspaceNum;
