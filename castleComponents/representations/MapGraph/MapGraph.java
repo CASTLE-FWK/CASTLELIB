@@ -87,7 +87,7 @@ public class MapGraph {
 		MapGraphParser mgp = new MapGraphParser(this);
 		mgp.parseMapGraph(path);
 	}
-	
+
 	public void setupMap(int numTransitPoints) {
 		assignEdges();
 		connectedComponents();
@@ -102,16 +102,29 @@ public class MapGraph {
 		buildCarParks();
 		generateTransitPoints(numTransitPoints);
 		prunePhase2();
-		
-		//Simple validation
+
+		// Simple validation
 		nodeValidation();
-		
-		//Print some useful stats
+
+		// Print some useful stats
 		System.out.println(getTransitNodesAsString());
 		System.out.println(range);
 		System.out.println(toString());
 	}
-	
+
+	public List<Node> findLeaves() {
+		List<Node> ns = new List<Node>();
+		for (Node n : nodes.values()) {
+			if (n.getEdges().size() == 1) {
+				ns.add(n);
+			} else if (n.getEdges().size() == 0) {
+				errLog("Stray edge not caught in validation. Investigate.");
+			}
+		}
+		return ns;
+
+	}
+
 	public void streamToGephi(String url) {
 		StreamToGephi stg = new StreamToGephi(url);
 		String[] testOut = exportGraphAsJSON().split("\n");
