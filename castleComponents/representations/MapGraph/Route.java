@@ -209,6 +209,14 @@ public class Route {
 	}
 
 	public Heading getHeading() {
+		if (nodesToVisit.size() == 0) {
+			//You are already at your destination
+			this.heading = Heading.NONE;
+			return this.heading;
+		}
+		if (nodePointer >= nodesToVisit.size()) {
+			nodePointer = nodesToVisit.size() - 2; //Dodgy, 
+		}
 		Node a = nodesToVisit.get(nodePointer);
 		Node b = nodesToVisit.get(nodePointer + 1);
 		Vector2 diffs = new Vector2(a.getCoords()).subtract(b.getCoords());

@@ -172,6 +172,10 @@ public class Node {
 				+ ", number of edges=" + edges.size() + "]";
 	}
 
+	public String demogString() {
+		return "Node demo [id=" + id + ", isCarPark=" + isCarPark() + ", isTrafficLight=" + hasTrafficLight() + "]";
+	}
+
 	public boolean isCarPark() {
 		return carPark;
 	}

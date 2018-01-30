@@ -117,6 +117,9 @@ public class MapGraph {
 		for (Node n : nodes.values()) {
 			if (n.getEdges().size() == 1) {
 				ns.add(n);
+				if (n.isCarPark()) {
+					addTransitPoint(n);
+				}
 			} else if (n.getEdges().size() == 0) {
 				errLog("Stray edge not caught in validation. Investigate.");
 			}
@@ -446,6 +449,11 @@ public class MapGraph {
 			errLog("no car parks");
 			System.exit(0);
 		}
+		if (carParkNodes.size() == 0) {
+			System.out.println("There's only one car park");
+			return carParkNodes.get(carParkNodes.keySet().toArray()[0]);
+		}
+		
 		for (Node n : carParkNodes.values()) {
 			double cand = v.calculateDistance(n.getCoords());
 			if (n.getNodeState().compareToIgnoreCase("NOGO") == 0) {
@@ -508,7 +516,12 @@ public class MapGraph {
 
 		return subGraph;
 	}
-
+	
+	public void changeNodeToType(long nodeID, String type) {
+		Node n = getNodeFromID(nodeID);
+		n.setNodeType(type);
+	}
+	
 	public void changeSectionOfMapToType(String eventName, String type) {
 		HashSet<Node> oldNodes = new HashSet<Node>(nodes.values());
 		for (Node on : oldNodes) {
