@@ -12,7 +12,7 @@ import org.bson.Document;
 
 import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
-import castleComponents.Enums.FeatureTypes;
+import castleComponents.Enums.FeatureType;
 import castleComponents.Interaction.InteractionType;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
@@ -269,7 +269,7 @@ public class Entity implements Runnable {
 		addInteraction(entityTo, InteractionType.INDIRECT, name);
 	}
 
-	public void updateFeature(String nameOfFeatureCall, FeatureTypes featureType) {
+	public void updateFeature(String nameOfFeatureCall, FeatureType featureType) {
 		if (!featuresInLastInterval.containsKey(nameOfFeatureCall)) {
 			featuresInLastInterval.put(nameOfFeatureCall, new Feature(nameOfFeatureCall, featureType));
 		} else {
@@ -397,10 +397,10 @@ public class Entity implements Runnable {
 
 class Feature {
 	String n;
-	FeatureTypes ft;
+	FeatureType ft;
 	int occurrence = 0;
 
-	public Feature(String n, FeatureTypes ft) {
+	public Feature(String n, FeatureType ft) {
 		this.n = n;
 		this.ft = ft;
 		occurrence = 1;
@@ -414,11 +414,11 @@ class Feature {
 		this.n = n;
 	}
 
-	public FeatureTypes getFeatureType() {
+	public FeatureType getFeatureType() {
 		return ft;
 	}
 
-	public void setFeatureType(FeatureTypes ft) {
+	public void setFeatureType(FeatureType ft) {
 		this.ft = ft;
 	}
 

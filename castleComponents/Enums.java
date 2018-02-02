@@ -1,13 +1,13 @@
 package castleComponents;
 
 public class Enums {
-	
+
 	public enum GridPositions {
-		LEFT,RIGHT, DOWN, UP, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT, TOP, BOTTOM, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT;
+		LEFT, RIGHT, DOWN, UP, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT, TOP, BOTTOM, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT;
 	}
-	
-	public static GridPositions getOpposite(GridPositions gp){
-		switch(gp){
+
+	public static GridPositions getOpposite(GridPositions gp) {
+		switch (gp) {
 		case LEFT:
 			return GridPositions.RIGHT;
 		case RIGHT:
@@ -15,7 +15,7 @@ public class Enums {
 		case DOWN:
 			return GridPositions.UP;
 		case UP:
-			return GridPositions.DOWN;	
+			return GridPositions.DOWN;
 		case UPLEFT:
 			return GridPositions.DOWNRIGHT;
 		case UPRIGHT:
@@ -24,7 +24,7 @@ public class Enums {
 			return GridPositions.UPRIGHT;
 		case DOWNRIGHT:
 			return GridPositions.UPLEFT;
-		
+
 		case TOP:
 			return GridPositions.BOTTOM;
 		case BOTTOM:
@@ -41,16 +41,16 @@ public class Enums {
 			return null;
 		}
 	}
-	
+
 	public enum ContinuousDirections {
-		
+
 	}
 
-	public enum RepresentationTypes{
+	public enum RepresentationTypes {
 		REP_GRID, REP_TORUS, REP_BOUND, REP_GRAPH, REP_NETWORK, REP_GIS, REP_MESH3D, REP_CONTINUOUS, REP_MAP2D
 	}
-	
-	public enum FeatureTypes{
+
+	public enum FeatureType {
 		BEHAVIOR, ADAPTATION, INTERACTION, EXTERNAL_INTERACTION, INTERNAL_INTERACTION
 	}
 }
