@@ -28,6 +28,15 @@ public class Node {
 	TrafficLight theTrafficLight = null;
 	boolean carPark = false;
 	Park theCarPark = null;
+	boolean humanAccessible = false;
+
+	public boolean isHumanAccessible() {
+		return humanAccessible;
+	}
+
+	public void setHumanAccessible(boolean humanAccessible) {
+		this.humanAccessible = humanAccessible;
+	}
 
 	// Purely for Dijkstra speed up
 	double dijkMinDistance = Double.POSITIVE_INFINITY;

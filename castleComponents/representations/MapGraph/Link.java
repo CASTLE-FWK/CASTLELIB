@@ -229,6 +229,7 @@ public class Link implements Comparable<Link> {
 		double length = 0.0;
 		for (int i = 0; i < wayPoints.size() - 1; i++) {
 			int j = i + 1;
+			wayPoints.get(i).setHumanAccessible(isHumanAccessible());
 			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
 
 			// Build edges at same time
@@ -281,42 +282,6 @@ public class Link implements Comparable<Link> {
 		}
 
 		return 0;
-	}
-
-	// TODO
-	public void moveEntity_BAD(Entity e, Vector2 pos, float moveDist, Vector2 nextNode) {
-		// Determine which pair of nodes Entity is sitting between
-		Node[] nodes = findClosestNodePair(pos);
-		if (nodes == null) {
-			System.err.println("LINK: null nodes");
-		}
-		Node a = nodes[0];
-		Vector2 coordsA = a.getGeoCoords();
-		Node b = nodes[1];
-		Vector2 coordsB = b.getGeoCoords();
-		double distanceInKM = calculateCoordinateDistance(coordsA, coordsB);
-
-		// Calculate the length and slope of the Link segment
-		double length = distanceInKM;
-		double percentageOfMove = moveDist / length;
-		double slope = coordsA.calculateSlope(coordsB);
-
-		// Calculate current movement percentage
-		double entityDistFromNode = calculateCoordinateDistance(pos, nextNode);
-		double percentage = entityDistFromNode / length;
-
-		// Calculate link percentage of move
-		double proposedPercentage = percentage + percentageOfMove;
-
-		// If less that 100%, do a simple shift
-		if (proposedPercentage < 100) {
-			// TODO Should return a VALID or something nice
-		}
-		// Else if geq 100%, move to next node and add percentage from there
-		// unless Node is a traffic-light or other
-		else if (proposedPercentage > 100) {
-			// TODO Need to tell the next node about it
-		}
 	}
 
 	public void errLog(Object o) {

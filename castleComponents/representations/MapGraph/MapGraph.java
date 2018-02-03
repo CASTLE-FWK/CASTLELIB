@@ -43,6 +43,7 @@ public class MapGraph {
 	// Pathfinding flags
 	public final int DIJKSTRA_SLOW = 0;
 	public final int DIKSTRA_FAST = 1;
+	private List<Node> leafNodes;
 
 	public MapGraph() {
 		links = new HashMap<Long, Link>();
@@ -113,10 +114,10 @@ public class MapGraph {
 	}
 
 	public List<Node> findLeaves() {
-		List<Node> ns = new List<Node>();
+		leafNodes = new List<Node>();
 		for (Node n : nodes.values()) {
 			if (n.getEdges().size() == 1) {
-				ns.add(n);
+				leafNodes.add(n);
 				if (n.isCarPark()) {
 					addTransitPoint(n);
 				}
@@ -124,8 +125,11 @@ public class MapGraph {
 				errLog("Stray edge not caught in validation. Investigate.");
 			}
 		}
-		return ns;
-
+		return leafNodes;
+	}
+	
+	public List<Node> getLeafNodes(){
+		return leafNodes;
 	}
 
 	public void streamToGephi(String url) {
@@ -529,11 +533,10 @@ public class MapGraph {
 		}
 	}
 
-	// TODO this;
-	public List<Entity> getEntitiesInRangeFromNode(Node n, double range) {
+	public List<Entity> getEntitiesNearNode(Node n, double range) {
 		List<Entity> ents = new List<Entity>();
 		for (Edge e : n.getEdges()) {
-
+			ents.addAll(e.getEntities());
 		}
 
 		return ents;
@@ -1115,6 +1118,14 @@ public class MapGraph {
 	public Node getRandomNode() {
 		Object[] n = nodes.values().toArray();
 		return (Node) n[RandomGen.generateRandomRangeInteger(0, n.length - 1)];
+	}
+	
+	public Node getRandomHumanAccessibleNode() {
+		Node n = getRandomNode();
+		while (!n.isHumanAccessible()) {
+			n = getRandomNode();
+		}
+		return n;
 	}
 
 	public void nodeValidation() {
