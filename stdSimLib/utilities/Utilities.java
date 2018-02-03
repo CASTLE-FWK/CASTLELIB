@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import castleComponents.objects.Vector2;
 
@@ -235,6 +236,10 @@ public class Utilities {
 			e.printStackTrace();
 		}
 		return l;
+	}
+	
+	public static <T> T getRandomEntryFromSet(Set<T> theSet) {
+		return (T)theSet.toArray()[RandomGen.generateRandomRangeInteger(0, theSet.size() - 1)];
 	}
 	
 }

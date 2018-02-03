@@ -186,8 +186,8 @@ public class MapGraph {
 		// I think this logic is correct
 		double distFromEnd = currEdge.getDistanceInKM() - distanceAlongEdge;
 		if (moveDist >= distFromEnd) {
-			if (nextNode.hasTrafficLight()) {
-				errLog("THERES A TRAFFIC LIGHT HERE");
+			if (nextNode.hasTrafficLight() && (e.getType().compareToIgnoreCase("vehicle") == 0)) {
+//				errLog("THERES A TRAFFIC LIGHT HERE");
 				if (nextNode.getTheTrafficLight().haveToStop(currEdge)) {
 					newDist = distanceAlongEdge + distFromEnd; // Yes, I know what this does Clem Fandango
 					route.setCurrentEdge(currEdge);

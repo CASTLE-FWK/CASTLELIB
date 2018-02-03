@@ -10,14 +10,22 @@ public class Parameter<T> {
 	
 	public Parameter(T value, String name){
 		this.value = value;
-		valueAsString = this.value.toString();
+		if (this.value == null) {
+			valueAsString = "null";
+		} else {
+			valueAsString = this.value.toString();
+		}
 		this.name = name;
 		type = this.value.getClass().getName();
 	}
 	
 	public Parameter(T value, String name, String type){
 		this.value = value;
-		valueAsString = this.value.toString();
+		if (this.value == null) {
+			valueAsString = "null";
+		} else {
+			valueAsString = this.value.toString();
+		}
 		this.name = name;
 		this.type = type;
 	}
@@ -25,7 +33,11 @@ public class Parameter<T> {
 	public Parameter(T[] value, String name){
 		usingPBR = true;
 		this.value = value[0];
-		valueAsString = this.value.toString();
+		if (this.value == null) {
+			valueAsString = "null";
+		} else {
+			valueAsString = this.value.toString();
+		}
 		this.name = name;
 		type = this.value.getClass().getName();
 	}
@@ -34,7 +46,11 @@ public class Parameter<T> {
 	public Parameter(T[] value, String name, String type){
 		usingPBR = true;
 		this.value = value[0];
-		valueAsString = this.value.toString();
+		if (this.value == null) {
+			valueAsString = "null";
+		} else {
+			valueAsString = this.value.toString();
+		}
 		this.name = name;
 		this.type = type;
 	}

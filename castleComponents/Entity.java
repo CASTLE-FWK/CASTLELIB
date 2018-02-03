@@ -226,6 +226,9 @@ public class Entity implements Runnable {
 	public <T> void addParameter(T o, String name) {
 		parameters.put(name, new Parameter<T>(o, name));
 	}
+	public <T> void addParameter(T o, String name, String type) {
+		parameters.put(name, new Parameter<T>(o, name, type));
+	}
 
 	public void addParameterFromString(String name, String type, String value) {
 		parameters.put(name, new Parameter<String>(value, name, type));
