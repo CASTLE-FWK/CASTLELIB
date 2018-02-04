@@ -615,14 +615,7 @@ public class MapGraph {
 			return null;
 		}
 	}
-
-	// TODO
-	// Just take flags and return from below
-	public String printMap() {
-		String str = "";
-		return str;
-	}
-
+	
 	public void printBounds() {
 		System.out.println(
 				"MapGraph Geo-Bounds      = [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");

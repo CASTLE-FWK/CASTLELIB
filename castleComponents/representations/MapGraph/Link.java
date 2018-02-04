@@ -230,6 +230,7 @@ public class Link implements Comparable<Link> {
 		for (int i = 0; i < wayPoints.size() - 1; i++) {
 			int j = i + 1;
 			wayPoints.get(i).setHumanAccessible(isHumanAccessible());
+			wayPoints.get(i).setMaxSpeed(maxSpeed);
 			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
 
 			// Build edges at same time
