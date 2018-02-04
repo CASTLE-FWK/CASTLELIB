@@ -39,7 +39,6 @@ public class Agent extends Entity{
 	/**
 	 * The Agents initial position in 2D space.
 	 */
-	protected Vector2 position;
 	protected Vector2 velocity;
 	protected double minimumX, minimumY, maximumX, maximumY;	
 	

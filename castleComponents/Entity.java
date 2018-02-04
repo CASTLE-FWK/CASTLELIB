@@ -19,44 +19,38 @@ import stdSimLib.utilities.Utilities;
 
 public class Entity implements Runnable {
 
+	protected ArrayList<Trigger> actionTriggers;
+	protected ArrayList<Trigger> actionTriggersToAdd;
+	final String AGENT = "agent";
+	protected ArrayList<Trigger> cleanupTriggers;
+	protected ArrayList<Trigger> cleanupTriggersToAdd;
+	final char COMMA = ',';
+	private Phase currentPhase;
 	private int currentStep = -1;
-	protected Logger logger;
 	protected OutputToJSON_Mongo dbOut;
+	protected EntityID entityID;
+	String entitySuperType = "";
+	public String entityType = "";
+	final String ENVIRONMENT = "environment";
+	HashMap<String, Feature> featuresInLastInterval;
+	final String GROUP = "group";
+	HashMap<String, Interaction> interactionsInLastInterval;
+	protected Logger logger;
+	protected Output output;
 	protected HashMap<String, Parameter<?>> parameters;
-
+	protected Vector2 position = new Vector2();
+	protected boolean ready = false;
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
 
-	protected ArrayList<Trigger> cleanupTriggers;
-	protected ArrayList<Trigger> cleanupTriggersToAdd;
-
-	protected ArrayList<Trigger> actionTriggers;
-	protected ArrayList<Trigger> actionTriggersToAdd;
-
-	String entitySuperType = "";
-	final String GROUP = "group";
-	final String AGENT = "agent";
-	final String ENVIRONMENT = "environment";
-
-	final char COMMA = ',';
-
-	boolean ready = false;
-
-	Vector2 position;
-
-	protected Output output;
-
-	HashMap<String, Interaction> interactionsInLastInterval;
-	HashMap<String, Feature> featuresInLastInterval;
-
-	public Entity(String type, long uid) {
-		entityID = new EntityID(type, uid);
+	public Entity(String type, EntityID eid) {
+		this.entityID = new EntityID(eid);
 		this.entityType = type;
 		init();
 	}
 
-	public Entity(String type, EntityID eid) {
-		this.entityID = new EntityID(eid);
+	public Entity(String type, long uid) {
+		entityID = new EntityID(type, uid);
 		this.entityType = type;
 		init();
 	}
@@ -67,68 +61,8 @@ public class Entity implements Runnable {
 		init();
 	}
 
-	public void init() {
-		currentPhase = Phase.SETUP;
-		parameters = new HashMap<String, Parameter<?>>();
-		interactionsInLastInterval = new HashMap<String, Interaction>();
-		featuresInLastInterval = new HashMap<String, Feature>();
-		setupTriggers = new ArrayList<Trigger>();
-		setupTriggersToAdd = new ArrayList<Trigger>();
-		cleanupTriggers = new ArrayList<Trigger>();
-		cleanupTriggersToAdd = new ArrayList<Trigger>();
-		actionTriggers = new ArrayList<Trigger>();
-		actionTriggersToAdd = new ArrayList<Trigger>();
-		position = new Vector2();
-	}
-
-	public void setLogger(Logger l) {
-		logger = l;
-	}
-
-	public void setDBOut(OutputToJSON_Mongo d) {
-		dbOut = d;
-	}
-
-	public boolean loggerIsNull() {
-		return (logger == null);
-	}
-
-	public boolean dbIsNull() {
-		return (dbOut == null);
-	}
-
-	protected EntityID entityID;
-
-	public EntityID getEntityID() {
-		return entityID;
-	}
-
-	public void setEntityID(EntityID entityID) {
-		this.entityID = entityID;
-	}
-
-	public String getID() {
-		return getEntityID().toString();
-	}
-
-	private Phase currentPhase;
-
-	public Phase getCurrentPhase() {
-		return currentPhase;
-	}
-
-	public void setCurrentPhase(Phase currentPhase) {
-		this.currentPhase = currentPhase;
-	}
-
-	public String entityType = "";
-
-	public void setEntityType(String entityType) {
-		this.entityType = entityType;
-	}
-
-	public String getType() {
-		return entityType;
+	public void addCommunicationInteraction(Entity entityTo, String name) {
+		addInteraction(entityTo, InteractionType.COMMUNICATION, name);
 	}
 
 	public void addFutureTrigger(Trigger tr, boolean unique) {
@@ -154,100 +88,8 @@ public class Entity implements Runnable {
 		i.add(tr);
 	}
 
-	public void setCurrentStep(int step) {
-		this.currentStep = step;
-	}
-
-	public int getCurrentStep() {
-		return this.currentStep;
-	}
-
-	@Override
-	public void run() {
-	}
-
-	public void initialise() {
-
-	}
-
-	public void phase_Setup() {
-
-	}
-
-	public void phase_Action() {
-
-	}
-
-	public void phase_Cleanup() {
-		writeModelData();
-	}
-
-	public void final_call() {
-
-	}
-
-	// Messaging
-	public void receiveMessage(Message<?> msg) {
-		MessageType msgType = msg.getMessageType();
-
-		switch (msgType) {
-		case CLOCK:
-			setCurrentStep((Integer) msg.getContents());
-			break;
-		case PHASE:
-			setCurrentPhase((Phase) msg.getContents());
-			break;
-		default:
-			throwCASTLEError("unknown message type", "receiveMessage", this.getClass().getName());
-			break;
-		}
-	}
-
-	public void sendMessage() {
-
-	}
-
-	public void errLog(Object o) {
-		System.err.println(getType() + " Warning: " + o.toString());
-	}
-
-	// Logging
-	public void muteLogger() {
-		logger.mute();
-	}
-
-	public void unmuteLogger() {
-		logger.unmute();
-	}
-
-	// For sending stats
-	// [o] should be a reference! (Pass by reference is the only way this is
-	// going to work w/out reflection)
-	public <T> void addParameter(T o, String name) {
-		parameters.put(name, new Parameter<T>(o, name));
-	}
-	public <T> void addParameter(T o, String name, String type) {
-		parameters.put(name, new Parameter<T>(o, name, type));
-	}
-
-	public void addParameterFromString(String name, String type, String value) {
-		parameters.put(name, new Parameter<String>(value, name, type));
-	}
-
-	public HashMap<String, Parameter<?>> getParameters() {
-		return parameters;
-	}
-
-	public Object getParameterValueFromString(String paramName) {
-		return parameters.get(paramName).getValue();
-	}
-
-	public String getParameterValueFromStringAsString(String paramName) {
-		return parameters.get(paramName).getCurrentValue();
-	}
-
-	public <T> void updateParameter(String paramName, T value) {
-		addParameter(value, paramName);
+	public void addIndirectInteraction(Entity entityTo, String name) {
+		addInteraction(entityTo, InteractionType.INDIRECT, name);
 	}
 
 	public void addInteraction(Entity entityTo, InteractionType type, String name) {
@@ -260,29 +102,23 @@ public class Entity implements Runnable {
 		}
 	}
 
+	// For sending stats
+	// [o] should be a reference! (Pass by reference is the only way this is
+	// going to work w/out reflection)
+	public <T> void addParameter(T o, String name) {
+		parameters.put(name, new Parameter<T>(o, name));
+	}
+
+	public <T> void addParameter(T o, String name, String type) {
+		parameters.put(name, new Parameter<T>(o, name, type));
+	}
+
+	public void addParameterFromString(String name, String type, String value) {
+		parameters.put(name, new Parameter<String>(value, name, type));
+	}
+
 	public void addQueryInteraction(Entity entityTo, String name) {
 		addInteraction(entityTo, InteractionType.QUERY, name);
-	}
-
-	public void addCommunicationInteraction(Entity entityTo, String name) {
-		addInteraction(entityTo, InteractionType.COMMUNICATION, name);
-	}
-
-	public void addIndirectInteraction(Entity entityTo, String name) {
-		addInteraction(entityTo, InteractionType.INDIRECT, name);
-	}
-
-	public void updateFeature(String nameOfFeatureCall, FeatureType featureType) {
-		if (!featuresInLastInterval.containsKey(nameOfFeatureCall)) {
-			featuresInLastInterval.put(nameOfFeatureCall, new Feature(nameOfFeatureCall, featureType));
-		} else {
-			featuresInLastInterval.get(nameOfFeatureCall).incrementOccurrence();
-		}
-	}
-
-	public List<Interaction> publishInteractions() {
-		List<Interaction> interactions = new ArrayList<Interaction>(interactionsInLastInterval.values());
-		return interactions;
 	}
 
 	public void clearInteractions() {
@@ -293,12 +129,48 @@ public class Entity implements Runnable {
 		return (("" + getID()).equalsIgnoreCase(entity.getID()));
 	}
 
-	public Vector2 getPosition() {
-		return position;
+	public boolean dbIsNull() {
+		return (dbOut == null);
 	}
 
-	public void setPosition(Vector2 p) {
-		position = new Vector2(p);
+	public void errLog(Object o) {
+		System.err.println(getType() + " Warning: " + o.toString());
+	}
+
+	public void final_call() {
+
+	}
+
+	public Phase getCurrentPhase() {
+		return currentPhase;
+	}
+
+	public int getCurrentStep() {
+		return this.currentStep;
+	}
+
+	public EntityID getEntityID() {
+		return entityID;
+	}
+
+	public String getID() {
+		return getEntityID().toString();
+	}
+
+	public Output getOutput() {
+		return output;
+	}
+
+	public HashMap<String, Parameter<?>> getParameters() {
+		return parameters;
+	}
+
+	public Object getParameterValueFromString(String paramName) {
+		return parameters.get(paramName).getValue();
+	}
+
+	public String getParameterValueFromStringAsString(String paramName) {
+		return parameters.get(paramName).getCurrentValue();
 	}
 
 	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange) {
@@ -331,23 +203,76 @@ public class Entity implements Runnable {
 		return points;
 	}
 
-	public void setOutput(Output out) {
-		output = out;
+	public Vector2 getPosition() {
+		return position;
 	}
 
-	public Output getOutput() {
-		return output;
+	public String getType() {
+		return entityType;
 	}
 
-	public void writeModelData() {
-		output.writeModelData(this);
+	public void init() {
+		currentPhase = Phase.SETUP;
+		parameters = new HashMap<String, Parameter<?>>();
+		interactionsInLastInterval = new HashMap<String, Interaction>();
+		featuresInLastInterval = new HashMap<String, Feature>();
+		setupTriggers = new ArrayList<Trigger>();
+		setupTriggersToAdd = new ArrayList<Trigger>();
+		cleanupTriggers = new ArrayList<Trigger>();
+		cleanupTriggersToAdd = new ArrayList<Trigger>();
+		actionTriggers = new ArrayList<Trigger>();
+		actionTriggersToAdd = new ArrayList<Trigger>();
+		position = new Vector2();
+	}
+
+	public void initialise() {
+
 	}
 
 	public void log(String str) {
 		if (output == null) {
 			errLog("output is null");
 		}
-		output.log(this, getID()+": "+str);
+		output.log(this, getID() + ": " + str);
+	}
+
+	public boolean loggerIsNull() {
+		return (logger == null);
+	}
+
+	public void logToConsole(String str) {
+		System.out.println(getID() + ": " + str);
+	}
+
+	// Logging
+	public void muteLogger() {
+		logger.mute();
+	}
+
+	public String parametersToString() {
+		StringBuilder sb = new StringBuilder("PARAMETERS [\n");
+		for (String s : parameters.keySet()) {
+			sb.append("\t").append(parameters.get(s)).append("\n");
+		}
+		sb.append("]\n");
+		return sb.toString();
+	}
+
+	public void phase_Action() {
+
+	}
+
+	public void phase_Cleanup() {
+		writeModelData();
+	}
+
+	public void phase_Setup() {
+
+	}
+
+	public List<Interaction> publishInteractions() {
+		List<Interaction> interactions = new ArrayList<Interaction>(interactionsInLastInterval.values());
+		return interactions;
 	}
 
 	// Trigger pulling
@@ -361,8 +286,81 @@ public class Entity implements Runnable {
 		}
 	}
 
+	// Messaging
+	public void receiveMessage(Message<?> msg) {
+		MessageType msgType = msg.getMessageType();
+
+		switch (msgType) {
+		case CLOCK:
+			setCurrentStep((Integer) msg.getContents());
+			break;
+		case PHASE:
+			setCurrentPhase((Phase) msg.getContents());
+			break;
+		default:
+			throwCASTLEError("unknown message type", "receiveMessage", this.getClass().getName());
+			break;
+		}
+	}
+
+	@Override
+	public void run() {
+	}
+
+	public void sendMessage() {
+
+	}
+
+	public void setCurrentPhase(Phase currentPhase) {
+		this.currentPhase = currentPhase;
+	}
+
+	public void setCurrentStep(int step) {
+		this.currentStep = step;
+	}
+
+	public void setDBOut(OutputToJSON_Mongo d) {
+		dbOut = d;
+	}
+
+	public void setEntityID(EntityID entityID) {
+		this.entityID = entityID;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
+	}
+
+	public void setLogger(Logger l) {
+		logger = l;
+	}
+
+	public void setOutput(Output out) {
+		output = out;
+	}
+
+	public void setPosition(Vector2 p) {
+		position = new Vector2(p);
+	}
+
 	public void throwCASTLEError(String desc, String location, String clazz) {
 		System.out.println("CASTLE ERROR: " + desc + " at method: " + location + " in class: " + clazz);
+	}
+
+	public void unmuteLogger() {
+		logger.unmute();
+	}
+
+	public void updateFeature(String nameOfFeatureCall, FeatureType featureType) {
+		if (!featuresInLastInterval.containsKey(nameOfFeatureCall)) {
+			featuresInLastInterval.put(nameOfFeatureCall, new Feature(nameOfFeatureCall, featureType));
+		} else {
+			featuresInLastInterval.get(nameOfFeatureCall).incrementOccurrence();
+		}
+	}
+
+	public <T> void updateParameter(String paramName, T value) {
+		addParameter(value, paramName);
 	}
 
 	public StringBuilder writeEntityData() {
@@ -393,14 +391,14 @@ public class Entity implements Runnable {
 		return sb;
 	}
 
-	public void logToConsole(String str) {
-		System.out.println(getID() + ": " + str);
+	public void writeModelData() {
+		output.writeModelData(this);
 	}
 }
 
 class Feature {
-	String n;
 	FeatureType ft;
+	String n;
 	int occurrence = 0;
 
 	public Feature(String n, FeatureType ft) {
@@ -409,27 +407,27 @@ class Feature {
 		occurrence = 1;
 	}
 
-	public String getName() {
-		return n;
-	}
-
-	public void setName(String n) {
-		this.n = n;
-	}
-
 	public FeatureType getFeatureType() {
 		return ft;
 	}
 
-	public void setFeatureType(FeatureType ft) {
-		this.ft = ft;
+	public String getName() {
+		return n;
+	}
+
+	public int getOccurrence() {
+		return occurrence;
 	}
 
 	public void incrementOccurrence() {
 		occurrence++;
 	}
 
-	public int getOccurrence() {
-		return occurrence;
+	public void setFeatureType(FeatureType ft) {
+		this.ft = ft;
+	}
+
+	public void setName(String n) {
+		this.n = n;
 	}
 }

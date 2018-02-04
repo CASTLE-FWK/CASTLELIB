@@ -85,6 +85,9 @@ public class Parameter<T> {
 	}
 	
 	public String getCurrentValue(){
+		if (value == null) {
+			return "null";
+		}
 		return value.toString();
 	}
 	
