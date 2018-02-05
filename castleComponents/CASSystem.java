@@ -24,6 +24,10 @@ public class CASSystem {
 	OutputToJSON_Mongo dbOutputter;
 	String executionID;
 	protected ArrayList<Parameter<?>> parameters;
+	public ArrayList<Parameter<?>> getParameters() {
+		return parameters;
+	}
+
 	String dbID;
 
 	protected SimulationInfo simulationInfo;
@@ -45,7 +49,11 @@ public class CASSystem {
 	int numCaps;
 
 	public CASSystem() {
-
+		parameters = new ArrayList<Parameter<?>>();
+	}
+	
+	public <T> void addParameter(T o, String name) {
+		parameters.add(new Parameter<T>(o, name));
 	}
 
 	public void setLogger(Logger l) {
@@ -174,6 +182,14 @@ public class CASSystem {
 		}
 
 		// notifyAll(); //??
+	}
+	
+	
+	public void initialDatabaseSend() {
+		if (dbOutputter == null) {
+			errLog("outputter is null");
+		}
+		dbOutputter.storeInitValues(parameters, Utilities.generateNiceTimeStamp());
 	}
 
 	// Send output to database

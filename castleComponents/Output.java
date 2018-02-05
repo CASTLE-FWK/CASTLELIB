@@ -1,6 +1,9 @@
 package castleComponents;
 
+import java.util.ArrayList;
+
 import dataGenerator.OutputToJSON_Mongo;
+import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
 public class Output {
@@ -70,6 +73,10 @@ public class Output {
 
 		logger.setup(logFilePath, simInfo.getSystemName());
 		
+	}
+	
+	public void systemInitialStatsToDB(ArrayList<Parameter<?>> params, String timeAsDate) {
+		dbOutput.storeInitValues(params, timeAsDate);
 	}
 
 	public void setLogger(Logger l) {

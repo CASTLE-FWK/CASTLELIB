@@ -188,18 +188,18 @@ public class OutputToJSON_Mongo {
 			for (Interaction inter : entityInteractions) {
 				Document interDoc = new Document().append("interaction-from", inter.getEntityFrom().getID())
 						.append("interaction-to", inter.getEntityTo().getID())
-						.append("interaction-type", inter.getType().toString());
+						.append("interaction-type", inter.getType().toString())
+						.append("interaction-name", inter.getInteractionName());
 				interactions.add(interDoc);
 			}
 		}
-
-		
 
 		List<Feature> entityFeatureCalls = e.publishFeatures();
 		if (entityFeatureCalls != null) {
 			for (Feature f : entityFeatureCalls) {
 				Document fCallDoc = new Document().append("feature-name", f.getName())
-						.append("feature-type", f.getFeatureType().toString()).append("feature-call#", f.getOccurrence());
+						.append("feature-type", f.getFeatureType().toString())
+						.append("feature-call#", f.getOccurrence());
 				fCallDocs.add(fCallDoc);
 			}
 		}
