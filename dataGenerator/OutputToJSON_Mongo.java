@@ -217,6 +217,7 @@ public class OutputToJSON_Mongo {
 			environmentsDocuments.add(entity);
 			break;
 		}
+		e.clear();
 	}
 
 	public void endOfStep() {

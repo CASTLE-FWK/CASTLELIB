@@ -284,6 +284,12 @@ public class Entity implements Runnable {
 		return interactions;
 	}
 
+	public void clear() {
+		interactionsInLastInterval.clear();
+		featuresInLastInterval.clear();
+		
+	}
+	
 	// Trigger pulling
 	public void pullTriggers(List<Trigger> triggers) {
 		for (Iterator<Trigger> iterator = triggers.iterator(); iterator.hasNext();) {

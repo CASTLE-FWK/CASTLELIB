@@ -127,8 +127,8 @@ public class MapGraph {
 		}
 		return leafNodes;
 	}
-	
-	public List<Node> getLeafNodes(){
+
+	public List<Node> getLeafNodes() {
 		return leafNodes;
 	}
 
@@ -191,7 +191,7 @@ public class MapGraph {
 		double distFromEnd = currEdge.getDistanceInKM() - distanceAlongEdge;
 		if (moveDist >= distFromEnd) {
 			if (nextNode.hasTrafficLight() && (e.getType().compareToIgnoreCase("vehicle") == 0)) {
-//				errLog("THERES A TRAFFIC LIGHT HERE");
+				// errLog("THERES A TRAFFIC LIGHT HERE");
 				if (nextNode.getTheTrafficLight().haveToStop(currEdge)) {
 					newDist = distanceAlongEdge + distFromEnd; // Yes, I know what this does Clem Fandango
 					route.setCurrentEdge(currEdge);
@@ -457,7 +457,7 @@ public class MapGraph {
 			System.out.println("There's only one car park");
 			return carParkNodes.get(carParkNodes.keySet().toArray()[0]);
 		}
-		
+
 		for (Node n : carParkNodes.values()) {
 			double cand = v.calculateDistance(n.getCoords());
 			if (n.getNodeState().compareToIgnoreCase("NOGO") == 0) {
@@ -520,12 +520,12 @@ public class MapGraph {
 
 		return subGraph;
 	}
-	
+
 	public void changeNodeToType(long nodeID, String type) {
 		Node n = getNodeFromID(nodeID);
 		n.setNodeType(type);
 	}
-	
+
 	public void changeSectionOfMapToType(String eventName, String type) {
 		HashSet<Node> oldNodes = new HashSet<Node>(nodes.values());
 		for (Node on : oldNodes) {
@@ -615,7 +615,7 @@ public class MapGraph {
 			return null;
 		}
 	}
-	
+
 	public void printBounds() {
 		System.out.println(
 				"MapGraph Geo-Bounds      = [ min=" + geoBoundingBox_Min + ", max=" + geoBoundingBox_Max + " ]");
@@ -1112,7 +1112,7 @@ public class MapGraph {
 		Object[] n = nodes.values().toArray();
 		return (Node) n[RandomGen.generateRandomRangeInteger(0, n.length - 1)];
 	}
-	
+
 	public Node getRandomHumanAccessibleNode() {
 		Node n = getRandomNode();
 		while (!n.isHumanAccessible()) {
