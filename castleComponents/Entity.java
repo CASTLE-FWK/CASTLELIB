@@ -8,7 +8,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bson.Document;
 
 import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
@@ -358,6 +357,11 @@ public class Entity implements Runnable {
 			featuresInLastInterval.get(nameOfFeatureCall).incrementOccurrence();
 		}
 	}
+	
+	public ArrayList<Feature> publishFeatures(){
+		ArrayList<Feature> f = new ArrayList<Feature>(featuresInLastInterval.values());
+		return f;
+	}
 
 	public <T> void updateParameter(String paramName, T value) {
 		addParameter(value, paramName);
@@ -370,6 +374,7 @@ public class Entity implements Runnable {
 		sb.append(entityType + "-name" + COMMA + getID());
 		sb.append("lifetime" + COMMA + "-1");
 
+		//Dump parameter values
 		Iterator<Entry<String, Parameter<?>>> it = getParameters().entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>) it.next();
@@ -379,6 +384,7 @@ public class Entity implements Runnable {
 			sb.append("parameter-value" + COMMA + param.getCurrentValue());
 		}
 
+		//Dump interactions
 		List<Interaction> entityInteractions = publishInteractions();
 		if (entityInteractions != null) {
 			for (Interaction inter : entityInteractions) {
@@ -387,47 +393,21 @@ public class Entity implements Runnable {
 				sb.append("interaction-type" + COMMA + inter.getType());
 			}
 		}
+		
+		//Dump features
+		List<Feature> entityFeatureCalls = publishFeatures();
+		if (entityFeatureCalls != null) {
+			for (Feature f : entityFeatureCalls) {
+				sb.append("feature-name" + COMMA +f.getName());
+				sb.append("feature-type" + COMMA + f.getFeatureType());
+				sb.append("feature-call#" + COMMA + f.getOccurrence());
+			}
+		}
 
 		return sb;
 	}
 
 	public void writeModelData() {
 		output.writeModelData(this);
-	}
-}
-
-class Feature {
-	FeatureType ft;
-	String n;
-	int occurrence = 0;
-
-	public Feature(String n, FeatureType ft) {
-		this.n = n;
-		this.ft = ft;
-		occurrence = 1;
-	}
-
-	public FeatureType getFeatureType() {
-		return ft;
-	}
-
-	public String getName() {
-		return n;
-	}
-
-	public int getOccurrence() {
-		return occurrence;
-	}
-
-	public void incrementOccurrence() {
-		occurrence++;
-	}
-
-	public void setFeatureType(FeatureType ft) {
-		this.ft = ft;
-	}
-
-	public void setName(String n) {
-		this.n = n;
 	}
 }

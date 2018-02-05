@@ -13,6 +13,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import castleComponents.Environment;
+import castleComponents.Feature;
 import castleComponents.SemanticGroup;
 import castleComponents.SimulationInfo;
 import stdSimLib.Parameter;
@@ -170,6 +171,7 @@ public class OutputToJSON_Mongo {
 		entity.append(entityType + "-name", e.getID());
 		entity.append("lifetime", -1);
 		ArrayList<Document> paramDocs = new ArrayList<Document>();
+		ArrayList<Document> fCallDocs = new ArrayList<Document>();
 
 		Iterator<Entry<String, Parameter<?>>> it = e.getParameters().entrySet().iterator();
 		while (it.hasNext()) {
@@ -191,7 +193,18 @@ public class OutputToJSON_Mongo {
 			}
 		}
 
+		
+
+		List<Feature> entityFeatureCalls = e.publishFeatures();
+		if (entityFeatureCalls != null) {
+			for (Feature f : entityFeatureCalls) {
+				Document fCallDoc = new Document().append("feature-name", f.getName())
+						.append("feature-type", f.getFeatureType().toString()).append("feature-call#", f.getOccurrence());
+				fCallDocs.add(fCallDoc);
+			}
+		}
 		entity.append("parameters", paramDocs);
+		entity.append("feature-calls", fCallDocs);
 
 		switch (entityType) {
 		case GROUP:
