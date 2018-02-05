@@ -100,6 +100,16 @@ public class Entity implements Runnable {
 			storedInteraction.incrementOccurrence();
 		}
 	}
+	
+	public void addHelperInteraction(Entity from, Entity to, InteractionType type, String name) {
+		Interaction interaction = new Interaction(from, to, type, name);
+		Interaction storedInteraction = interactionsInLastInterval.get(interaction.getID());
+		if (storedInteraction == null) {
+			interactionsInLastInterval.put(interaction.getID(), interaction);
+		} else {
+			storedInteraction.incrementOccurrence();
+		}
+	}
 
 	// For sending stats
 	// [o] should be a reference! (Pass by reference is the only way this is
