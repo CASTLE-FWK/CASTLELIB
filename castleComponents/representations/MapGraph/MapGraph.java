@@ -152,6 +152,10 @@ public class MapGraph {
 			}
 		}
 	}
+	
+	public void removeEntity(Entity e) {
+		//TODO
+	}
 
 	/** How to move Entities around **/
 	// TODO HERE
