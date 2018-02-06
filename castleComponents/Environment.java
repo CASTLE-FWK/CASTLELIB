@@ -131,26 +131,6 @@ public class Environment extends Entity {
 
 		}
 	}
- 
-	@Override
-	public void initialise(){
-//		logger.print(getEntityID().toString() + " performing phase_init at step " + getCurrentStep());
-	}
-
-	@Override
-	public void phase_Setup(){
-//		logger.print(getEntityID().toString() + " performing phase_setup at step " + getCurrentStep());
-	}
-
-	@Override
-	public void phase_Action(){
-//		logger.print(getEntityID().toString() + " performing phase_action at step " + getCurrentStep());
-	}
-
-	@Override
-	public void phase_Cleanup(){
-//		logger.print(getEntityID().toString() + " performing phase_cleanup at step " + getCurrentStep());
-	}
 
 
 	public ArrayList<SemanticGroup> getContainedSemanticGroups(){
