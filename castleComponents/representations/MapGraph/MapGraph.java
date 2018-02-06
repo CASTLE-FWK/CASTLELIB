@@ -1112,6 +1112,16 @@ public class MapGraph {
 		Object[] n = nodes.values().toArray();
 		return (Node) n[RandomGen.generateRandomRangeInteger(0, n.length - 1)];
 	}
+	
+	public Node getRandomVehicleAccessibleNode() {
+		boolean va = false;
+		Node n = null;
+		while (!va) {
+			n = getRandomNode();
+			va = n.isVehicleAccessible();
+		}
+		return n;
+	}
 
 	public Node getRandomHumanAccessibleNode() {
 		Node n = getRandomNode();

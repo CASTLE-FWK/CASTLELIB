@@ -30,6 +30,15 @@ public class Node {
 	Park theCarPark = null;
 	boolean humanAccessible = false;
 	int maxSpeed = 0;
+	boolean vehicleAccessible = true;
+
+	public boolean isVehicleAccessible() {
+		return vehicleAccessible;
+	}
+
+	public void setVehicleAccessible(boolean vehicleAccessible) {
+		this.vehicleAccessible = vehicleAccessible;
+	}
 
 	public int getMaxSpeed() {
 		return maxSpeed;

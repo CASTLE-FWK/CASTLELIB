@@ -24,6 +24,11 @@ public class Link implements Comparable<Link> {
 	long id;
 	boolean humanAccessible = false;
 	boolean carParkArea = false;
+	boolean vehicleAccessible = true;
+
+	public boolean isVehicleAccessible() {
+		return vehicleAccessible;
+	}
 
 	public boolean isCarParkArea() {
 		return carParkArea;
@@ -159,6 +164,22 @@ public class Link implements Comparable<Link> {
 
 	public void setRoadType(String roadType) {
 		this.roadType = roadType;
+		switch (this.roadType) {
+		case "living_street":
+			vehicleAccessible = false;
+			break;
+		case "pedestrian":
+			vehicleAccessible = false;
+			break;
+		case "footway":
+			vehicleAccessible = false;
+			break;
+		case "cycleway":
+			vehicleAccessible = false;
+		default:
+			vehicleAccessible = true;
+			break;
+		}
 	}
 
 	public boolean isLit() {
@@ -231,6 +252,7 @@ public class Link implements Comparable<Link> {
 			int j = i + 1;
 			wayPoints.get(i).setHumanAccessible(isHumanAccessible());
 			wayPoints.get(i).setMaxSpeed(maxSpeed);
+			wayPoints.get(i).setVehicleAccessible(isHumanAccessible());
 			length += calculateCoordinateDistance(wayPoints.get(i).getGeoCoords(), wayPoints.get(j).getGeoCoords());
 
 			// Build edges at same time
