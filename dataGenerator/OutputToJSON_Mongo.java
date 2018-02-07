@@ -285,7 +285,8 @@ public class OutputToJSON_Mongo implements Runnable {
 	}
 
 	public void endOfStep() {
-		this.run();
+		Thread t = new Thread(this);
+		t.start();
 		// String stepString = "step-" + currentStep;
 		// Document qDoc = new Document(ID_STR, stepString);
 		// currentCollection.insertOne(qDoc);
