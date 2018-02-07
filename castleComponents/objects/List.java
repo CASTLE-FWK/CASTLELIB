@@ -58,6 +58,10 @@ public class List<T> extends ArrayList<T> {
 	public T getLast() {
 		return get(size() -1);
 	}
+	
+	public T getFirst() {
+		return get(0);
+	}
 
 	@Override
 	public String toString() {

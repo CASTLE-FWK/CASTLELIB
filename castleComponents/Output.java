@@ -76,7 +76,11 @@ public class Output {
 	}
 	
 	public void systemInitialStatsToDB(ArrayList<Parameter<?>> params, String timeAsDate) {
-		dbOutput.storeInitValues(params, timeAsDate);
+		if (!dbOutputMuted) {
+			if (loggingToDB) {
+				dbOutput.storeInitValues(params, timeAsDate);
+			}
+		}
 	}
 
 	public void setLogger(Logger l) {

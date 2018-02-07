@@ -479,6 +479,9 @@ public class MapGraph {
 		Node minNode = null;
 		double minDist = Double.MAX_VALUE;
 		for (Node n : transitPoints) {
+			if (n.isCarPark()) {
+				continue;
+			}
 			double cand = v.calculateDistance(n.getCoords());
 			if (cand < minDist) {
 				minNode = n;
@@ -589,7 +592,7 @@ public class MapGraph {
 			// Get the next edge in the route
 			Edge nextEdge = route.getFollowingEdge(currEdge);
 			if (nextEdge.getID() == currEdge.getID()) {
-				errLog("large error");
+//				errLog("large error");
 			}
 			// Range has to decrease
 

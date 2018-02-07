@@ -1,18 +1,17 @@
 package castleComponents;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureType;
 import castleComponents.Interaction.InteractionType;
+import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
@@ -41,6 +40,8 @@ public class Entity implements Runnable {
 	protected boolean ready = false;
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
+
+	boolean agentDestroyed = false;
 
 	public Entity(String type, EntityID eid) {
 		this.entityID = new EntityID(eid);
@@ -100,7 +101,7 @@ public class Entity implements Runnable {
 			storedInteraction.incrementOccurrence();
 		}
 	}
-	
+
 	public void addHelperInteraction(Entity from, Entity to, InteractionType type, String name) {
 		Interaction interaction = new Interaction(from, to, type, name);
 		Interaction storedInteraction = interactionsInLastInterval.get(interaction.getID());
@@ -287,9 +288,9 @@ public class Entity implements Runnable {
 	public void clear() {
 		interactionsInLastInterval.clear();
 		featuresInLastInterval.clear();
-		
+
 	}
-	
+
 	// Trigger pulling
 	public void pullTriggers(List<Trigger> triggers) {
 		for (Iterator<Trigger> iterator = triggers.iterator(); iterator.hasNext();) {
@@ -373,8 +374,8 @@ public class Entity implements Runnable {
 			featuresInLastInterval.get(nameOfFeatureCall).incrementOccurrence();
 		}
 	}
-	
-	public ArrayList<Feature> publishFeatures(){
+
+	public ArrayList<Feature> publishFeatures() {
 		ArrayList<Feature> f = new ArrayList<Feature>(featuresInLastInterval.values());
 		return f;
 	}
@@ -390,7 +391,7 @@ public class Entity implements Runnable {
 		sb.append(entityType + "-name" + COMMA + getID());
 		sb.append("lifetime" + COMMA + "-1");
 
-		//Dump parameter values
+		// Dump parameter values
 		Iterator<Entry<String, Parameter<?>>> it = getParameters().entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>) it.next();
@@ -400,7 +401,7 @@ public class Entity implements Runnable {
 			sb.append("parameter-value" + COMMA + param.getCurrentValue());
 		}
 
-		//Dump interactions
+		// Dump interactions
 		List<Interaction> entityInteractions = publishInteractions();
 		if (entityInteractions != null) {
 			for (Interaction inter : entityInteractions) {
@@ -409,12 +410,12 @@ public class Entity implements Runnable {
 				sb.append("interaction-type" + COMMA + inter.getType());
 			}
 		}
-		
-		//Dump features
+
+		// Dump features
 		List<Feature> entityFeatureCalls = publishFeatures();
 		if (entityFeatureCalls != null) {
 			for (Feature f : entityFeatureCalls) {
-				sb.append("feature-name" + COMMA +f.getName());
+				sb.append("feature-name" + COMMA + f.getName());
 				sb.append("feature-type" + COMMA + f.getFeatureType());
 				sb.append("feature-call#" + COMMA + f.getOccurrence());
 			}
@@ -424,6 +425,7 @@ public class Entity implements Runnable {
 	}
 
 	public void writeModelData() {
-		output.writeModelData(this);
+		if (!agentDestroyed)
+			output.writeModelData(this);
 	}
 }

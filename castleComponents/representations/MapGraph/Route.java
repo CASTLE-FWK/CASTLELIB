@@ -119,7 +119,7 @@ public class Route {
 
 	public Edge getFollowingEdge(Edge e) {
 		int currIndex = edgesToTraverse.indexOf(e);
-		if (currIndex < edgesToTraverse.size()) {
+		if (currIndex < edgesToTraverse.size() - 1) {
 			return edgesToTraverse.get(currIndex + 1);
 		} else {
 			return edgesToTraverse.get(currIndex);
@@ -214,7 +214,7 @@ public class Route {
 			this.heading = Heading.NONE;
 			return this.heading;
 		}
-		if (nodePointer >= nodesToVisit.size()) {
+		if (nodePointer >= nodesToVisit.size() - 1) {
 			nodePointer = nodesToVisit.size() - 2; //Dodgy, 
 		}
 		Node a = nodesToVisit.get(nodePointer);

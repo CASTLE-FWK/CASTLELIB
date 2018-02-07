@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.UpdateResult;
 
 import org.bson.Document;
 
@@ -22,7 +23,7 @@ import castleComponents.Entity;
 import castleComponents.Interaction;
 import castleComponents.Output;
 
-public class OutputToJSON_Mongo {
+public class OutputToJSON_Mongo implements Runnable {
 
 	Document theOutput;
 	Document system;
@@ -32,6 +33,13 @@ public class OutputToJSON_Mongo {
 	Document initValues;
 	Document logs;
 	ArrayList<Document> interactions;
+	ArrayList<ArrayList<Document>> interactionsSizeStore;
+	private final int INTERACTION_SIZE_LIMIT = 12500;
+	private final String EACH = "$each";
+	private final String SET = "$set";
+	private final String PUSH = "$push";
+	private final String ADD_TO_SET = "$addToSet";
+	private final String ID_STR = "_id";
 
 	String URL = "http://127.0.0.1:5984/"; // this isn't correct but it's close
 	String DB_NAME = "testdb_1";
@@ -56,7 +64,8 @@ public class OutputToJSON_Mongo {
 	MongoClient mongoClient;
 	MongoDatabase db;
 
-	String DBName = "default_DB_Name";
+	String collectionName = "default_DB_Name";
+	String dbName = "";
 
 	Output output;
 
@@ -71,23 +80,23 @@ public class OutputToJSON_Mongo {
 	public void setupDB(String systemName, String executionID, String databaseName) {
 		System.out.println("Setting up db at");
 		this.executionID = executionID;
-		DBName = systemName;
-		currentPath = URL + DBName;
+		collectionName = systemName;
+		currentPath = URL + collectionName;
 		// this.dbID = dbID;
-
+		dbName = databaseName;
 		mongoClient = new MongoClient();
 		db = mongoClient.getDatabase(databaseName);
 		if (db == null) {
 			System.err
 					.println("db is null, which means the database called " + databaseName + " probably doesn't exist");
 		}
-		DBName = DBName + "_" + executionID;
-		DBName = DBName.replaceAll("\\s+", "_");
-		this.currentCollection = getCurrentCollectionFromDB(DBName);
+		collectionName = collectionName + "_" + executionID;
+		collectionName = collectionName.replaceAll("\\s+", "_");
+		this.currentCollection = getCurrentCollectionFromDB(collectionName);
 		if (this.currentCollection == null) {
 			System.err.println("cc is null");
 		}
-		System.out.println("MongoDB collection is at " + DBName);
+		System.out.println("MongoDB collection is at " + collectionName);
 		newStep();
 	}
 
@@ -104,17 +113,18 @@ public class OutputToJSON_Mongo {
 		interactions = new ArrayList<Document>();
 		environmentsDocuments = new ArrayList<Document>();
 		groupsDocuments = new ArrayList<Document>();
+		interactionsSizeStore = new ArrayList<ArrayList<Document>>();
 	}
 
 	public void storeInitValues(ArrayList<Parameter<?>> params, String startTimeAsDate) {
 		ArrayList<Document> paramDocs = new ArrayList<Document>();
 		for (Parameter<?> param : params) {
-			Document paramDoc = new Document().append("parameter-name", param.getName())
-					.append("parameter-type", param.getType()).append("parameter-value", param.getCurrentValue());
+			Document paramDoc = new Document().append(PARAMETER_NAME, param.getName())
+					.append(PARAMETER_TYPE, param.getType()).append(PARAMETER_VALUE, param.getCurrentValue());
 
 			paramDocs.add(paramDoc);
 		}
-		initValues.append("_id", "system-initialisation");
+		initValues.append(ID_STR, "system-initialisation");
 		initValues.append("initialisation-parameters", paramDocs);
 		initValues.append("start-time", startTimeAsDate);
 		initValues.append("execution-ID", executionID);
@@ -162,6 +172,19 @@ public class OutputToJSON_Mongo {
 		return entityType;
 	}
 
+	final String PARAMETER_NAME = "parameter_name";
+	final String PARAMETER_TYPE = "parameter_type";
+	final String PARAMETER_VALUE = "parameter_value";
+
+	final String INTERACTION_FROM = "interaction_from";
+	final String INTERACTION_TYPE = "interaction_type";
+	final String INTERACTION_TO = "interaction_to";
+	final String INTERACTION_NAME = "interaction_name";
+
+	final String FEATURE_NAME = "feature-name";
+	final String FEATURE_TYPE = "feature-type";
+	final String FEATURE_CALL_NUM = "feature-call#";
+
 	public void exportEntity(Entity e) {
 		String entityType = getEntityType(e);
 
@@ -177,8 +200,8 @@ public class OutputToJSON_Mongo {
 		while (it.hasNext()) {
 			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>) it.next();
 			Parameter<?> param = pair.getValue();
-			Document paramDoc = new Document().append("parameter-name", param.getName())
-					.append("parameter-type", param.getType()).append("parameter-value", param.getCurrentValue());
+			Document paramDoc = new Document().append(PARAMETER_NAME, param.getName())
+					.append(PARAMETER_TYPE, param.getType()).append(PARAMETER_VALUE, param.getCurrentValue());
 
 			paramDocs.add(paramDoc);
 		}
@@ -186,20 +209,21 @@ public class OutputToJSON_Mongo {
 		List<Interaction> entityInteractions = e.publishInteractions();
 		if (entityInteractions != null) {
 			for (Interaction inter : entityInteractions) {
-				Document interDoc = new Document().append("interaction-from", inter.getEntityFrom().getID())
-						.append("interaction-to", inter.getEntityTo().getID())
-						.append("interaction-type", inter.getType().toString())
-						.append("interaction-name", inter.getInteractionName());
-				interactions.add(interDoc);
+				Document interDoc = new Document().append(INTERACTION_FROM, inter.getEntityFrom().getID())
+						.append(INTERACTION_TO, inter.getEntityTo().getID())
+						.append(INTERACTION_TYPE, inter.getType().toString())
+						.append(INTERACTION_NAME, inter.getInteractionName());
+				// interactions.add(interDoc);
+				storeNewInteractionDocument(interDoc);
 			}
 		}
 
 		List<Feature> entityFeatureCalls = e.publishFeatures();
 		if (entityFeatureCalls != null) {
 			for (Feature f : entityFeatureCalls) {
-				Document fCallDoc = new Document().append("feature-name", f.getName())
-						.append("feature-type", f.getFeatureType().toString())
-						.append("feature-call#", f.getOccurrence());
+				Document fCallDoc = new Document().append(FEATURE_NAME, f.getName())
+						.append(FEATURE_TYPE, f.getFeatureType().toString())
+						.append(FEATURE_CALL_NUM, f.getOccurrence());
 				fCallDocs.add(fCallDoc);
 			}
 		}
@@ -220,29 +244,94 @@ public class OutputToJSON_Mongo {
 		e.clear();
 	}
 
-	public void endOfStep() {
-		currentCollection.insertOne(new Document("_id", "step-" + currentStep).append("system-info", system)
-				.append("environments", environmentsDocuments).append("groups", groupsDocuments)
-				.append("agents", agentsDocuments).append("interactions", interactions));
+	public void storeNewInteractionDocument(Document interDoc) {
+		if (interactions.size() >= INTERACTION_SIZE_LIMIT) {
+			interactionsSizeStore.add(new ArrayList<Document>(interactions));
+			interactions.clear();
+			System.out.println("OTOOOO OBOOID");
+		}
+		interactions.add(interDoc);
 	}
 
-	public Document getCompleteDocument() {
-		return new Document("_id", "step-" + currentStep).append("system-info", system)
-				.append("environments", environmentsDocuments).append("groups", groupsDocuments)
-				.append("agents", agentsDocuments).append("interactions", interactions);
+	final String STEP_DASH = "step-";
+	@Override
+	public void run() {
+		String stepString = STEP_DASH + currentStep;
+		Document qDoc = new Document(ID_STR, stepString);
+		currentCollection.insertOne(qDoc);
+		currentCollection.updateOne(qDoc, new Document(SET, new Document("system-info", system)));
+		currentCollection.updateOne(qDoc, new Document(SET, new Document("environments", environmentsDocuments)));
+		currentCollection.updateOne(qDoc, new Document(SET, new Document("groups", groupsDocuments)));
+		currentCollection.updateOne(qDoc, new Document(SET, new Document("agents", agentsDocuments)));
+
+		interactionsSizeStore.add(interactions);
+		for (int i = 0; i < interactionsSizeStore.size(); i++) {
+			ArrayList<Document> d = interactionsSizeStore.get(i);
+			String command = "";
+			if (i == 0) {
+				command = SET;
+				currentCollection.updateOne(qDoc, new Document(command, new Document("interactions", d)));
+			} else {
+				command = PUSH;
+				// new ThreadedDocumentWriter(dbName, collectionName, qDoc,
+				// new Document(command, new Document("interactions", new Document(EACH,
+				// d)))).run();
+				currentCollection.updateOne(qDoc,
+						new Document(command, new Document("interactions", new Document(EACH, d))));
+			}
+
+		}
+
+	}
+
+	public void endOfStep() {
+		this.run();
+		// String stepString = "step-" + currentStep;
+		// Document qDoc = new Document(ID_STR, stepString);
+		// currentCollection.insertOne(qDoc);
+		// currentCollection.updateOne(qDoc, new Document("$set", new
+		// Document("system-info", system)));
+		// currentCollection.updateOne(qDoc, new Document("$set", new
+		// Document("environments", environmentsDocuments)));
+		// currentCollection.updateOne(qDoc, new Document("$set", new Document("groups",
+		// groupsDocuments)));
+		// currentCollection.updateOne(qDoc, new Document("$set", new Document("agents",
+		// agentsDocuments)));
+		//
+		// interactionsSizeStore.add(interactions);
+		// for (int i = 0; i < interactionsSizeStore.size(); i++) {
+		// ArrayList<Document> d = interactionsSizeStore.get(i);
+		// String command = "";
+		// if (i == 0) {
+		// command = SET;
+		// currentCollection.updateOne(qDoc, new Document(command, new
+		// Document("interactions", d)));
+		// } else {
+		// command = PUSH;
+		// // new ThreadedDocumentWriter(dbName, collectionName, qDoc,
+		// // new Document(command, new Document("interactions", new Document(EACH,
+		// // d)))).run();
+		// currentCollection.updateOne(qDoc,
+		// new Document(command, new Document("interactions", new Document(EACH, d))));
+		// }
+		//
+		// }
+
+		// currentCollection.updateOne(new Document(ID_STR, stepString), new
+		// Document("$set", new Document("interactions", interactions)));
 	}
 
 	public Document exportParameters(String name, String parameterValue, String type) {
 		Document param = new Document();
-		param.append("parameter-name", name);
-		param.append("parameter-type", type);
-		param.append("parameter-value", parameterValue);
+		param.append(PARAMETER_NAME, name);
+		param.append(PARAMETER_TYPE, type);
+		param.append(PARAMETER_VALUE, parameterValue);
 		return param;
 	}
 
 	// Complete JSON and send to DB
 	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps) {
-		currentCollection.insertOne(new Document("_id", "termination-statistics").append("termination-step", finalStep)
+		currentCollection.insertOne(new Document(ID_STR, "termination-statistics").append("termination-step", finalStep)
 				.append("%-of-execution-finished", (((double) finalStep) / ((double) totalSteps) * 100))
 				.append("elapsed-time", elapsedTime));
 	}
@@ -253,5 +342,42 @@ public class OutputToJSON_Mongo {
 
 	public void errLog(Object o) {
 		System.err.println(getClass().getSimpleName() + " Warning: " + o.toString());
+	}
+}
+
+class ThreadedDocumentWriter implements Runnable {
+	MongoCollection<Document> currentCollection;
+	Document query;
+	Document docToWrite;
+	MongoClient mc;
+
+	public ThreadedDocumentWriter(String dbName, String collName, Document que, Document dtw) {
+		MongoClient mc = new MongoClient();
+		MongoDatabase db = mc.getDatabase(dbName);
+		if (db == null) {
+			System.err.println("db is null, which means the database called " + dbName + " probably doesn't exist");
+		}
+
+		this.currentCollection = db.getCollection(collName);
+		this.query = que;
+		this.docToWrite = dtw;
+	}
+
+	@Override
+	public void run() {
+		writeDocument();
+	}
+
+	public void writeDocument() {
+		UpdateResult ur = currentCollection.updateOne(query, docToWrite);
+		if (!ur.wasAcknowledged()) {
+			System.out.println("8989899821");
+			System.exit(0);
+		} else {
+			if (ur.getModifiedCount() < 1) {
+				System.out.println("pmasdpdaspdas");
+				System.exit(0);
+			}
+		}
 	}
 }

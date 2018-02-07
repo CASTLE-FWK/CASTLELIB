@@ -1,10 +1,10 @@
 package observationTool;
 
 import java.util.Comparator;
-import java.util.HashMap;
 
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
+import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 
 //This is a virtual Agent. Identical to an Agent it just allows the MetricRunner to process already stored information
@@ -21,7 +21,7 @@ public class VEntity extends Entity {
 		super(type, uid);
 		this.name = name;
 	}
-
+ 
 	public VEntity(VEntity v) {
 		super(v.getType(), v.getID());
 		this.name = v.getName();

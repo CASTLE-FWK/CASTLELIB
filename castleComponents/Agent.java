@@ -217,9 +217,10 @@ public class Agent extends Entity{
 	//I'm relying that Repast properly handle destruction of an agent
 	public void destroyAgent(){	
 		lifeState.setState(AGENT_DEAD);
+		super.agentDestroyed = true;
 //		isAliveInSystem = false;	//TODO: REMOVE THESE
 		if (DEBUG_MODE){
-			System.out.println("DESTROYING " + toString());
+//			System.out.println("DESTROYING " + toString());
 		}
 	}
 	
