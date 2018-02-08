@@ -17,6 +17,7 @@ import castleComponents.Environment;
 import castleComponents.Feature;
 import castleComponents.SemanticGroup;
 import castleComponents.SimulationInfo;
+import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 import castleComponents.Agent;
 import castleComponents.Entity;
@@ -34,6 +35,9 @@ public class OutputToJSON_Mongo implements Runnable {
 	Document logs;
 	ArrayList<Document> interactions;
 	ArrayList<ArrayList<Document>> interactionsSizeStore;
+	HashMap<Integer, ArrayList<Document>> maxInteractionsStore;
+	
+	
 	private final int INTERACTION_SIZE_LIMIT = 12500;
 	private final String EACH = "$each";
 	private final String SET = "$set";
@@ -114,6 +118,7 @@ public class OutputToJSON_Mongo implements Runnable {
 		environmentsDocuments = new ArrayList<Document>();
 		groupsDocuments = new ArrayList<Document>();
 		interactionsSizeStore = new ArrayList<ArrayList<Document>>();
+		maxInteractionsStore = new HashMap<Integer, ArrayList<Document>>();
 	}
 
 	public void storeInitValues(ArrayList<Parameter<?>> params, String startTimeAsDate) {
@@ -246,6 +251,8 @@ public class OutputToJSON_Mongo implements Runnable {
 
 	public void storeNewInteractionDocument(Document interDoc) {
 		if (interactions.size() >= INTERACTION_SIZE_LIMIT) {
+//			int count = maxInteractionsStore.size();
+//			maxInteractionsStore.put(count, new ArrayList<Document>(interactions));
 			interactionsSizeStore.add(new ArrayList<Document>(interactions));
 			interactions.clear();
 			System.out.println("OTOOOO OBOOID");
@@ -264,7 +271,10 @@ public class OutputToJSON_Mongo implements Runnable {
 		currentCollection.updateOne(qDoc, new Document(SET, new Document("groups", groupsDocuments)));
 		currentCollection.updateOne(qDoc, new Document(SET, new Document("agents", agentsDocuments)));
 
-		interactionsSizeStore.add(interactions);
+		interactionsSizeStore.add(new ArrayList<Document>(interactions));
+		
+//		maxInteractionsStore.put(maxInteractions.size(), new ArrayList<Document>(interactions));
+		
 		for (int i = 0; i < interactionsSizeStore.size(); i++) {
 			ArrayList<Document> d = interactionsSizeStore.get(i);
 			String command = "";
