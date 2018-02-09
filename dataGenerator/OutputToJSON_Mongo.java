@@ -5,11 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.UpdateResult;
 
 import org.bson.Document;
 
@@ -17,7 +18,6 @@ import castleComponents.Environment;
 import castleComponents.Feature;
 import castleComponents.SemanticGroup;
 import castleComponents.SimulationInfo;
-import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 import castleComponents.Agent;
 import castleComponents.Entity;
@@ -33,19 +33,27 @@ public class OutputToJSON_Mongo implements Runnable {
 	Document agents;
 	Document initValues;
 	Document logs;
-	ArrayList<Document> interactions;
-	ArrayList<ArrayList<Document>> interactionsSizeStore;
-	HashMap<Integer, ArrayList<Document>> maxInteractionsStore;
-	
-	
-	private final int INTERACTION_SIZE_LIMIT = 12500;
-	private final String EACH = "$each";
-	private final String SET = "$set";
-	private final String PUSH = "$push";
-	private final String ADD_TO_SET = "$addToSet";
-	private final String ID_STR = "_id";
 
-	String URL = "http://127.0.0.1:5984/"; // this isn't correct but it's close
+	protected final int INTERACTION_SIZE_LIMIT = 12500;
+	protected final int AGENTS_SIZE_LIMIT = 1500;
+	protected final int GROUPS_SIZE_LIMIT = 1500;
+	protected final int ENVIRONMENTS_SIZE_LIMIT = 1500;
+	protected final int LOGS_SIZE_LIMIT = 12500;
+
+	protected final int MAX_CONCURRENT_THREADS = 10;
+
+	protected final String EACH = "$each";
+	protected final String SET = "$set";
+	protected final String PUSH = "$push";
+	protected final String ADD_TO_SET = "$addToSet";
+	protected final String ID_STR = "_id";
+
+	protected final String AGENTS = "agents";
+	protected final String GROUPS = "groups";
+	protected final String ENVIRONMENTS = "environments";
+	protected final String INTERACTIONS = "interactions";
+
+	String URL = "127.0.0.1:27017"; // this isn't correct but it's close
 	String DB_NAME = "testdb_1";
 
 	String executionID = "";
@@ -55,9 +63,15 @@ public class OutputToJSON_Mongo implements Runnable {
 	SimulationInfo simInfo;
 
 	ArrayList<Document> agentsDocuments;
+	ArrayList<ArrayList<Document>> agentMaxSizeDocumentStore;
 	ArrayList<Document> groupsDocuments;
+	ArrayList<ArrayList<Document>> groupsMaxSizeDocumentStore;
 	ArrayList<Document> environmentsDocuments;
+	ArrayList<ArrayList<Document>> environmentsMaxSizeDocumentStore;
 	ArrayList<Document> logDocuments;
+	ArrayList<ArrayList<Document>> logsMaxSizeDocumentStore;
+	ArrayList<Document> interactions;
+	ArrayList<ArrayList<Document>> interactionsSizeStore;
 
 	final String GROUP = "group";
 	final String AGENT = "agent";
@@ -71,7 +85,27 @@ public class OutputToJSON_Mongo implements Runnable {
 	String collectionName = "default_DB_Name";
 	String dbName = "";
 
+	// The wall of clones
+	ArrayList<Document> agentsDocumentsClone;
+	ArrayList<ArrayList<Document>> agentMaxSizeDocumentStoreClone;
+	ArrayList<Document> groupsDocumentsClone;
+	ArrayList<ArrayList<Document>> groupsMaxSizeDocumentStoreClone;
+	ArrayList<Document> environmentsDocumentsClone;
+	ArrayList<ArrayList<Document>> environmentsMaxSizeDocumentStoreClone;
+	ArrayList<Document> logDocumentsClone;
+	ArrayList<ArrayList<Document>> logsMaxSizeDocumentStoreClone;
+	ArrayList<Document> interactionsClone;
+	ArrayList<ArrayList<Document>> interactionsSizeStoreClone;
+	Document systemClone;
+	Document environmentsClone;
+	Document groupsClone;
+	Document agentsClone;
+	Document initValuesClone;
+	Document logsClone;
+
 	Output output;
+
+	ArrayList<MongoWriteQueuer> mongoWriteQueue;
 
 	public OutputToJSON_Mongo(Output output, SimulationInfo simInfo) {
 		// Create DB
@@ -79,6 +113,8 @@ public class OutputToJSON_Mongo implements Runnable {
 		this.output = output;
 
 		initValues = new Document();
+		mongoWriteQueue = new ArrayList<MongoWriteQueuer>();
+		mongoWriteQueueRunner = new ArrayList<MongoWriteQueuer>();
 	}
 
 	public void setupDB(String systemName, String executionID, String databaseName) {
@@ -86,9 +122,15 @@ public class OutputToJSON_Mongo implements Runnable {
 		this.executionID = executionID;
 		collectionName = systemName;
 		currentPath = URL + collectionName;
-		// this.dbID = dbID;
+		// this.dbID = dbID;5984
 		dbName = databaseName;
+		// MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+		// builder.threadsAllowedToBlockForConnectionMultiplier(50);
+		// MongoClientOptions options = builder.build();
+		//
+		// ServerAddress sa = new ServerAddress(URL);
 		mongoClient = new MongoClient();
+
 		db = mongoClient.getDatabase(databaseName);
 		if (db == null) {
 			System.err
@@ -118,7 +160,10 @@ public class OutputToJSON_Mongo implements Runnable {
 		environmentsDocuments = new ArrayList<Document>();
 		groupsDocuments = new ArrayList<Document>();
 		interactionsSizeStore = new ArrayList<ArrayList<Document>>();
-		maxInteractionsStore = new HashMap<Integer, ArrayList<Document>>();
+		agentMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		groupsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		environmentsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		logsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
 	}
 
 	public void storeInitValues(ArrayList<Parameter<?>> params, String startTimeAsDate) {
@@ -218,7 +263,6 @@ public class OutputToJSON_Mongo implements Runnable {
 						.append(INTERACTION_TO, inter.getEntityTo().getID())
 						.append(INTERACTION_TYPE, inter.getType().toString())
 						.append(INTERACTION_NAME, inter.getInteractionName());
-				// interactions.add(interDoc);
 				storeNewInteractionDocument(interDoc);
 			}
 		}
@@ -237,99 +281,110 @@ public class OutputToJSON_Mongo implements Runnable {
 
 		switch (entityType) {
 		case GROUP:
-			groupsDocuments.add(entity);
+			storeNewGroupDocument(entity);
 			break;
 		case AGENT:
-			agentsDocuments.add(entity);
+			storeNewAgentDocument(entity);
 			break;
 		case ENVIRONMENT:
-			environmentsDocuments.add(entity);
+			storeNewEnvironmentDocument(entity);
 			break;
 		}
 		e.clear();
 	}
 
 	public void storeNewInteractionDocument(Document interDoc) {
-		if (interactions.size() >= INTERACTION_SIZE_LIMIT) {
-//			int count = maxInteractionsStore.size();
-//			maxInteractionsStore.put(count, new ArrayList<Document>(interactions));
-			interactionsSizeStore.add(new ArrayList<Document>(interactions));
-			interactions.clear();
-			System.out.println("OTOOOO OBOOID");
+		// if (interactions.size() >= INTERACTION_SIZE_LIMIT) {
+		// interactionsSizeStore.add(new ArrayList<Document>(interactions));
+		// interactions.clear();
+		// }
+		interactions.add(new Document(interDoc));
+	}
+
+	public void storeNewAgentDocument(Document interDoc) {
+		if (agentsDocuments.size() >= AGENTS_SIZE_LIMIT) {
+			agentMaxSizeDocumentStore.add(new ArrayList<Document>(agentsDocuments));
+			agentsDocuments.clear();
 		}
-		interactions.add(interDoc);
+		agentsDocuments.add(new Document(interDoc));
+	}
+
+	public void storeNewGroupDocument(Document interDoc) {
+		// if (groupsDocuments.size() >= GROUPS_SIZE_LIMIT) {
+		// agentMaxSizeDocumentStore.add(new ArrayList<Document>(groupsDocuments));
+		// groupsDocuments.clear();
+		// }
+		groupsDocuments.add(new Document(interDoc));
+	}
+
+	public void storeNewEnvironmentDocument(Document interDoc) {
+		// if (environmentsDocuments.size() >= ENVIRONMENTS_SIZE_LIMIT) {
+		// environmentsMaxSizeDocumentStore.add(new
+		// ArrayList<Document>(environmentsDocuments));
+		// environmentsDocuments.clear();
+		// }
+		environmentsDocuments.add(new Document(interDoc));
+	}
+
+	public void storeNewLogDocument(Document interDoc) {
+		// if (logDocuments.size() >= AGENTS_SIZE_LIMIT) {
+		// logsMaxSizeDocumentStore.add(new ArrayList<Document>(logDocuments));
+		// logDocuments.clear();
+		// }
+		logDocuments.add(new Document(interDoc));
 	}
 
 	final String STEP_DASH = "step-";
+	private ArrayList<MongoWriteQueuer> mongoWriteQueueRunner;
+
 	@Override
 	public void run() {
-		String stepString = STEP_DASH + currentStep;
-		Document qDoc = new Document(ID_STR, stepString);
-		currentCollection.insertOne(qDoc);
-		currentCollection.updateOne(qDoc, new Document(SET, new Document("system-info", system)));
-		currentCollection.updateOne(qDoc, new Document(SET, new Document("environments", environmentsDocuments)));
-		currentCollection.updateOne(qDoc, new Document(SET, new Document("groups", groupsDocuments)));
-		currentCollection.updateOne(qDoc, new Document(SET, new Document("agents", agentsDocuments)));
-
-		interactionsSizeStore.add(new ArrayList<Document>(interactions));
-		
-//		maxInteractionsStore.put(maxInteractions.size(), new ArrayList<Document>(interactions));
-		
-		for (int i = 0; i < interactionsSizeStore.size(); i++) {
-			ArrayList<Document> d = interactionsSizeStore.get(i);
-			String command = "";
-			if (i == 0) {
-				command = SET;
-				currentCollection.updateOne(qDoc, new Document(command, new Document("interactions", d)));
-			} else {
-				command = PUSH;
-				// new ThreadedDocumentWriter(dbName, collectionName, qDoc,
-				// new Document(command, new Document("interactions", new Document(EACH,
-				// d)))).run();
-				currentCollection.updateOne(qDoc,
-						new Document(command, new Document("interactions", new Document(EACH, d))));
-			}
-
-		}
+		System.out.println("TRIGGER WRITER");
+		runWriteQueue();
 
 	}
 
-	public void endOfStep() {
-		Thread t = new Thread(this);
-		t.start();
-		// String stepString = "step-" + currentStep;
-		// Document qDoc = new Document(ID_STR, stepString);
-		// currentCollection.insertOne(qDoc);
-		// currentCollection.updateOne(qDoc, new Document("$set", new
-		// Document("system-info", system)));
-		// currentCollection.updateOne(qDoc, new Document("$set", new
-		// Document("environments", environmentsDocuments)));
-		// currentCollection.updateOne(qDoc, new Document("$set", new Document("groups",
-		// groupsDocuments)));
-		// currentCollection.updateOne(qDoc, new Document("$set", new Document("agents",
-		// agentsDocuments)));
-		//
-		// interactionsSizeStore.add(interactions);
-		// for (int i = 0; i < interactionsSizeStore.size(); i++) {
-		// ArrayList<Document> d = interactionsSizeStore.get(i);
-		// String command = "";
-		// if (i == 0) {
-		// command = SET;
-		// currentCollection.updateOne(qDoc, new Document(command, new
-		// Document("interactions", d)));
-		// } else {
-		// command = PUSH;
-		// // new ThreadedDocumentWriter(dbName, collectionName, qDoc,
-		// // new Document(command, new Document("interactions", new Document(EACH,
-		// // d)))).run();
-		// currentCollection.updateOne(qDoc,
-		// new Document(command, new Document("interactions", new Document(EACH, d))));
+	public void runWriteQueue() {
+		ExecutorService e = Executors.newFixedThreadPool(mongoWriteQueueRunner.size());
+		System.out.println("mongo queue size: " + mongoWriteQueueRunner.size());
+		try {
+			for (MongoWriteQueuer mwq : mongoWriteQueueRunner) {
+				e.execute(mwq);
+			}
+			e.shutdown();
+			// ArrayList<Future<Boolean>> futures = new
+			// ArrayList<Future<Boolean>>(e.invokeAll(mongoWriteQueueRunner));
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			System.exit(0);
+		}
+		// mongoWriteQueueRunner = new ArrayList<MongoWriteQueuer>();
+		System.out.println("wait");
+		// for (MongoWriteQueuer mwq : mongoWriteQueue) {
+		// e.execute(mwq);
 		// }
-		//
+		// e.awaitTermination();
+		// return e.isTerminated();
+	}
+
+	public void endOfStep() {
+		agentMaxSizeDocumentStore.add(agentsDocuments);
+		MongoWriteQueuer mwq = new MongoWriteQueuer(agentsDocuments, agentMaxSizeDocumentStore, groupsDocuments, environmentsDocuments,
+				logDocuments, interactions, system, initValues, logs, currentStep, currentCollection);
+		// mwq.run();
+		mongoWriteQueue.add(mwq);
+
+		// if (this.currentStep % MAX_CONCURRENT_THREADS == 0) {
+		// System.out.println("TRIGGER WRITER");
+		// runWriteQueue();
+		// mongoWriteQueue = new ArrayList<MongoWriteQueuer>();
 		// }
 
-		// currentCollection.updateOne(new Document(ID_STR, stepString), new
-		// Document("$set", new Document("interactions", interactions)));
+		mongoWriteQueueRunner = new ArrayList<MongoWriteQueuer>(mongoWriteQueue);
+		Thread t = new Thread(this);
+		t.start();
+		mongoWriteQueue.clear();
+		// }
 	}
 
 	public Document exportParameters(String name, String parameterValue, String type) {
@@ -342,6 +397,7 @@ public class OutputToJSON_Mongo implements Runnable {
 
 	// Complete JSON and send to DB
 	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps) {
+		runWriteQueue();
 		currentCollection.insertOne(new Document(ID_STR, "termination-statistics").append("termination-step", finalStep)
 				.append("%-of-execution-finished", (((double) finalStep) / ((double) totalSteps) * 100))
 				.append("elapsed-time", elapsedTime));
@@ -356,39 +412,116 @@ public class OutputToJSON_Mongo implements Runnable {
 	}
 }
 
-class ThreadedDocumentWriter implements Runnable {
-	MongoCollection<Document> currentCollection;
-	Document query;
-	Document docToWrite;
-	MongoClient mc;
+class MongoWriteQueuer implements Runnable {
+	ArrayList<Document> agentsDocuments;
+	ArrayList<ArrayList<Document>> agentMaxSizeDocumentStore;
+	ArrayList<Document> groupsDocuments;
+	ArrayList<ArrayList<Document>> groupsMaxSizeDocumentStore;
+	ArrayList<Document> environmentsDocuments;
+	ArrayList<ArrayList<Document>> environmentsMaxSizeDocumentStore;
+	ArrayList<Document> logDocuments;
+	ArrayList<ArrayList<Document>> logsMaxSizeDocumentStore;
+	ArrayList<Document> interactions;
+	ArrayList<ArrayList<Document>> interactionsSizeStore;
+	Document system;
+	Document initValues;
+	Document logs;
+	int currentStep = -1;
+	private MongoCollection<Document> currentCollection;
 
-	public ThreadedDocumentWriter(String dbName, String collName, Document que, Document dtw) {
-		MongoClient mc = new MongoClient();
-		MongoDatabase db = mc.getDatabase(dbName);
-		if (db == null) {
-			System.err.println("db is null, which means the database called " + dbName + " probably doesn't exist");
-		}
+	protected final int INTERACTION_SIZE_LIMIT = 12500;
+	protected final int AGENTS_SIZE_LIMIT = 2000;
+	protected final int GROUPS_SIZE_LIMIT = 2000;
+	protected final int ENVIRONMENTS_SIZE_LIMIT = 2000;
+	protected final int LOGS_SIZE_LIMIT = 12500;
 
-		this.currentCollection = db.getCollection(collName);
-		this.query = que;
-		this.docToWrite = dtw;
+	protected final int MAX_CONCURRENT_THREADS = 10;
+
+	protected final String EACH = "$each";
+	protected final String SET = "$set";
+	protected final String PUSH = "$push";
+	protected final String ADD_TO_SET = "$addToSet";
+	protected final String ID_STR = "_id";
+
+	protected final String AGENTS = "agents";
+	protected final String GROUPS = "groups";
+	protected final String ENVIRONMENTS = "environments";
+	protected final String INTERACTIONS = "interactions";
+	protected final String STEP_DASH = "step-";
+
+	public MongoWriteQueuer(ArrayList<Document> agentsDocuments, ArrayList<ArrayList<Document>> agentMaxSizeDocuments, ArrayList<Document> groupsDocuments,
+			ArrayList<Document> environmentsDocuments, ArrayList<Document> logDocuments,
+			ArrayList<Document> interactions, Document system, Document initValues, Document logs, int currentStep,
+			MongoCollection<Document> currentCollection) {
+		super();
+		this.agentsDocuments = new ArrayList<Document>(agentsDocuments);
+		this.agentMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>(agentMaxSizeDocuments);
+		this.groupsDocuments = new ArrayList<Document>(groupsDocuments);
+		this.groupsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		this.environmentsDocuments = new ArrayList<Document>(environmentsDocuments);
+		this.environmentsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		this.logDocuments = new ArrayList<Document>(logDocuments);
+		this.logsMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>();
+		this.interactions = new ArrayList<Document>(interactions);
+		this.interactionsSizeStore = new ArrayList<ArrayList<Document>>();
+		this.system = system;
+		this.initValues = initValues;
+		this.logs = logs;
+		this.currentStep = currentStep;
+		this.currentCollection = currentCollection;
+
+		System.out.println("WRITE CS: " + this.currentStep);
 	}
 
-	@Override
 	public void run() {
-		writeDocument();
+		String stepString = STEP_DASH + currentStep;
+		Document qDoc = new Document(ID_STR, stepString);
+		currentCollection.insertOne(qDoc);
+		currentCollection.updateOne(qDoc, new Document(SET, new Document("system-info", system)));
+
+		// Finalise sends
+		// documentChunkSender(INTERACTIONS, qDoc, interactionsSizeStore);
+		// documentChunkSender(AGENTS, qDoc, agentMaxSizeDocumentStore);
+		// documentChunkSender(GROUPS, qDoc, groupsMaxSizeDocumentStore);
+		// documentChunkSender(ENVIRONMENTS, qDoc, environmentsMaxSizeDocumentStore);
+		//
+		aDocumentChunker(interactions, INTERACTION_SIZE_LIMIT, INTERACTIONS, qDoc);
+//		aDocumentChunker(agentsDocuments, AGENTS_SIZE_LIMIT, AGENTS, qDoc);
+		documentChunkSender(AGENTS, qDoc, agentMaxSizeDocumentStore);
+		aDocumentChunker(groupsDocuments, GROUPS_SIZE_LIMIT, GROUPS, qDoc);
+		aDocumentChunker(environmentsDocuments, ENVIRONMENTS_SIZE_LIMIT, ENVIRONMENTS, qDoc);
 	}
 
-	public void writeDocument() {
-		UpdateResult ur = currentCollection.updateOne(query, docToWrite);
-		if (!ur.wasAcknowledged()) {
-			System.out.println("8989899821");
-			System.exit(0);
+	public void aDocumentChunker(ArrayList<Document> docs, int maxSize, String name, Document qDoc) {
+		if (docs.size() > maxSize) {
+			int multiple = docs.size() / maxSize;
+			int realMax = maxSize * multiple;
+			int remainder = docs.size() - realMax;
+			for (int i = 0; i < multiple * maxSize; i += multiple) {
+				if (i == 0) {
+					currentCollection.updateOne(qDoc,
+							new Document(SET, new Document(name, docs.subList(i, i * multiple))));
+				} else {
+					currentCollection.updateOne(qDoc,
+							new Document(PUSH, new Document(name, new Document(EACH, docs.subList(i, i * multiple)))));
+				}
+			}
+			currentCollection.updateOne(qDoc, new Document(PUSH,
+					new Document(name, new Document(EACH, docs.subList(realMax, realMax + remainder)))));
 		} else {
-			if (ur.getModifiedCount() < 1) {
-				System.out.println("pmasdpdaspdas");
-				System.exit(0);
+			currentCollection.updateOne(qDoc, new Document(SET, new Document(name, docs)));
+		}
+	}
+
+	public void documentChunkSender(String name, Document qDoc, ArrayList<ArrayList<Document>> docMap) {
+		for (int i = 0; i < docMap.size(); i++) {
+			ArrayList<Document> d = docMap.get(i);
+			if (i == 0) {
+				currentCollection.updateOne(qDoc, new Document(SET, new Document(name, d)));
+			} else {
+				currentCollection.updateOne(qDoc, new Document(PUSH, new Document(name, new Document(EACH, d))));
 			}
 		}
 	}
+
 }
