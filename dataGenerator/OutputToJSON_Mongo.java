@@ -368,9 +368,11 @@ public class OutputToJSON_Mongo implements Runnable {
 	}
 
 	public void endOfStep() {
+		System.out.println("CURRENT STEP::: "+currentStep);
 		agentMaxSizeDocumentStore.add(agentsDocuments);
-		MongoWriteQueuer mwq = new MongoWriteQueuer(agentsDocuments, agentMaxSizeDocumentStore, groupsDocuments, environmentsDocuments,
-				logDocuments, interactions, system, initValues, logs, currentStep, currentCollection);
+		MongoWriteQueuer mwq = new MongoWriteQueuer(agentsDocuments, agentMaxSizeDocumentStore, groupsDocuments,
+				environmentsDocuments, logDocuments, interactions, system, initValues, logs, currentStep,
+				currentCollection);
 		// mwq.run();
 		mongoWriteQueue.add(mwq);
 
@@ -397,7 +399,7 @@ public class OutputToJSON_Mongo implements Runnable {
 
 	// Complete JSON and send to DB
 	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps) {
-		runWriteQueue();
+//		runWriteQueue();
 		currentCollection.insertOne(new Document(ID_STR, "termination-statistics").append("termination-step", finalStep)
 				.append("%-of-execution-finished", (((double) finalStep) / ((double) totalSteps) * 100))
 				.append("elapsed-time", elapsedTime));
@@ -449,10 +451,10 @@ class MongoWriteQueuer implements Runnable {
 	protected final String INTERACTIONS = "interactions";
 	protected final String STEP_DASH = "step-";
 
-	public MongoWriteQueuer(ArrayList<Document> agentsDocuments, ArrayList<ArrayList<Document>> agentMaxSizeDocuments, ArrayList<Document> groupsDocuments,
-			ArrayList<Document> environmentsDocuments, ArrayList<Document> logDocuments,
-			ArrayList<Document> interactions, Document system, Document initValues, Document logs, int currentStep,
-			MongoCollection<Document> currentCollection) {
+	public MongoWriteQueuer(ArrayList<Document> agentsDocuments, ArrayList<ArrayList<Document>> agentMaxSizeDocuments,
+			ArrayList<Document> groupsDocuments, ArrayList<Document> environmentsDocuments,
+			ArrayList<Document> logDocuments, ArrayList<Document> interactions, Document system, Document initValues,
+			Document logs, int currentStep, MongoCollection<Document> currentCollection) {
 		super();
 		this.agentsDocuments = new ArrayList<Document>(agentsDocuments);
 		this.agentMaxSizeDocumentStore = new ArrayList<ArrayList<Document>>(agentMaxSizeDocuments);
@@ -480,13 +482,8 @@ class MongoWriteQueuer implements Runnable {
 		currentCollection.updateOne(qDoc, new Document(SET, new Document("system-info", system)));
 
 		// Finalise sends
-		// documentChunkSender(INTERACTIONS, qDoc, interactionsSizeStore);
-		// documentChunkSender(AGENTS, qDoc, agentMaxSizeDocumentStore);
-		// documentChunkSender(GROUPS, qDoc, groupsMaxSizeDocumentStore);
-		// documentChunkSender(ENVIRONMENTS, qDoc, environmentsMaxSizeDocumentStore);
-		//
 		aDocumentChunker(interactions, INTERACTION_SIZE_LIMIT, INTERACTIONS, qDoc);
-//		aDocumentChunker(agentsDocuments, AGENTS_SIZE_LIMIT, AGENTS, qDoc);
+		// aDocumentChunker(agentsDocuments, AGENTS_SIZE_LIMIT, AGENTS, qDoc);
 		documentChunkSender(AGENTS, qDoc, agentMaxSizeDocumentStore);
 		aDocumentChunker(groupsDocuments, GROUPS_SIZE_LIMIT, GROUPS, qDoc);
 		aDocumentChunker(environmentsDocuments, ENVIRONMENTS_SIZE_LIMIT, ENVIRONMENTS, qDoc);

@@ -77,8 +77,9 @@ public class Output {
 	
 	public void systemInitialStatsToDB(ArrayList<Parameter<?>> params, String timeAsDate) {
 		if (!dbOutputMuted) {
-			if (loggingToDB) {
+			if (writingModelDataToDB) {
 				dbOutput.storeInitValues(params, timeAsDate);
+				System.out.println("sending init values to db");
 			}
 		}
 	}

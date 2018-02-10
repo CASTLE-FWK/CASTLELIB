@@ -43,8 +43,8 @@ public class MetricRunner {
 	static String experimentID = "";
 	static String initCriteria = "";
 
-	static String experimentDirRoot = "/Users/lachlan/repos/interlib/observationModule/experiments/";
-	static String resultsDirRoot = "/Users/lachlan/repos/interlib/observationModule/results/";
+	static String experimentDirRoot = "/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/";
+	static String resultsDirRoot = "/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/results/";
 
 	static int[] realEvents_emergence;
 	static int[] realEvents_stability;
@@ -82,10 +82,10 @@ public class MetricRunner {
 					continue;
 				}
 
-				//The file now contains a list of paths to experiment JSON files
+				// The file now contains a list of paths to experiment JSON files
 				toTheDoc = new StringBuilder();
 
-				//Print everything out to a MetricResult object
+				// Print everything out to a MetricResult object
 				allResults = new ArrayList<MetricResult>();
 
 				String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
@@ -104,14 +104,14 @@ public class MetricRunner {
 
 					runAnalysis(exp, theTestSystems.get(test));
 					collector.restart();
-					allResults.add(currentResult); //Lets hope PBR actually behaves
+					allResults.add(currentResult); // Lets hope PBR actually behaves
 
 				}
 				collector.close();
 				runtime = System.currentTimeMillis() - runtime;
 				println("Total runtime: %1$f seconds", runtime / 1000);
 				toTheDoc.append("\n#runtime\t" + runtime);
-				//Write results to file
+				// Write results to file
 				if (!testing) {
 					Utilities.writeToFile(toTheDoc.toString(),
 							resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
@@ -127,12 +127,17 @@ public class MetricRunner {
 		}
 	}
 
+	public static void ex() {
+		System.out.println("****EXITING*&**@!*@");
+		System.exit(0);
+	}
+
 	public static void runAnalysis(Experiment e, SystemInfo thisTestSystem) {
 		SystemInfo theTestSystem = thisTestSystem;
 		String experimentID = e.getExperimentID();
 		String experimentDBID = theTestSystem.getSystemDBID();
 		String systemName = theTestSystem.getSystemName();
-		MetricRunner.systemName = systemName; //TODO: Think about this issue
+		MetricRunner.systemName = systemName; // TODO: Think about this issue
 
 		String systemConfiguration = theTestSystem.getConfigurationName();
 		MetricRunner.initCriteria = theTestSystem.getConfigurationString();
@@ -145,19 +150,22 @@ public class MetricRunner {
 		areaY = 0;
 		String initName = "";
 		int numberOfAgents = 0;
+		final String PARAMETER_NAME = "parameter_name";
+		final String PARAMETER_VALUE = "parameter_value";
+		final String PARAMETER_TYPE = "parameter_type";
 		for (Document doc : sysParams) {
-			if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0) {
-				areaX = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0) {
-				areaY = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0) {
-				initName = doc.getString("parameter-value");
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("cellPopulation") == 0) {
-				numberOfAgents = Integer.parseInt(doc.getString("parameter-value"));
+			if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("Size (X)") == 0) {
+				areaX = Integer.parseInt(doc.getString(PARAMETER_VALUE));
+			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("Size(Y)") == 0) {
+				areaY = Integer.parseInt(doc.getString(PARAMETER_VALUE));
+			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("initPath") == 0) {
+				initName = doc.getString(PARAMETER_VALUE);
+			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("cellPopulation") == 0) {
+				numberOfAgents = Integer.parseInt(doc.getString(PARAMETER_VALUE));
 			}
 		}
 
-		//Print out dataset information
+		// Print out dataset information
 		println("*******DATASET INFORMATION*******");
 		println("System Name: " + systemName);
 		println("Experiment ID: " + experimentID);
@@ -168,11 +176,12 @@ public class MetricRunner {
 			println("NO SYSTEM NAME ENTERED");
 			System.exit(0);
 		}
-		//LETS BUILD VAGENTS
+
+		// LETS BUILD VAGENTS
 		int totalNumberOfSteps = collector.getTerminationStep();
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
-		//Prep real events arrays
+		// Prep real events arrays
 		realEvents_emergence = new int[totalNumberOfSteps];
 		Arrays.fill(realEvents_emergence, 0);
 		realEvents_stability = new int[totalNumberOfSteps];
@@ -182,7 +191,7 @@ public class MetricRunner {
 		realEvents_adaptability = new int[totalNumberOfSteps];
 		Arrays.fill(realEvents_adaptability, 0);
 
-		//Add the real events to the current results
+		// Add the real events to the current results
 		currentResult.addResultType(realEventsNameEm);
 		currentResult.addResultType(realEventsNameSt);
 		currentResult.addResultType(realEventsNameCr);
@@ -194,82 +203,59 @@ public class MetricRunner {
 		String realEventCriticalityFile;
 		String realEventAdaptabilityFile;
 
-		//Import corresponding real event files
-		if (systemConfiguration.compareToIgnoreCase("random") != 0) {
-			realEventEmergenceFile = realEventFileRoot.concat(systemConfiguration + "/events_emergence.tsv");
-			realEventStabilityFile = realEventFileRoot.concat(systemConfiguration + "/events_stability.tsv");
-			realEventCriticalityFile = realEventFileRoot.concat(systemConfiguration + "/events_criticality.tsv");
-			realEventAdaptabilityFile = realEventFileRoot.concat(systemConfiguration + "/events_adaptability.tsv");
-		} else {
-			realEventEmergenceFile = realEventFileRoot
-					.concat(systemConfiguration + "/events_emergence" + systemString + ".tsv");
-			realEventStabilityFile = realEventFileRoot
-					.concat(systemConfiguration + "/events_stability" + systemString + ".tsv");
-			realEventCriticalityFile = realEventFileRoot
-					.concat(systemConfiguration + "/events_criticality" + systemString + ".tsv");
-			realEventAdaptabilityFile = realEventFileRoot
-					.concat(systemConfiguration + "/events_adaptability" + systemString + ".tsv");
-		}
-		String line = "";
-		try {
-			BufferedReader br = Utilities.getFileAsBufferedReader(realEventEmergenceFile);
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				int eventNumber = Integer.parseInt(line);
-				realEvents_emergence[eventNumber] = 1;
-				currentResult.addResultAtStep(realEventsNameEm, 1, eventNumber);
-			}
-
-			line = "";
-			br = Utilities.getFileAsBufferedReader(realEventStabilityFile);
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				int eventNumber = Integer.parseInt(line);
-
-				realEvents_stability[eventNumber] = 1;
-				currentResult.addResultAtStep(realEventsNameSt, 1, eventNumber);
-			}
-
-			line = "";
-			br = Utilities.getFileAsBufferedReader(realEventCriticalityFile);
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				int eventNumber = Integer.parseInt(line);
-
-				realEvents_criticality[eventNumber] = 1;
-				currentResult.addResultAtStep(realEventsNameCr, 1, eventNumber);
-			}
-			line = "";
-			br = Utilities.getFileAsBufferedReader(realEventAdaptabilityFile);
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-
-				int eventNumber = Integer.parseInt(line);
-				realEvents_adaptability[eventNumber] = 1;
-				currentResult.addResultAtStep(realEventsNameAd, 1, eventNumber);
-			}
-
-		} catch (IOException ea) {
-			// TODO Auto-generated catch block
-			ea.printStackTrace();
-			System.exit(0);
-		}
-
+		// Import corresponding real event files
+		// This is from GoL testing
+		/*
+		 * if (systemConfiguration.compareToIgnoreCase("random") != 0) {
+		 * realEventEmergenceFile = realEventFileRoot.concat(systemConfiguration +
+		 * "/events_emergence.tsv"); realEventStabilityFile =
+		 * realEventFileRoot.concat(systemConfiguration + "/events_stability.tsv");
+		 * realEventCriticalityFile = realEventFileRoot.concat(systemConfiguration +
+		 * "/events_criticality.tsv"); realEventAdaptabilityFile =
+		 * realEventFileRoot.concat(systemConfiguration + "/events_adaptability.tsv"); }
+		 * else { realEventEmergenceFile = realEventFileRoot .concat(systemConfiguration
+		 * + "/events_emergence" + systemString + ".tsv"); realEventStabilityFile =
+		 * realEventFileRoot .concat(systemConfiguration + "/events_stability" +
+		 * systemString + ".tsv"); realEventCriticalityFile = realEventFileRoot
+		 * .concat(systemConfiguration + "/events_criticality" + systemString + ".tsv");
+		 * realEventAdaptabilityFile = realEventFileRoot .concat(systemConfiguration +
+		 * "/events_adaptability" + systemString + ".tsv"); } String line = ""; try {
+		 * BufferedReader br =
+		 * Utilities.getFileAsBufferedReader(realEventEmergenceFile); while ((line =
+		 * br.readLine()) != null) { if (line.startsWith("#")) { continue; } int
+		 * eventNumber = Integer.parseInt(line); realEvents_emergence[eventNumber] = 1;
+		 * currentResult.addResultAtStep(realEventsNameEm, 1, eventNumber); }
+		 * 
+		 * line = ""; br = Utilities.getFileAsBufferedReader(realEventStabilityFile);
+		 * while ((line = br.readLine()) != null) { if (line.startsWith("#")) {
+		 * continue; } int eventNumber = Integer.parseInt(line);
+		 * 
+		 * realEvents_stability[eventNumber] = 1;
+		 * currentResult.addResultAtStep(realEventsNameSt, 1, eventNumber); }
+		 * 
+		 * line = ""; br = Utilities.getFileAsBufferedReader(realEventCriticalityFile);
+		 * while ((line = br.readLine()) != null) { if (line.startsWith("#")) {
+		 * continue; } int eventNumber = Integer.parseInt(line);
+		 * 
+		 * realEvents_criticality[eventNumber] = 1;
+		 * currentResult.addResultAtStep(realEventsNameCr, 1, eventNumber); } line = "";
+		 * br = Utilities.getFileAsBufferedReader(realEventAdaptabilityFile); while
+		 * ((line = br.readLine()) != null) { if (line.startsWith("#")) { continue; }
+		 * 
+		 * int eventNumber = Integer.parseInt(line);
+		 * realEvents_adaptability[eventNumber] = 1;
+		 * currentResult.addResultAtStep(realEventsNameAd, 1, eventNumber); }
+		 * 
+		 * ex(); } catch (IOException ea) { // TODO Auto-generated catch block
+		 * ea.printStackTrace(); System.exit(0); }
+		 */
 		ArrayList<MetricInfo> metricsToRun = e.getMetrics();
 		for (MetricInfo mi : metricsToRun) {
-			//			println(mi.parametersToString());
-			//			boolean needsTraining = mi.needsTraining();
+			// println(mi.parametersToString());
+			// boolean needsTraining = mi.needsTraining();
 			metricRunner(theTestSystem, mi, systemString);
 		}
-
+		ex();
 		println("finished");
 	}
 
@@ -310,10 +296,12 @@ public class MetricRunner {
 		sb.append("#runtime\t" + runtime);
 		scResult.addRuntime(runtime);
 
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName+"/systemComplexity"+initCrit+".tsv");
-		//		Utilities.writeToFile(scResult.resultsToString(), resultsDirRoot+systemName+"/systemComplexity"+initCrit+"RESULTPRINT.tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName+"/systemComplexity"+initCrit+".tsv");
+		// Utilities.writeToFile(scResult.resultsToString(),
+		// resultsDirRoot+systemName+"/systemComplexity"+initCrit+"RESULTPRINT.tsv");
 
-		//Determine threshold ranges
+		// Determine threshold ranges
 		double stdDev = scResult.calculateSTDDev(resultsName);
 		double minThresh = scResult.calculateMean(resultsName) - stdDev;
 
@@ -328,7 +316,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		StringBuilder sb = new StringBuilder();
 		long runtime = 0;
-		//Run metric: ChanGoL Interaction Metric
+		// Run metric: ChanGoL Interaction Metric
 		String resultsNameA = "iT";
 		String resultsNameB = "zT";
 		print("*******WKV CHAN 2011 Interaction Metric*******");
@@ -346,17 +334,18 @@ public class MetricRunner {
 		currentResult.addResultType(metricName + ": " + resultsNameB);
 		sb.append("#" + systemName + " Chan11 GoL Interaction Metric Results\n");
 		sb.append("#step\tZt\tIt\n");
-		//Run setup
+		// Run setup
 		chanGoL.setup(collector.buildVAgentList(0), totalNumberOfSteps);
-		//		ArrayList<Double> yitList = new ArrayList<Double>();
+		// ArrayList<Double> yitList = new ArrayList<Double>();
 		int[] YiTBuckets = new int[10];
 		runtime = System.currentTimeMillis();
-		//Requirements: List of agents at each step and the step before
+		// Requirements: List of agents at each step and the step before
 		for (int time = 1; time < totalNumberOfSteps; time++) {
-			ArrayList<VEntity> stepT = collector.buildVAgentList(time); //Agents from step t
-			ArrayList<VEntity> stepTM1 = collector.buildVAgentList(time - 1); //Agents from step t-1
-			chanGoL.calculateResults(stepTM1, stepT, time); //Calculate the results
-			//double[] res = chanGoL.getResultArray(i);						//Results at each step as an array (Zt, It, Yit)
+			ArrayList<VEntity> stepT = collector.buildVAgentList(time); // Agents from step t
+			ArrayList<VEntity> stepTM1 = collector.buildVAgentList(time - 1); // Agents from step t-1
+			chanGoL.calculateResults(stepTM1, stepT, time); // Calculate the results
+			// double[] res = chanGoL.getResultArray(i); //Results at each step as an array
+			// (Zt, It, Yit)
 			double getIT = chanGoL.getResult_It();
 			long getZT = chanGoL.getResult_Zt();
 			chanGoLResult.addResultAtStep(resultsNameA, getIT, time);
@@ -396,8 +385,10 @@ public class MetricRunner {
 		runtime = System.currentTimeMillis() - runtime;
 		sb.append("\n#runtime\t" + runtime);
 		chanGoLResult.addRuntime(runtime);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName+"/chan11GoL"+initCrit+".tsv");
-		//		Utilities.writeToFile(chanGoLResult.resultsToString(), resultsDirRoot+systemName+"/chan11GoL"+initCrit+"RESULTSPRINT.tsv");		
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName+"/chan11GoL"+initCrit+".tsv");
+		// Utilities.writeToFile(chanGoLResult.resultsToString(),
+		// resultsDirRoot+systemName+"/chan11GoL"+initCrit+"RESULTSPRINT.tsv");
 
 		sb = new StringBuilder();
 		sb.append("#" + systemName + " Chan11 GoL Interaction Metric Results: Histogram Data\n");
@@ -415,7 +406,8 @@ public class MetricRunner {
 
 		runtime = System.currentTimeMillis() - runtime;
 		sb.append("\n#runtime\t" + runtime);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName+"/chan11GoL"+initCrit+"_histogram.tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName+"/chan11GoL"+initCrit+"_histogram.tsv");
 		double stdDev = chanGoLResult.calculateSTDDev(resultsNameA);
 		double minThresh = chanGoLResult.calculateMean(resultsNameA) - stdDev;
 		double maxThresh = chanGoLResult.calculateMax(resultsNameA);
@@ -427,7 +419,7 @@ public class MetricRunner {
 	public static void Metric_OToole14(SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		//Run metric: OToole 2014 Emergence Detection
+		// Run metric: OToole 2014 Emergence Detection
 		StringBuilder sb = new StringBuilder();
 		String resultsName = "Percentage of Statistically Significant Agents";
 		long runtime = 0;
@@ -455,7 +447,7 @@ public class MetricRunner {
 		double res = 0.0;
 		for (int time = 0; time < totalNumberOfSteps; time++) {
 			oToole.run(collector.buildVAgentList(time), time);
-			//Print results
+			// Print results
 			if (oToole.resultsReady()) {
 				res = oToole.getLatestResults();
 				resultStats.add(res);
@@ -483,8 +475,10 @@ public class MetricRunner {
 		runtime = System.currentTimeMillis() - runtime;
 		oTooleResult.addRuntime(runtime);
 		sb.append("\n#runtime\t" + runtime);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName+"/oToole14"+initCrit+".tsv");
-		//		Utilities.writeToFile(oTooleResult.resultsToString().concat("\n"+sb2.toString()), resultsDirRoot+systemName+"/oToole14"+initCrit+"RESULTSPRINT.tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName+"/oToole14"+initCrit+".tsv");
+		// Utilities.writeToFile(oTooleResult.resultsToString().concat("\n"+sb2.toString()),
+		// resultsDirRoot+systemName+"/oToole14"+initCrit+"RESULTSPRINT.tsv");
 		double stdDev = oTooleResult.calculateSTDDev(resultsName);
 		double minThresh = oTooleResult.calculateMean(resultsName) - stdDev;
 		double maxThresh = oTooleResult.calculateMax(resultsName);
@@ -515,8 +509,8 @@ public class MetricRunner {
 
 		StringBuilder sb2 = new StringBuilder(sb.toString());
 
-		//Step 1: Define states of the system (For Game of Life)
-		//Split system into <x,y> and count the Alive states in each
+		// Step 1: Define states of the system (For Game of Life)
+		// Split system into <x,y> and count the Alive states in each
 		int numGridsX = ((Double) mps.getParameterValue("Num-grids-X")).intValue();
 		int numGridsY = ((Double) mps.getParameterValue("Num-grids-Y")).intValue();
 		int numGrids = numGridsX * numGridsY;
@@ -529,16 +523,16 @@ public class MetricRunner {
 		currentResult.addResultType("MSSE (LQ) " + numGridsX + "x" + numGridsY);
 		currentResult.addResultType("MSSE (IQ) " + numGridsX + "x" + numGridsY);
 
-		//Step 2: "Train" on N replications
-		//Get training IDs
+		// Step 2: "Train" on N replications
+		// Get training IDs
 		ArrayList<String> trainingSets = mi.getTrainingSystemsDBIDS();
 		MSSE_State[][] allLifeQuads = new MSSE_State[trainingSets.size()][];
 		MSSE_State[][] allInterQuads = new MSSE_State[trainingSets.size()][];
 		runtime = System.currentTimeMillis();
 		int systemCounter = 0;
-		//Cycle through other collections
+		// Cycle through other collections
 		for (String str : trainingSets) {
-			//Load up and get basic info
+			// Load up and get basic info
 			println("Training from: " + str);
 			collector.setCollection(str);
 
@@ -568,7 +562,7 @@ public class MetricRunner {
 			int thisQuadSizeX = thisAreaX / numGridsX;
 			int thisQuadSizeY = thisAreaY / numGridsY;
 
-			//Calculate the lifeQuad and interQuad for this system
+			// Calculate the lifeQuad and interQuad for this system
 			for (int t = 0; t < thisTotalNumberOfSteps; t++) {
 				Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, thisAreaX, thisAreaY);
 				ArrayList<VEntity> agents = collector.buildVAgentList(t);
@@ -579,7 +573,7 @@ public class MetricRunner {
 				thisLifeQuad.reset();
 				thisInterQuad.reset();
 
-				//Calculate state at time t for system blah
+				// Calculate state at time t for system blah
 				for (int i = 0; i < thisAreaX; i++) {
 					for (int j = 0; j < thisAreaY; j++) {
 						VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
@@ -603,9 +597,10 @@ public class MetricRunner {
 			systemCounter++;
 		}
 
-		//Calculate likelihoods (count the number of replications in which that state was observed)
-		//Step 3: Calculate SE for those states against Trained values
-		//		initCriteria = initCrit;
+		// Calculate likelihoods (count the number of replications in which that state
+		// was observed)
+		// Step 3: Calculate SE for those states against Trained values
+		// initCriteria = initCrit;
 
 		collector.setCollection(si.getSystemDBID());
 
@@ -625,7 +620,7 @@ public class MetricRunner {
 		}
 
 		double unitAsPercentage = 100.0 / (double) numberOfAgents;
-		//Calculate the lifeQuad and interQuad (not done yet) for this system
+		// Calculate the lifeQuad and interQuad (not done yet) for this system
 		MSSE_State[] currentLifeQuads = new MSSE_State[totalNumberOfSteps];
 		MSSE_State[] currentInterQuads = new MSSE_State[totalNumberOfSteps];
 		for (int t = 0; t < totalNumberOfSteps; t++) {
@@ -637,7 +632,7 @@ public class MetricRunner {
 			HashMap<String, ArrayList<Interaction>> interactionMap = collector.getAgentInteractionMap(t);
 			lifeQuad.reset();
 			interQuad.reset();
-			//Calculate state at time t for system blah
+			// Calculate state at time t for system blah
 			for (int i = 0; i < areaX; i++) {
 				for (int j = 0; j < areaY; j++) {
 					VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
@@ -656,14 +651,14 @@ public class MetricRunner {
 			}
 			currentLifeQuads[t] = new MSSE_State(lifeQuad);
 			currentInterQuads[t] = new MSSE_State(interQuad);
-			//Magic SE stuff is done here
+			// Magic SE stuff is done here
 
 			double runningLQSE = 0.0;
 			double runningIQSE = 0.0;
 			int totalStatesAtT = allLifeQuads.length + 1;
 			double normaliser = Math.log((double) totalStatesAtT);
 			for (int i = 0; i < allLifeQuads.length; i++) {
-				//Calculate if hit has occurred
+				// Calculate if hit has occurred
 				double LQcount = 0;
 				double IQcount = 0;
 				if (allLifeQuads[i][t].compareState(currentLifeQuads[t])) {
@@ -713,16 +708,18 @@ public class MetricRunner {
 		sb.append("\n#runtime\t" + runtime);
 		sb2.append("\n#runtime\t" + runtime);
 		msseResult.addRuntime(runtime);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName+"/msse"+initCrit+"_lifeQuad.tsv");
-		//		Utilities.writeToFile(sb2.toString(), resultsDirRoot+systemName+"/msse"+initCrit+"_interQuad.tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName+"/msse"+initCrit+"_lifeQuad.tsv");
+		// Utilities.writeToFile(sb2.toString(),
+		// resultsDirRoot+systemName+"/msse"+initCrit+"_interQuad.tsv");
 
 		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, 0, 1, 0.025);
 		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, 0, 1, 0.025);
 	}
 
 	public static void Metric_BR(SystemInfo si, MetricInfo mi, MetricParameters mps) {
-		//What is the next metric to go here
-		//Run Metric: Bandwidth Recognition
+		// What is the next metric to go here
+		// Run Metric: Bandwidth Recognition
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		print("*******Bandwidth Recognition*******");
@@ -752,7 +749,7 @@ public class MetricRunner {
 		currentResult.addResultType(emergenceMatch);
 		currentResult.addResultType(adaptabilityMatch);
 
-		//Step 1: Bring in labelled Training data sets
+		// Step 1: Bring in labelled Training data sets
 		ArrayList<String> trainingSetsBR = mi.getTrainingSystemsDBIDS();
 		int sampleSize = 0;
 		double percentageToGet = (Double) mps.getParameterValue("Percentage-to-get");
@@ -782,17 +779,17 @@ public class MetricRunner {
 			}
 			types.add(thisInitName);
 			thisNumberOfCells = thisAreaX * thisAreaY;
-			//Step 2: Calculate feature likelihoods for the dataset
+			// Step 2: Calculate feature likelihoods for the dataset
 			sampleSize = (int) (thisNumberOfCells * percentageToGet);
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
 			HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
 			HashMap<Integer, Integer> feature2Hits = new HashMap<Integer, Integer>();
 
-			//POpulate feature1hits
+			// POpulate feature1hits
 			for (int p = 0; p < 9; p++) {
 				feature1Hits.put(p, 0);
 			}
-			//Populate feature2hits
+			// Populate feature2hits
 			for (int p = 0; p < 2; p++) {
 				feature2Hits.put(p, 0);
 			}
@@ -805,7 +802,7 @@ public class MetricRunner {
 				}
 				for (int i = 0; i < sampleSize; i++) {
 					VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size() - 1));
-					//Get Feature 1: # of Live Neighbours
+					// Get Feature 1: # of Live Neighbours
 					int aliveNeighbours = 0;
 					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
 							.getNeighbours((int) tmpAgent.getPosition().getX(), (int) tmpAgent.getPosition().getY(), 1);
@@ -820,7 +817,7 @@ public class MetricRunner {
 						feature1Hits.put(aliveNeighbours, 1);
 					}
 
-					//Get Feature 2: Changed state since last hit
+					// Get Feature 2: Changed state since last hit
 					int changed = 0;
 					if (t != 0) {
 						String tmpAgentName = tmpAgent.getName();
@@ -837,10 +834,10 @@ public class MetricRunner {
 					}
 
 				}
-				//Calculate likelihood of Feature1 and Feature2
+				// Calculate likelihood of Feature1 and Feature2
 
 			}
-			//Calculate likelihood of Feature1
+			// Calculate likelihood of Feature1
 			int total = 0;
 			for (int f1 = 0; f1 < 9; f1++) {
 				total += feature1Hits.get(f1);
@@ -859,7 +856,7 @@ public class MetricRunner {
 				feature1Types.put(thisInitName, F1Likelihoods);
 			}
 
-			//Calculate likelihood of Feature2
+			// Calculate likelihood of Feature2
 			total = 0;
 			for (int f2 = 0; f2 < 2; f2++) {
 				if (feature2Hits.get(f2) != null)
@@ -881,9 +878,9 @@ public class MetricRunner {
 			}
 		}
 
-		//Step 4: Calculate for the current sample
-		//			initCriteria = initCrit;
-		//			
+		// Step 4: Calculate for the current sample
+		// initCriteria = initCrit;
+		//
 		collector.setCollection(si.getSystemDBID());
 
 		ArrayList<Document> sysParams = collector.getInitialisationParameters();
@@ -912,7 +909,7 @@ public class MetricRunner {
 			double runningMultip = 1.0;
 			for (int i = 0; i < sampleSize; i++) {
 				VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size() - 1));
-				//Get Feature 1: # of Live Neighbours
+				// Get Feature 1: # of Live Neighbours
 				int aliveNeighbours = 0;
 				ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
 						.getNeighbours((int) tmpAgent.getPosition().getX(), (int) tmpAgent.getPosition().getY(), 1);
@@ -927,7 +924,7 @@ public class MetricRunner {
 					feature1Hits.put(aliveNeighbours, 1);
 				}
 
-				//Get Feature 2: Changed state since last hit
+				// Get Feature 2: Changed state since last hit
 				int changed = 0;
 				if (t > 0) {
 					String tmpAgentName = tmpAgent.getName();
@@ -943,9 +940,9 @@ public class MetricRunner {
 					feature2Hits.put(changed, 1);
 				}
 
-				//Calculate per agent here
+				// Calculate per agent here
 				for (String b : types) {
-					//Feature1
+					// Feature1
 					double f1 = feature1Types.get(b).get(aliveNeighbours);
 					double f2 = 0;
 					if (feature2Types.get(b).get(changed) != null)
@@ -959,7 +956,7 @@ public class MetricRunner {
 					}
 				}
 			}
-			//Calculate the max
+			// Calculate the max
 			double max = -Double.MAX_VALUE;
 			String typeMax = "";
 			for (String b : types) {
@@ -1009,11 +1006,11 @@ public class MetricRunner {
 			brResult.addResultAtStep(realEventsNameCr, realEvents_criticality[t], t);
 			brResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[t], t);
 			brResult.addResultAtStep(cmName, correct, t);
-			brResult.addStringResultAtStep(smName, maxName, t); //TODO: This
+			brResult.addStringResultAtStep(smName, maxName, t); // TODO: This
 		}
 		runtime = System.currentTimeMillis() - runtime;
 		brResult.addRuntime(runtime);
-		//		Utilities.writeToFile(brResult.resultsToString(),resultsDirRoot+systemName+"/BR"+initCrit+".tsv");
+		// Utilities.writeToFile(brResult.resultsToString(),resultsDirRoot+systemName+"/BR"+initCrit+".tsv");
 		double accBr = brResult.accuracyCalculationForString(smName, smName, parseModelName(initName),
 				parseModelName(initName));
 		println("accBR: " + accBr);
@@ -1052,7 +1049,7 @@ public class MetricRunner {
 		int bitsetCounter = 0;
 		for (int time = 1; time < totalNumberOfSteps; time++) {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-			Collections.sort(agents, VEntity.sortByName()); //Sort by name or position?
+			Collections.sort(agents, VEntity.sortByName()); // Sort by name or position?
 			BitSet bs = new BitSet(agents.size());
 			for (int i = 0; i < agents.size(); i++) {
 				bs.set(i, agents.get(i).getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0);
@@ -1097,20 +1094,20 @@ public class MetricRunner {
 			bitsetCounter++;
 		}
 		println("Oscillation size: %1$d", oscillationSize);
-		//Find the oscillation size
-		//		BitSet start = bitsOverTime.get(maxDistStart);
-		//		for (int i = maxDistStart+1; i < totalNumberOfSteps-1; i++){
-		//			BitSet possible = (BitSet)bitsOverTime.get(i).clone();
-		//			possible.xor(start);
-		//			if (possible.length()-1 == -1){
-		////				println("i: "+i);
-		//				oscillationSize = i - maxDistStart;
-		//				break;
-		//			}
-		//		}
-		//		println("Oscillation size: %1$d",oscillationSize);
-		//If we know the start and the size, we can go through that way...
-		//This is fucking cheap
+		// Find the oscillation size
+		// BitSet start = bitsOverTime.get(maxDistStart);
+		// for (int i = maxDistStart+1; i < totalNumberOfSteps-1; i++){
+		// BitSet possible = (BitSet)bitsOverTime.get(i).clone();
+		// possible.xor(start);
+		// if (possible.length()-1 == -1){
+		//// println("i: "+i);
+		// oscillationSize = i - maxDistStart;
+		// break;
+		// }
+		// }
+		// println("Oscillation size: %1$d",oscillationSize);
+		// If we know the start and the size, we can go through that way...
+		// This is fucking cheap
 		for (int i = 0; i < totalNumberOfSteps; i++) {
 			if ((i - maxDistStart) % oscillationSize == 0) {
 				oscillResult.addResultAtStep(resultsName, 1.0, i);
@@ -1119,29 +1116,30 @@ public class MetricRunner {
 				oscillResult.addResultAtStep(resultsName, 0.0, i);
 				currentResult.addResultAtStep(resultsName, 0.0, i);
 			}
-			//			if (i == maxDistStart){
-			//				System.out.println("ddsk:" +i );
-			//				oscillResult.addResultAtStep(resultsName,1.0,i);	
-			//				currentResult.addResultAtStep(resultsName,1.0,i);
-			//			} else if (i > maxDistStart){
-			//				if ((i - maxDistStart) % oscillationSize == 0){
-			//					oscillResult.addResultAtStep(resultsName,1.0,i);
-			//					currentResult.addResultAtStep(resultsName,1.0,i);
-			//				} else {
-			//					oscillResult.addResultAtStep(resultsName,0.0,i);
-			//					currentResult.addResultAtStep(resultsName,0.0,i);
-			//				}
-			//			}  else {
-			//				oscillResult.addResultAtStep(resultsName,0.0,i);
-			//				currentResult.addResultAtStep(resultsName,0.0,i);
-			//			}
+			// if (i == maxDistStart){
+			// System.out.println("ddsk:" +i );
+			// oscillResult.addResultAtStep(resultsName,1.0,i);
+			// currentResult.addResultAtStep(resultsName,1.0,i);
+			// } else if (i > maxDistStart){
+			// if ((i - maxDistStart) % oscillationSize == 0){
+			// oscillResult.addResultAtStep(resultsName,1.0,i);
+			// currentResult.addResultAtStep(resultsName,1.0,i);
+			// } else {
+			// oscillResult.addResultAtStep(resultsName,0.0,i);
+			// currentResult.addResultAtStep(resultsName,0.0,i);
+			// }
+			// } else {
+			// oscillResult.addResultAtStep(resultsName,0.0,i);
+			// currentResult.addResultAtStep(resultsName,0.0,i);
+			// }
 		}
 		runtime = System.currentTimeMillis() - runtime;
 		oscillResult.addRuntime(runtime);
 
 		double stdDev = oscillResult.calculateSTDDev(resultsName);
 
-		//		calculateAccuracy("OscillationDetector", resultsName, oscillResult, stdDev, 2.0, 0.025);
+		// calculateAccuracy("OscillationDetector", resultsName, oscillResult, stdDev,
+		// 2.0, 0.025);
 		calculateAccuracy("OscillationDetector", resultsName, oscillResult, 0, 1, 0.025);
 
 		println("Oscillations detected: %1$d with max distance: %2$d starting from %3$d with %4$d consecutive hits. Min distance: %5$d",
@@ -1150,7 +1148,7 @@ public class MetricRunner {
 
 	}
 
-	//TODO: Cluster tracking
+	// TODO: Cluster tracking
 	public static void Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 
@@ -1205,14 +1203,14 @@ public class MetricRunner {
 		int k = 1;
 		HashMap<String, Double> ctResults;
 		for (int t = 0; t < totalNumberOfSteps; t = t + k) {
-			//			println("Time: "+t);
-			//			if (igOld == null){
-			//				igOld = collector.buildInteractionGraph(t-1);
+			// println("Time: "+t);
+			// if (igOld == null){
+			// igOld = collector.buildInteractionGraph(t-1);
 			ttResult.addResultAtStep(realEventsNameEm, realEvents_emergence[t], t);
 			ttResult.addResultAtStep(realEventsNameSt, realEvents_stability[t], t);
 			ttResult.addResultAtStep(realEventsNameCr, realEvents_criticality[t], t);
 			ttResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[t], t);
-			//			}			
+			// }
 
 			igNew = collector.buildInteractionGraph(t);
 			ctResults = tt.examineClusters(tt.dfsHelper(igNew));
@@ -1262,7 +1260,8 @@ public class MetricRunner {
 
 		tt.zarf();
 		Utilities.writeToFile(sb.toString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
-				+ metricName.replaceAll("\\s+", "") + "/" + si.getConfigurationString() + "-densities-over-time.tsv", false);
+				+ metricName.replaceAll("\\s+", "") + "/" + si.getConfigurationString() + "-densities-over-time.tsv",
+				false);
 	}
 
 	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si) {
@@ -1289,7 +1288,7 @@ public class MetricRunner {
 		double runtime = System.currentTimeMillis();
 		StringBuilder sb = new StringBuilder();
 
-		//So, whats happening here?
+		// So, whats happening here?
 		for (int time = 1; time < totalNumberOfSteps; time++) {
 			eotResult.addResultAtStep(realEventsNameEm, realEvents_emergence[time], time);
 			eotResult.addResultAtStep(realEventsNameSt, realEvents_stability[time], time);
@@ -1314,16 +1313,17 @@ public class MetricRunner {
 					+ realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 		}
-		//		
+		//
 		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, 0, 10.0, 0.025);
 		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, 0, 10.0, 0.025);
 		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, 0, 10.0, 0.025);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
-	//The following XXX metrics come from Eberhardinger et al (2015)
-	//Note: Some of these could actually be used as outputs for the above metrics.
-	//Metrics for Adaptation Algorithms
+	// The following XXX metrics come from Eberhardinger et al (2015)
+	// Note: Some of these could actually be used as outputs for the above metrics.
+	// Metrics for Adaptation Algorithms
 
 	/**
 	 * "The intuition of WAT is that adaptation is responsible for keeping the
@@ -1332,16 +1332,16 @@ public class MetricRunner {
 	 * 
 	 * How can we phrase that in terms of this? What is working time? What is
 	 * adaptivity time? Time as existing: dead -> dead uses 1 unit of time
-	 * alive/dead -> dead/alive uses x units of time alive -> alive uses 1 unit
-	 * of time as well However, this is just by looking at the states
-	 * themselves, how can we impart the interactions that cause the change? Use
-	 * the rules: 3|3|4. Similar to the entropy measure from before. Following
-	 * the logic above: we just change the weightings
+	 * alive/dead -> dead/alive uses x units of time alive -> alive uses 1 unit of
+	 * time as well However, this is just by looking at the states themselves, how
+	 * can we impart the interactions that cause the change? Use the rules: 3|3|4.
+	 * Similar to the entropy measure from before. Following the logic above: we
+	 * just change the weightings
 	 * 
 	 * @param mi
 	 * @param si
 	 */
-	//TODO: Put into its own Metric class file
+	// TODO: Put into its own Metric class file
 	public static void Metric_KaddoumWAT(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
@@ -1357,7 +1357,7 @@ public class MetricRunner {
 		watResult.addResultType(realEventsNameAd);
 		currentResult.addResultType(resultsName);
 
-		double workingTime = 0.0; //I should find this exact formula
+		double workingTime = 0.0; // I should find this exact formula
 		double adaptivityTime = 0.0;
 		double watScore = -1.0;
 
@@ -1373,45 +1373,50 @@ public class MetricRunner {
 
 			workingTime = agents.size() * 8.0;
 
-			//			for (VAgent v : agents){
-			//				boolean lifeState = v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			//				VAgent pv = prevAgents.get(v.getName());
-			//				if (pv == null){
-			//					System.out.println("Agent didnt exist...");
-			//					continue;
-			//				}
-			//				boolean prevState = pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			//				if (lifeState  == prevState){
-			//					continue;
-			//				}
-			//				
-			//				
-			//				ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
-			//				if (theAgentsInteractions == null){
-			//					System.out.println("Issue here (1)");
-			//				}
-			//				adaptivityTime += theAgentsInteractions.size();
+			// for (VAgent v : agents){
+			// boolean lifeState =
+			// v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") ==
+			// 0;
+			// VAgent pv = prevAgents.get(v.getName());
+			// if (pv == null){
+			// System.out.println("Agent didnt exist...");
+			// continue;
+			// }
+			// boolean prevState =
+			// pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+			// == 0;
+			// if (lifeState == prevState){
+			// continue;
+			// }
 			//
-			//			}
+			//
+			// ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
+			// if (theAgentsInteractions == null){
+			// System.out.println("Issue here (1)");
+			// }
+			// adaptivityTime += theAgentsInteractions.size();
+			//
+			// }
 			watScore = SelfAdaptiveSystems.KaddoumWAT(agents, prevAgents, interactions, workingTime);
 
-			//			if (adaptivityTime == 0){
-			//				watScore = 0;
-			//			} else {
-			//				watScore = workingTime/adaptivityTime;
-			//			}
+			// if (adaptivityTime == 0){
+			// watScore = 0;
+			// } else {
+			// watScore = workingTime/adaptivityTime;
+			// }
 
 			watResult.addResultAtStep(resultsName, watScore, time);
 			currentResult.addResultAtStep(resultsName, watScore, time);
 			sb.append(time + "\t" + watScore + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time]
 					+ "\t" + realEvents_criticality[time] + "\n");
 
-			//			println(time+"\t"+watScore);
+			// println(time+"\t"+watScore);
 			adaptivityTime = 0.0;
 		}
 
 		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
 	public static void Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
@@ -1426,7 +1431,7 @@ public class MetricRunner {
 		String metricName = "VillegasAU";
 		StringBuilder sb = new StringBuilder();
 		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si);
-		//		auResult.addResultType(resultsName);
+		// auResult.addResultType(resultsName);
 		auResult.addResultType(aName);
 		auResult.addResultType(uName);
 		auResult.addResultType(realEventsNameEm);
@@ -1439,7 +1444,7 @@ public class MetricRunner {
 		currentResult.addResultType(aName);
 		currentResult.addResultType(uName);
 
-		int consecutiveDowntime = 2; //The shortest amount of consecutive down time
+		int consecutiveDowntime = 2; // The shortest amount of consecutive down time
 		HashMap<String, Integer> theAgentsDowntime = new HashMap<String, Integer>();
 		HashMap<String, Integer> theAgentsUptime = new HashMap<String, Integer>();
 
@@ -1452,15 +1457,16 @@ public class MetricRunner {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
 
-			double MTTF = 0.0; //mean time to fail
-			//What if we consider that a failure is a non-statechange for some consec
-			//What if we consider that a faiure is the length of time with non-consecutive changes
+			double MTTF = 0.0; // mean time to fail
+			// What if we consider that a failure is a non-statechange for some consec
+			// What if we consider that a faiure is the length of time with non-consecutive
+			// changes
 			int failCounter = 0;
 
-			double MTTR = 0.0; //mean time to recover
+			double MTTR = 0.0; // mean time to recover
 			double A = 0.0;
 			double U = 0.0;
-			//What if we consider that a recovery is the length of a failure
+			// What if we consider that a recovery is the length of a failure
 			int recoveryCounter = 0;
 
 			for (VEntity v : agents) {
@@ -1477,22 +1483,22 @@ public class MetricRunner {
 
 					if (agentUpTime == null) {
 						theAgentsUptime.put(v.getName(), 0);
-						//						agentUpTime = theAgentsUptime.get(v.getName());
+						// agentUpTime = theAgentsUptime.get(v.getName());
 					}
 					if (agentDowntime == null) {
 						theAgentsDowntime.put(v.getName(), 0);
-						//						agentDowntime = theAgentsDowntime.get(v.getName());
+						// agentDowntime = theAgentsDowntime.get(v.getName());
 					}
 					if (agentDowntime != null && agentUpTime != null) {
-						//Has now entered a "downtime" state
+						// Has now entered a "downtime" state
 						if (agentDowntime == consecutiveDowntime) {
 							MTTF += agentUpTime;
 							failCounter++;
 							theAgentsUptime.put(v.getName(), 0);
 							theAgentsDowntime.put(v.getName(), agentDowntime + 1);
-							//							System.out.println("MTTF: "+MTTF);
+							// System.out.println("MTTF: "+MTTF);
 						} else {
-							//							theAgentsUptime.put(v.getName(), 0);
+							// theAgentsUptime.put(v.getName(), 0);
 							theAgentsDowntime.put(v.getName(), agentDowntime + 1);
 						}
 					}
@@ -1503,11 +1509,11 @@ public class MetricRunner {
 
 					if (agentUpTime == null) {
 						theAgentsUptime.put(v.getName(), 0);
-						//						agentUpTime = theAgentsUptime.get(v.getName());
+						// agentUpTime = theAgentsUptime.get(v.getName());
 					}
 					if (agentDowntime == null) {
 						theAgentsDowntime.put(v.getName(), 0);
-						//						agentDowntime = theAgentsDowntime.get(v.getName());
+						// agentDowntime = theAgentsDowntime.get(v.getName());
 					}
 
 					if (agentDowntime != null && agentUpTime != null) {
@@ -1539,9 +1545,9 @@ public class MetricRunner {
 				A = 0.5;
 				U = 0.5;
 			} else {
-				A = MTTF / (MTTF + MTTR); //availability
-				U = MTTR / (MTTF + MTTR); //unavailability
-				//A + U = 1				
+				A = MTTF / (MTTF + MTTR); // availability
+				U = MTTR / (MTTF + MTTR); // unavailability
+				// A + U = 1
 			}
 
 			auResult.addResultAtStep(aName, A, time);
@@ -1551,7 +1557,7 @@ public class MetricRunner {
 			sb.append(time + "\t" + MTTR + "\t" + MTTF + "\t" + A + "\t" + U + "\t" + failCounter + "\t"
 					+ recoveryCounter + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
-			//			println(time+"\t"+MTTR+"\t"+MTTF+"\t"+A+"\t"+U+"\t"+failCounter+"\t"+recoveryCounter);
+			// println(time+"\t"+MTTR+"\t"+MTTF+"\t"+A+"\t"+U+"\t"+failCounter+"\t"+recoveryCounter);
 
 			currentResult.addResultAtStep(aName, A, time);
 			currentResult.addResultAtStep(uName, U, time);
@@ -1559,7 +1565,8 @@ public class MetricRunner {
 		}
 		calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025);
 		calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0, 0.025);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
 	public static void Metric_PerfSit(MetricInfo mi, SystemInfo si) {
@@ -1578,11 +1585,11 @@ public class MetricRunner {
 
 		currentResult.addResultType(resultsName);
 
-		//Situation is a snapshot of size k >= 1
-		//Each subsituation is a changing of state
-		//the max cost to change state is some number
-		//max cost of changing from alive to dead is 8
-		//max cost of changing from dead to alive is 3 (it is also the only cost)
+		// Situation is a snapshot of size k >= 1
+		// Each subsituation is a changing of state
+		// the max cost to change state is some number
+		// max cost of changing from alive to dead is 8
+		// max cost of changing from dead to alive is 3 (it is also the only cost)
 
 		double cMax = 0.0;
 		double subsitSum = 0.0;
@@ -1592,52 +1599,60 @@ public class MetricRunner {
 			perfsitResult.addResultAtStep(realEventsNameSt, realEvents_stability[time], time);
 			perfsitResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
 			perfsitResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
-			//			cMax = 0.0;
-			//			subsitSum = 0.0;
+			// cMax = 0.0;
+			// subsitSum = 0.0;
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-			//			Grid<VAgent> theGrid = new Grid<VAgent>(VAgent.class, areaX, areaY);
-			//			
-			//			//Fill the previous time stamp grid
-			//			Iterator<Entry<String, VAgent>> it = prevAgents.entrySet().iterator();
-			//			while (it.hasNext()){
-			//				Map.Entry<String, VAgent> pair = (Map.Entry<String, VAgent>)it.next();
-			//				VAgent agt = pair.getValue();
-			//				theGrid.addCell(agt, agt.getPosition());
-			//			}
-			//			
-			//			for (VAgent v : agents){
-			//				boolean lifeState = v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			//				VAgent pv = prevAgents.get(v.getName());
-			//				if (pv == null){
-			//					System.out.println("Agent didnt exist...");
-			//					continue;
-			//				}
-			//				boolean prevState = pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			//				if (lifeState  == prevState){
-			//					continue;
-			//				}
-			//				if (lifeState) {
-			//					if (!prevState){
-			//						ArrayList<VAgent> neighbours = theGrid.getNeighbours((int)v.getPosition().getX(), (int)v.getPosition().getY(), 1);						
-			//						int lifeCount = 0;
-			//						for (VAgent n : neighbours){
-			//							if (n.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0){
-			//								lifeCount++;
-			//							}
-			//						}
-			//						subsitSum += lifeCount;
-			//						cMax += 8.0;
-			//					}
-			//				} else {
-			//					if (prevState){
-			//						subsitSum += 3.0;
-			//						cMax += 3.0;
-			//					}
-			//				}
-			//				
-			//			}
-			//			double perf = (1 - subsitSum / cMax);
+			// Grid<VAgent> theGrid = new Grid<VAgent>(VAgent.class, areaX, areaY);
+			//
+			// //Fill the previous time stamp grid
+			// Iterator<Entry<String, VAgent>> it = prevAgents.entrySet().iterator();
+			// while (it.hasNext()){
+			// Map.Entry<String, VAgent> pair = (Map.Entry<String, VAgent>)it.next();
+			// VAgent agt = pair.getValue();
+			// theGrid.addCell(agt, agt.getPosition());
+			// }
+			//
+			// for (VAgent v : agents){
+			// boolean lifeState =
+			// v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") ==
+			// 0;
+			// VAgent pv = prevAgents.get(v.getName());
+			// if (pv == null){
+			// System.out.println("Agent didnt exist...");
+			// continue;
+			// }
+			// boolean prevState =
+			// pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+			// == 0;
+			// if (lifeState == prevState){
+			// continue;
+			// }
+			// if (lifeState) {
+			// if (!prevState){
+			// ArrayList<VAgent> neighbours =
+			// theGrid.getNeighbours((int)v.getPosition().getX(),
+			// (int)v.getPosition().getY(), 1);
+			// int lifeCount = 0;
+			// for (VAgent n : neighbours){
+			// if
+			// (n.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+			// == 0){
+			// lifeCount++;
+			// }
+			// }
+			// subsitSum += lifeCount;
+			// cMax += 8.0;
+			// }
+			// } else {
+			// if (prevState){
+			// subsitSum += 3.0;
+			// cMax += 3.0;
+			// }
+			// }
+			//
+			// }
+			// double perf = (1 - subsitSum / cMax);
 			double perf = SelfAdaptiveSystems.PerfSit(agents, prevAgents, new Vector2(areaX, areaY));
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
@@ -1645,7 +1660,8 @@ public class MetricRunner {
 			currentResult.addResultAtStep(resultsName, perf, time);
 		}
 		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0, 100.0, 0.025);
-		//		Utilities.writeToFile(sb.toString(), resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		// Utilities.writeToFile(sb.toString(),
+		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
 	public static void Metric_ReineckeAD(MetricInfo mi, SystemInfo si) {
@@ -1653,8 +1669,8 @@ public class MetricRunner {
 	}
 
 	/**
-	 * Calculate accuracy for a metric generated set of results and a
-	 * corresponding real events array
+	 * Calculate accuracy for a metric generated set of results and a corresponding
+	 * real events array
 	 * 
 	 * @param metricName
 	 * @param resultsName
@@ -1685,7 +1701,7 @@ public class MetricRunner {
 
 			print("Calculating accuracy for %1$s for %2$s with threshold range set between %3$f & %4$f with an increment of %5$f",
 					metricName, resultsName, lower, upper, increment);
-			//Note: Set window to 1 for the original tests
+			// Note: Set window to 1 for the original tests
 			for (double d = lower; d < upper; d = d + increment) {
 				for (double db = 1.0; db < 2; db = db + 1.0) {
 					for (int window = 1; window < 15; window++) {
@@ -1733,7 +1749,7 @@ public class MetricRunner {
 				maxScoreEm = -1.0;
 			}
 
-			//Send the best to files
+			// Send the best to files
 			result.accuracyCalculation(resultsName, realEventsNameEm, maxDEm, 1, bestWindowEM, true);
 			result.accuracyCalculation(resultsName, realEventsNameSt, maxDSt, 1, bestWindowSt, true);
 			result.accuracyCalculation(resultsName, realEventsNameCr, maxDCr, 1, bestWindowCr, true);
@@ -1754,24 +1770,22 @@ public class MetricRunner {
 					bestSt.calculateTPR() * 100.0, bestSt.calculatePPV() * 100.0, bestSt.getNumberOfRealInstances(),
 					bestSt.getTruePositives(), bestSt.getFalsePositives(), bestSt.getTrueNegatives(),
 					bestSt.getFalseNegatives(), bestWindowSt);
-			String crResults = String.format(
-					metricName
-							+ "\tCriticality\t%1$f\t%2$f\t%3$f\t%4$f\t%5$f\t%6$f\t%7$d\t%8$d\t%9$d\t%10$d\t%11$d\t%12$d",
+			String crResults = String.format(metricName
+					+ "\tCriticality\t%1$f\t%2$f\t%3$f\t%4$f\t%5$f\t%6$f\t%7$d\t%8$d\t%9$d\t%10$d\t%11$d\t%12$d",
 					maxDCr, maxScoreCr, bestCr.calculateACC() * 100.0, bestCr.calculateSPC() * 100.0,
 					bestCr.calculateTPR() * 100.0, bestCr.calculatePPV() * 100.0, bestCr.getNumberOfRealInstances(),
 					bestCr.getTruePositives(), bestCr.getFalsePositives(), bestCr.getTrueNegatives(),
 					bestCr.getFalseNegatives(), bestWindowCr);
-			String adResults = String.format(
-					metricName
-							+ "\tAdaptability\t%1$f\t%2$f\t%3$f\t%4$f\t%5$f\t%6$f\t%7$d\t%8$d\t%9$d\t%10$d\t%11$d\t%12$d",
+			String adResults = String.format(metricName
+					+ "\tAdaptability\t%1$f\t%2$f\t%3$f\t%4$f\t%5$f\t%6$f\t%7$d\t%8$d\t%9$d\t%10$d\t%11$d\t%12$d",
 					maxDAd, maxScoreAd, bestAd.calculateACC() * 100.0, bestAd.calculateSPC() * 100.0,
 					bestAd.calculateTPR() * 100.0, bestAd.calculatePPV() * 100.0, bestAd.getNumberOfRealInstances(),
 					bestAd.getTruePositives(), bestAd.getFalsePositives(), bestAd.getTrueNegatives(),
 					bestAd.getFalseNegatives(), bestWindowAd);
 
-			//Send the results to a nicer place...
-			//Maybe a BIG static string builder
-			//		sb.append(header);
+			// Send the results to a nicer place...
+			// Maybe a BIG static string builder
+			// sb.append(header);
 			sb.append(initCriteria + "\t" + emResults);
 			sb.append("\n");
 			sb.append(initCriteria + "\t" + stResults);
@@ -1791,7 +1805,7 @@ public class MetricRunner {
 		}
 	}
 
-	//TODO: Make these not magic 
+	// TODO: Make these not magic
 	public static void metricRunner(SystemInfo testSystem, MetricInfo mi, String initString) {
 		String metricName = mi.getMetricName();
 		switch (metricName) {
