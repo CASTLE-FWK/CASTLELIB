@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dataGenerator.OutputToJSON_Mongo;
+import simulator.ExecutionParameters;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
@@ -221,6 +222,13 @@ public class CASSystem {
 		return out;
 	}
 
+	public void buildClone(ExecutionParameters ep) {
+		
+	}
+	public void runClone() {
+		
+	}
+	
 	public void errLog(Object o) {
 		System.err.println(getClass().getSimpleName() + " Warning: " + o.toString());
 	}
