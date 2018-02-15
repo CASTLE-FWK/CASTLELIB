@@ -72,9 +72,9 @@ public class Output {
 				+ "\n* writing to file path: " + logFilePath + "\n********FINISHED LOGGING SETUP********");
 
 		logger.setup(logFilePath, simInfo.getSystemName());
-		
+
 	}
-	
+
 	public void systemInitialStatsToDB(ArrayList<Parameter<?>> params, String timeAsDate) {
 		if (!dbOutputMuted) {
 			if (writingModelDataToDB) {
@@ -134,7 +134,7 @@ public class Output {
 				logger.logToConsole(e.writeEntityData().toString());
 			}
 			if (writingModelDataToFile) {
-				logger.logToFile(e.writeEntityData());
+				logger.logToFile(e.writeEntityData().toString());
 			}
 		}
 		if (!dbOutputMuted) {
@@ -145,10 +145,8 @@ public class Output {
 
 	}
 
-	public void sendLogToFile(String filePath, String log, boolean append) {
-		if (loggingToFile) {
-			new ThreadedFileWriter(filePath, log, append).run();
-		}
+	public void sendStringToFile(String filePath, String log, boolean append) {
+		new ThreadedFileWriter(filePath, log, append).run();
 	}
 
 	public void setupDB(String systemName, String executionID, String databaseName) {
@@ -198,7 +196,7 @@ public class Output {
 			}
 		}
 	}
-	
+
 	public void sendEndOfStepStats(int stepNumber, int totalSteps, long timeSinceLastStep, long elapsedTime) {
 		if (dbOutput != null) {
 			if (!dbOutputMuted) {
@@ -300,8 +298,9 @@ public class Output {
 	public void setWritingModelDataToDB(boolean writingModelDataToDB) {
 		this.writingModelDataToDB = writingModelDataToDB;
 	}
+
 	public void errLog(Object o) {
-		System.err.println("Output Warning: "+o.toString());
+		System.err.println("Output Warning: " + o.toString());
 	}
 }
 

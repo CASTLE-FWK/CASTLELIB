@@ -17,7 +17,7 @@ public class Logger {
 	private String systemStepInfoDir;
 	private String sysName;
 
-	private StringBuilder stringBuilder;
+	private StringBuffer stringBuilder;
 	private Output output;
 
 	private SimulationInfo simInfo;
@@ -46,8 +46,8 @@ public class Logger {
 		systemLogPath = filePath;
 		this.sysName = sysName;
 
-		if (output.isLoggingToFile()) {
-			stringBuilder = new StringBuilder();
+		if (output.isLoggingToFile() || output.isWritingModelDataToFile()) {
+			stringBuilder = new StringBuffer();
 			setUpLog(systemLogPath);
 		}
 	}
@@ -61,14 +61,21 @@ public class Logger {
 
 	public void newStep(int stepNumber) {
 		output.sendLogToConsole("\n***************\nStep " + stepNumber);
-		stringBuilder = new StringBuilder();
-		stringBuilder.append("Step " + stepNumber + "\n");
+		stringBuilder = new StringBuffer();
+//		stringBuilder.append("Step " + stepNumber + "\n");
+		stringBuilder.append("{ \"Step-Number\" : "+stepNumber+" }\n");
 	}
 
 	public void endOfStep(int stepNumber) {
 		if (output.isLoggingToFile()) {
 			if (stringBuilder.length() != 0) {
-				output.sendLogToFile(systemStepInfoDir + "/Step" + stepNumber + ".txt", stringBuilder.toString(),
+				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".txt", stringBuilder.toString(),
+						false);
+			}
+		}
+		if (output.isWritingModelDataToFile()) {
+			if (stringBuilder.length() != 0) {
+				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", stringBuilder.toString(),
 						false);
 			}
 		}
@@ -103,7 +110,7 @@ public class Logger {
 		output.sendLogToConsole(str.toString());
 	}
 
-	public void log(StringBuilder str) {
+	public void log(StringBuffer str) {
 		if (output.isLoggingToFile()) {
 			logToFile(str);
 		}
@@ -112,15 +119,18 @@ public class Logger {
 		}
 	}
 
-	public void logToFile(StringBuilder sb) {
-		stringBuilder.append(sb + "\n");
+	public void logToFile(StringBuffer sb) {
+		if (sb.length() <= 0) {
+			System.out.println("I HAVE NOT LEN");
+		}
+		stringBuilder.append(sb.toString() + "\n");
 	}
 
 	public void logToFile(String str) {
 		stringBuilder.append(str + "\n");
 	}
 
-	public void writeModelData(StringBuilder sb) {
+	public void writeModelData(StringBuffer sb) {
 		if (output.isWritingModelDataToConsole()) {
 			logToConsole(sb.toString());
 		}
@@ -132,12 +142,12 @@ public class Logger {
 	// Sets up the log path (should be fully automated)
 	public void setUpLog(String str) {
 		systemLogPath = str;
-		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID();
+		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID().replaceAll("\\s+", "");
 		systemSpecPath = systemOutputDirPath + "/systemInitialization.txt";
 		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
 		systemStepInfoDir = systemOutputDirPath + "/steps";
 
-		if (output.isLoggingToFile()) {
+		if (output.isLoggingToFile() || output.isWritingModelDataToFile()) {
 			// Create directories and initial files
 			System.out.println("Create directories and files for logging");
 			System.out.println("Log directory at " + systemLogPath);
@@ -165,6 +175,6 @@ public class Logger {
 		out += "----------------------------------------";
 
 		output.sendLogToConsole(out);
-		output.sendLogToFile(systemSpecPath, out, false);
+		output.sendStringToFile(systemSpecPath, out, false);
 	}
 }

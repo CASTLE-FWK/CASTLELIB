@@ -7,6 +7,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bson.Document;
+
 import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureType;
@@ -14,7 +16,8 @@ import castleComponents.Interaction.InteractionType;
 import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
-
+import com.eclipsesource.json.*;
+import com.eclipsesource.json.JsonObject.Member;
 public class Entity implements Runnable {
 
 	protected ArrayList<Trigger> actionTriggers;
@@ -23,6 +26,7 @@ public class Entity implements Runnable {
 	protected ArrayList<Trigger> cleanupTriggers;
 	protected ArrayList<Trigger> cleanupTriggersToAdd;
 	final char COMMA = ',';
+	final char NL = '\n';
 	private Phase currentPhase;
 	private int currentStep = -1;
 	protected OutputToJSON_Mongo dbOut;
@@ -383,8 +387,8 @@ public class Entity implements Runnable {
 	public <T> void updateParameter(String paramName, T value) {
 		addParameter(value, paramName);
 	}
-
-	public StringBuilder writeEntityData() {
+	
+	public StringBuilder writeEntityData_OLD() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(entityType + "-ID" + COMMA + getID());
 		sb.append(entityType + "-type" + COMMA + getType());
@@ -422,6 +426,67 @@ public class Entity implements Runnable {
 		}
 
 		return sb;
+	}
+	
+
+	final String PARAMETER_NAME = "parameter_name";
+	final String PARAMETER_TYPE = "parameter_type";
+	final String PARAMETER_VALUE = "parameter_value";
+
+	final String INTERACTION_FROM = "interaction_from";
+	final String INTERACTION_TYPE = "interaction_type";
+	final String INTERACTION_TO = "interaction_to";
+	final String INTERACTION_NAME = "interaction_name";
+
+	final String FEATURE_NAME = "feature-name";
+	final String FEATURE_TYPE = "feature-type";
+	final String FEATURE_CALL_NUM = "feature-call#";
+	
+	public StringBuilder writeEntityData() {
+		Document entity = new Document();
+		entity.append(entityType + "-ID", getID());
+		entity.append(entityType + "-type", getType());
+		entity.append(entityType + "-name", getID());
+		entity.append("lifetime", -1);
+		ArrayList<Document> paramDocs = new ArrayList<Document>();
+		ArrayList<Document> fCallDocs = new ArrayList<Document>();
+		ArrayList<Document> interactionDocs = new ArrayList<Document>();
+
+		Iterator<Entry<String, Parameter<?>>> it = getParameters().entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, Parameter<?>> pair = (Map.Entry<String, Parameter<?>>) it.next();
+			Parameter<?> param = pair.getValue();
+			Document paramDoc = new Document().append(PARAMETER_NAME, param.getName())
+					.append(PARAMETER_TYPE, param.getType()).append(PARAMETER_VALUE, param.getCurrentValue());
+
+			paramDocs.add(paramDoc);
+		}
+
+		List<Interaction> entityInteractions = publishInteractions();
+		if (entityInteractions != null) {
+			for (Interaction inter : entityInteractions) {
+				Document interDoc = new Document().append(INTERACTION_FROM, inter.getEntityFrom().getID())
+						.append(INTERACTION_TO, inter.getEntityTo().getID())
+						.append(INTERACTION_TYPE, inter.getType().toString())
+						.append(INTERACTION_NAME, inter.getInteractionName());
+				interactionDocs.add(interDoc);
+			}
+		}
+
+		List<Feature> entityFeatureCalls = publishFeatures();
+		if (entityFeatureCalls != null) {
+			for (Feature f : entityFeatureCalls) {
+				Document fCallDoc = new Document().append(FEATURE_NAME, f.getName())
+						.append(FEATURE_TYPE, f.getFeatureType().toString())
+						.append(FEATURE_CALL_NUM, f.getOccurrence());
+				fCallDocs.add(fCallDoc);
+			}
+		}
+		
+		entity.append("parameters", paramDocs);
+		entity.append("feature-calls", fCallDocs);
+		entity.append("interactions", interactionDocs);
+		return new StringBuilder(entity.toJson());
 	}
 
 	public void writeModelData() {
