@@ -46,6 +46,8 @@ public class Entity implements Runnable {
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
 
+	
+	
 	boolean agentDestroyed = false;
 
 	public Entity(String type, EntityID eid) {

@@ -140,7 +140,7 @@ public class Output {
 			if (writingModelDataToFile) {
 				String superType = "";
 				if (e instanceof Environment) {
-					superType = "environment";
+					superType = "Environment";
 				} else if (e instanceof SemanticGroup) {
 					superType = "Group";
 				} else if (e instanceof Agent) {

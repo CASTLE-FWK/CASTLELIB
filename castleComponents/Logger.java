@@ -32,6 +32,7 @@ public class Logger {
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
 		this.simInfo = simInfo;
+		documentStorage = new HashMap<String, ArrayList<Document>>();
 	}
 
 	public void setOutput(Output op) {
@@ -72,6 +73,7 @@ public class Logger {
 //		stringBuilder.append("Step " + stepNumber + "\n");
 		stringBuilder.append("{ \"Step-Number\" : "+stepNumber+" }\n");
 		doc = new Document();
+		documentStorage = new HashMap<String, ArrayList<Document>>();
 		doc.append("step-number", stepNumber);
 	}
 
@@ -92,11 +94,11 @@ public class Logger {
 				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(),
 						false);
 			}
-			
-			if (stringBuilder.length() != 0) {
-				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", stringBuilder.toString(),
-						false);
-			}
+//			
+//			if (stringBuilder.length() != 0) {
+//				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", stringBuilder.toString(),
+//						false);
+//			}
 		}
 	}
 
