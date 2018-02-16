@@ -28,7 +28,7 @@ public class JsonParser {
 				anExperiment.addTestSystem(new SystemInfo(obj.get("System-name").asString(),
 						obj.get("Configuration").asObject().get("Configuration-name").asString(),
 						obj.get("Configuration").asObject().get("Dimensions").asString(),
-						obj.get("System-db-id").asString()));
+						obj.get("System-storage-location").asString(), obj.get("System-storage-type").asString()));
 			}
 			anExperiment.addMetricInfos(parseMetricInfoForExperiment(object.get("Metrics-to-use").asArray()));
 
@@ -81,11 +81,12 @@ public class JsonParser {
 		}
 		return systems;
 	}
-	
-	public static void parseMetricMappings(JsonArray arr, MetricInfo mi){
-		for (int i = 0; i < arr.size(); i++){
+
+	public static void parseMetricMappings(JsonArray arr, MetricInfo mi) {
+		for (int i = 0; i < arr.size(); i++) {
 			JsonObject item = arr.get(i).asObject();
-			mi.addVariableMap(item.get("metric-variable").asString(), item.get("entity-type").asString(), item.get("entity-variable").asString());
+			mi.addVariableMap(item.get("metric-variable").asString(), item.get("entity-type").asString(),
+					item.get("entity-variable").asString());
 		}
 	}
 }

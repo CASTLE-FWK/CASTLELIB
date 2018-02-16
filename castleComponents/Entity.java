@@ -18,6 +18,7 @@ import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 import com.eclipsesource.json.*;
 import com.eclipsesource.json.JsonObject.Member;
+
 public class Entity implements Runnable {
 
 	protected ArrayList<Trigger> actionTriggers;
@@ -387,7 +388,7 @@ public class Entity implements Runnable {
 	public <T> void updateParameter(String paramName, T value) {
 		addParameter(value, paramName);
 	}
-	
+
 	public StringBuilder writeEntityData_OLD() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(entityType + "-ID" + COMMA + getID());
@@ -427,7 +428,6 @@ public class Entity implements Runnable {
 
 		return sb;
 	}
-	
 
 	final String PARAMETER_NAME = "parameter_name";
 	final String PARAMETER_TYPE = "parameter_type";
@@ -441,8 +441,8 @@ public class Entity implements Runnable {
 	final String FEATURE_NAME = "feature-name";
 	final String FEATURE_TYPE = "feature-type";
 	final String FEATURE_CALL_NUM = "feature-call#";
-	
-	public StringBuilder writeEntityData() {
+
+	public Document writeEntityDataDocument() {
 		Document entity = new Document();
 		entity.append(entityType + "-ID", getID());
 		entity.append(entityType + "-type", getType());
@@ -482,11 +482,15 @@ public class Entity implements Runnable {
 				fCallDocs.add(fCallDoc);
 			}
 		}
-		
+
 		entity.append("parameters", paramDocs);
 		entity.append("feature-calls", fCallDocs);
 		entity.append("interactions", interactionDocs);
-		return new StringBuilder(entity.toJson());
+		return entity;
+	}
+
+	public String writeEntityDataToString() {
+		return writeEntityDataDocument().toJson();
 	}
 
 	public void writeModelData() {

@@ -2,6 +2,8 @@ package castleComponents;
 
 import java.util.ArrayList;
 
+import org.bson.Document;
+
 import dataGenerator.OutputToJSON_Mongo;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
@@ -32,6 +34,8 @@ public class Output {
 
 	private Logger logger;
 	boolean loggerMuted = false;
+	
+	Document runningDoc;
 
 	public Output(SimulationInfo si) {
 		setSimulationInfo(si);
@@ -131,10 +135,21 @@ public class Output {
 	public void writeModelData(Entity e) {
 		if (!loggerMuted) {
 			if (writingModelDataToConsole) {
-				logger.logToConsole(e.writeEntityData().toString());
+				logger.logToConsole(e.writeEntityDataToString());
 			}
 			if (writingModelDataToFile) {
-				logger.logToFile(e.writeEntityData().toString());
+				String superType = "";
+				if (e instanceof Environment) {
+					superType = "environment";
+				} else if (e instanceof SemanticGroup) {
+					superType = "Group";
+				} else if (e instanceof Agent) {
+					superType = "Agent";
+				} else {
+					superType = "UNKNOWN";
+				}
+				logger.logToFileFromDocument(superType, e.writeEntityDataDocument());
+				logger.logToFile(e.writeEntityDataToString());
 			}
 		}
 		if (!dbOutputMuted) {
@@ -142,7 +157,6 @@ public class Output {
 				dbOutput.exportEntity(e);
 			}
 		}
-
 	}
 
 	public void sendStringToFile(String filePath, String log, boolean append) {
@@ -179,6 +193,7 @@ public class Output {
 		}
 		if (logger != null) {
 			if (!loggerMuted) {
+				runningDoc = new Document();
 				logger.newStep(ticks);
 			}
 		}

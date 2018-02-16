@@ -3,18 +3,21 @@ package experimentExecution;
 public class SystemInfo {
 	String systemName;
 	SystemConfiguration configuration;
-	String systemDBID;
+	String systemLocation;
 	int numberOfSteps;
+	
+	boolean fromDB = true;
 
-	public SystemInfo(String systemName, String configName, String configDims, String systemDBID) {
+	public SystemInfo(String systemName, String configName, String configDims, String systemDBID, String locationType) {
 		this.systemName = systemName;
 		this.configuration = new SystemConfiguration(configName, configDims);
-		this.systemDBID = systemDBID;
+		this.systemLocation = systemDBID;
+		fromDB = (locationType.compareToIgnoreCase("file") != 0);
 	}
 
 	// TrainingSystem
 	public SystemInfo(String systemDBID) {
-		this.systemDBID = systemDBID;
+		this.systemLocation = systemDBID;
 	}
 
 	public String getSystemName() {
@@ -26,7 +29,7 @@ public class SystemInfo {
 	}
 
 	public String getSystemDBID() {
-		return systemDBID;
+		return systemLocation;
 	}
 
 	public String getConfigurationDimensions() {
@@ -49,8 +52,12 @@ public class SystemInfo {
 	public String toString() {
 		String str = "Name: " + systemName + "\n";
 		str += "Configuration: " + configuration.toString() + "\n";
-		str += "System DB ID: " + systemDBID;
+		str += "System DB ID: " + systemLocation;
 		return str;
+	}
+
+	public boolean isFromDB() {
+		return fromDB;
 	}
 }
 

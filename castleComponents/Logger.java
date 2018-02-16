@@ -1,6 +1,10 @@
 package castleComponents;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import org.bson.Document;
 
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
@@ -21,6 +25,9 @@ public class Logger {
 	private Output output;
 
 	private SimulationInfo simInfo;
+	
+	Document doc;
+	private HashMap<String, ArrayList<Document>> documentStorage;
 
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
@@ -64,6 +71,8 @@ public class Logger {
 		stringBuilder = new StringBuffer();
 //		stringBuilder.append("Step " + stepNumber + "\n");
 		stringBuilder.append("{ \"Step-Number\" : "+stepNumber+" }\n");
+		doc = new Document();
+		doc.append("step-number", stepNumber);
 	}
 
 	public void endOfStep(int stepNumber) {
@@ -74,6 +83,16 @@ public class Logger {
 			}
 		}
 		if (output.isWritingModelDataToFile()) {
+			//Empty out document storage and turn into string
+			for (String v : documentStorage.keySet()) {
+				doc.append(v, documentStorage.get(v));
+			}
+			
+			if (doc != null) {
+				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(),
+						false);
+			}
+			
 			if (stringBuilder.length() != 0) {
 				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", stringBuilder.toString(),
 						false);
@@ -129,6 +148,17 @@ public class Logger {
 	public void logToFile(String str) {
 		stringBuilder.append(str + "\n");
 	}
+	
+	public void logToFileFromDocument(String key, Document d) {
+		ArrayList<Document> docs = documentStorage.get(key);
+		if (docs == null) {
+			docs = new ArrayList<Document>();
+			documentStorage.put(key, docs);
+			docs = documentStorage.get(key);
+		}
+			docs.add(d);
+	}
+	
 
 	public void writeModelData(StringBuffer sb) {
 		if (output.isWritingModelDataToConsole()) {

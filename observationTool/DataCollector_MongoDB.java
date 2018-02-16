@@ -25,14 +25,14 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.ascending;
 import static java.util.Arrays.asList;
 
-public class DataCollector {
+public class DataCollector_MongoDB {
 
 	String db;
 	MongoClient mongoClient;
 	MongoDatabase theDatabase;
 	MongoCollection<Document> currentCollection;
 
-	public DataCollector(String db) {
+	public DataCollector_MongoDB(String db) {
 		this.db = db;
 		mongoClient = new MongoClient();
 		theDatabase = mongoClient.getDatabase(db);

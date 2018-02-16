@@ -39,7 +39,7 @@ public class MetricRunner_ED {
 	
 	static String db;
 	static String collectionID;
-	static DataCollector collector;
+	static DataCollector_MongoDB collector;
 	static String systemName = "";
 	static String experimentID = "";
 	static String initCriteria = "";
@@ -71,7 +71,7 @@ public class MetricRunner_ED {
 	public static void main(String[] args) {
 		String analysisToRun = args[0];
 		db = "simulations";
-		collector = new DataCollector(db);
+		collector = new DataCollector_MongoDB(db);
 		BufferedReader br = Utilities.getFileAsBufferedReader(analysisToRun);
 		String line = "";
 		try {
