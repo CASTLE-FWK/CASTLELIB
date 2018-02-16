@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.lang.model.type.IntersectionType;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -20,6 +22,9 @@ public class DataCollector_FileSystem {
 	String filepathStepsRoot = "";
 	final String STEP = "Step";
 	final String JSON = ".json";
+	final String AGENTS = "Agents";
+	final String ENVIRONMENTS = "Environments";
+	final String GROUPS = "Groups";
 
 	public DataCollector_FileSystem(String fp) {
 		filePathRoot = fp;
@@ -30,7 +35,7 @@ public class DataCollector_FileSystem {
 		ArrayList<VEntity> vAgents = new ArrayList<VEntity>();
 		// Open file
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray agents = file.get("Agents").asArray();
+		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
 			String name = obj.get("agent-name").asString();
@@ -54,7 +59,7 @@ public class DataCollector_FileSystem {
 	public HashMap<String, VEntity> buildVAgentMap(int stepNumber) {
 		HashMap<String, VEntity> vAgents = new HashMap<String, VEntity>();
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray agents = file.get("Agents").asArray();
+		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
 			String name = obj.get("agent-name").asString();
@@ -74,7 +79,7 @@ public class DataCollector_FileSystem {
 		return vAgents;
 	}
 
-	//TODO
+	// TODO
 	public InteractionGraph buildInteractionGraph(int stepNumber) {
 		InteractionGraph ig = new InteractionGraph();
 		HashMap<String, VEntity> agMap = buildVAgentMap(stepNumber);
@@ -82,18 +87,57 @@ public class DataCollector_FileSystem {
 		return null;
 	}
 
-	//TODO
 	public ArrayList<Interaction> getAllInteractionsFromStep(int stepNumber) {
+		// Go through each entity and pull out the interactions list
+		JsonObject file = parseFile(buildFilePath(stepNumber));
+		JsonArray agents = file.get(AGENTS).asArray();
+		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
+		for (int i = 0; i < agents.size(); i++) {
+			JsonObject obj = agents.get(i).asObject();
+			interactions.addAll(getInteractionsFromEntity(obj));
+		}
+		JsonArray groups = file.get(GROUPS).asArray();
+		for (int i = 0; i < groups.size(); i++) {
+			JsonObject obj = groups.get(i).asObject();
+			interactions.addAll(getInteractionsFromEntity(obj));
+		}
 
-		return null;
+		JsonArray environments = file.get(ENVIRONMENTS).asArray();
+		for (int i = 0; i < environments.size(); i++) {
+			JsonObject obj = environments.get(i).asObject();
+			interactions.addAll(getInteractionsFromEntity(obj));
+		}
+
+		return interactions;
 	}
 
-	//TODO
+	// TODO
 	public int countInteractionsInStep(int stepNumber) {
-		return -1;
+		int counter = 0;
+		// Go through each entity and pull out the interactions list
+		JsonObject file = parseFile(buildFilePath(stepNumber));
+		JsonArray agents = file.get(AGENTS).asArray();
+		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
+		for (int i = 0; i < agents.size(); i++) {
+			JsonObject obj = agents.get(i).asObject();
+			counter += countInteractionsFromEntity(obj);
+		}
+		JsonArray groups = file.get(GROUPS).asArray();
+		for (int i = 0; i < groups.size(); i++) {
+			JsonObject obj = groups.get(i).asObject();
+			counter += countInteractionsFromEntity(obj);
+		}
+
+		JsonArray environments = file.get(ENVIRONMENTS).asArray();
+		for (int i = 0; i < environments.size(); i++) {
+			JsonObject obj = environments.get(i).asObject();
+			counter += countInteractionsFromEntity(obj);
+		}
+
+		return counter;
 	}
-	
-	//TODO
+
+	// TODO
 	public int getTerminationStep() {
 		return -1;
 	}
@@ -113,5 +157,22 @@ public class DataCollector_FileSystem {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public int countInteractionsFromEntity(JsonObject obj) {
+		return obj.get("interactions").asArray().size();
+	}
+
+	public ArrayList<Interaction> getInteractionsFromEntity(JsonObject obj) {
+		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
+		JsonArray inters = obj.get("interactions").asArray();
+		for (int j = 0; j < inters.size(); j++) {
+			JsonObject iObj = inters.get(j).asObject();
+			String from = iObj.get("interaction-from").asString();
+			String to = iObj.get("interaction-to").asString();
+			String type = iObj.get("interaction-type").asString();
+			interactions.add(new Interaction(from, to, type));
+		}
+		return interactions;
 	}
 }
