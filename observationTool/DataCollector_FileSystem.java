@@ -5,6 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.lang.model.type.IntersectionType;
 
@@ -12,7 +15,9 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
+import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;
+import interactionGraph.Node;
 import stdSimLib.Interaction;
 
 public class DataCollector_FileSystem {
@@ -29,6 +34,17 @@ public class DataCollector_FileSystem {
 	public DataCollector_FileSystem(String fp) {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
+	}
+	
+	public void setCollection(String fp) {
+		filePathRoot = fp;
+		filepathStepsRoot = filePathRoot + "/steps";
+	}
+	
+	//TODO
+	public HashMap<String, String> getInitialisationParameters(){
+		HashMap<String, String> ip = new HashMap<String, String>();
+		return ip;
 	}
 
 	public ArrayList<VEntity> buildVAgentList(int stepNumber) {
@@ -55,6 +71,11 @@ public class DataCollector_FileSystem {
 
 		return vAgents;
 	}
+	
+	//TODO
+	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber){
+		return null;
+	}
 
 	public HashMap<String, VEntity> buildVAgentMap(int stepNumber) {
 		HashMap<String, VEntity> vAgents = new HashMap<String, VEntity>();
@@ -79,12 +100,26 @@ public class DataCollector_FileSystem {
 		return vAgents;
 	}
 
-	// TODO
 	public InteractionGraph buildInteractionGraph(int stepNumber) {
 		InteractionGraph ig = new InteractionGraph();
 		HashMap<String, VEntity> agMap = buildVAgentMap(stepNumber);
 		ArrayList<Interaction> interactions = getAllInteractionsFromStep(stepNumber);
-		return null;
+		Iterator<Entry<String, VEntity>> it = agMap.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, VEntity> pair = (Map.Entry<String, VEntity>) it.next();
+			VEntity agt = pair.getValue();
+			ig.addNode(new Node(agt));
+		}
+
+		for (Interaction inter : interactions) {
+			Node start = ig.findNode(inter.getAgentFromAsString());
+			Node end = ig.findNode(inter.getAgentToAsString());
+			if (start != null && end != null) {
+				ig.addEdge(new Edge(start, end, inter.getType(), inter.getOccurrence()));
+			}
+		}
+
+		return ig;
 	}
 
 	public ArrayList<Interaction> getAllInteractionsFromStep(int stepNumber) {
@@ -111,7 +146,6 @@ public class DataCollector_FileSystem {
 		return interactions;
 	}
 
-	// TODO
 	public int countInteractionsInStep(int stepNumber) {
 		int counter = 0;
 		// Go through each entity and pull out the interactions list
@@ -141,6 +175,9 @@ public class DataCollector_FileSystem {
 	public int getTerminationStep() {
 		return -1;
 	}
+	
+	public void restart() {}
+	public void close() {}
 
 	// All the helper functions are below
 

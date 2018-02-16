@@ -91,6 +91,7 @@ public class DataCollector_MongoDB {
 		return ts.first();
 	}
 
+	//TODO Change this to a HashMap
 	public ArrayList<Document> getInitialisationParameters() {
 		FindIterable<Document> ip = find("_id", "system-initialisation");
 		Document doc = ip.first();
