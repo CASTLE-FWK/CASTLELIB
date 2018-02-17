@@ -24,6 +24,7 @@ public class DataCollector_FileSystem {
 	String filePathRoot = "";
 	String initParamFilePath = "";
 	String filepathStepsRoot = "";
+	String terminationStatsFilePath = "";
 	final String STEP = "Step";
 	final String JSON = ".json";
 	final String AGENTS = "Agent";
@@ -38,6 +39,7 @@ public class DataCollector_FileSystem {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
 		initParamFilePath = filePathRoot + "/systemInitialization" + JSON;
+		terminationStatsFilePath = filePathRoot +"/termination-statistics"+JSON;
 	}
 
 	public HashMap<String, String> getInitialisationParameters() {
@@ -149,6 +151,7 @@ public class DataCollector_FileSystem {
 		int counter = 0;
 		// Go through each entity and pull out the interactions list
 		JsonObject file = parseFile(buildFilePath(stepNumber));
+		System.out.println("stepNumber: "+stepNumber);
 		JsonArray agents = file.get(AGENTS).asArray();
 		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
 		for (int i = 0; i < agents.size(); i++) {
@@ -163,8 +166,10 @@ public class DataCollector_FileSystem {
 
 		JsonArray environments = file.get(ENVIRONMENTS).asArray();
 		for (int i = 0; i < environments.size(); i++) {
-			JsonObject obj = environments.get(i).asObject();
-			counter += countInteractionsFromEntity(obj);
+			if (environments.get(i).isObject()) {
+				JsonObject obj = environments.get(i).asObject();
+				counter += countInteractionsFromEntity(obj);
+			}
 		}
 		return counter;
 	}
@@ -183,7 +188,8 @@ public class DataCollector_FileSystem {
 
 	// TODO
 	public int getTerminationStep() {
-		return -1;
+		JsonObject obj = parseFile(terminationStatsFilePath);
+		return obj.getInt("termination-step", -1);
 	}
 
 	/*****************************************************************/

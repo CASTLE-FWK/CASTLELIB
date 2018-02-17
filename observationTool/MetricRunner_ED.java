@@ -128,7 +128,7 @@ public class MetricRunner_ED {
 	public static void runAnalysis(Experiment e, SystemInfo thisTestSystem){
 		SystemInfo theTestSystem = thisTestSystem;
 		String experimentID = e.getExperimentID();
-		String experimentDBID = theTestSystem.getSystemDBID();
+		String experimentDBID = theTestSystem.getSystemDataLocation();
 		String systemName = theTestSystem.getSystemName();
 		MetricRunner_ED.systemName = systemName; //TODO: Think about this issue
 		

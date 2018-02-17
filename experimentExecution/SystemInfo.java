@@ -28,7 +28,7 @@ public class SystemInfo {
 		return configuration.getConfigName();
 	}
 
-	public String getSystemDBID() {
+	public String getSystemDataLocation() {
 		return systemLocation;
 	}
 

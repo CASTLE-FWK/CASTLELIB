@@ -43,7 +43,7 @@ public class MetricInfo {
 	public ArrayList<String> getTrainingSystemsDBIDS() {
 		ArrayList<String> dbIDS = new ArrayList<String>();
 		for (SystemInfo si : trainingSystems) {
-			dbIDS.add(si.getSystemDBID());
+			dbIDS.add(si.getSystemDataLocation());
 		}
 
 		return dbIDS;

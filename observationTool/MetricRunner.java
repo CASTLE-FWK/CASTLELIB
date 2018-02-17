@@ -100,8 +100,12 @@ public class MetricRunner {
 
 			double runtime = System.currentTimeMillis();
 			for (int test = 0; test < theTestSystems.size(); test++) {
-				currentResult = new MetricResult(theTestSystems.get(test).getConfigurationString(), "AllMetrics", 1000,
-						theTestSystems.get(test), resultsDirRoot);
+				SystemInfo currTestSystem = theTestSystems.get(test);
+				String experimentDataLocation = currTestSystem.getSystemDataLocation();
+				collector.setCollection(experimentDataLocation);
+				currTestSystem.setNumberOfSteps(collector.getTerminationStep());
+				currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics", currTestSystem.getNumberOfSteps(),
+						currTestSystem, resultsDirRoot);
 
 				runAnalysis(exp, theTestSystems.get(test));
 				collector.restart();
@@ -137,7 +141,7 @@ public class MetricRunner {
 	public static void runAnalysis(Experiment e, SystemInfo thisTestSystem) {
 		SystemInfo theTestSystem = thisTestSystem;
 		String experimentID = e.getExperimentID();
-		String experimentDBID = theTestSystem.getSystemDBID();
+		String experimentDataLocation = theTestSystem.getSystemDataLocation();
 		String systemName = theTestSystem.getSystemName();
 		MetricRunner.systemName = systemName; // TODO: Think about this issue
 
@@ -145,7 +149,7 @@ public class MetricRunner {
 		MetricRunner.initCriteria = theTestSystem.getConfigurationString();
 		String systemString = theTestSystem.getConfigurationDimensions();
 
-		collector.setCollection(experimentDBID);
+		collector.setCollection(experimentDataLocation);
 
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		areaX = 0;
@@ -178,9 +182,7 @@ public class MetricRunner {
 		}
 
 		// LETS BUILD VAGENTS
-		// TODO
 		int totalNumberOfSteps = collector.getTerminationStep();
-		totalNumberOfSteps = 10;
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays
@@ -606,7 +608,7 @@ public class MetricRunner {
 		// Step 3: Calculate SE for those states against Trained values
 		// initCriteria = initCrit;
 
-		collector.setCollection(si.getSystemDBID());
+		collector.setCollection(si.getSystemDataLocation());
 
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
@@ -889,7 +891,7 @@ public class MetricRunner {
 		// Step 4: Calculate for the current sample
 		// initCriteria = initCrit;
 		//
-		collector.setCollection(si.getSystemDBID());
+		collector.setCollection(si.getSystemDataLocation());
 
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
