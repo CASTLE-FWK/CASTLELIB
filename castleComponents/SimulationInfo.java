@@ -11,7 +11,7 @@ public class SimulationInfo {
 		this.systemName = sysName;
 		this.description = desc;
 		this.timeStamp = timeStamp;
-		this.executionID = "name-"+this.timeStamp;
+		this.executionID = this.systemName+"-"+this.timeStamp;
 	}
 
 	public String getSystemName() {
