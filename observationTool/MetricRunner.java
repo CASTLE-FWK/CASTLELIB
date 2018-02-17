@@ -27,6 +27,10 @@ import stdSimLib.utilities.Utilities;
 
 import org.bson.Document;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import experimentExecution.Experiment;
@@ -71,61 +75,57 @@ public class MetricRunner {
 		String analysisToRun = args[0];
 		db = "simulations"; // WRONG
 		collector = new DataCollector_FileSystem(db);
-		BufferedReader br = Utilities.getFileAsBufferedReader(analysisToRun);
-		String line = "";
-		try {
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				if (line.length() <= 0) {
-					continue;
-				}
+		JsonObject experimentMeta = JsonParser.parseFileAsJson(analysisToRun);
 
-				// The file now contains a list of paths to experiment JSON files
-				toTheDoc = new StringBuilder();
+		experimentDirRoot = experimentMeta.get("experiments-directory").asString();
+		resultsDirRoot = experimentMeta.get("results-directory").asString();
+		JsonArray experimentFiles = experimentMeta.get("experiment-files").asArray();
+		for (JsonValue jo : experimentFiles) {
+			String line = jo.asString();
 
-				// Print everything out to a MetricResult object
-				allResults = new ArrayList<MetricResult>();
+			// The file now contains a list of paths to experiment JSON files
+			toTheDoc = new StringBuilder();
 
-				String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
+			// Print everything out to a MetricResult object
+			allResults = new ArrayList<MetricResult>();
 
-				toTheDoc.append(notes + "\n");
-				toTheDoc.append(
-						"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
-				Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
-				print(exp.toString());
-				ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
-				
-				double runtime = System.currentTimeMillis();
-				for (int test = 0; test < theTestSystems.size(); test++) {
-					currentResult = new MetricResult(theTestSystems.get(test).getConfigurationString(), "AllMetrics",
-							1000, theTestSystems.get(test));
+			String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
-					runAnalysis(exp, theTestSystems.get(test));
-					collector.restart();
-					allResults.add(currentResult); // Lets hope PBR actually behaves
+			toTheDoc.append(notes + "\n");
+			toTheDoc.append(
+					"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
+			Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
+			print(exp.toString());
+			ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
 
-				}
-				ex();
-				collector.close();
-				runtime = System.currentTimeMillis() - runtime;
-				println("Total runtime: %1$f seconds", runtime / 1000);
-				toTheDoc.append("\n#runtime\t" + runtime);
-				// Write results to file
-				if (!testing) {
-					Utilities.writeToFile(toTheDoc.toString(),
-							resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
-				}
+			double runtime = System.currentTimeMillis();
+			for (int test = 0; test < theTestSystems.size(); test++) {
+				currentResult = new MetricResult(theTestSystems.get(test).getConfigurationString(), "AllMetrics", 1000,
+						theTestSystems.get(test));
 
-				for (MetricResult r : allResults) {
-					Utilities.writeToFile(r.resultsToString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
-							+ r.getExperimentName() + "_allMetrics.tsv", false);
-				}
+				runAnalysis(exp, theTestSystems.get(test));
+				collector.restart();
+				allResults.add(currentResult); // Lets hope PBR actually behaves
+
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+
+			collector.close();
+			runtime = System.currentTimeMillis() - runtime;
+			println("Total runtime: %1$f seconds", runtime / 1000);
+			toTheDoc.append("\n#runtime\t" + runtime);
+			// Write results to file
+			if (!testing) {
+				Utilities.writeToFile(toTheDoc.toString(),
+						resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
+			}
+
+			for (MetricResult r : allResults) {
+				Utilities.writeToFile(r.resultsToString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
+						+ r.getExperimentName() + "_allMetrics.tsv", false);
+			}
+			ex();
 		}
+
 	}
 
 	public static void ex() {
@@ -177,10 +177,10 @@ public class MetricRunner {
 		}
 
 		// LETS BUILD VAGENTS
-		//TODO
+		// TODO
 		int totalNumberOfSteps = collector.getTerminationStep();
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
-
+		totalNumberOfSteps = 0;
 		// Prep real events arrays
 		realEvents_emergence = new int[totalNumberOfSteps];
 		Arrays.fill(realEvents_emergence, 0);
@@ -271,6 +271,8 @@ public class MetricRunner {
 		sb.append("#" + systemName + " System Complexity Results\n");
 		sb.append("#step\tresult\n");
 		long runtime = System.currentTimeMillis();
+		System.out.println("TOTAL NUMBER OF STEPS: "+totalNumberOfSteps);
+		
 		MetricResult scResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
 		scResult.addResultType(resultsName);
 		scResult.addResultType(realEventsNameEm);

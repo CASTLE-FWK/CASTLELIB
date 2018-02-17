@@ -6,6 +6,7 @@ import com.eclipsesource.json.JsonObject.Member;
 import observationTool.metrics.MetricParameters;
 
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class JsonParser {
@@ -13,6 +14,16 @@ public class JsonParser {
 	static String test = "test.json";
 
 	public static void main(String[] args) {
+	}
+	
+	public static JsonObject parseFileAsJson(String filePath) {
+		try {
+			return Json.parse((new FileReader(filePath))).asObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Experiment parseExperiment(String filePath) {
