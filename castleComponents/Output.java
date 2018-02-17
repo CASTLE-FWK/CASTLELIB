@@ -233,7 +233,7 @@ public class Output {
 		}
 		if (logger != null) {
 			if (!loggerMuted) {
-				logger.endOfStep(ticks);
+				logger.endOfSimulation(ticks, elapsedTime, desiredTotalTicks);
 			}
 		}
 	}

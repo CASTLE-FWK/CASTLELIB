@@ -96,7 +96,7 @@ public class MetricRunner {
 				Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
 				print(exp.toString());
 				ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
-
+				
 				double runtime = System.currentTimeMillis();
 				for (int test = 0; test < theTestSystems.size(); test++) {
 					currentResult = new MetricResult(theTestSystems.get(test).getConfigurationString(), "AllMetrics",
@@ -107,6 +107,7 @@ public class MetricRunner {
 					allResults.add(currentResult); // Lets hope PBR actually behaves
 
 				}
+				ex();
 				collector.close();
 				runtime = System.currentTimeMillis() - runtime;
 				println("Total runtime: %1$f seconds", runtime / 1000);
@@ -176,6 +177,7 @@ public class MetricRunner {
 		}
 
 		// LETS BUILD VAGENTS
+		//TODO
 		int totalNumberOfSteps = collector.getTerminationStep();
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 

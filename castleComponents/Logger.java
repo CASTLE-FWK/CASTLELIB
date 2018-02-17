@@ -29,6 +29,8 @@ public class Logger {
 	Document doc;
 	private HashMap<String, ArrayList<Document>> documentStorage;
 
+	private String systemTerminationInfoPath;
+
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
 		this.simInfo = simInfo;
@@ -177,6 +179,7 @@ public class Logger {
 		systemSpecPath = systemOutputDirPath + "/systemInitialization.json";
 		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
 		systemStepInfoDir = systemOutputDirPath + "/steps";
+		systemTerminationInfoPath = systemOutputDirPath + "/termination-statistics.json";
 
 		if (output.isLoggingToFile() || output.isWritingModelDataToFile()) {
 			// Create directories and initial files
@@ -189,9 +192,18 @@ public class Logger {
 			output.initialiseLoggingPath(systemStepInfoDir, true);
 
 			output.initialiseLoggingPath(systemSpecPath, false);
+			output.initialiseLoggingPath(systemTerminationInfoPath, false);
 
 			output.initialiseLoggingPath(systemLogDirPath, false);
 		}
+	}
+	
+	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps) {
+		Document dd = new Document("_id", "termination-statistics").append("termination-step", finalStep)
+				.append("%-of-execution-finished", (((double) finalStep) / ((double) totalSteps) * 100))
+				.append("elapsed-time", elapsedTime);
+		output.sendStringToFile(systemTerminationInfoPath, dd.toJson(), false);
+		
 	}
 
 	public void writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params) {
@@ -228,5 +240,9 @@ public class Logger {
 		output.sendStringToFile(systemSpecPath, dd.toJson(), false);
 		
 		
+	}
+
+	public String getSystemTerminationInfoPath() {
+		return systemTerminationInfoPath;
 	}
 }

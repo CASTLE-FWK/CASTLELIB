@@ -40,7 +40,6 @@ public class DataCollector_FileSystem {
 		initParamFilePath = filePathRoot + "/systemInitialization" + JSON;
 	}
 
-	// TODO
 	public HashMap<String, String> getInitialisationParameters() {
 		HashMap<String, String> ip = new HashMap<String, String>();
 		JsonObject obj = parseFile(initParamFilePath);
