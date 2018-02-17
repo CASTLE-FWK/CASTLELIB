@@ -26,9 +26,9 @@ public class DataCollector_FileSystem {
 	String filepathStepsRoot = "";
 	final String STEP = "Step";
 	final String JSON = ".json";
-	final String AGENTS = "Agents";
-	final String ENVIRONMENTS = "Environments";
-	final String GROUPS = "Groups";
+	final String AGENTS = "Agent";
+	final String ENVIRONMENTS = "Environment";
+	final String GROUPS = "Group";
 
 	public DataCollector_FileSystem(String fp) {
 		setCollection(fp);

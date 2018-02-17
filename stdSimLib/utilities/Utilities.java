@@ -62,6 +62,7 @@ public class Utilities {
 	
 	public static void writeToFile(String fileContents, String absoluteFilePath, boolean append){
 		File outputFile = new File(absoluteFilePath);
+		outputFile.getParentFile().mkdirs();
 		
 		System.out.println("Writing file to: " + absoluteFilePath);
 		

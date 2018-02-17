@@ -25,7 +25,7 @@ public class MetricResult {
 	private String resultsDir = "/Users/lachlan/repos/interlib/observationModule/results/";
 
 	//TODO: SI HACK IS LAZY. NEED TO MAKE NICER
-	public MetricResult(String sysName, String metricName, int totalNumberOfSteps, SystemInfo si) {
+	public MetricResult(String sysName, String metricName, int totalNumberOfSteps, SystemInfo si, String resultsDir) {
 		this.systemName = sysName;
 		this.metricName = metricName;
 		resultNames = new HashSet<String>();
@@ -34,8 +34,9 @@ public class MetricResult {
 		stringResults = new HashMap<String, String[]>();
 		this.numberOfSteps = totalNumberOfSteps;
 		printingOrder = new String[0];
+		this.resultsDir = resultsDir;
 
-		resultsDir += sysName.replaceAll("\\s+", "") + "/" + metricName.replaceAll("\\s+", "") + "/best/"
+		this.resultsDir += sysName.replaceAll("\\s+", "") + "/" + metricName.replaceAll("\\s+", "") + "/best/"
 				+ si.getConfigurationString() + "_";
 	}
 

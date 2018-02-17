@@ -82,7 +82,7 @@ public class MetricRunner {
 		JsonArray experimentFiles = experimentMeta.get("experiment-files").asArray();
 		for (JsonValue jo : experimentFiles) {
 			String line = jo.asString();
-
+			String experimentName = "";
 			// The file now contains a list of paths to experiment JSON files
 			toTheDoc = new StringBuilder();
 
@@ -101,7 +101,7 @@ public class MetricRunner {
 			double runtime = System.currentTimeMillis();
 			for (int test = 0; test < theTestSystems.size(); test++) {
 				currentResult = new MetricResult(theTestSystems.get(test).getConfigurationString(), "AllMetrics", 1000,
-						theTestSystems.get(test));
+						theTestSystems.get(test), resultsDirRoot);
 
 				runAnalysis(exp, theTestSystems.get(test));
 				collector.restart();
@@ -113,15 +113,16 @@ public class MetricRunner {
 			runtime = System.currentTimeMillis() - runtime;
 			println("Total runtime: %1$f seconds", runtime / 1000);
 			toTheDoc.append("\n#runtime\t" + runtime);
+			String dirTimeStamp = resultsDirRoot + systemName.replaceAll("\\s+", "") + "_"+Utilities.generateTimeID() + "/";
 			// Write results to file
 			if (!testing) {
 				Utilities.writeToFile(toTheDoc.toString(),
-						resultsDirRoot + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
+						dirTimeStamp + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
 			}
 
 			for (MetricResult r : allResults) {
-				Utilities.writeToFile(r.resultsToString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
-						+ r.getExperimentName() + "_allMetrics.tsv", false);
+				Utilities.writeToFile(r.resultsToString(), dirTimeStamp + r.getExperimentName() + "_allMetrics.tsv",
+						false);
 			}
 			ex();
 		}
@@ -179,8 +180,9 @@ public class MetricRunner {
 		// LETS BUILD VAGENTS
 		// TODO
 		int totalNumberOfSteps = collector.getTerminationStep();
+		totalNumberOfSteps = 10;
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
-		totalNumberOfSteps = 0;
+
 		// Prep real events arrays
 		realEvents_emergence = new int[totalNumberOfSteps];
 		Arrays.fill(realEvents_emergence, 0);
@@ -255,7 +257,6 @@ public class MetricRunner {
 			// boolean needsTraining = mi.needsTraining();
 			metricRunner(theTestSystem, mi, systemString);
 		}
-		ex();
 		println("finished");
 	}
 
@@ -271,9 +272,9 @@ public class MetricRunner {
 		sb.append("#" + systemName + " System Complexity Results\n");
 		sb.append("#step\tresult\n");
 		long runtime = System.currentTimeMillis();
-		System.out.println("TOTAL NUMBER OF STEPS: "+totalNumberOfSteps);
-		
-		MetricResult scResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		System.out.println("TOTAL NUMBER OF STEPS: " + totalNumberOfSteps);
+
+		MetricResult scResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		scResult.addResultType(resultsName);
 		scResult.addResultType(realEventsNameEm);
 		scResult.addResultType(realEventsNameAd);
@@ -324,7 +325,7 @@ public class MetricRunner {
 		print("*******WKV CHAN 2011 Interaction Metric*******");
 		String metricName = "Chan GoL Interaction Metric";
 		ChanGoLInterMetric chanGoL = new ChanGoLInterMetric();
-		MetricResult chanGoLResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult chanGoLResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		chanGoLResult.addResultType(resultsNameA);
 		chanGoLResult.addResultType(resultsNameB);
 		chanGoLResult.addResultType(realEventsNameEm);
@@ -430,7 +431,7 @@ public class MetricRunner {
 		int windowTruncateSize = 5;
 		String metricName = "OToole 2014";
 		OToole14Metric oToole = new OToole14Metric(maxWindowSize, windowTruncateSize);
-		MetricResult oTooleResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult oTooleResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		oTooleResult.addResultType(resultsName);
 		oTooleResult.addResultType(realEventsNameEm);
 		oTooleResult.addResultType(realEventsNameSt);
@@ -496,7 +497,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		print("************** MSSE *************");
 		String metricName = "MSSE";
-		MetricResult msseResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult msseResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		sb = new StringBuilder();
 		sb.append("#" + systemName + " MSSE Results\n");
 		sb.append("#step\tresult\n");
@@ -730,7 +731,7 @@ public class MetricRunner {
 		print("*******Bandwidth Recognition*******");
 		long runtime = 0;
 		String metricName = "Limited Bandwidth Recognition";
-		MetricResult brResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult brResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		String MLSPname = "Most Likely System Probability";
 		String cmName = "Correct Match";
 		String smName = "System Match";
@@ -1043,7 +1044,7 @@ public class MetricRunner {
 		int minDistance = totalNumberOfSteps;
 		int oscillationSize = -1;
 		int firstOscillationStart = -1;
-		MetricResult oscillResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si);
+		MetricResult oscillResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		oscillResult.addResultType(resultsName);
 		oscillResult.addResultType(realEventsNameEm);
 		oscillResult.addResultType(realEventsNameSt);
@@ -1163,7 +1164,7 @@ public class MetricRunner {
 		println("*******Tag and Track*******");
 		ClusterTrack tt = new ClusterTrack();
 		String metricName = "TagAndTrack";
-		MetricResult ttResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult ttResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 
 		String averageClusterStateDensityName = "averageClusterStateDensity";
 		String averageAgentDensityName = "averageAgentDensity";
@@ -1279,7 +1280,7 @@ public class MetricRunner {
 		String secName = "Shannon Entropy Change";
 		String ceName = "Conditional Entropy";
 		String metricName = "Entropy";
-		MetricResult eotResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si);
+		MetricResult eotResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		Entropy entropyCalculator = new Entropy();
 		eotResult.addResultType(resultsName);
 		eotResult.addResultType(ceName);
@@ -1356,7 +1357,7 @@ public class MetricRunner {
 		String resultsName = "WAT";
 		String metricName = "KaddoumWAT";
 		StringBuilder sb = new StringBuilder();
-		MetricResult watResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult watResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		watResult.addResultType(resultsName);
 		watResult.addResultType(realEventsNameEm);
 		watResult.addResultType(realEventsNameSt);
@@ -1437,7 +1438,7 @@ public class MetricRunner {
 		String uName = "Unavailability";
 		String metricName = "VillegasAU";
 		StringBuilder sb = new StringBuilder();
-		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si);
+		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		// auResult.addResultType(resultsName);
 		auResult.addResultType(aName);
 		auResult.addResultType(uName);
@@ -1583,7 +1584,7 @@ public class MetricRunner {
 		String resultsName = "PerfSit";
 		String metricName = "PerfSit";
 		StringBuilder sb = new StringBuilder();
-		MetricResult perfsitResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si);
+		MetricResult perfsitResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		perfsitResult.addResultType(resultsName);
 		perfsitResult.addResultType(realEventsNameEm);
 		perfsitResult.addResultType(realEventsNameSt);
