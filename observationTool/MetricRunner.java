@@ -69,7 +69,7 @@ public class MetricRunner {
 
 	public static void main(String[] args) {
 		String analysisToRun = args[0];
-		db = "simulations"; //WRONG
+		db = "simulations"; // WRONG
 		collector = new DataCollector_FileSystem(db);
 		BufferedReader br = Utilities.getFileAsBufferedReader(analysisToRun);
 		String line = "";
@@ -145,24 +145,22 @@ public class MetricRunner {
 
 		collector.setCollection(experimentDBID);
 
-		ArrayList<Document> sysParams = collector.getInitialisationParameters();
+		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		areaX = 0;
 		areaY = 0;
 		String initName = "";
 		int numberOfAgents = 0;
-		final String PARAMETER_NAME = "parameter_name";
-		final String PARAMETER_VALUE = "parameter_value";
-		final String PARAMETER_TYPE = "parameter_type";
-		for (Document doc : sysParams) {
-			if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("Size (X)") == 0) {
-				areaX = Integer.parseInt(doc.getString(PARAMETER_VALUE));
-			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("Size(Y)") == 0) {
-				areaY = Integer.parseInt(doc.getString(PARAMETER_VALUE));
-			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("initPath") == 0) {
-				initName = doc.getString(PARAMETER_VALUE);
-			} else if (doc.getString(PARAMETER_NAME).compareToIgnoreCase("cellPopulation") == 0) {
-				numberOfAgents = Integer.parseInt(doc.getString(PARAMETER_VALUE));
-			}
+		if (sysParams.containsKey("Size (X)")) {
+			areaX = Integer.parseInt(sysParams.get("Size (X)"));
+		}
+		if (sysParams.containsKey("Size (Y)")) {
+			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
+		}
+		if (sysParams.containsKey("initPath")) {
+			initName = sysParams.get("initPath");
+		}
+		if (sysParams.containsKey("cellPopulation")) {
+			numberOfAgents = Integer.parseInt("cellPopulation");
 		}
 
 		// Print out dataset information
@@ -536,21 +534,22 @@ public class MetricRunner {
 			println("Training from: " + str);
 			collector.setCollection(str);
 
-			ArrayList<Document> thisSysParams = collector.getInitialisationParameters();
+			HashMap<String, String> thisSysParams = collector.getInitialisationParameters();
 			int thisAreaX = 0;
 			int thisAreaY = 0;
 			int thisNumberOfAgents = 0;
 			String thisInitName = "";
-			for (Document doc : thisSysParams) {
-				if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0) {
-					thisAreaX = Integer.parseInt(doc.getString("parameter-value"));
-				} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0) {
-					thisAreaY = Integer.parseInt(doc.getString("parameter-value"));
-				} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0) {
-					thisInitName = doc.getString("parameter-value");
-				} else if (doc.getString("parameter-name").compareToIgnoreCase("cellPopulation") == 0) {
-					thisNumberOfAgents = Integer.parseInt(doc.getString("parameter-value"));
-				}
+			if (thisSysParams.containsKey("Size (X)")) {
+				thisAreaX = Integer.parseInt(thisSysParams.get("Size (X)"));
+			}
+			if (thisSysParams.containsKey("Size (Y)")) {
+				thisAreaY = Integer.parseInt(thisSysParams.get("Size (Y)"));
+			}
+			if (thisSysParams.containsKey("initPath")) {
+				thisInitName = thisSysParams.get("initPath");
+			}
+			if (thisSysParams.containsKey("cellPopulation")) {
+				thisNumberOfAgents = Integer.parseInt(thisSysParams.get("cellPopulation"));
 			}
 			double thisUnitAsPercentage = 100.0 / (double) thisNumberOfAgents;
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
@@ -604,19 +603,21 @@ public class MetricRunner {
 
 		collector.setCollection(si.getSystemDBID());
 
-		ArrayList<Document> sysParams = collector.getInitialisationParameters();
+		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
+		int numberOfCells = 0;
 		int numberOfAgents = 0;
-		for (Document doc : sysParams) {
-			if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0) {
-				areaX = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0) {
-				areaY = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0) {
-				initName = doc.getString("parameter-value");
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("cellPopulation") == 0) {
-				numberOfAgents = Integer.parseInt(doc.getString("parameter-value"));
-			}
+		if (sysParams.containsKey("Size (X)")) {
+			areaX = Integer.parseInt(sysParams.get("Size (X)"));
+		}
+		if (sysParams.containsKey("Size (Y)")) {
+			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
+		}
+		if (sysParams.containsKey("initPath")) {
+			initName = sysParams.get("initPath");
+		}
+		if (sysParams.containsKey("cellPopulation")) {
+			numberOfAgents = Integer.parseInt(sysParams.get("cellPopulation"));
 		}
 
 		double unitAsPercentage = 100.0 / (double) numberOfAgents;
@@ -763,19 +764,21 @@ public class MetricRunner {
 			println("Training from: " + str);
 			collector.setCollection(str);
 			runtime = System.currentTimeMillis();
-			ArrayList<Document> sysParams = collector.getInitialisationParameters();
 			int thisAreaX = 0;
 			int thisAreaY = 0;
 			String thisInitName = "";
+			HashMap<String, String> sysParams = collector.getInitialisationParameters();
+			String initName = "";
 			int thisNumberOfCells = 0;
-			for (Document doc : sysParams) {
-				if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0) {
-					thisAreaX = Integer.parseInt(doc.getString("parameter-value"));
-				} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0) {
-					thisAreaY = Integer.parseInt(doc.getString("parameter-value"));
-				} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0) {
-					thisInitName = doc.getString("parameter-value");
-				}
+			int numberOfAgents = 0;
+			if (sysParams.containsKey("Size (X)")) {
+				thisAreaX = Integer.parseInt(sysParams.get("Size (X)"));
+			}
+			if (sysParams.containsKey("Size (Y)")) {
+				thisAreaY = Integer.parseInt(sysParams.get("Size (Y)"));
+			}
+			if (sysParams.containsKey("initPath")) {
+				thisInitName = sysParams.get("initPath");
 			}
 			types.add(thisInitName);
 			thisNumberOfCells = thisAreaX * thisAreaY;
@@ -883,17 +886,17 @@ public class MetricRunner {
 		//
 		collector.setCollection(si.getSystemDBID());
 
-		ArrayList<Document> sysParams = collector.getInitialisationParameters();
+		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
 		int numberOfCells = 0;
-		for (Document doc : sysParams) {
-			if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0) {
-				areaX = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0) {
-				areaY = Integer.parseInt(doc.getString("parameter-value"));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0) {
-				initName = doc.getString("parameter-value");
-			}
+		if (sysParams.containsKey("Size (X)")) {
+			areaX = Integer.parseInt(sysParams.get("Size (X)"));
+		}
+		if (sysParams.containsKey("Size (Y)")) {
+			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
+		}
+		if (sysParams.containsKey("initPath")) {
+			initName = sysParams.get("initPath");
 		}
 
 		HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();

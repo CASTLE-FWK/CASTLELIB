@@ -113,8 +113,11 @@ public class Utilities {
 	public static String generateTimeID(){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		LocalDateTime dateTime = LocalDateTime.now();
-		return dateTime.format(formatter)+Character.toChars(RandomGen.generateRandomRangeInteger(97, 122))[0]
-				+Character.toChars(RandomGen.generateRandomRangeInteger(97, 122))[0]; 		
+		return dateTime.format(formatter)+generateRandomChar()+generateRandomChar();	
+	}
+	
+	public static char generateRandomChar() {
+		return Character.toChars(RandomGen.generateRandomRangeInteger(97, 122))[0];
 	}
 	
 	public static String byteArrayToHexString(byte[] b) {

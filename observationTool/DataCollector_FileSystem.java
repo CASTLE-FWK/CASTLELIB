@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.lang.model.type.IntersectionType;
-
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -24,6 +22,7 @@ public class DataCollector_FileSystem {
 
 	//
 	String filePathRoot = "";
+	String initParamFilePath = "";
 	String filepathStepsRoot = "";
 	final String STEP = "Step";
 	final String JSON = ".json";
@@ -34,16 +33,19 @@ public class DataCollector_FileSystem {
 	public DataCollector_FileSystem(String fp) {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
+		initParamFilePath = filePathRoot+"/systemInitialization"+JSON;
 	}
-	
+
 	public void setCollection(String fp) {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
+		initParamFilePath = filePathRoot+"/systemInitialization"+JSON;
 	}
-	
-	//TODO
-	public HashMap<String, String> getInitialisationParameters(){
+
+	// TODO
+	public HashMap<String, String> getInitialisationParameters() {
 		HashMap<String, String> ip = new HashMap<String, String>();
+
 		return ip;
 	}
 
@@ -71,9 +73,9 @@ public class DataCollector_FileSystem {
 
 		return vAgents;
 	}
-	
-	//TODO
-	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber){
+
+	// TODO
+	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber) {
 		return null;
 	}
 
@@ -175,9 +177,12 @@ public class DataCollector_FileSystem {
 	public int getTerminationStep() {
 		return -1;
 	}
-	
-	public void restart() {}
-	public void close() {}
+
+	public void restart() {
+	}
+
+	public void close() {
+	}
 
 	// All the helper functions are below
 

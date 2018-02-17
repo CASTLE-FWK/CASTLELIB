@@ -209,7 +209,7 @@ public class CASSystem {
 		// Fill Agent section
 	}
 
-	public String writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params) {
+	public String systemSpecsToString(String sysName, String sysDescription, List<Parameter<?>> params) {
 		String out = "Simulation Initialization Details: \n";
 		out += "Name: " + sysName + "\n";
 		out += "Description: " + sysDescription + "\n";

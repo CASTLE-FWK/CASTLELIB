@@ -79,11 +79,16 @@ public class Output {
 
 	}
 
-	public void systemInitialStatsToDB(ArrayList<Parameter<?>> params, String timeAsDate) {
+	public void outputSystemInitializationParameters(ArrayList<Parameter<?>> params, SimulationInfo si) {
 		if (!dbOutputMuted) {
 			if (writingModelDataToDB) {
-				dbOutput.storeInitValues(params, timeAsDate);
+				dbOutput.storeInitValues(params, si.getTimeStamp());
 				System.out.println("sending init values to db");
+			}
+		}
+		if (!loggerMuted) {
+			if (writingModelDataToFile) {
+				logger.writeSystemSpecsToFile(si, params);
 			}
 		}
 	}

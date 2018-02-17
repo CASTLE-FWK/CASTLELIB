@@ -4,12 +4,14 @@ public class SimulationInfo {
 
 	String systemName = "";
 	String description = "";
-	String executionID = "";	
+	String executionID = "";
+	String timeStamp = "";
 	
-	public SimulationInfo(String sysName, String desc, String executionID){
+	public SimulationInfo(String sysName, String desc, String timeStamp){
 		this.systemName = sysName;
 		this.description = desc;
-		this.executionID = executionID;
+		this.timeStamp = timeStamp;
+		this.executionID = "name-"+this.timeStamp;
 	}
 
 	public String getSystemName() {
@@ -34,5 +36,9 @@ public class SimulationInfo {
 
 	public void setExecutionID(String executionID) {
 		this.executionID = executionID;
+	}
+
+	public String getTimeStamp() {
+		return timeStamp;
 	}
 }

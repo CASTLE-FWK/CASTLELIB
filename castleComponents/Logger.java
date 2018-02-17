@@ -25,7 +25,7 @@ public class Logger {
 	private Output output;
 
 	private SimulationInfo simInfo;
-	
+
 	Document doc;
 	private HashMap<String, ArrayList<Document>> documentStorage;
 
@@ -70,8 +70,8 @@ public class Logger {
 	public void newStep(int stepNumber) {
 		output.sendLogToConsole("\n***************\nStep " + stepNumber);
 		stringBuilder = new StringBuffer();
-//		stringBuilder.append("Step " + stepNumber + "\n");
-		stringBuilder.append("{ \"Step-Number\" : "+stepNumber+" }\n");
+		// stringBuilder.append("Step " + stepNumber + "\n");
+		stringBuilder.append("{ \"Step-Number\" : " + stepNumber + " }\n");
 		doc = new Document();
 		documentStorage = new HashMap<String, ArrayList<Document>>();
 		doc.append("step-number", stepNumber);
@@ -85,20 +85,20 @@ public class Logger {
 			}
 		}
 		if (output.isWritingModelDataToFile()) {
-			//Empty out document storage and turn into string
+			// Empty out document storage and turn into string
 			for (String v : documentStorage.keySet()) {
 				doc.append(v, documentStorage.get(v));
 			}
-			
+
 			if (doc != null) {
-				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(),
-						false);
+				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(), false);
 			}
-//			
-//			if (stringBuilder.length() != 0) {
-//				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", stringBuilder.toString(),
-//						false);
-//			}
+			//
+			// if (stringBuilder.length() != 0) {
+			// output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json",
+			// stringBuilder.toString(),
+			// false);
+			// }
 		}
 	}
 
@@ -150,7 +150,7 @@ public class Logger {
 	public void logToFile(String str) {
 		stringBuilder.append(str + "\n");
 	}
-	
+
 	public void logToFileFromDocument(String key, Document d) {
 		ArrayList<Document> docs = documentStorage.get(key);
 		if (docs == null) {
@@ -158,9 +158,8 @@ public class Logger {
 			documentStorage.put(key, docs);
 			docs = documentStorage.get(key);
 		}
-			docs.add(d);
+		docs.add(d);
 	}
-	
 
 	public void writeModelData(StringBuffer sb) {
 		if (output.isWritingModelDataToConsole()) {
@@ -174,8 +173,8 @@ public class Logger {
 	// Sets up the log path (should be fully automated)
 	public void setUpLog(String str) {
 		systemLogPath = str;
-		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID().replaceAll("\\s+", "");
-		systemSpecPath = systemOutputDirPath + "/systemInitialization.txt";
+		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID().replaceAll("\\s+", "")+Utilities.generateRandomChar()+Utilities.generateRandomChar();
+		systemSpecPath = systemOutputDirPath + "/systemInitialization.json";
 		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
 		systemStepInfoDir = systemOutputDirPath + "/steps";
 
@@ -208,5 +207,26 @@ public class Logger {
 
 		output.sendLogToConsole(out);
 		output.sendStringToFile(systemSpecPath, out, false);
+	}
+
+	public void writeSystemSpecsToFile(SimulationInfo si, List<Parameter<?>> params) {
+		Document dd = new Document("_id", "system-initialisation");
+		dd.append("name", si.getSystemName());
+		dd.append("description", si.getDescription());
+		dd.append("execution-start-time", si.getTimeStamp());
+		
+		ArrayList<Document> pdList = new ArrayList<Document>();
+		for (Parameter<?> p : params) {
+			String name = p.getName();
+			String value = p.getCurrentValue();
+			String type = p.getType();
+			Document pdd = new Document("parameter-name", name).append("parameter-value", value).append("parameter-type", type);
+			pdList.add(pdd);
+		}
+		
+		dd.append("initialisation-parameters", pdList);
+		output.sendStringToFile(systemSpecPath, dd.toJson(), false);
+		
+		
 	}
 }

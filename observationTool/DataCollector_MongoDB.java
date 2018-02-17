@@ -92,10 +92,17 @@ public class DataCollector_MongoDB {
 	}
 
 	//TODO Change this to a HashMap
-	public ArrayList<Document> getInitialisationParameters() {
+	public HashMap<String, String> getInitialisationParameters() {
 		FindIterable<Document> ip = find("_id", "system-initialisation");
 		Document doc = ip.first();
-		return doc.get("initialisation-parameters", ArrayList.class);
+		ArrayList<Document> docs = doc.get("initialisation-parameters", ArrayList.class);
+		HashMap<String, String> ipm = new HashMap<String, String>();
+		for (Document d : docs) {
+			String name = d.getString("parameter-name");
+			String value = d.getString("parameter-value");
+			ipm.put(name, value);
+		}
+		return ipm;
 	}
 
 	public AggregateIterable<Document> getParameterValueFromType(int stepNumber, String agentType,
