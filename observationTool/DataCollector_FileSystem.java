@@ -31,15 +31,13 @@ public class DataCollector_FileSystem {
 	final String GROUPS = "Groups";
 
 	public DataCollector_FileSystem(String fp) {
-		filePathRoot = fp;
-		filepathStepsRoot = filePathRoot + "/steps";
-		initParamFilePath = filePathRoot+"/systemInitialization"+JSON;
+		setCollection(fp);
 	}
 
 	public void setCollection(String fp) {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
-		initParamFilePath = filePathRoot+"/systemInitialization"+JSON;
+		initParamFilePath = filePathRoot + "/systemInitialization" + JSON;
 	}
 
 	// TODO
@@ -169,8 +167,19 @@ public class DataCollector_FileSystem {
 			JsonObject obj = environments.get(i).asObject();
 			counter += countInteractionsFromEntity(obj);
 		}
-
 		return counter;
+	}
+
+	public int countNumberOfAgentsInStep(int stepNumber) {
+		return countEntityType(stepNumber, AGENTS);
+	}
+
+	public int countNumberOfEnvironmentsInStep(int stepNumber) {
+		return countEntityType(stepNumber, ENVIRONMENTS);
+	}
+
+	public int countNumberOfGroupsInStep(int stepNumber) {
+		return countEntityType(stepNumber, GROUPS);
 	}
 
 	// TODO
@@ -178,13 +187,8 @@ public class DataCollector_FileSystem {
 		return -1;
 	}
 
-	public void restart() {
-	}
-
-	public void close() {
-	}
-
-	// All the helper functions are below
+	/*****************************************************************/
+	// All the class specific helper functions are below
 
 	public String buildFilePath(int stepNumber) {
 		return filepathStepsRoot + "/" + STEP + stepNumber + JSON;
@@ -216,5 +220,18 @@ public class DataCollector_FileSystem {
 			interactions.add(new Interaction(from, to, type));
 		}
 		return interactions;
+	}
+
+	public int countEntityType(int stepNumber, String type) {
+		JsonObject file = parseFile(buildFilePath(stepNumber));
+		JsonArray ents = file.get(type).asArray();
+		return ents.size();
+	}
+
+	// Unused
+	public void restart() {
+	}
+
+	public void close() {
 	}
 }
