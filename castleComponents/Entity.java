@@ -32,12 +32,11 @@ public class Entity implements Runnable {
 	private int currentStep = -1;
 	protected OutputToJSON_Mongo dbOut;
 	protected EntityID entityID;
-	String entitySuperType = "";
 	public String entityType = "";
 	final String ENVIRONMENT = "environment";
-	HashMap<String, Feature> featuresInLastInterval;
+	protected HashMap<String, Feature> featuresInLastInterval;
 	final String GROUP = "group";
-	HashMap<String, Interaction> interactionsInLastInterval;
+	protected HashMap<String, Interaction> interactionsInLastInterval;
 	protected Logger logger;
 	protected Output output;
 	protected HashMap<String, Parameter<?>> parameters;
@@ -45,9 +44,10 @@ public class Entity implements Runnable {
 	protected boolean ready = false;
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
+	
+	public enum EntityType {Agent, Group, Environment};
+	EntityType entitySuperType;
 
-	
-	
 	boolean agentDestroyed = false;
 
 	public Entity(String type, EntityID eid) {
@@ -66,6 +66,14 @@ public class Entity implements Runnable {
 		entityID = new EntityID(idAsString);
 		this.entityType = type;
 		init();
+	}
+	
+	public void setEntitySuperType(EntityType t) {
+		entitySuperType = t;
+	}
+	
+	public String getEntitySuperType() {
+		return entitySuperType.toString();
 	}
 
 	public void addCommunicationInteraction(Entity entityTo, String name) {
@@ -393,9 +401,10 @@ public class Entity implements Runnable {
 
 	public StringBuilder writeEntityData_OLD() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(entityType + "-ID" + COMMA + getID());
-		sb.append(entityType + "-type" + COMMA + getType());
-		sb.append(entityType + "-name" + COMMA + getID());
+		String est = getEntitySuperType();
+		sb.append(est + "-ID" + COMMA + getID());
+		sb.append(est + "-type" + COMMA + getType());
+		sb.append(est + "-name" + COMMA + getID());
 		sb.append("lifetime" + COMMA + "-1");
 
 		// Dump parameter values
@@ -443,13 +452,19 @@ public class Entity implements Runnable {
 	final String FEATURE_NAME = "feature-name";
 	final String FEATURE_TYPE = "feature-type";
 	final String FEATURE_CALL_NUM = "feature-call#";
+	
+	final String FRAG_ID = "-ID";
+	final String FRAG_TYPE = "-type";
+	final String FRAG_NAME = "-name";
+	final String LIFETIME = "lifetime";
 
 	public Document writeEntityDataDocument() {
 		Document entity = new Document();
-		entity.append(entityType + "-ID", getID());
-		entity.append(entityType + "-type", getType());
-		entity.append(entityType + "-name", getID());
-		entity.append("lifetime", -1);
+		String est = getEntitySuperType();
+		entity.append(est + FRAG_ID, getID());
+		entity.append(est + FRAG_TYPE, getType());
+		entity.append(est + FRAG_NAME, getID());
+		entity.append(LIFETIME, -1);
 		ArrayList<Document> paramDocs = new ArrayList<Document>();
 		ArrayList<Document> fCallDocs = new ArrayList<Document>();
 		ArrayList<Document> interactionDocs = new ArrayList<Document>();

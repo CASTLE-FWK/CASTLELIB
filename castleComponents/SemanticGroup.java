@@ -15,6 +15,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
 
+import castleComponents.Entity.EntityType;
+
 public class SemanticGroup extends Entity {
 	protected ArrayList<Agent> storedAgents;
 	ArrayList<SemanticGroup> storedCapsules;
@@ -33,6 +35,7 @@ public class SemanticGroup extends Entity {
 	// Blablah
 	public SemanticGroup(String capType, EntityID id) {
 		super(capType, id);
+		super.setEntitySuperType(EntityType.Group);
 		storedAgents = new ArrayList<Agent>();
 		storedCapsules = new ArrayList<SemanticGroup>();
 

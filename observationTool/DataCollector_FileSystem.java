@@ -73,9 +73,29 @@ public class DataCollector_FileSystem {
 		return vAgents;
 	}
 
-	// TODO
 	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber) {
-		return null;
+		HashMap<String, ArrayList<Interaction>> theMap = new HashMap<String, ArrayList<Interaction>>();
+		JsonObject file = parseFile(buildFilePath(stepNumber));
+		JsonArray agents = file.get(AGENTS).asArray();
+		for (int i = 0; i < agents.size(); i++) {
+			JsonObject obj = agents.get(i).asObject();
+			String name = obj.get("agent-name").asString();
+			theMap.put(name, new ArrayList<Interaction>());
+			ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
+			for (Interaction inter : interactions) {
+				String from = inter.getAgentFromAsString();
+				String to = inter.getAgentToAsString();
+				if (!theMap.containsKey(from)) {
+					theMap.put(from, new ArrayList<Interaction>());
+				}
+				if (!theMap.containsKey(to)) {
+					theMap.put(to, new ArrayList<Interaction>());
+				}
+				theMap.get(from).add(inter);
+				theMap.get(to).add(inter);
+			}
+		}
+		return theMap;
 	}
 
 	public HashMap<String, VEntity> buildVAgentMap(int stepNumber) {
@@ -146,6 +166,7 @@ public class DataCollector_FileSystem {
 
 		return interactions;
 	}
+	
 
 	public int countInteractionsInStep(int stepNumber) {
 		int counter = 0;

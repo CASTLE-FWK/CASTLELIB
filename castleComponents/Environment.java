@@ -14,6 +14,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
 
+import castleComponents.Entity.EntityType;
 import castleComponents.representations.Grid;
 
 public class Environment extends Entity {
@@ -37,6 +38,7 @@ public class Environment extends Entity {
 
 	public Environment(String envType, EntityID eid){
 		super(envType,eid);
+		super.setEntitySuperType(EntityType.Agent);
 //		numberOfCapsules = numCaps;
 //		groupsX = numCaps;
 //		groupsY = numCaps;

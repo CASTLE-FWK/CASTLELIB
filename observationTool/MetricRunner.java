@@ -183,6 +183,7 @@ public class MetricRunner {
 
 		// LETS BUILD VAGENTS
 		int totalNumberOfSteps = collector.getTerminationStep();
+		totalNumberOfSteps = 10; //TODO REMOVE THIS
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays

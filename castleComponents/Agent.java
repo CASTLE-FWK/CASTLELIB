@@ -25,6 +25,7 @@ public class Agent extends Entity{
 		super(type, id);
 		this.id = id;
 		this.type = type;
+		super.setEntitySuperType(EntityType.Agent);
 	}
 
 	
