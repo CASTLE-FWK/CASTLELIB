@@ -1322,7 +1322,7 @@ public class MetricRunner {
 			double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agents, new Vector2(areaX, areaY), mp);
 			double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agents, prevAgents);
 			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
-					new Vector2(areaX, areaY));
+					new Vector2(areaX, areaY), mp);
 
 			eotResult.addResultAtStep(resultsName, shannonEntropy, time);
 			eotResult.addResultAtStep(secName, shannonEntropyChange, time);

@@ -35,7 +35,7 @@ public class VEntity extends Entity {
 	}
 
 	public void addParameterFromString(String name, String type, String value) {
-		if (name.compareToIgnoreCase("Position") == 0) {
+		if (name.compareToIgnoreCase("Position") == 0 || name.compareToIgnoreCase("Location") == 0) {
 			position = new Vector2(value);
 		}
 		super.addParameterFromString(name, type, value);
