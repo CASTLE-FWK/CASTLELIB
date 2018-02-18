@@ -55,13 +55,14 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
+//			System.out.println(obj.toString());
 			String name = obj.get("agent-name").asString();
 			String id = obj.get("agent-ID").asString();
 			String type = obj.get("agent-type").asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
-				JsonObject d = params.get(i).asObject();
+				JsonObject d = params.get(j).asObject();
 				String pName = d.get("parameter-name").asString();
 				String pType = d.get("parameter-type").asString();
 				String pValue = d.get("parameter-value").asString();
@@ -110,7 +111,7 @@ public class DataCollector_FileSystem {
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
-				JsonObject d = params.get(i).asObject();
+				JsonObject d = params.get(j).asObject();
 				String pName = d.get("parameter-name").asString();
 				String pType = d.get("parameter-type").asString();
 				String pValue = d.get("parameter-value").asString();

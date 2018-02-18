@@ -440,14 +440,14 @@ public class Entity implements Runnable {
 		return sb;
 	}
 
-	final String PARAMETER_NAME = "parameter_name";
-	final String PARAMETER_TYPE = "parameter_type";
-	final String PARAMETER_VALUE = "parameter_value";
+	final String PARAMETER_NAME = "parameter-name";
+	final String PARAMETER_TYPE = "parameter-type";
+	final String PARAMETER_VALUE = "parameter-value";
 
-	final String INTERACTION_FROM = "interaction_from";
-	final String INTERACTION_TYPE = "interaction_type";
-	final String INTERACTION_TO = "interaction_to";
-	final String INTERACTION_NAME = "interaction_name";
+	final String INTERACTION_FROM = "interaction-from";
+	final String INTERACTION_TYPE = "interaction-type";
+	final String INTERACTION_TO = "interaction-to";
+	final String INTERACTION_NAME = "interaction-name";
 
 	final String FEATURE_NAME = "feature-name";
 	final String FEATURE_TYPE = "feature-type";
