@@ -1,12 +1,13 @@
 package observationTool.metrics;
 
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.results.MetricResult;
 
 public class ShannonEntropy extends MetricBase implements MetricInterface {
 
-	public ShannonEntropy() {
-		super("ShannonEntropy");
+	public ShannonEntropy(MetricInfo mi) {
+		super("ShannonEntropy", mi);
 		// TODO Auto-generated constructor stub
 	}
 

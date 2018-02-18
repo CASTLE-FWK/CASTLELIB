@@ -11,6 +11,7 @@ import org.apache.commons.math3.distribution.TDistribution;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
@@ -52,8 +53,8 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 
 	public ArrayList<Double> percentageSignif;
 
-	public OToole14Metric(int maxWindowSize, int windowTruncateSize) {
-		super("OToole14Metric");
+	public OToole14Metric(int maxWindowSize, int windowTruncateSize, MetricInfo mi) {
+		super("OToole14Metric", mi);
 		this.maxWindowSize = maxWindowSize;
 		this.windowTruncateSize = windowTruncateSize;
 		agentWindows = new HashMap<String, AgentWindow>();

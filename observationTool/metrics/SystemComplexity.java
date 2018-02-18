@@ -2,6 +2,7 @@ package observationTool.metrics;
 
 import java.util.ArrayList;
 
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.results.AccuracyResults;
 import observationTool.results.MetricResult;
@@ -27,8 +28,8 @@ public class SystemComplexity extends MetricBase implements MetricInterface {
 
 	double latestResults;
 
-	public SystemComplexity() {
-		super("SystemComplexity");
+	public SystemComplexity(MetricInfo mi) {
+		super("SystemComplexity", mi);
 		// TODO Auto-generated constructor stub
 	}
 

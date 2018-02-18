@@ -2,6 +2,7 @@ package observationTool.metrics;
 
 import java.util.ArrayList;
 
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
@@ -35,8 +36,8 @@ public class MSSE extends MetricBase implements MetricInterface {
 
 	double finalResult;
 
-	public MSSE() {
-		super("MSSE");
+	public MSSE(MetricInfo mi) {
+		super("MSSE", mi);
 		// TODO Auto-generated constructor stub
 	}
 

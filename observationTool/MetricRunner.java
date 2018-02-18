@@ -36,6 +36,7 @@ import castleComponents.representations.Grid;
 import experimentExecution.Experiment;
 import experimentExecution.JsonParser;
 import experimentExecution.MetricInfo;
+import experimentExecution.MetricVariableMapping;
 import experimentExecution.SystemInfo;
 
 public class MetricRunner {
@@ -263,7 +264,7 @@ public class MetricRunner {
 		println("finished");
 	}
 
-	public static void Metric_SystemComplexity(SystemInfo si) {
+	public static void Metric_SystemComplexity(SystemInfo si, MetricInfo mi) {
 
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
@@ -271,7 +272,7 @@ public class MetricRunner {
 		StringBuilder sb = new StringBuilder();
 		print("*******System Complexity*******");
 		String metricName = "SystemComplexity";
-		SystemComplexity sc = new SystemComplexity();
+		SystemComplexity sc = new SystemComplexity(mi);
 		sb.append("#" + systemName + " System Complexity Results\n");
 		sb.append("#step\tresult\n");
 		long runtime = System.currentTimeMillis();
@@ -422,7 +423,7 @@ public class MetricRunner {
 
 	}
 
-	public static void Metric_OToole14(SystemInfo si) {
+	public static void Metric_OToole14(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		// Run metric: OToole 2014 Emergence Detection
@@ -433,7 +434,7 @@ public class MetricRunner {
 		int maxWindowSize = 20;
 		int windowTruncateSize = 5;
 		String metricName = "OToole 2014";
-		OToole14Metric oToole = new OToole14Metric(maxWindowSize, windowTruncateSize);
+		OToole14Metric oToole = new OToole14Metric(maxWindowSize, windowTruncateSize, mi);
 		MetricResult oTooleResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		oTooleResult.addResultType(resultsName);
 		oTooleResult.addResultType(realEventsNameEm);
@@ -1284,7 +1285,7 @@ public class MetricRunner {
 		String ceName = "Conditional Entropy";
 		String metricName = "Entropy";
 		MetricResult eotResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
-		Entropy entropyCalculator = new Entropy();
+		Entropy entropyCalculator = new Entropy(mi);
 		eotResult.addResultType(resultsName);
 		eotResult.addResultType(ceName);
 		eotResult.addResultType(secName);
@@ -1360,6 +1361,7 @@ public class MetricRunner {
 		String resultsName = "WAT";
 		String metricName = "KaddoumWAT";
 		StringBuilder sb = new StringBuilder();
+		SelfAdaptiveSystems sas = new SelfAdaptiveSystems(mi);
 		MetricResult watResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		watResult.addResultType(resultsName);
 		watResult.addResultType(realEventsNameEm);
@@ -1384,31 +1386,7 @@ public class MetricRunner {
 
 			workingTime = agents.size() * 8.0;
 
-			// for (VAgent v : agents){
-			// boolean lifeState =
-			// v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") ==
-			// 0;
-			// VAgent pv = prevAgents.get(v.getName());
-			// if (pv == null){
-			// System.out.println("Agent didnt exist...");
-			// continue;
-			// }
-			// boolean prevState =
-			// pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
-			// == 0;
-			// if (lifeState == prevState){
-			// continue;
-			// }
-			//
-			//
-			// ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
-			// if (theAgentsInteractions == null){
-			// System.out.println("Issue here (1)");
-			// }
-			// adaptivityTime += theAgentsInteractions.size();
-			//
-			// }
-			watScore = SelfAdaptiveSystems.KaddoumWAT(agents, prevAgents, interactions, workingTime);
+			watScore = sas.KaddoumWAT(agents, prevAgents, interactions, workingTime);
 
 			// if (adaptivityTime == 0){
 			// watScore = 0;
@@ -1430,6 +1408,7 @@ public class MetricRunner {
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
+	//TODO This one needs to be ported across into the SAS class but its so very nasty
 	public static void Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
@@ -1440,6 +1419,7 @@ public class MetricRunner {
 		String aName = "Availability";
 		String uName = "Unavailability";
 		String metricName = "VillegasAU";
+		final String STATE_1 = "STATE_1"; 
 		StringBuilder sb = new StringBuilder();
 		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		// auResult.addResultType(resultsName);
@@ -1454,6 +1434,11 @@ public class MetricRunner {
 
 		currentResult.addResultType(aName);
 		currentResult.addResultType(uName);
+		
+		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
+		String eType1 = mvm1.getTargetEntity();
+		String eVN1 = mvm1.getTargetEntityVariableName();
+		String dv1 = mvm1.getDesiredValue();
 
 		int consecutiveDowntime = 2; // The shortest amount of consecutive down time
 		HashMap<String, Integer> theAgentsDowntime = new HashMap<String, Integer>();
@@ -1481,61 +1466,63 @@ public class MetricRunner {
 			int recoveryCounter = 0;
 
 			for (VEntity v : agents) {
-				boolean lifeState = v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-				VEntity pv = prevAgents.get(v.getName());
-				if (pv == null) {
-					System.out.println("Agent didnt exist...");
-					continue;
-				}
-				boolean prevState = pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-				if (lifeState == prevState) {
-					Integer agentUpTime = theAgentsUptime.get(v.getName());
-					Integer agentDowntime = theAgentsDowntime.get(v.getName());
-
-					if (agentUpTime == null) {
-						theAgentsUptime.put(v.getName(), 0);
-						// agentUpTime = theAgentsUptime.get(v.getName());
+				if (v.getType().compareToIgnoreCase(eType1) == 0) {
+					boolean lifeState = v.getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0;
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						System.out.println("Agent didnt exist...");
+						continue;
 					}
-					if (agentDowntime == null) {
-						theAgentsDowntime.put(v.getName(), 0);
-						// agentDowntime = theAgentsDowntime.get(v.getName());
-					}
-					if (agentDowntime != null && agentUpTime != null) {
-						// Has now entered a "downtime" state
-						if (agentDowntime == consecutiveDowntime) {
-							MTTF += agentUpTime;
-							failCounter++;
+					boolean prevState = pv.getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0;
+					if (lifeState == prevState) {
+						Integer agentUpTime = theAgentsUptime.get(v.getName());
+						Integer agentDowntime = theAgentsDowntime.get(v.getName());
+	
+						if (agentUpTime == null) {
 							theAgentsUptime.put(v.getName(), 0);
-							theAgentsDowntime.put(v.getName(), agentDowntime + 1);
-							// System.out.println("MTTF: "+MTTF);
-						} else {
-							// theAgentsUptime.put(v.getName(), 0);
-							theAgentsDowntime.put(v.getName(), agentDowntime + 1);
+							// agentUpTime = theAgentsUptime.get(v.getName());
 						}
-					}
-
-				} else {
-					Integer agentUpTime = theAgentsUptime.get(v.getName());
-					Integer agentDowntime = theAgentsDowntime.get(v.getName());
-
-					if (agentUpTime == null) {
-						theAgentsUptime.put(v.getName(), 0);
-						// agentUpTime = theAgentsUptime.get(v.getName());
-					}
-					if (agentDowntime == null) {
-						theAgentsDowntime.put(v.getName(), 0);
-						// agentDowntime = theAgentsDowntime.get(v.getName());
-					}
-
-					if (agentDowntime != null && agentUpTime != null) {
-						if (agentDowntime >= consecutiveDowntime) {
-							MTTR += agentDowntime;
-							recoveryCounter++;
+						if (agentDowntime == null) {
 							theAgentsDowntime.put(v.getName(), 0);
-							theAgentsUptime.put(v.getName(), agentUpTime + 1);
-						} else {
+							// agentDowntime = theAgentsDowntime.get(v.getName());
+						}
+						if (agentDowntime != null && agentUpTime != null) {
+							// Has now entered a "downtime" state
+							if (agentDowntime == consecutiveDowntime) {
+								MTTF += agentUpTime;
+								failCounter++;
+								theAgentsUptime.put(v.getName(), 0);
+								theAgentsDowntime.put(v.getName(), agentDowntime + 1);
+								// System.out.println("MTTF: "+MTTF);
+							} else {
+								// theAgentsUptime.put(v.getName(), 0);
+								theAgentsDowntime.put(v.getName(), agentDowntime + 1);
+							}
+						}
+	
+					} else {
+						Integer agentUpTime = theAgentsUptime.get(v.getName());
+						Integer agentDowntime = theAgentsDowntime.get(v.getName());
+	
+						if (agentUpTime == null) {
+							theAgentsUptime.put(v.getName(), 0);
+							// agentUpTime = theAgentsUptime.get(v.getName());
+						}
+						if (agentDowntime == null) {
 							theAgentsDowntime.put(v.getName(), 0);
-							theAgentsUptime.put(v.getName(), agentUpTime + 1);
+							// agentDowntime = theAgentsDowntime.get(v.getName());
+						}
+	
+						if (agentDowntime != null && agentUpTime != null) {
+							if (agentDowntime >= consecutiveDowntime) {
+								MTTR += agentDowntime;
+								recoveryCounter++;
+								theAgentsDowntime.put(v.getName(), 0);
+								theAgentsUptime.put(v.getName(), agentUpTime + 1);
+							} else {
+								theAgentsDowntime.put(v.getName(), 0);
+								theAgentsUptime.put(v.getName(), agentUpTime + 1);
+							}
 						}
 					}
 				}
@@ -1587,6 +1574,7 @@ public class MetricRunner {
 		String resultsName = "PerfSit";
 		String metricName = "PerfSit";
 		StringBuilder sb = new StringBuilder();
+		SelfAdaptiveSystems sas = new SelfAdaptiveSystems(mi);
 		MetricResult perfsitResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		perfsitResult.addResultType(resultsName);
 		perfsitResult.addResultType(realEventsNameEm);
@@ -1614,57 +1602,8 @@ public class MetricRunner {
 			// subsitSum = 0.0;
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-			// Grid<VAgent> theGrid = new Grid<VAgent>(VAgent.class, areaX, areaY);
-			//
-			// //Fill the previous time stamp grid
-			// Iterator<Entry<String, VAgent>> it = prevAgents.entrySet().iterator();
-			// while (it.hasNext()){
-			// Map.Entry<String, VAgent> pair = (Map.Entry<String, VAgent>)it.next();
-			// VAgent agt = pair.getValue();
-			// theGrid.addCell(agt, agt.getPosition());
-			// }
-			//
-			// for (VAgent v : agents){
-			// boolean lifeState =
-			// v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") ==
-			// 0;
-			// VAgent pv = prevAgents.get(v.getName());
-			// if (pv == null){
-			// System.out.println("Agent didnt exist...");
-			// continue;
-			// }
-			// boolean prevState =
-			// pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
-			// == 0;
-			// if (lifeState == prevState){
-			// continue;
-			// }
-			// if (lifeState) {
-			// if (!prevState){
-			// ArrayList<VAgent> neighbours =
-			// theGrid.getNeighbours((int)v.getPosition().getX(),
-			// (int)v.getPosition().getY(), 1);
-			// int lifeCount = 0;
-			// for (VAgent n : neighbours){
-			// if
-			// (n.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
-			// == 0){
-			// lifeCount++;
-			// }
-			// }
-			// subsitSum += lifeCount;
-			// cMax += 8.0;
-			// }
-			// } else {
-			// if (prevState){
-			// subsitSum += 3.0;
-			// cMax += 3.0;
-			// }
-			// }
-			//
-			// }
-			// double perf = (1 - subsitSum / cMax);
-			double perf = SelfAdaptiveSystems.PerfSit(agents, prevAgents, new Vector2(areaX, areaY));
+
+			double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY));
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);
@@ -1821,13 +1760,13 @@ public class MetricRunner {
 		String metricName = mi.getMetricName();
 		switch (metricName) {
 		case "System Complexity":
-			Metric_SystemComplexity(testSystem);
+			Metric_SystemComplexity(testSystem, mi);
 			break;
 		case "Chan GoL 11":
 			Metric_ChanGoLIM(testSystem, mi);
 			break;
 		case "OToole 14":
-			Metric_OToole14(testSystem);
+			Metric_OToole14(testSystem, mi);
 			break;
 		case "Oscillation Detection":
 			Metric_OscillatorDetect(testSystem);

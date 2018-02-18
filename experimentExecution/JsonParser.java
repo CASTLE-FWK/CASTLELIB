@@ -97,7 +97,7 @@ public class JsonParser {
 		for (int i = 0; i < arr.size(); i++) {
 			JsonObject item = arr.get(i).asObject();
 			mi.addVariableMap(item.get("metric-variable").asString(), item.get("entity-type").asString(),
-					item.get("entity-variable").asString());
+					item.get("entity-variable").asString(), item.get("variable-desired-value").asString() );
 		}
 	}
 }

@@ -1,17 +1,24 @@
 package observationTool.metrics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import experimentExecution.MetricInfo;
+import experimentExecution.MetricVariableMapping;
 import observationTool.VEntity;
 
 public class MetricBase {
 
-	String metricName;
-	String metricDescription;
-	ArrayList<MetricRequirement> requirements;
+	protected String metricName;
+	protected String metricDescription;
+	protected ArrayList<MetricRequirement> requirements;
+	protected MetricInfo mi;
+	protected HashMap<String, MetricVariableMapping> metricVariableMappings;
 
-	public MetricBase(String metricName) {
+	public MetricBase(String metricName, MetricInfo mi) {
 		this.metricName = metricName;
+		this.mi = mi;
+		metricVariableMappings = this.mi.getMetricVariableMappings();
 		requirements = new ArrayList<MetricRequirement>();
 	}
 
@@ -19,6 +26,7 @@ public class MetricBase {
 		AGENTS, INTERACTIONS, ENVIRONMENTS, GROUPS, AGENT, ENVIRONMENT, GROUP;
 	}
 
+	// Useful functions
 	public boolean entityIsOfType(VEntity ve, String type) {
 		return ve.getType().compareToIgnoreCase(type) == 0;
 	}
@@ -26,6 +34,10 @@ public class MetricBase {
 	public boolean compareParameters(VEntity ve1, VEntity ve2, String paramName) {
 		return (ve2.getParameterValueFromStringAsString(paramName)
 				.compareToIgnoreCase(ve1.getParameterValueFromStringAsString(paramName)) == 0);
+	}
+
+	public boolean isParameterEqualToValue(VEntity v, String parameterName, String desiredValue) {
+		return v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0;
 	}
 
 }

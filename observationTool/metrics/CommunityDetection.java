@@ -2,6 +2,7 @@ package observationTool.metrics;
 
 import java.util.ArrayList;
 
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.results.MetricResult;
 
@@ -24,8 +25,8 @@ public class CommunityDetection extends MetricBase implements MetricInterface {
 
 	double finalResult;
 
-	public CommunityDetection() {
-		super("CommunityDetection");
+	public CommunityDetection(MetricInfo mi) {
+		super("CommunityDetection", mi);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -44,15 +44,13 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public long result_Zt;
 	public double result_It;
 	public double[][] result_Yit;
-	MetricInfo mi;
-	HashMap<String, MetricVariableMapping> metricVariableMappings;
 	
 	//What are the states that this metric requires
 	final String STATE_1 = "STATE_1";
 
 	public ChanGoLInterMetric(MetricInfo mi) {
 		// TODO Auto-generated constructor stub
-		super("ChanGoLInterMetric");
+		super("ChanGoLInterMetric", mi);
 		cumulativeIndiv = new HashMap<String, Double>();
 		this.mi = mi;
 		metricVariableMappings = mi.getMetricVariableMappings();
@@ -80,6 +78,8 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 		String eType1 = mvm1.getTargetEntity();
 		String eVN1 = mvm1.getTargetEntityVariableName();
+		
+		
 		if (step_tm1.size() != step_t.size()) {
 			// System.out.println("Agent lists are not the same size.
 			// Terminating metric.");
@@ -100,18 +100,7 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 				// agents. Terminating metric.");
 				continue;
 			}
-
-			// if
-			// (MetricRunner_ED.getCurrentState(vatm1).compareTo(MetricRunner_ED.getCurrentState(vat))
-			// != 0 ){
-			// cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID())
-			// + 1.0);
-			// overallChanges[currentStep]++;
-			// if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]){
-			// maxAtT[currentStep] =
-			// cumulativeIndiv.get(vat.getID()).intValue();
-			// }
-			// }
+			
 			if (entityIsOfType(vatm1, eType1) && entityIsOfType(vat, eType1)) {
 				if (!compareParameters(vatm1, vat, eVN1)) {
 					cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);

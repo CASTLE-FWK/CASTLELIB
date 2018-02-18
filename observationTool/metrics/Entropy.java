@@ -6,13 +6,17 @@ import java.util.HashMap;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
+import experimentExecution.MetricInfo;
 import observationTool.VEntity;
 
-public class Entropy {
+public class Entropy extends MetricBase{
 	
 	private final double BOLTZMANN_CONSTANT = (1.38065 * Math.pow(10, -23));
 	
-	public Entropy(){}
+	
+	public Entropy(MetricInfo mi){
+		super("Entropy", mi);
+	}
 	
 	
 	public double BotzmannEntropy(ArrayList<VEntity> agents){

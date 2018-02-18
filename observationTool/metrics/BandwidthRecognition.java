@@ -1,5 +1,6 @@
 package observationTool.metrics;
 
+import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
 import observationTool.results.MetricResult;
 
@@ -11,8 +12,8 @@ import observationTool.results.MetricResult;
  */
 public class BandwidthRecognition extends MetricBase implements MetricInterface {
 
-	public BandwidthRecognition() {
-		super("BandwidthRecognition");
+	public BandwidthRecognition(MetricInfo mi) {
+		super("BandwidthRecognition", mi);
 		// TODO Auto-generated constructor stub
 	}
 
