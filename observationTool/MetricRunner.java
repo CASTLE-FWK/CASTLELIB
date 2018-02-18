@@ -1034,7 +1034,7 @@ public class MetricRunner {
 
 	}
 
-	public static void Metric_OscillatorDetect(SystemInfo si) {
+	public static void Metric_OscillatorDetect(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		print("******Oscillation Detector*****");
@@ -1056,6 +1056,14 @@ public class MetricRunner {
 		oscillResult.addResultType(realEventsNameAd);
 		currentResult.addResultType(resultsName);
 		double runtime = System.currentTimeMillis();
+		
+		final String STATE_1 = "STATE_1";
+		
+		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
+		String eType1 = mvm1.getTargetEntity();
+		String eVN1 = mvm1.getTargetEntityVariableName();
+		String dv1 = mvm1.getDesiredValue();
+
 
 		boolean hit = false;
 		int bitsetCounter = 0;
@@ -1064,7 +1072,9 @@ public class MetricRunner {
 			Collections.sort(agents, VEntity.sortByName()); // Sort by name or position?
 			BitSet bs = new BitSet(agents.size());
 			for (int i = 0; i < agents.size(); i++) {
-				bs.set(i, agents.get(i).getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0);
+				if (agents.get(i).getType().compareToIgnoreCase(eType1) == 0) {
+					bs.set(i, agents.get(i).getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0);
+				}
 			}
 			bitsOverTime.add(bitsetCounter, bs);
 
@@ -1276,7 +1286,7 @@ public class MetricRunner {
 				false);
 	}
 
-	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si) {
+	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		print("******Entropy Over Time*****");
@@ -1309,7 +1319,7 @@ public class MetricRunner {
 
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-			double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agents, new Vector2(areaX, areaY));
+			double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agents, new Vector2(areaX, areaY), mp);
 			double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agents, prevAgents);
 			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
 					new Vector2(areaX, areaY));
@@ -1567,7 +1577,7 @@ public class MetricRunner {
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
-	public static void Metric_PerfSit(MetricInfo mi, SystemInfo si) {
+	public static void Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		print("******PerfSit*****");
@@ -1603,7 +1613,7 @@ public class MetricRunner {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
 
-			double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY));
+			double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);
@@ -1769,7 +1779,7 @@ public class MetricRunner {
 			Metric_OToole14(testSystem, mi);
 			break;
 		case "Oscillation Detection":
-			Metric_OscillatorDetect(testSystem);
+			Metric_OscillatorDetect(testSystem, mi);
 			break;
 		case "Tag & Track":
 			Metric_TagAndTrack(testSystem, mi);
@@ -1787,7 +1797,10 @@ public class MetricRunner {
 			}
 			break;
 		case "Entropy Over Time":
-			Metric_EntropyOverTime(mi, testSystem);
+			ArrayList<MetricParameters> mpset_eot = mi.getMetricParameters();
+			for (int i = 0; i < mpset_eot.size(); i++) {
+				Metric_EntropyOverTime(mi, testSystem, mpset_eot.get(i));
+			}
 			break;
 		case "KaddoumWAT":
 			Metric_KaddoumWAT(mi, testSystem);
@@ -1796,7 +1809,10 @@ public class MetricRunner {
 			Metric_VillegasAU(mi, testSystem);
 			break;
 		case "PerfSit":
-			Metric_PerfSit(mi, testSystem);
+			ArrayList<MetricParameters> mpset_ps = mi.getMetricParameters();
+			for (int i = 0; i < mpset_ps.size(); i++) {
+				Metric_PerfSit(mi, testSystem, mpset_ps.get(i));
+			}
 			break;
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);

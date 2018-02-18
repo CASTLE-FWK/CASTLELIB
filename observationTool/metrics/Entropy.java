@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import castleComponents.objects.Vector2;
+import castleComponents.representations.Continuous;
 import castleComponents.representations.Grid;
 import experimentExecution.MetricInfo;
 import observationTool.VEntity;
@@ -50,16 +51,20 @@ public class Entropy extends MetricBase{
 	}
 	
 	
-	public double shannonEntropy_Neighbours(ArrayList<VEntity> agents, Vector2 gridSize){
+	public double shannonEntropy_Neighbours(ArrayList<VEntity> agents, Vector2 gridSize, MetricParameters mp){
 		double d = 0.0;
 		//Lets do Alive neighbours. This means we need a Grid
-		Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, (int)gridSize.getX(), (int)gridSize.getY());
+		double neighbourDist = (Double)mp.getParameterValue("se-neighbour-dist");
+//		Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, (int)gridSize.getX(), (int)gridSize.getY());
+		Continuous<VEntity> theCont = new Continuous<VEntity>();
 		for (VEntity agt : agents){
-			theGrid.addCell(agt, agt.getPosition());
+//			theGrid.addCell(agt, agt.getPosition());
+			theCont.addEntity(agt, agt.getPosition());
 		}
 		for (VEntity v : agents){
 			Vector2 pos = v.getPosition();
-			ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid.getNeighbours((int)pos.getX(), (int)pos.getY(), 1);
+//			ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid.getNeighbours((int)pos.getX(), (int)pos.getY(), 1);
+			ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(), neighbourDist);
 			double prob = 0;
 			for (VEntity n : neighbours){
 				if (n.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0){
