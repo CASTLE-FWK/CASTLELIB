@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import experimentExecution.MetricInfo;
+import experimentExecution.MetricVariableMapping;
 import experimentExecution.SystemInfo;
 import observationTool.MetricRunner_ED;
 import observationTool.VEntity;
@@ -42,11 +44,18 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public long result_Zt;
 	public double result_It;
 	public double[][] result_Yit;
+	MetricInfo mi;
+	HashMap<String, MetricVariableMapping> metricVariableMappings;
+	
+	//What are the states that this metric requires
+	final String STATE_1 = "STATE_1";
 
-	public ChanGoLInterMetric() {
+	public ChanGoLInterMetric(MetricInfo mi) {
 		// TODO Auto-generated constructor stub
 		super("ChanGoLInterMetric");
 		cumulativeIndiv = new HashMap<String, Double>();
+		this.mi = mi;
+		metricVariableMappings = mi.getMetricVariableMappings();
 	}
 
 	// TODO: Being lazy and assuming correct things are there
@@ -68,6 +77,9 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 
 	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep) {
 		// These lists should be the same size
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		String eType1 = mvm1.getTargetEntity();
+		String eVN1 = mvm1.getTargetEntityVariableName();
 		if (step_tm1.size() != step_t.size()) {
 			// System.out.println("Agent lists are not the same size.
 			// Terminating metric.");
@@ -100,16 +112,26 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 			// cumulativeIndiv.get(vat.getID()).intValue();
 			// }
 			// }
-
-			if (vatm1.getParameterValueFromStringAsString("Alive")
-					.compareTo(vat.getParameterValueFromStringAsString("Alive")) != 0) {
-				// Increment count of agent change
-				cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
-				overallChanges[currentStep]++;
-				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
-					maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
+			if (entityIsOfType(vatm1, eType1) && entityIsOfType(vat, eType1)) {
+				if (!compareParameters(vatm1, vat, eVN1)) {
+					cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
+					overallChanges[currentStep]++;
+					if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
+						maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
+					}
 				}
 			}
+//				
+//				
+//			if (vatm1.getParameterValueFromStringAsString("Alive")
+//					.compareTo(vat.getParameterValueFromStringAsString("Alive")) != 0) {
+//				// Increment count of agent change
+//				cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
+//				overallChanges[currentStep]++;
+//				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
+//					maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
+//				}
+//			}
 
 		}
 

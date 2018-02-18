@@ -1,6 +1,7 @@
 package experimentExecution;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import observationTool.metrics.MetricParameters;
@@ -10,14 +11,14 @@ public class MetricInfo {
 	ArrayList<MetricParameters> metricParameters; // ???
 	boolean needsTraining = false;
 	ArrayList<SystemInfo> trainingSystems;
-	HashSet<MetricVariableMap> metricVariableMappings;
+	HashMap<String, MetricVariableMapping> metricVariableMappings;
 
 	public MetricInfo(String metricName, boolean needsTraining) {
 		trainingSystems = new ArrayList<SystemInfo>();
 		this.metricName = metricName;
 		this.needsTraining = needsTraining;
 		metricParameters = new ArrayList<MetricParameters>();
-		metricVariableMappings = new HashSet<MetricVariableMap>();
+		metricVariableMappings = new HashMap<String, MetricVariableMapping>();
 	}
 
 	public void addTrainingSystems(ArrayList<SystemInfo> ts) {
@@ -70,39 +71,12 @@ public class MetricInfo {
 		}
 		return str;
 	}
-	
-	public void addVariableMap(String metricVar, String targetEntity, String targetEntityVariableName){
-		metricVariableMappings.add(new MetricVariableMap(metricVar, targetEntity, targetEntityVariableName));
-	}
-	
-	
-}
 
-class MetricVariableMap{
-	String metricVar;
-	String targetEntity;
-	String targetEntityVariableName;
-	public MetricVariableMap(String mv, String te, String tevn){
-		this.metricVar = mv;
-		this.targetEntity = te;
-		this.targetEntityVariableName = tevn;
+	public void addVariableMap(String metricVar, String targetEntity, String targetEntityVariableName) {
+		metricVariableMappings.put(metricVar, new MetricVariableMapping(metricVar, targetEntity, targetEntityVariableName));
 	}
-	public String getMetricVar() {
-		return metricVar;
-	}
-	public void setMetricVar(String metricVar) {
-		this.metricVar = metricVar;
-	}
-	public String getTargetEntity() {
-		return targetEntity;
-	}
-	public void setTargetEntity(String targetEntity) {
-		this.targetEntity = targetEntity;
-	}
-	public String getTargetEntityVariableName() {
-		return targetEntityVariableName;
-	}
-	public void setTargetEntityVariableName(String targetEntityVariableName) {
-		this.targetEntityVariableName = targetEntityVariableName;
+
+	public HashMap<String, MetricVariableMapping> getMetricVariableMappings() {
+		return metricVariableMappings;
 	}
 }

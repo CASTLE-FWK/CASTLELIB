@@ -317,7 +317,7 @@ public class MetricRunner {
 
 	}
 
-	public static void Metric_ChanGoLIM(SystemInfo si) {
+	public static void Metric_ChanGoLIM(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		StringBuilder sb = new StringBuilder();
@@ -327,7 +327,7 @@ public class MetricRunner {
 		String resultsNameB = "zT";
 		print("*******WKV CHAN 2011 Interaction Metric*******");
 		String metricName = "Chan GoL Interaction Metric";
-		ChanGoLInterMetric chanGoL = new ChanGoLInterMetric();
+		ChanGoLInterMetric chanGoL = new ChanGoLInterMetric(mi);
 		MetricResult chanGoLResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		chanGoLResult.addResultType(resultsNameA);
 		chanGoLResult.addResultType(resultsNameB);
@@ -1824,7 +1824,7 @@ public class MetricRunner {
 			Metric_SystemComplexity(testSystem);
 			break;
 		case "Chan GoL 11":
-			Metric_ChanGoLIM(testSystem);
+			Metric_ChanGoLIM(testSystem, mi);
 			break;
 		case "OToole 14":
 			Metric_OToole14(testSystem);
