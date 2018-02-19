@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
+import experimentExecution.TypeMap;
 import observationTool.VEntity;
 
 public class MetricBase {
@@ -27,32 +28,20 @@ public class MetricBase {
 	}
 
 	// Useful functions
-	public boolean entityIsOfType(VEntity ve, String type) {
-		return ve.getType().compareToIgnoreCase(type) == 0;
+	public boolean entityIsOfType(VEntity ve, MetricVariableMapping mvm) {
+		return mvm.entityIsOfType(ve);
 	}
 
-	public boolean compareParameters(VEntity ve1, VEntity ve2, String paramName) {
-		return (ve2.getParameterValueFromStringAsString(paramName)
-				.compareToIgnoreCase(ve1.getParameterValueFromStringAsString(paramName)) == 0);
+	public boolean compareParameters(VEntity ve1, VEntity ve2, MetricVariableMapping mvm) {
+		return mvm.compareParameters(ve1, ve2);
 	}
 
-	public boolean isParameterEqualToValue(VEntity v, String parameterName, String desiredValue) {
-		if (v.containsParameter(parameterName)) {
-			return v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0;
-		} else {
-			return false;
-		}
-		
+	public boolean isParameterEqualToDesiredValue(VEntity v, MetricVariableMapping mvm) {
+		return mvm.isParameterEqualToDesiredValue(v);
+
 	}
 
-	
-	
-	//These need the requiste changes done in the Json, JsonParser, and MetricRunner
-	public boolean entityIsOfType(VEntity ve, String[] types) {
-		boolean is = false;
-		for (String s : types) {
-			is = entityIsOfType(ve, s);
-		}
-		return is;
-	}
+	// These need the requisite changes done in the Json, JsonParser, and
+	// MetricRunner
+
 }

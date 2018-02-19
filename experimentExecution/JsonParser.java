@@ -15,7 +15,7 @@ public class JsonParser {
 
 	public static void main(String[] args) {
 	}
-	
+
 	public static JsonObject parseFileAsJson(String filePath) {
 		try {
 			return Json.parse((new FileReader(filePath))).asObject();
@@ -96,8 +96,18 @@ public class JsonParser {
 	public static void parseMetricMappings(JsonArray arr, MetricInfo mi) {
 		for (int i = 0; i < arr.size(); i++) {
 			JsonObject item = arr.get(i).asObject();
-			mi.addVariableMap(item.get("metric-variable").asString(), item.get("entity-type").asString(),
-					item.get("entity-variable").asString(), item.get("variable-desired-value").asString() );
+			String metricVariable = item.get("metric-variable").asString();
+			MetricVariableMapping mvm = new MetricVariableMapping(metricVariable);
+			JsonArray typeMaps = item.get("type-maps").asArray();
+			for (int j = 0; j < typeMaps.size(); j++) {
+				JsonObject et = typeMaps.get(j).asObject();
+				String etN = et.get("entity-type").asString();
+				String etV = et.get("entity-variable").asString();
+				String etDV = et.get("variable-desired-value").asString();
+				mvm.addTypeMap(etN, etV, etDV);
+			}
+
+			mi.addVariableMapping(metricVariable, mvm);
 		}
 	}
 }

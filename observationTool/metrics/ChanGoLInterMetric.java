@@ -76,8 +76,6 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep) {
 		// These lists should be the same size
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntityType();
-		String eVN1 = mvm1.getTargetEntityVariableName();
 		
 		
 		if (step_tm1.size() != step_t.size()) {
@@ -101,8 +99,8 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 				continue;
 			}
 			
-			if (entityIsOfType(vatm1, eType1) && entityIsOfType(vat, eType1)) {
-				if (!compareParameters(vatm1, vat, eVN1)) {
+			if (entityIsOfType(vatm1, mvm1) && entityIsOfType(vat, mvm1)) {
+				if (!compareParameters(vatm1, vat, mvm1)) {
 					cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
 					overallChanges[currentStep]++;
 					if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {

@@ -105,8 +105,8 @@ public class MetricRunner {
 				String experimentDataLocation = currTestSystem.getSystemDataLocation();
 				collector.setCollection(experimentDataLocation);
 				currTestSystem.setNumberOfSteps(collector.getTerminationStep());
-				currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics", currTestSystem.getNumberOfSteps(),
-						currTestSystem, resultsDirRoot);
+				currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
+						currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
 
 				runAnalysis(exp, theTestSystems.get(test));
 				collector.restart();
@@ -118,7 +118,8 @@ public class MetricRunner {
 			runtime = System.currentTimeMillis() - runtime;
 			println("Total runtime: %1$f seconds", runtime / 1000);
 			toTheDoc.append("\n#runtime\t" + runtime);
-			String dirTimeStamp = resultsDirRoot + systemName.replaceAll("\\s+", "") + "_"+Utilities.generateTimeID() + "/";
+			String dirTimeStamp = resultsDirRoot + systemName.replaceAll("\\s+", "") + "_" + Utilities.generateTimeID()
+					+ "/";
 			// Write results to file
 			if (!testing) {
 				Utilities.writeToFile(toTheDoc.toString(),
@@ -184,7 +185,7 @@ public class MetricRunner {
 
 		// LETS BUILD VAGENTS
 		int totalNumberOfSteps = collector.getTerminationStep();
-		totalNumberOfSteps = 10; //TODO REMOVE THIS
+		totalNumberOfSteps = 10; // TODO REMOVE THIS
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays
@@ -1056,14 +1057,10 @@ public class MetricRunner {
 		oscillResult.addResultType(realEventsNameAd);
 		currentResult.addResultType(resultsName);
 		double runtime = System.currentTimeMillis();
-		
-		final String STATE_1 = "STATE_1";
-		
-		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		String eType1 = mvm1.getTargetEntityType();
-		String eVN1 = mvm1.getTargetEntityVariableName();
-		String dv1 = mvm1.getDesiredValue();
 
+		final String STATE_1 = "STATE_1";
+
+		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
 
 		boolean hit = false;
 		int bitsetCounter = 0;
@@ -1072,8 +1069,8 @@ public class MetricRunner {
 			Collections.sort(agents, VEntity.sortByName()); // Sort by name or position?
 			BitSet bs = new BitSet(agents.size());
 			for (int i = 0; i < agents.size(); i++) {
-				if (agents.get(i).getType().compareToIgnoreCase(eType1) == 0) {
-					bs.set(i, agents.get(i).getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0);
+				if (mvm1.entityIsOfType(agents.get(i))) {
+					bs.set(i, mvm1.isParameterEqualToDesiredValue(agents.get(i)));
 				}
 			}
 			bitsOverTime.add(bitsetCounter, bs);
@@ -1418,7 +1415,8 @@ public class MetricRunner {
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
 
-	//TODO This one needs to be ported across into the SAS class but its so very nasty
+	// TODO This one needs to be ported across into the SAS class but its so very
+	// nasty
 	public static void Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
@@ -1429,7 +1427,7 @@ public class MetricRunner {
 		String aName = "Availability";
 		String uName = "Unavailability";
 		String metricName = "VillegasAU";
-		final String STATE_1 = "STATE_1"; 
+		final String STATE_1 = "STATE_1";
 		StringBuilder sb = new StringBuilder();
 		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		// auResult.addResultType(resultsName);
@@ -1444,11 +1442,8 @@ public class MetricRunner {
 
 		currentResult.addResultType(aName);
 		currentResult.addResultType(uName);
-		
+
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		String eType1 = mvm1.getTargetEntityType();
-		String eVN1 = mvm1.getTargetEntityVariableName();
-		String dv1 = mvm1.getDesiredValue();
 
 		int consecutiveDowntime = 2; // The shortest amount of consecutive down time
 		HashMap<String, Integer> theAgentsDowntime = new HashMap<String, Integer>();
@@ -1476,18 +1471,18 @@ public class MetricRunner {
 			int recoveryCounter = 0;
 
 			for (VEntity v : agents) {
-				if (v.getType().compareToIgnoreCase(eType1) == 0) {
-					boolean lifeState = v.getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0;
+				if (mvm1.entityIsOfType(v)) {
+					boolean lifeState = mvm1.isParameterEqualToDesiredValue(v);
 					VEntity pv = prevAgents.get(v.getName());
 					if (pv == null) {
 						System.out.println("Agent didnt exist...");
 						continue;
 					}
-					boolean prevState = pv.getParameterValueFromStringAsString(eVN1).compareToIgnoreCase(dv1) == 0;
+					boolean prevState = mvm1.isParameterEqualToDesiredValue(pv);
 					if (lifeState == prevState) {
 						Integer agentUpTime = theAgentsUptime.get(v.getName());
 						Integer agentDowntime = theAgentsDowntime.get(v.getName());
-	
+
 						if (agentUpTime == null) {
 							theAgentsUptime.put(v.getName(), 0);
 							// agentUpTime = theAgentsUptime.get(v.getName());
@@ -1509,11 +1504,11 @@ public class MetricRunner {
 								theAgentsDowntime.put(v.getName(), agentDowntime + 1);
 							}
 						}
-	
+
 					} else {
 						Integer agentUpTime = theAgentsUptime.get(v.getName());
 						Integer agentDowntime = theAgentsDowntime.get(v.getName());
-	
+
 						if (agentUpTime == null) {
 							theAgentsUptime.put(v.getName(), 0);
 							// agentUpTime = theAgentsUptime.get(v.getName());
@@ -1522,7 +1517,7 @@ public class MetricRunner {
 							theAgentsDowntime.put(v.getName(), 0);
 							// agentDowntime = theAgentsDowntime.get(v.getName());
 						}
-	
+
 						if (agentDowntime != null && agentUpTime != null) {
 							if (agentDowntime >= consecutiveDowntime) {
 								MTTR += agentDowntime;

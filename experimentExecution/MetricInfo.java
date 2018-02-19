@@ -72,9 +72,8 @@ public class MetricInfo {
 		return str;
 	}
 
-	public void addVariableMap(String metricVar, String targetEntity, String targetEntityVariableName, String dv) {
-		metricVariableMappings.put(metricVar,
-				new MetricVariableMapping(metricVar, targetEntity, targetEntityVariableName, dv));
+	public void addVariableMapping(String metricVar, MetricVariableMapping mvm) {
+		metricVariableMappings.put(metricVar, mvm);
 	}
 
 	public HashMap<String, MetricVariableMapping> getMetricVariableMappings() {

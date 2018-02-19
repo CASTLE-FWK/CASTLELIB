@@ -55,7 +55,6 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-//			System.out.println(obj.toString());
 			String name = obj.get("agent-name").asString();
 			String id = obj.get("agent-ID").asString();
 			String type = obj.get("agent-type").asString();

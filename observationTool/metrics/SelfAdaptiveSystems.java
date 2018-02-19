@@ -28,19 +28,16 @@ public class SelfAdaptiveSystems extends MetricBase {
 		double adaptivityTime = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntityType();
-		String eVN1 = mvm1.getTargetEntityVariableName();
-		String dv1 = mvm1.getDesiredValue();
 
 		for (VEntity v : agents) {
-			if (entityIsOfType(v, eType1)) {
-				boolean lifeState = isParameterEqualToValue(v, eVN1, dv1);
+			if (entityIsOfType(v, mvm1)) {
+				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
 					System.out.println("Agent didnt exist...");
 					continue;
 				}
-				boolean prevState = isParameterEqualToValue(pv, eVN1, dv1);
+				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
 				if (lifeState == prevState) {
 					continue;
 				}
@@ -61,9 +58,6 @@ public class SelfAdaptiveSystems extends MetricBase {
 		double subsitSum = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntityType();
-		String eVN1 = mvm1.getTargetEntityVariableName();
-		String dv1 = mvm1.getDesiredValue();
 		
 		double neighbourDist = (Double)mp.getParameterValue("neighbour-distance");
 
@@ -80,14 +74,14 @@ public class SelfAdaptiveSystems extends MetricBase {
 		}
 
 		for (VEntity v : agents) {
-			if (entityIsOfType(v, eType1)) {
-				boolean lifeState = isParameterEqualToValue(v, eVN1, dv1);
+			if (entityIsOfType(v, mvm1)) {
+				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
 					System.out.println("Agent didnt exist...");
 					continue;
 				}
-				boolean prevState = isParameterEqualToValue(pv, eVN1, dv1);
+				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
 				if (lifeState == prevState) {
 					continue;
 				}
@@ -98,8 +92,8 @@ public class SelfAdaptiveSystems extends MetricBase {
 //								.getNeighbours((int) v.getPosition().getX(), (int) v.getPosition().getY(), 1);
 						int lifeCount = 0;
 						for (VEntity n : neighbours) {
-							if (entityIsOfType(n, eType1)) {
-								if (isParameterEqualToValue(n, eVN1, dv1)) {
+							if (entityIsOfType(n, mvm1)) {
+								if (isParameterEqualToDesiredValue(n, mvm1)) {
 									lifeCount++;
 								}
 							}
