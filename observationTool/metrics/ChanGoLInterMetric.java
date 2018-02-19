@@ -76,7 +76,7 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep) {
 		// These lists should be the same size
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		
 		

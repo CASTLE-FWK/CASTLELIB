@@ -55,7 +55,7 @@ public class Entropy extends MetricBase {
 		// Lets do Alive neighbours. This means we need a Grid
 		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 		
@@ -91,7 +91,7 @@ public class Entropy extends MetricBase {
 		double d = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 
@@ -132,9 +132,11 @@ public class Entropy extends MetricBase {
 		final double ONEEIGHTH = 1.0 / 8.0;
 		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
+		
+		
 		// p(x,y) = p(probabilty that neighbours are in their current states,
 		// currentState of this) (actually, vice versa)
 		Continuous<VEntity> theCont = new Continuous<VEntity>();

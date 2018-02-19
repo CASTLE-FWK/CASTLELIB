@@ -13,8 +13,8 @@ import stdSimLib.Interaction;
 import stdSimLib.Snapshot;
 
 public class InteractionGraph {
-	HashSet<Node> nodes; //TODO: Replace with HashMap
-	HashMap<String,Node> nodesMap;
+	HashSet<Node> nodes; // TODO: Replace with HashMap
+	HashMap<String, Node> nodesMap;
 	ArrayList<Edge> edges;
 	int numberOfNodes = 0;
 	int numberOfEdges = 0;
@@ -22,100 +22,117 @@ public class InteractionGraph {
 	int currentTimeStep = 0;
 	String experimentName = "";
 	String runName = "";
-	
 
-	
-	public InteractionGraph(Snapshot snapshot){
+	public InteractionGraph(Snapshot snapshot) {
 		ArrayList<Agent> agents = snapshot.getAgents();
 		ArrayList<Interaction> interactions = snapshot.getInteractions();
 		nodes = new HashSet<Node>();
 		edges = new ArrayList<Edge>();
-		
+
 		snapshotInterval = snapshot.getSnapshotInterval();
 		currentTimeStep = snapshot.getCurrentTime();
 		experimentName = snapshot.getExperimentName();
 		runName = snapshot.getRunName();
-		
-		for (Agent agent : agents){
+
+		for (Agent agent : agents) {
 			nodes.add(new Node(agent));
 		}
 		numberOfNodes = nodes.size();
-		
-		for (Interaction interaction : interactions){
+
+		for (Interaction interaction : interactions) {
 			edges.add(new Edge(interaction));
 		}
-		numberOfEdges = edges.size();	
+		numberOfEdges = edges.size();
 	}
-	
+
 	public InteractionGraph() {
 		nodes = new HashSet<Node>();
 		edges = new ArrayList<Edge>();
-		nodesMap = new HashMap<String,Node>();
+		nodesMap = new HashMap<String, Node>();
 	}
-	
-	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions){
+
+	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions) {
 		nodes = new HashSet<Node>();
-		for (Entity e : entities){
+		for (Entity e : entities) {
 			addNode(new Node(e));
 		}
-		for (Interaction inter : interactions){
+		for (Interaction inter : interactions) {
 			Node start = findNode(inter.getAgentFromAsString());
 			Node end = findNode(inter.getAgentToAsString());
-			if (start != null && end != null){
+			if (start != null && end != null) {
 				edges.add(new Edge(start, end, inter.getType(), inter.getOccurrence()));
 			}
 		}
 	}
-	
-	/*Used for HDA*/
-	public void updateNodesDistance(Node nodeA, Node nodeB, double weight, double HDAStrength){		
+
+	/* Used for HDA */
+	public void updateNodesDistance(Node nodeA, Node nodeB, double weight, double HDAStrength) {
 		double newX, newY, newXModified, newYModified;
 		newX = Math.abs(nodeA.getX() - nodeB.getX());
 		newY = Math.abs(nodeA.getY() - nodeB.getY());
-		
+
 		newXModified = newX / (HDAStrength * weight);
 		newYModified = newY / (HDAStrength * weight);
-		
-		if (nodeA.getX() < nodeB.getX()){
-			nodeA.setX(nodeA.getX() + ((newX/HDAStrength) - newXModified));
-			nodeB.setX(nodeB.getX() - ((newX/HDAStrength) + newXModified));
-		} else if (nodeA.getX() > nodeB.getX()){
-			nodeB.setX(nodeB.getX() + ((newX/HDAStrength) - newXModified));
-			nodeA.setX(nodeA.getX() - ((newX/HDAStrength) + newXModified));
+
+		if (nodeA.getX() < nodeB.getX()) {
+			nodeA.setX(nodeA.getX() + ((newX / HDAStrength) - newXModified));
+			nodeB.setX(nodeB.getX() - ((newX / HDAStrength) + newXModified));
+		} else if (nodeA.getX() > nodeB.getX()) {
+			nodeB.setX(nodeB.getX() + ((newX / HDAStrength) - newXModified));
+			nodeA.setX(nodeA.getX() - ((newX / HDAStrength) + newXModified));
 		}
-		
-		if (nodeA.getY() < nodeB.getY()){
-			nodeA.setY(nodeA.getY() + ((newY/HDAStrength) - newYModified));
-			nodeB.setY(nodeB.getY() - ((newY/HDAStrength) + newYModified));
-		} else if (nodeA.getY() > nodeB.getY()){
-			nodeB.setY(nodeB.getY() + ((newY/HDAStrength) - newYModified));
-			nodeA.setY(nodeA.getY() - ((newY/HDAStrength) + newYModified));
-		}			
+
+		if (nodeA.getY() < nodeB.getY()) {
+			nodeA.setY(nodeA.getY() + ((newY / HDAStrength) - newYModified));
+			nodeB.setY(nodeB.getY() - ((newY / HDAStrength) + newYModified));
+		} else if (nodeA.getY() > nodeB.getY()) {
+			nodeB.setY(nodeB.getY() + ((newY / HDAStrength) - newYModified));
+			nodeA.setY(nodeA.getY() - ((newY / HDAStrength) + newYModified));
+		}
 	}
-	
-	public void normalise(){
+
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder("InteractionGraph = [");
+		String NL = "\n";
+		String TAB = "\t";
+		str.append("nodes: {\n");
+		// nodes
+		for (Node n : nodes) {
+			str.append(TAB).append(n.toString()).append(NL);
+		}
+		str.append("}\nedges: {\n");
+		for (Edge e : edges) {
+			str.append(TAB).append(e.toString()).append(NL);
+		}
+		str.append("}]");
+
+		return str.toString();
+	}
+
+	public void normalise() {
 		Vector2 agg = new Vector2();
-		for (Node n : nodes){
+		for (Node n : nodes) {
 			agg.add(n.getPosition());
 		}
 		agg.divide(nodes.size());
-		for (Node n : nodes){
+		for (Node n : nodes) {
 			n.normalise(agg);
 		}
 	}
 
-	public void sortEdges(){
+	public void sortEdges() {
 		Collections.sort(edges);
 	}
-	
-	public ArrayList<Node> sortNodesOnEdgeCount(){
+
+	public ArrayList<Node> sortNodesOnEdgeCount() {
 		ArrayList<Node> nodes = new ArrayList<Node>(this.nodes);
-		Collections.sort(nodes, new Comparator<Node>(){
+		Collections.sort(nodes, new Comparator<Node>() {
 			@Override
-			public int compare(Node n1, Node n2){
-				if (n1.getTotalWeight() < n2.getTotalWeight()){
+			public int compare(Node n1, Node n2) {
+				if (n1.getTotalWeight() < n2.getTotalWeight()) {
 					return -1;
-				} else if (n1.getTotalWeight() < n2.getTotalWeight()){
+				} else if (n1.getTotalWeight() < n2.getTotalWeight()) {
 					return 1;
 				} else {
 					return 0;
@@ -125,7 +142,6 @@ public class InteractionGraph {
 		return nodes;
 	}
 
-
 	/**
 	 * @return the nodes
 	 */
@@ -133,14 +149,13 @@ public class InteractionGraph {
 		return new ArrayList<Node>(this.nodes);
 	}
 
-
 	/**
-	 * @param nodes the nodes to set
+	 * @param nodes
+	 *            the nodes to set
 	 */
 	public void setNodes(ArrayList<Node> nodes) {
 		this.nodes = new HashSet<Node>(nodes);
 	}
-
 
 	/**
 	 * @return the edges
@@ -149,14 +164,13 @@ public class InteractionGraph {
 		return edges;
 	}
 
-
 	/**
-	 * @param edges the edges to set
+	 * @param edges
+	 *            the edges to set
 	 */
 	public void setEdges(ArrayList<Edge> edges) {
 		this.edges = edges;
 	}
-
 
 	/**
 	 * @return the numberOfNodes
@@ -165,14 +179,13 @@ public class InteractionGraph {
 		return numberOfNodes;
 	}
 
-
 	/**
-	 * @param numberOfNodes the numberOfNodes to set
+	 * @param numberOfNodes
+	 *            the numberOfNodes to set
 	 */
 	public void setNumberOfNodes(int numberOfNodes) {
 		this.numberOfNodes = numberOfNodes;
 	}
-
 
 	/**
 	 * @return the numberOfEdges
@@ -181,9 +194,9 @@ public class InteractionGraph {
 		return numberOfEdges;
 	}
 
-
 	/**
-	 * @param numberOfEdges the numberOfEdges to set
+	 * @param numberOfEdges
+	 *            the numberOfEdges to set
 	 */
 	public void setNumberOfEdges(int numberOfEdges) {
 		this.numberOfEdges = numberOfEdges;
@@ -197,7 +210,8 @@ public class InteractionGraph {
 	}
 
 	/**
-	 * @param snapshotInterval the snapshotInterval to set
+	 * @param snapshotInterval
+	 *            the snapshotInterval to set
 	 */
 	public void setSnapshotInterval(int snapshotInterval) {
 		this.snapshotInterval = snapshotInterval;
@@ -211,7 +225,8 @@ public class InteractionGraph {
 	}
 
 	/**
-	 * @param currentTimeStep the currentTimeStep to set
+	 * @param currentTimeStep
+	 *            the currentTimeStep to set
 	 */
 	public void setCurrentTimeStep(int currentTimeStep) {
 		this.currentTimeStep = currentTimeStep;
@@ -230,23 +245,23 @@ public class InteractionGraph {
 	public String getRunName() {
 		return runName;
 	}
-	
-	public void addNode(Node n){
+
+	public void addNode(Node n) {
 		nodes.add(n);
 		nodesMap.put(n.getName(), n);
 	}
-	
-	public Node findNode(String name){
-//		for (Node n : nodes){
-//			if (n.getName().compareToIgnoreCase(name) == 0){
-//				return n;
-//			}
-//		}
-//		return null;
+
+	public Node findNode(String name) {
+		// for (Node n : nodes){
+		// if (n.getName().compareToIgnoreCase(name) == 0){
+		// return n;
+		// }
+		// }
+		// return null;
 		return nodesMap.get(name);
 	}
-	
-	public void addEdge(Edge e){
+
+	public void addEdge(Edge e) {
 		edges.add(e);
 		e.getStart().addOutgoingEdge(e);
 		e.getEnd().addIncomingEdge(e);

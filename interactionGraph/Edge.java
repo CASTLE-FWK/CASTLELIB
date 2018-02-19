@@ -44,7 +44,7 @@ public class Edge implements Comparable<Edge>{
 	
 	@Override
 	public String toString(){
-		String out = start.getName()+"\t"+end.getName()+"\tType: "+type+"\tWeight: "+getWeight();
+		String out = "Node-From: "+start.getName()+",\tNode-To: "+end.getName()+",\tType: "+type+",\tWeight: "+getWeight();
 		return out;
 	}
 	

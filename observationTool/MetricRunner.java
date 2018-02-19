@@ -1060,7 +1060,7 @@ public class MetricRunner {
 		final String STATE_1 = "STATE_1";
 		
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 
@@ -1446,7 +1446,7 @@ public class MetricRunner {
 		currentResult.addResultType(uName);
 		
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 

@@ -28,7 +28,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 		double adaptivityTime = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 
@@ -61,7 +61,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 		double subsitSum = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		String eType1 = mvm1.getTargetEntity();
+		String eType1 = mvm1.getTargetEntityType();
 		String eVN1 = mvm1.getTargetEntityVariableName();
 		String dv1 = mvm1.getDesiredValue();
 		

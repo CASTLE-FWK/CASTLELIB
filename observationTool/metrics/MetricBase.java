@@ -37,7 +37,22 @@ public class MetricBase {
 	}
 
 	public boolean isParameterEqualToValue(VEntity v, String parameterName, String desiredValue) {
-		return v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0;
+		if (v.containsParameter(parameterName)) {
+			return v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0;
+		} else {
+			return false;
+		}
+		
 	}
 
+	
+	
+	//These need the requiste changes done in the Json, JsonParser, and MetricRunner
+	public boolean entityIsOfType(VEntity ve, String[] types) {
+		boolean is = false;
+		for (String s : types) {
+			is = entityIsOfType(ve, s);
+		}
+		return is;
+	}
 }

@@ -197,6 +197,10 @@ public class Entity implements Runnable {
 	public String getParameterValueFromStringAsString(String paramName) {
 		return parameters.get(paramName).getCurrentValue();
 	}
+	
+	public boolean containsParameter(String paramName) {
+		return parameters.containsKey(paramName);
+	}
 
 	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange) {
 		ArrayList<Vector2> points = new ArrayList<Vector2>();
