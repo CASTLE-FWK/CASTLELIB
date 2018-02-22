@@ -41,6 +41,18 @@ public class MetricBase {
 
 	}
 
+	public int parseInt(String s) {
+		return Integer.parseInt(s);
+	}
+
+	public double parseDouble(String s) {
+		return Double.parseDouble(s);
+	}
+
+	public boolean parseBoolean(String s) {
+		return Boolean.parseBoolean(s);
+	}
+
 	// These need the requisite changes done in the Json, JsonParser, and
 	// MetricRunner
 
