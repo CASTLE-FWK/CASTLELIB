@@ -38,7 +38,30 @@ public class MetricBase {
 
 	public boolean isParameterEqualToDesiredValue(VEntity v, MetricVariableMapping mvm) {
 		return mvm.isParameterEqualToDesiredValue(v);
+	}
 
+	public String getParameter(VEntity v, String s) {
+		return v.getParameterValueFromStringAsString(s);
+	}
+
+	public HashMap<String, String> getAllParameters(VEntity v, MetricVariableMapping mvm) {
+		ArrayList<TypeMap> types = mvm.getSpecificTypeMap(v.getType());
+		HashMap<String, String> vals = new HashMap<String, String>();
+
+		for (TypeMap t : types) {
+			vals.put(t.getTargetEntityVariableName(), getParameter(v, t.getTargetEntityVariableName()));
+		}
+
+		return vals;
+	}
+
+	public ArrayList<String> getAllParameterNames(VEntity v, MetricVariableMapping mvm) {
+		ArrayList<TypeMap> types = mvm.getSpecificTypeMap(v.getType());
+		ArrayList<String> typeNames = new ArrayList<String>();
+		for (TypeMap t : types) {
+			typeNames.add(t.getTargetEntityVariableName());
+		}
+		return typeNames;
 	}
 
 	public int parseInt(String s) {

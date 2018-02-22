@@ -23,7 +23,8 @@ public class TrafficCountValidator extends MetricBase {
 		int counter = 0;
 		for (VEntity v : ents) {
 			if (entityIsOfType(v, mvm1)) {
-				counter += parseInt(v.getParameterValueFromStringAsString(TRAFFIC_COUNTER));
+				String paramName = getAllParameterNames(v, mvm1).get(0);
+				counter += parseInt(getParameter(v, paramName));
 			}
 		}
 

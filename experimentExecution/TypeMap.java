@@ -1,21 +1,17 @@
 package experimentExecution;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class TypeMap {
 	private String targetEntity;
 	private String targetEntityVariableName;
 	private String desiredValue;
 
 	// The over-engineering part
-//	private HashMap<String, ArrayList<String>> typesAndVars;
-//	typesAndVars = new HashMap<String, ArrayList<String>>();
+	// private HashMap<String, ArrayList<String>> typesAndVars;
+	// typesAndVars = new HashMap<String, ArrayList<String>>();
 	public TypeMap(String te, String tevn, String dv) {
 		setTargetEntity(te);
 		setTargetEntityVariableName(tevn);
 		setDesiredValue(dv);
-		
 	}
 
 	public void setTargetEntity(String targetEntity) {
@@ -41,5 +37,4 @@ public class TypeMap {
 	public String getTargetEntityType() {
 		return targetEntity;
 	}
-
 }

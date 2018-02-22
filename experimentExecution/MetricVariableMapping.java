@@ -74,13 +74,5 @@ public class MetricVariableMapping {
 			score += v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue);
 		}
 		return (score == 0);
-		
-		
-//		if (v.containsParameter(parameterName)) {
-//			return v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0;
-//		} else {
-//			return false;
-//		}
-
 	}
 }
