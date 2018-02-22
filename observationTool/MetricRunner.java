@@ -9,7 +9,7 @@ import observationTool.metrics.MetricParameters;
 import observationTool.metrics.OToole14Metric;
 import observationTool.metrics.SelfAdaptiveSystems;
 import observationTool.metrics.SystemComplexity;
-import observationTool.metrics.transportationNetwork.TrafficCountValidator;
+import observationTool.metrics.transportationNetwork.Counter;
 import observationTool.results.AccuracyResults;
 import observationTool.results.MetricResult;
 
@@ -75,6 +75,7 @@ public class MetricRunner {
 
 	public static void main(String[] args) {
 		String analysisToRun = args[0];
+		testing = Boolean.parseBoolean(args[1]);
 		db = "simulations"; // WRONG
 		collector = new DataCollector_FileSystem(db);
 		JsonObject experimentMeta = JsonParser.parseFileAsJson(analysisToRun);
@@ -186,7 +187,9 @@ public class MetricRunner {
 
 		// LETS BUILD VAGENTS
 		int totalNumberOfSteps = collector.getTerminationStep();
-		totalNumberOfSteps = 10; // TODO REMOVE THIS
+		if (testing) {
+			totalNumberOfSteps = 25; // TODO REMOVE THIS
+		}
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays
@@ -1353,7 +1356,7 @@ public class MetricRunner {
 	 * How can we phrase that in terms of this? What is working time? What is
 	 * adaptivity time? Time as existing: dead -> dead uses 1 unit of time
 	 * alive/dead -> dead/alive uses x units of time alive -> alive uses 1 unit of
-	 * time as well However, this is just by looking at the states themselves, how
+	 * time as well However, thisisCongested is just by looking at the states themselves, how
 	 * can we impart the interactions that cause the change? Use the rules: 3|3|4.
 	 * Similar to the entropy measure from before. Following the logic above: we
 	 * just change the weightings
@@ -1624,20 +1627,33 @@ public class MetricRunner {
 
 	}
 
-	public static void Metric_TrafficCountValidator(MetricInfo mi, SystemInfo si) {
+	public static void Metric_Counter(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		TrafficCountValidator tcv = new TrafficCountValidator(mi);
+		Counter tcv = new Counter(mi);
 		announce(tcv.getMetricName());
+		
+		String countingType = (String) mp.getParameterValue("counting-type");
+		boolean isDouble = false;
+		if (countingType == "double") {
+			isDouble = true;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		MetricResult tcvResult = new MetricResult(systemName, tcv.getMetricName(), totalNumberOfSteps, si,
 				resultsDirRoot);
-		tcvResult.addResultType("TrafficCounter");
+		tcvResult.addResultType("Counter");
 		for (int time = 1; time < totalNumberOfSteps; time++) {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-			int count = tcv.count(agents);
-			tcvResult.addResultAtStep("TrafficCounter", count, time);
+			if (isDouble) {
+				double count = tcv.countDouble(agents);
+				tcvResult.addResultAtStep("Counter", count, time);
+			} else {
+				int count = tcv.countInt(agents);
+				tcvResult.addResultAtStep("Counter", count, time);
+			}
 		}
+		
 	}
 
 	/**
@@ -1826,8 +1842,10 @@ public class MetricRunner {
 				Metric_PerfSit(mi, testSystem, mpset_ps.get(i));
 			}
 			break;
-		case "TrafficCountValidator":
-			Metric_TrafficCountValidator(mi, testSystem);
+		case "Counter":
+			ArrayList<MetricParameters> mpset_cou = mi.getMetricParameters();
+			MetricParameters mp = mpset_cou.get(0);
+			Metric_Counter(mi, testSystem, mp);
 			break;
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);

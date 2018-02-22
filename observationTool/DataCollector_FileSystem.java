@@ -172,7 +172,7 @@ public class DataCollector_FileSystem {
 		int counter = 0;
 		// Go through each entity and pull out the interactions list
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		System.out.println("stepNumber: "+stepNumber);
+//		System.out.println("stepNumber: "+stepNumber);
 		JsonArray agents = file.get(AGENTS).asArray();
 		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
 		for (int i = 0; i < agents.size(); i++) {
