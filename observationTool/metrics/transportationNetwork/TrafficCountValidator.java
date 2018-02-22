@@ -10,7 +10,6 @@ import observationTool.metrics.MetricBase;
 public class TrafficCountValidator extends MetricBase {
 
 	private final String STATE_1 = "STATE_1";
-	private final String TRAFFIC_COUNTER = "Traffic-counter";
 
 	public TrafficCountValidator(MetricInfo mi) {
 		super("TrafficCountValidator", mi);

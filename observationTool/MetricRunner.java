@@ -9,6 +9,7 @@ import observationTool.metrics.MetricParameters;
 import observationTool.metrics.OToole14Metric;
 import observationTool.metrics.SelfAdaptiveSystems;
 import observationTool.metrics.SystemComplexity;
+import observationTool.metrics.transportationNetwork.TrafficCountValidator;
 import observationTool.results.AccuracyResults;
 import observationTool.results.MetricResult;
 
@@ -1623,6 +1624,22 @@ public class MetricRunner {
 
 	}
 
+	public static void Metric_TrafficCountValidator(MetricInfo mi, SystemInfo si) {
+		int totalNumberOfSteps = si.getNumberOfSteps();
+		String initCrit = si.getConfigurationString();
+		TrafficCountValidator tcv = new TrafficCountValidator(mi);
+		announce(tcv.getMetricName());
+		StringBuilder sb = new StringBuilder();
+		MetricResult tcvResult = new MetricResult(systemName, tcv.getMetricName(), totalNumberOfSteps, si,
+				resultsDirRoot);
+		tcvResult.addResultType("TrafficCounter");
+		for (int time = 1; time < totalNumberOfSteps; time++) {
+			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+			int count = tcv.count(agents);
+			tcvResult.addResultAtStep("TrafficCounter", count, time);
+		}
+	}
+
 	/**
 	 * Calculate accuracy for a metric generated set of results and a corresponding
 	 * real events array
@@ -1809,6 +1826,9 @@ public class MetricRunner {
 				Metric_PerfSit(mi, testSystem, mpset_ps.get(i));
 			}
 			break;
+		case "TrafficCountValidator":
+			Metric_TrafficCountValidator(mi, testSystem);
+			break;
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);
 
@@ -1823,6 +1843,11 @@ public class MetricRunner {
 		if (!quiet) {
 			System.out.println(String.format(str, objs));
 		}
+	}
+
+	public static void announce(String str) {
+		String s = "********" + str + "********";
+		print(s);
 	}
 
 	public static String parseModelName(String str) {

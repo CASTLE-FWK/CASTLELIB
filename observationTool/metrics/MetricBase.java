@@ -75,6 +75,10 @@ public class MetricBase {
 	public boolean parseBoolean(String s) {
 		return Boolean.parseBoolean(s);
 	}
+	
+	public String getMetricName() {
+		return this.metricName;
+	}
 
 	// These need the requisite changes done in the Json, JsonParser, and
 	// MetricRunner
