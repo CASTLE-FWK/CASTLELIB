@@ -30,9 +30,13 @@ public class DataCollector_FileSystem {
 	final String AGENTS = "Agent";
 	final String ENVIRONMENTS = "Environment";
 	final String GROUPS = "Group";
+	
+	//Some speed up things
+	HashMap<Integer, Integer> totalNumberOfInteractionsInStep;
 
 	public DataCollector_FileSystem(String fp) {
 		setCollection(fp);
+		totalNumberOfInteractionsInStep = new HashMap<Integer, Integer>();
 	}
 
 	public void setCollection(String fp) {
@@ -163,12 +167,15 @@ public class DataCollector_FileSystem {
 			JsonObject obj = environments.get(i).asObject();
 			interactions.addAll(getInteractionsFromEntity(obj));
 		}
-
+		
 		return interactions;
 	}
 	
 
 	public int countInteractionsInStep(int stepNumber) {
+		if (totalNumberOfInteractionsInStep.containsKey(stepNumber)) {
+			return totalNumberOfInteractionsInStep.get(stepNumber);
+		}
 		int counter = 0;
 		// Go through each entity and pull out the interactions list
 		JsonObject file = parseFile(buildFilePath(stepNumber));
@@ -192,6 +199,7 @@ public class DataCollector_FileSystem {
 				counter += countInteractionsFromEntity(obj);
 			}
 		}
+		totalNumberOfInteractionsInStep.put(stepNumber, counter);
 		return counter;
 	}
 

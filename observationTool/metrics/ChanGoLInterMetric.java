@@ -136,6 +136,7 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 			} else {
 				tmp = tmp.doubleValue();
 			}
+			//Theres an issue with this array
 			result_Yit[currentStep][i] = tmp / (double) maxAtT[currentStep];
 			result_Zt += cumulativeIndiv.get(step_t.get(i).getID()).intValue();
 		}

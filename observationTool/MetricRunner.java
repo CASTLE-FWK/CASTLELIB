@@ -275,7 +275,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		String resultsName = "Change in Interaction Frequency";
 		StringBuilder sb = new StringBuilder();
-		print("*******System Complexity*******");
+		announce("System Complexity");
 		String metricName = "SystemComplexity";
 		SystemComplexity sc = new SystemComplexity(mi);
 		sb.append("#" + systemName + " System Complexity Results\n");
@@ -331,7 +331,7 @@ public class MetricRunner {
 		// Run metric: ChanGoL Interaction Metric
 		String resultsNameA = "iT";
 		String resultsNameB = "zT";
-		print("*******WKV CHAN 2011 Interaction Metric*******");
+		announce("WKV CHAN 2011 Interaction Metric");
 		String metricName = "Chan GoL Interaction Metric";
 		ChanGoLInterMetric chanGoL = new ChanGoLInterMetric(mi);
 		MetricResult chanGoLResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
@@ -504,7 +504,7 @@ public class MetricRunner {
 
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("************** MSSE *************");
+		announce("MSSE");
 		String metricName = "MSSE";
 		MetricResult msseResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		sb = new StringBuilder();
@@ -737,7 +737,7 @@ public class MetricRunner {
 		// Run Metric: Bandwidth Recognition
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("*******Bandwidth Recognition*******");
+		announce("Bandwidth Recognition");
 		long runtime = 0;
 		String metricName = "Limited Bandwidth Recognition";
 		MetricResult brResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
@@ -1042,7 +1042,7 @@ public class MetricRunner {
 	public static void Metric_OscillatorDetect(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("******Oscillation Detector*****");
+		announce("Oscillation Detector");
 		String resultsName = "Oscillation Detector";
 		StringBuilder theString = new StringBuilder();
 		ArrayList<BitSet> bitsOverTime = new ArrayList<BitSet>(totalNumberOfSteps);
@@ -1171,12 +1171,11 @@ public class MetricRunner {
 
 	}
 
-	// TODO: Cluster tracking
 	public static void Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 
 		StringBuilder sb = new StringBuilder();
-		println("*******Tag and Track*******");
+		announce("Tag and Track");
 		ClusterTrack tt = new ClusterTrack();
 		String metricName = "TagAndTrack";
 		MetricResult ttResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
@@ -1290,7 +1289,7 @@ public class MetricRunner {
 	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("******Entropy Over Time*****");
+		announce("Entropy Over Time");
 		String resultsName = "Entropy";
 		String secName = "Shannon Entropy Change";
 		String ceName = "Conditional Entropy";
@@ -1368,7 +1367,7 @@ public class MetricRunner {
 	public static void Metric_KaddoumWAT(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("******KaddoumWAT*****");
+		announce("KaddoumWAT");
 		String resultsName = "WAT";
 		String metricName = "KaddoumWAT";
 		StringBuilder sb = new StringBuilder();
@@ -1395,15 +1394,10 @@ public class MetricRunner {
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
 			HashMap<String, ArrayList<Interaction>> interactions = collector.getAgentInteractionMap(time - 1);
 
-			workingTime = agents.size() * 8.0;
+//			workingTime = agents.size() * 8.0;
+			workingTime = collector.countInteractionsInStep(time);
 
 			watScore = sas.KaddoumWAT(agents, prevAgents, interactions, workingTime);
-
-			// if (adaptivityTime == 0){
-			// watScore = 0;
-			// } else {
-			// watScore = workingTime/adaptivityTime;
-			// }
 
 			watResult.addResultAtStep(resultsName, watScore, time);
 			currentResult.addResultAtStep(resultsName, watScore, time);
@@ -1424,7 +1418,7 @@ public class MetricRunner {
 	public static void Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("******VillegasAU*****");
+		announce("VillegasAU");
 		String resultsName = "VillegasAU";
 		String mttrName = "MTTR";
 		String mttfName = "MTTF";
@@ -1579,7 +1573,7 @@ public class MetricRunner {
 	public static void Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
-		print("******PerfSit*****");
+		announce("PerfSit");
 		String resultsName = "PerfSit";
 		String metricName = "PerfSit";
 		StringBuilder sb = new StringBuilder();
@@ -1639,7 +1633,6 @@ public class MetricRunner {
 			isDouble = true;
 		}
 		
-		StringBuilder sb = new StringBuilder();
 		MetricResult tcvResult = new MetricResult(systemName, tcv.getMetricName(), totalNumberOfSteps, si,
 				resultsDirRoot);
 		tcvResult.addResultType("Counter");
