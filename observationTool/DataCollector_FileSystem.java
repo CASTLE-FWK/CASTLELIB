@@ -164,8 +164,10 @@ public class DataCollector_FileSystem {
 
 		JsonArray environments = file.get(ENVIRONMENTS).asArray();
 		for (int i = 0; i < environments.size(); i++) {
-			JsonObject obj = environments.get(i).asObject();
-			interactions.addAll(getInteractionsFromEntity(obj));
+			if (environments.get(i).isObject()) {
+				JsonObject obj = environments.get(i).asObject();
+				interactions.addAll(getInteractionsFromEntity(obj));
+			}
 		}
 		
 		return interactions;
@@ -181,7 +183,6 @@ public class DataCollector_FileSystem {
 		JsonObject file = parseFile(buildFilePath(stepNumber));
 //		System.out.println("stepNumber: "+stepNumber);
 		JsonArray agents = file.get(AGENTS).asArray();
-		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
 			counter += countInteractionsFromEntity(obj);

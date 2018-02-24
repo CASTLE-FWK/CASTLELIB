@@ -44,8 +44,8 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public long result_Zt;
 	public double result_It;
 	public double[][] result_Yit;
-	
-	//What are the states that this metric requires
+
+	// What are the states that this metric requires
 	final String STATE_1 = "STATE_1";
 
 	public ChanGoLInterMetric(MetricInfo mi) {
@@ -56,12 +56,6 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		metricVariableMappings = mi.getMetricVariableMappings();
 	}
 
-	// TODO: Being lazy and assuming correct things are there
-	@Override
-	public void runMetric(Object... params) {
-		// TODO Auto-generated method stub
-
-	}
 
 	// What needs to happen here?
 	public void setup(ArrayList<VEntity> step_zero, int numberOfSteps) {
@@ -79,9 +73,8 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		
 		
 		if (step_tm1.size() != step_t.size()) {
-			// System.out.println("Agent lists are not the same size.
-			// Terminating metric.");
-			// return;
+			 System.out.println("Agent lists are not the same size. Terminating metric.");
+			 return;
 		}
 
 		// Sort to fix any issues
@@ -137,6 +130,7 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 				tmp = tmp.doubleValue();
 			}
 			//Theres an issue with this array
+			errLog("currentStep: "+currentStep+", i: "+i+", result_Yit size:"+result_Yit.length);
 			result_Yit[currentStep][i] = tmp / (double) maxAtT[currentStep];
 			result_Zt += cumulativeIndiv.get(step_t.get(i).getID()).intValue();
 		}
@@ -162,22 +156,17 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		return res;
 	}
 
+
 	@Override
-	public String getMetricInformation() {
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public MetricResult[] getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public MetricResult getMetricResults() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

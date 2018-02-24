@@ -33,23 +33,10 @@ public class SystemComplexity extends MetricBase implements MetricInterface {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String getMetricInformation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MetricResult getMetricResults() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public double getLatestResult() {
 		return latestResults;
 	}
 
-	@Override
 	public void runMetric(Object... params) {
 		// Check the list of this is what we need
 		int reqCount = 0;
@@ -177,9 +164,15 @@ public class SystemComplexity extends MetricBase implements MetricInterface {
 	}
 
 	@Override
-	public void runMetric(SystemInfo si) {
+	public void run() {
 		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	public MetricResult[] getResults() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

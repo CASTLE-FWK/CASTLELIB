@@ -1176,7 +1176,7 @@ public class MetricRunner {
 
 		StringBuilder sb = new StringBuilder();
 		announce("Tag and Track");
-		ClusterTrack tt = new ClusterTrack();
+		ClusterTrack tt = new ClusterTrack(mi);
 		String metricName = "TagAndTrack";
 		MetricResult ttResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 

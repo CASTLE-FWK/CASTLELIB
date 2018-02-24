@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 import castleComponents.objects.Vector2;
+import experimentExecution.MetricInfo;
+import experimentExecution.MetricVariableMapping;
 import experimentExecution.SystemInfo;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
@@ -37,24 +39,18 @@ import stdSimLib.utilities.Utilities;
  *
  */
 
-public class ClusterTrack implements MetricInterface {
-
+public class ClusterTrack extends MetricBase implements MetricInterface {
+	final String STATE_1 = "STATE_1";
 	public String metricName;
 	StringBuilder sb;
 	HashMap<String, Integer> prevIDs;
 
-	public ClusterTrack() {
-		// TODO Auto-generated constructor stub
-		metricName = "ClusterTrack";
+	public ClusterTrack(MetricInfo mi) {
+		super("ClusterTrack", mi);
+		metricVariableMappings = mi.getMetricVariableMappings();
 		//		clusters = new ArrayList<Cluster>();
 		sb = new StringBuilder();
 		prevIDs = new HashMap<String, Integer>();
-	}
-
-	@Override
-	public void runMetric(Object... params) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void Calculate(ArrayList<Cluster> previous, ArrayList<Cluster> current, double threshold) {
@@ -92,6 +88,7 @@ public class ClusterTrack implements MetricInterface {
 
 	public HashMap<String, Double> examineClusters(ArrayList<Cluster> clusters) {
 		//		double 
+		
 		double averageClusterStateDensity = 0.0;
 		double averageDensity = 0.0;
 		double averageArea = 0.0;
@@ -145,6 +142,7 @@ public class ClusterTrack implements MetricInterface {
 	}
 
 	public double clusterStateDensity(Cluster c) {
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 		double density = c.getDensity();
 		double area = c.getArea();
 		double result = 0.0;
@@ -158,11 +156,10 @@ public class ClusterTrack implements MetricInterface {
 			//			if (res){
 			//				countAlive++;
 			//			}
-
-			//THIS IF FOR Game Of LIFE (WE NEED TO MAKE THIS GENERIC. AFTER THE PAPER IS DONE
-			//TODO: IHAISUDH****
-			if (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("True") == 0) {
-				countAlive++;
+			if (entityIsOfType(v, mvm1)) {
+				if (isParameterEqualToDesiredValue(v, mvm1)) {
+					countAlive++;
+				}
 			}
 		}
 
@@ -302,6 +299,7 @@ public class ClusterTrack implements MetricInterface {
 
 	//How many centroids? Space divided by 4,5,6,7...X?
 	public ArrayList<Cluster> KMeans(InteractionGraph ig, int numClusters, Vector2 totalSpace) {
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 		ArrayList<Node> nodes = ig.getNodes();
 		//Random init
@@ -358,11 +356,14 @@ public class ClusterTrack implements MetricInterface {
 				//				int nodeCount = theseNodes.size();
 				int nodeCount = 0;
 				for (Node n : theseNodes) {
-					if (n.getVAgent().getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-						Vector2 v = n.getPosition();
-						sumX += v.getX();
-						sumY += v.getY();
-						nodeCount++;
+					//MARKER 2
+					if (entityIsOfType(n.getVAgent(), mvm1)) {
+						if (isParameterEqualToDesiredValue(n.getVAgent(), mvm1)) {
+							Vector2 v = n.getPosition();
+							sumX += v.getX();
+							sumY += v.getY();
+							nodeCount++;
+						}
 					}
 					//					Vector2 v = n.getPosition();
 					//					sumX += v.getX();
@@ -402,25 +403,6 @@ public class ClusterTrack implements MetricInterface {
 		}
 		return clusters;
 	}
-
-	@Override
-	public String getMetricInformation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public MetricResult getMetricResults() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void MinCutPhase(InteractionGraph ig) {
 		//
 		double cutOfThePhase = 0.0;
@@ -443,6 +425,18 @@ public class ClusterTrack implements MetricInterface {
 			}
 			newIG.addNode(nodes.get(i));
 		}
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MetricResult[] getResults() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 
