@@ -55,7 +55,7 @@ public class Entropy extends MetricBase {
 		// Lets do Alive neighbours. This means we need a Grid
 		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		
+
 		Continuous<VEntity> theCont = new Continuous<VEntity>();
 		for (VEntity agt : agents) {
 			theCont.addEntity(agt, agt.getPosition());
@@ -119,14 +119,14 @@ public class Entropy extends MetricBase {
 
 	}
 
-	public double conditionalEntropy(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents, Vector2 gridSize, MetricParameters mp) {
+	public double conditionalEntropy(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents, Vector2 gridSize,
+			MetricParameters mp) {
 		double d = 0.0;
 		final double SEVENEIGHTHS = 7.0 / 8.0;
 		final double ONEEIGHTH = 1.0 / 8.0;
 		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		
-		
+
 		// p(x,y) = p(probabilty that neighbours are in their current states,
 		// currentState of this) (actually, vice versa)
 		Continuous<VEntity> theCont = new Continuous<VEntity>();

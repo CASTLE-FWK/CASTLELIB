@@ -1628,24 +1628,26 @@ public class MetricRunner {
 		announce(tcv.getMetricName());
 		
 		String countingType = (String) mp.getParameterValue("counting-type");
-		boolean isDouble = false;
-		if (countingType == "double") {
-			isDouble = true;
-		}
 		
+		tcv.setup(totalNumberOfSteps, countingType);
+		tcv.setCollector(collector);
 		MetricResult tcvResult = new MetricResult(systemName, tcv.getMetricName(), totalNumberOfSteps, si,
 				resultsDirRoot);
-		tcvResult.addResultType("Counter");
-		for (int time = 1; time < totalNumberOfSteps; time++) {
-			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-			if (isDouble) {
-				double count = tcv.countDouble(agents);
-				tcvResult.addResultAtStep("Counter", count, time);
-			} else {
-				int count = tcv.countInt(agents);
-				tcvResult.addResultAtStep("Counter", count, time);
-			}
-		}
+		tcv.setResultStore(tcvResult);
+		
+		tcv.run();
+		tcv.getResults();
+//		tcvResult.addResultType("Counter");
+//		for (int time = 1; time < totalNumberOfSteps; time++) {
+//			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+//			if (isDouble) {
+//				double count = tcv.countDouble(agents);
+//				tcvResult.addResultAtStep("Counter(Double)", count, time);
+//			} else {
+//				int count = tcv.countInt(agents);
+//				tcvResult.addResultAtStep("Counter(Integer)", count, time);
+//			}
+//		}
 		
 	}
 

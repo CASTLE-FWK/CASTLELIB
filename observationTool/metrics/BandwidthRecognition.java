@@ -2,6 +2,7 @@ package observationTool.metrics;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.results.MetricResult;
 
 /**
@@ -18,27 +19,21 @@ public class BandwidthRecognition extends MetricBase implements MetricInterface 
 	}
 
 	@Override
-	public void runMetric(Object... params) {
+	public void run() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public String getMetricInformation() {
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MetricResult getMetricResults() {
+	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }

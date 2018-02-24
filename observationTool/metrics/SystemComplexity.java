@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.results.AccuracyResults;
 import observationTool.results.MetricResult;
 import stdSimLib.Interaction;
@@ -170,9 +171,15 @@ public class SystemComplexity extends MetricBase implements MetricInterface {
 	}
 
 	@Override
-	public MetricResult[] getResults() {
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setCollector(DataCollector_FileSystem dfs) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

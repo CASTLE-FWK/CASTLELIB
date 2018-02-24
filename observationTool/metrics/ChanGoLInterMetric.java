@@ -7,6 +7,7 @@ import java.util.HashMap;
 import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.MetricRunner_ED;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
@@ -165,8 +166,15 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 
 
 	@Override
-	public MetricResult[] getResults() {
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public void setCollector(DataCollector_FileSystem dfs) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -30,8 +30,8 @@ public class DataCollector_FileSystem {
 	final String AGENTS = "Agent";
 	final String ENVIRONMENTS = "Environment";
 	final String GROUPS = "Group";
-	
-	//Some speed up things
+
+	// Some speed up things
 	HashMap<Integer, Integer> totalNumberOfInteractionsInStep;
 
 	public DataCollector_FileSystem(String fp) {
@@ -43,7 +43,7 @@ public class DataCollector_FileSystem {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
 		initParamFilePath = filePathRoot + "/systemInitialization" + JSON;
-		terminationStatsFilePath = filePathRoot +"/termination-statistics"+JSON;
+		terminationStatsFilePath = filePathRoot + "/termination-statistics" + JSON;
 	}
 
 	public HashMap<String, String> getInitialisationParameters() {
@@ -169,10 +169,9 @@ public class DataCollector_FileSystem {
 				interactions.addAll(getInteractionsFromEntity(obj));
 			}
 		}
-		
+
 		return interactions;
 	}
-	
 
 	public int countInteractionsInStep(int stepNumber) {
 		if (totalNumberOfInteractionsInStep.containsKey(stepNumber)) {
@@ -181,7 +180,7 @@ public class DataCollector_FileSystem {
 		int counter = 0;
 		// Go through each entity and pull out the interactions list
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-//		System.out.println("stepNumber: "+stepNumber);
+		// System.out.println("stepNumber: "+stepNumber);
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
@@ -216,7 +215,6 @@ public class DataCollector_FileSystem {
 		return countEntityType(stepNumber, GROUPS);
 	}
 
-	// TODO
 	public int getTerminationStep() {
 		JsonObject obj = parseFile(terminationStatsFilePath);
 		return obj.getInt("termination-step", -1);

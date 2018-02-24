@@ -13,6 +13,7 @@ import castleComponents.objects.Vector2;
 import castleComponents.representations.Grid;
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
 
@@ -188,28 +189,23 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 	}
 
 	@Override
-	public void runMetric(Object... params) {
+	public void run() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public String getMetricInformation() {
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MetricResult getMetricResults() {
+	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
-	}
 
 }
 

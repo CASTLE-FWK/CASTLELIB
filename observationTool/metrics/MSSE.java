@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
 import stdSimLib.Interaction;
@@ -46,31 +47,26 @@ public class MSSE extends MetricBase implements MetricInterface {
 		return finalResult;
 	}
 
-	@Override
-	public void runMetric(Object... params) {
-
-	}
-
 	public void train(int stepNumber, ArrayList<VEntity> agents, ArrayList<Interaction> interactions) {
 
 	}
 
 	@Override
-	public String getMetricInformation() {
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MetricResult getMetricResults() {
+	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }

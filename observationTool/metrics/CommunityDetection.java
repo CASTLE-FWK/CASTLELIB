@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import experimentExecution.MetricInfo;
 import experimentExecution.SystemInfo;
+import observationTool.DataCollector_FileSystem;
 import observationTool.results.MetricResult;
 
 /**
@@ -35,7 +36,6 @@ public class CommunityDetection extends MetricBase implements MetricInterface {
 		return finalResult;
 	}
 
-	@Override
 	public void runMetric(Object... params) {
 		// TODO Auto-generated method stub
 		int reqCount = 0;
@@ -52,22 +52,23 @@ public class CommunityDetection extends MetricBase implements MetricInterface {
 		}
 	}
 
+
 	@Override
-	public String getMetricInformation() {
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public MetricResult getResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public MetricResult getMetricResults() {
+	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void runMetric(SystemInfo si) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 }

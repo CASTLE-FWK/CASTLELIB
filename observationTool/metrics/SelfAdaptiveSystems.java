@@ -53,24 +53,25 @@ public class SelfAdaptiveSystems extends MetricBase {
 		return (adaptivityTime / workingTime);
 	}
 
-	public double PerfSit(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents, Vector2 dimensions, MetricParameters mp) {
+	public double PerfSit(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents, Vector2 dimensions,
+			MetricParameters mp) {
 		double cMax = 0.0;
 		double subsitSum = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		
-		double neighbourDist = (Double)mp.getParameterValue("neighbour-distance");
 
-//		Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, (int) dimensions.getX(), (int) dimensions.getY());
+		double neighbourDist = (Double) mp.getParameterValue("neighbour-distance");
+
+		// Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, (int)
+		// dimensions.getX(), (int) dimensions.getY());
 		Continuous<VEntity> theCont = new Continuous<VEntity>();
 		Iterator<Entry<String, VEntity>> it = prevAgents.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, VEntity> pair = (Map.Entry<String, VEntity>) it.next();
 			VEntity agt = pair.getValue();
 			theCont.addEntity(agt, agt.getPosition());
-			
-			
-//			theGrid.addCell(agt, agt.getPosition());
+
+			// theGrid.addCell(agt, agt.getPosition());
 		}
 
 		for (VEntity v : agents) {
@@ -87,9 +88,11 @@ public class SelfAdaptiveSystems extends MetricBase {
 				}
 				if (lifeState) {
 					if (!prevState) {
-						ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(), neighbourDist);
-//						ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
-//								.getNeighbours((int) v.getPosition().getX(), (int) v.getPosition().getY(), 1);
+						ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont
+								.getNeighborsFromVector(v.getPosition(), neighbourDist);
+						// ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
+						// .getNeighbours((int) v.getPosition().getX(), (int) v.getPosition().getY(),
+						// 1);
 						int lifeCount = 0;
 						for (VEntity n : neighbours) {
 							if (entityIsOfType(n, mvm1)) {
