@@ -100,6 +100,7 @@ public class MetricRunner {
 			Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
 			print(exp.toString());
 			ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
+			System.out.println("Number of Systems to Analyse: "+theTestSystems.size());
 
 			double runtime = System.currentTimeMillis();
 			for (int test = 0; test < theTestSystems.size(); test++) {

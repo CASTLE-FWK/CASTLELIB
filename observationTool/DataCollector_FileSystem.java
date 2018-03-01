@@ -59,9 +59,19 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get("agent-name").asString();
-			String id = obj.get("agent-ID").asString();
-			String type = obj.get("agent-type").asString();
+			if (obj == null) {
+				System.err.println("obj is null");
+				System.err.println("file is "+buildFilePath(stepNumber));
+				System.exit(0);
+			}
+			if (obj.get("Agent-name") == null) {
+				System.err.println("Agent-name is null");
+				System.err.println("file is "+buildFilePath(stepNumber));
+				System.exit(0);
+			}
+			String name = obj.get("Agent-name").asString();
+			String id = obj.get("Agent-ID").asString();
+			String type = obj.get("Agent-type").asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
@@ -83,7 +93,7 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get("agent-name").asString();
+			String name = obj.get("Agent-name").asString();
 			theMap.put(name, new ArrayList<Interaction>());
 			ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
 			for (Interaction inter : interactions) {
@@ -108,9 +118,19 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get("agent-name").asString();
-			String id = obj.get("agent-ID").asString();
-			String type = obj.get("agent-type").asString();
+			if (obj == null) {
+				System.err.println("obj is null");
+				System.err.println("file is "+buildFilePath(stepNumber));
+				System.exit(0);
+			}
+			if (obj.get("Agent-name") == null) {
+				System.err.println("Agent-name is null");
+				System.err.println("file is "+buildFilePath(stepNumber));
+				System.exit(0);
+			}
+			String name = obj.get("Agent-name").asString();
+			String id = obj.get("Agent-ID").asString();
+			String type = obj.get("Agent-type").asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
@@ -158,8 +178,10 @@ public class DataCollector_FileSystem {
 		}
 		JsonArray groups = file.get(GROUPS).asArray();
 		for (int i = 0; i < groups.size(); i++) {
-			JsonObject obj = groups.get(i).asObject();
-			interactions.addAll(getInteractionsFromEntity(obj));
+			if (groups.get(i).isObject()) {
+				JsonObject obj = groups.get(i).asObject();
+				interactions.addAll(getInteractionsFromEntity(obj));
+			}
 		}
 
 		JsonArray environments = file.get(ENVIRONMENTS).asArray();
