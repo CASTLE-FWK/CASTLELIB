@@ -64,14 +64,14 @@ public class DataCollector_FileSystem {
 				System.err.println("file is "+buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get("Agent-name") == null) {
-				System.err.println("Agent-name is null");
+			if (obj.get("agent-name") == null) {
+				System.err.println("agent-name is null");
 				System.err.println("file is "+buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get("Agent-name").asString();
-			String id = obj.get("Agent-ID").asString();
-			String type = obj.get("Agent-type").asString();
+			String name = obj.get("agent-name").asString();
+			String id = obj.get("agent-ID").asString();
+			String type = obj.get("agent-type").asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
@@ -93,7 +93,7 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get("Agent-name").asString();
+			String name = obj.get("agent-name").asString();
 			theMap.put(name, new ArrayList<Interaction>());
 			ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
 			for (Interaction inter : interactions) {
@@ -123,14 +123,14 @@ public class DataCollector_FileSystem {
 				System.err.println("file is "+buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get("Agent-name") == null) {
-				System.err.println("Agent-name is null");
+			if (obj.get("agent-name") == null) {
+				System.err.println("agent-name is null");
 				System.err.println("file is "+buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get("Agent-name").asString();
-			String id = obj.get("Agent-ID").asString();
-			String type = obj.get("Agent-type").asString();
+			String name = obj.get("agent-name").asString();
+			String id = obj.get("agent-ID").asString();
+			String type = obj.get("agent-type").asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {

@@ -189,7 +189,7 @@ public class MetricRunner {
 		// LETS BUILD VAGENTS
 		int totalNumberOfSteps = collector.getTerminationStep();
 		if (testing) {
-			totalNumberOfSteps = 25; // TODO REMOVE THIS
+			totalNumberOfSteps = 25;
 		}
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
