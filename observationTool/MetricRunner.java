@@ -270,8 +270,7 @@ public class MetricRunner {
 		println("finished");
 	}
 
-	public static void Metric_SystemComplexity(SystemInfo si, MetricInfo mi) {
-
+	public static MetricResult Metric_SystemComplexity(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		String resultsName = "Change in Interaction Frequency";
@@ -322,9 +321,10 @@ public class MetricRunner {
 
 		calculateAccuracy(metricName, resultsName, scResult, 0, 2 * stdDev, 0.025);
 
+		return scResult;
 	}
 
-	public static void Metric_ChanGoLIM(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_ChanGoLIM(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		StringBuilder sb = new StringBuilder();
@@ -426,10 +426,11 @@ public class MetricRunner {
 		double maxThresh = chanGoLResult.calculateMax(resultsNameA);
 
 		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, 0, 2 * stdDev, 0.025);
+		return chanGoLResult;
 
 	}
 
-	public static void Metric_OToole14(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_OToole14(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		// Run metric: OToole 2014 Emergence Detection
@@ -497,9 +498,10 @@ public class MetricRunner {
 		double maxThresh = oTooleResult.calculateMax(resultsName);
 
 		calculateAccuracy("OToole14", resultsName, oTooleResult, 0, 2 * stdDev, 0.025);
+		return oTooleResult;
 	}
 
-	public static void Metric_MSSE(SystemInfo si, MetricInfo mi, MetricParameters mps) {
+	public static MetricResult Metric_MSSE(SystemInfo si, MetricInfo mi, MetricParameters mps) {
 		StringBuilder sb = new StringBuilder();
 		long runtime = 0;
 
@@ -731,9 +733,10 @@ public class MetricRunner {
 
 		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, 0, 1, 0.025);
 		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, 0, 1, 0.025);
+		return msseResult;
 	}
 
-	public static void Metric_BR(SystemInfo si, MetricInfo mi, MetricParameters mps) {
+	public static MetricResult Metric_BR(SystemInfo si, MetricInfo mi, MetricParameters mps) {
 		// What is the next metric to go here
 		// Run Metric: Bandwidth Recognition
 		int totalNumberOfSteps = si.getNumberOfSteps();
@@ -1038,9 +1041,11 @@ public class MetricRunner {
 		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, 0, 2, 1.0);
 		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, 0, 2, 1.0);
 
+		return brResult;
+		
 	}
 
-	public static void Metric_OscillatorDetect(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_OscillatorDetect(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("Oscillation Detector");
@@ -1169,10 +1174,11 @@ public class MetricRunner {
 		println("Oscillations detected: %1$d with max distance: %2$d starting from %3$d with %4$d consecutive hits. Min distance: %5$d",
 				numOscillationsFound, distance, maxDistStart, consecutive, minDistance);
 		println("Oscillation size: %1$d", oscillationSize);
+		return oscillResult;
 
 	}
 
-	public static void Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 
 		StringBuilder sb = new StringBuilder();
@@ -1285,9 +1291,10 @@ public class MetricRunner {
 		Utilities.writeToFile(sb.toString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
 				+ metricName.replaceAll("\\s+", "") + "/" + si.getConfigurationString() + "-densities-over-time.tsv",
 				false);
+		return ttResult;
 	}
 
-	public static void Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("Entropy Over Time");
@@ -1340,6 +1347,8 @@ public class MetricRunner {
 		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, 0, 10.0, 0.025);
 		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, 0, 10.0, 0.025);
 		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, 0, 10.0, 0.025);
+		
+		return eotResult;
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 	}
@@ -1365,7 +1374,7 @@ public class MetricRunner {
 	 * @param si
 	 */
 	// TODO: Put into its own Metric class file
-	public static void Metric_KaddoumWAT(MetricInfo mi, SystemInfo si) {
+	public static MetricResult Metric_KaddoumWAT(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("KaddoumWAT");
@@ -1412,11 +1421,12 @@ public class MetricRunner {
 		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		return watResult;
 	}
 
 	// TODO This one needs to be ported across into the SAS class but its so very
 	// nasty
-	public static void Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
+	public static MetricResult Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("VillegasAU");
@@ -1569,9 +1579,10 @@ public class MetricRunner {
 		calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0, 0.025);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		return auResult;
 	}
 
-	public static void Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("PerfSit");
@@ -1616,13 +1627,10 @@ public class MetricRunner {
 		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0, 100.0, 0.025);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
+		return perfsitResult;
 	}
 
-	public static void Metric_ReineckeAD(MetricInfo mi, SystemInfo si) {
-
-	}
-
-	public static void Metric_Counter(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_Counter(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		Counter tcv = new Counter(mi);
@@ -1649,6 +1657,7 @@ public class MetricRunner {
 //				tcvResult.addResultAtStep("Counter(Integer)", count, time);
 //			}
 //		}
+		return tcvResult;
 		
 	}
 
