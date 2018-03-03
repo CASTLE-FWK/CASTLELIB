@@ -35,9 +35,21 @@ public class DataCollector_FileSystem {
 	final String AGENT_PRE = "agent";
 	final String ENV_PRE = "environment";
 	final String GRP_PRE = "group";
-	final String D_NAME="-name";
+	final String PARAM_PRE = "parameter";
+	final String D_NAME = "-name";
 	final String D_ID = "-ID";
 	final String D_TYPE = "-type";
+	final String D_VALUE = "-value";
+
+	// Agent
+	final String AGENTNAME = AGENT_PRE + D_NAME;
+	final String AGENTID = AGENT_PRE + D_ID;
+	final String AGENTTYPE = AGENT_PRE + D_TYPE;
+
+	// PARAMETERS
+	final String PARAMNAME = PARAM_PRE + D_NAME;
+	final String PARAMVAL = PARAM_PRE + D_VALUE;
+	final String PARAMTYPE = PARAM_PRE + D_TYPE;
 
 	// Some speed up things
 	HashMap<Integer, Integer> totalNumberOfInteractionsInStep;
@@ -72,21 +84,21 @@ public class DataCollector_FileSystem {
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get("agent-name") == null) {
+			if (obj.get(AGENTNAME) == null) {
 				System.err.println("agent-name is null");
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get("agent-name").asString();
-			String id = obj.get("agent-ID").asString();
-			String type = obj.get("agent-type").asString();
+			String name = obj.get(AGENTNAME).asString();
+			String id = obj.get(AGENTID).asString();
+			String type = obj.get(AGENTTYPE).asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
 				JsonObject d = params.get(j).asObject();
-				String pName = d.get("parameter-name").asString();
-				String pType = d.get("parameter-type").asString();
-				String pValue = d.get("parameter-value").asString();
+				String pName = d.get(PARAMNAME).asString();
+				String pType = d.get(PARAMTYPE).asString();
+				String pValue = d.get(PARAMVAL).asString();
 				tmpVA.addParameterFromString(pName, pType, pValue);
 			}
 			vAgents.add(tmpVA);
@@ -101,7 +113,7 @@ public class DataCollector_FileSystem {
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get("agent-name").asString();
+			String name = obj.get(AGENTNAME).asString();
 			theMap.put(name, new ArrayList<Interaction>());
 			ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
 			for (Interaction inter : interactions) {
@@ -131,21 +143,21 @@ public class DataCollector_FileSystem {
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get("agent-name") == null) {
+			if (obj.get(AGENTNAME) == null) {
 				System.err.println("agent-name is null");
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get("agent-name").asString();
-			String id = obj.get("agent-ID").asString();
-			String type = obj.get("agent-type").asString();
+			String name = obj.get(AGENTNAME).asString();
+			String id = obj.get(AGENTID).asString();
+			String type = obj.get(AGENTTYPE).asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
 				JsonObject d = params.get(j).asObject();
-				String pName = d.get("parameter-name").asString();
-				String pType = d.get("parameter-type").asString();
-				String pValue = d.get("parameter-value").asString();
+				String pName = d.get(PARAMNAME).asString();
+				String pType = d.get(PARAMTYPE).asString();
+				String pValue = d.get(PARAMVAL).asString();
 				tmpVA.addParameterFromString(pName, pType, pValue);
 			}
 			vAgents.put(tmpVA.getName(), tmpVA);
