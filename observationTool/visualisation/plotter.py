@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 import argparse
 import csv
 import pprint
+import math
 
 #0: parse cli args
 
@@ -11,6 +13,7 @@ parser.add_argument('file', metavar="file", type=str, nargs=1, help='the file wi
 parser.add_argument('steps_column', metavar="SC", type=int, nargs=1, help='the column that has the step counter')
 parser.add_argument('starting_column', metavar="MSC", type=int, nargs=1, help='the column where the metric results start')
 parser.add_argument('header_row', metavar="HR", type=int, nargs=1, help="the row with the header information")
+parser.add_argument('save_dir', metavar="sd", type=str, nargs=1, help="save directory for plots")
 args = parser.parse_args()
 #1: Get file
 
@@ -19,6 +22,7 @@ fp = args.file[0]
 sc = args.steps_column[0]
 msc = args.starting_column[0]
 hr = args.header_row[0]
+sd = args.save_dir[0]
 
 with open(fp, 'rb') as tsvin:
 	#a: check its a TSV
@@ -38,32 +42,69 @@ with open(fp, 'rb') as tsvin:
 			for item in row:
 				if (len(item) == 0):
 					continue
-				item = item.replace("#","")		
+				item = item.replace("#","")
 				if colcount == sc:
 					datadict[item] = []
 					datamap[colcount] = item
 				elif colcount >= msc:
 					datadict[item] = []
 					datamap[colcount] = item
-
 				colcount = colcount + 1
 		else:
 			colcount = 0;
 			for item in row:
 				#get dict thing
 				if colcount in datamap:
+					if (item == "#runtime"):
+						continue
 					dictLoc = datamap[colcount]
-					datadict[dictLoc].append(item)
-
-
-
+					datadict[dictLoc].append(float(item))
 				colcount = colcount + 1
-
 		rowcount = rowcount + 1
-	pprint.pprint(datadict)	
-	pprint.pprint(datamap)
+print `"metric result file parsed. now to graph"`
 
+stepsList = datadict["step"]
 
+for key in datadict:
+	if key == "step":
+		continue
+	keyNWS = ''.join(key.split())
+	print("plotting "+key)
+	x = datadict[key]
+	fig = plt.figure(figsize=(11.69, 8.27))
+	ax = fig.add_subplot(111)
+	ax.set_title(key)
+	ax.plot(x, label=key)
+	
+	print("\tmin is "+str(min(x)))
+	print("\tmax is "+str(max(x)))
+	rge = (max(x)-min(x))+1
+	ss = rge / 5
+	# print `ss`
+	if (math.isnan(ss)):
+		print("\tCan't plot due to NaN.")
+		plt.clf()
+		continue
+	# print`np.arange(min(x), max(x)+1, ss)`
+
+	ax.yaxis.set_ticks(np.arange(min(x), max(x)+1, ss))
+	
+	# loc = plticker.MultipleLocator(base=1.0)
+	# ax.xaxis.set_major_locator(loc)
+
+	ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.3f'))
+	# plt.xlim(stepsList)
+	ax.set_xlabel("Steps")
+	ax.set_ylabel(key)
+	
+	path = sd
+	path+="/"+keyNWS+".pdf"
+	path = path.replace("\\s+","")
+	# fig.legend()
+	fig.savefig(path, bbox_inches='tight')
+	fig.clf()
+
+print("\tFinished plotting. Plot files are in "+sd)
 
 
 
