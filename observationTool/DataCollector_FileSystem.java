@@ -31,6 +31,14 @@ public class DataCollector_FileSystem {
 	final String ENVIRONMENTS = "Environment";
 	final String GROUPS = "Group";
 
+	// Prefixes
+	final String AGENT_PRE = "agent";
+	final String ENV_PRE = "environment";
+	final String GRP_PRE = "group";
+	final String D_NAME="-name";
+	final String D_ID = "-ID";
+	final String D_TYPE = "-type";
+
 	// Some speed up things
 	HashMap<Integer, Integer> totalNumberOfInteractionsInStep;
 
@@ -61,12 +69,12 @@ public class DataCollector_FileSystem {
 			JsonObject obj = agents.get(i).asObject();
 			if (obj == null) {
 				System.err.println("obj is null");
-				System.err.println("file is "+buildFilePath(stepNumber));
+				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
 			if (obj.get("agent-name") == null) {
 				System.err.println("agent-name is null");
-				System.err.println("file is "+buildFilePath(stepNumber));
+				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
 			String name = obj.get("agent-name").asString();
@@ -120,12 +128,12 @@ public class DataCollector_FileSystem {
 			JsonObject obj = agents.get(i).asObject();
 			if (obj == null) {
 				System.err.println("obj is null");
-				System.err.println("file is "+buildFilePath(stepNumber));
+				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
 			if (obj.get("agent-name") == null) {
 				System.err.println("agent-name is null");
-				System.err.println("file is "+buildFilePath(stepNumber));
+				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
 			String name = obj.get("agent-name").asString();
