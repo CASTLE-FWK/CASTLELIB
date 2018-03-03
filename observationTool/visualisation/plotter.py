@@ -9,6 +9,7 @@ import math
 #0: parse cli args
 
 parser = argparse.ArgumentParser(description='Plot metric results from the Observation Tool')
+parser.add_argument('directory', metavar="dir", type=str, nargs=1, help="the directory that stores the results files and where the plots will be stored")
 parser.add_argument('file', metavar="file", type=str, nargs=1, help='the file with the results')
 parser.add_argument('steps_column', metavar="SC", type=int, nargs=1, help='the column that has the step counter')
 parser.add_argument('starting_column', metavar="MSC", type=int, nargs=1, help='the column where the metric results start')
@@ -18,11 +19,13 @@ args = parser.parse_args()
 #1: Get file
 
 # print `args.file[0]`
-fp = args.file[0]
+direc = args.directory[0]
+fp = direc+"/"+args.file[0]
+sd = direc+"/"+args.save_dir[0]
 sc = args.steps_column[0]
 msc = args.starting_column[0]
 hr = args.header_row[0]
-sd = args.save_dir[0]
+
 
 with open(fp, 'rb') as tsvin:
 	#a: check its a TSV
@@ -83,7 +86,11 @@ for key in datadict:
 	# print `ss`
 	if (math.isnan(ss)):
 		print("\tCan't plot due to NaN.")
-		plt.clf()
+		fig.clf()
+		continue
+	if (math.isinf(ss)):
+		print("\tCan't plot due to Infinity.")
+		fig.clf()
 		continue
 	# print`np.arange(min(x), max(x)+1, ss)`
 
@@ -103,8 +110,9 @@ for key in datadict:
 	# fig.legend()
 	fig.savefig(path, bbox_inches='tight')
 	fig.clf()
+	plt.close()
 
-print("\tFinished plotting. Plot files are in "+sd)
+print("Finished plotting. Plot files are in "+sd)
 
 
 
