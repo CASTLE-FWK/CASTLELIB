@@ -11,16 +11,29 @@ import stdSimLib.utilities.Utilities;
 //TODO: Need to do something about results stored as Strings...
 public class MetricResult {
 	private String systemName;
+	public String getSystemName() {
+		return systemName;
+	}
 	private String metricName;
 	private HashSet<String> resultNames;
 	private HashSet<String> stringResultNames;
+	public HashSet<String> getStringResultNames(){
+		return stringResultNames;
+	}
 	private HashMap<String, Double[]> results;
 	private HashMap<String, String[]> stringResults;
+	public HashMap<String, String[]> getStringResults(){
+		return stringResults;
+	}
+	
 	private double runtime = 0.0;
 	private int numberOfSteps = 0;
 	private AccuracyResults theResult;
 	private int numberOfRealInstances = 0;
 	String[] printingOrder;
+	public String[] getPrintingOrder() {
+		return printingOrder;
+	}
 
 	private String resultsDir = "/Users/lachlan/repos/interlib/observationModule/results/";
 
@@ -38,6 +51,27 @@ public class MetricResult {
 
 		this.resultsDir += sysName.replaceAll("\\s+", "") + "/" + metricName.replaceAll("\\s+", "") + "/best/"
 				+ si.getConfigurationString() + "_";
+	}
+	
+	public void append(MetricResult mr) {
+		if (systemName.compareToIgnoreCase(mr.getSystemName()) != 0) {
+			System.out.println("Cannot append results from 2 different systems.");
+			return;
+		}
+		resultNames.addAll(mr.getResultNames());
+		stringResultNames.addAll(mr.getStringResultNames());
+		HashMap<String, Double[]> mrR = mr.getResult();
+		for (String s : mrR.keySet()) {
+			results.put(s, mrR.get(s));
+		}
+		HashMap<String, String[]> mrS = mr.getStringResults();
+		for (String s : mrS.keySet()) {
+			stringResults.put(s, mrS.get(s));
+		}
+		for (String s : mr.getPrintingOrder()) {
+			addPrintingOrder(s);
+		}
+		
 	}
 
 	public void setPrintingOrder(String... headers) {
