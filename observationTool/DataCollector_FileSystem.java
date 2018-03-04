@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
@@ -52,11 +53,12 @@ public class DataCollector_FileSystem {
 	final String PARAMTYPE = PARAM_PRE + D_TYPE;
 
 	// Some speed up things
-	HashMap<Integer, Integer> totalNumberOfInteractionsInStep;
-
+	ConcurrentHashMap<Integer, Integer> totalNumberOfInteractionsInStep;
+	
+	
 	public DataCollector_FileSystem(String fp) {
 		setCollection(fp);
-		totalNumberOfInteractionsInStep = new HashMap<Integer, Integer>();
+		totalNumberOfInteractionsInStep = new ConcurrentHashMap<Integer, Integer>();
 	}
 
 	public void setCollection(String fp) {
@@ -103,7 +105,6 @@ public class DataCollector_FileSystem {
 			}
 			vAgents.add(tmpVA);
 		}
-
 		return vAgents;
 	}
 
@@ -183,7 +184,6 @@ public class DataCollector_FileSystem {
 				ig.addEdge(new Edge(start, end, inter.getType(), inter.getOccurrence()));
 			}
 		}
-
 		return ig;
 	}
 
