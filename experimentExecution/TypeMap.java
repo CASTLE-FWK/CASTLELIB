@@ -37,4 +37,11 @@ public class TypeMap {
 	public String getTargetEntityType() {
 		return targetEntity;
 	}
+
+	@Override
+	public String toString() {
+		return "(targetEntity:" + targetEntity + ",targetEntityVariableName:" + targetEntityVariableName
+				+ ",desiredValue:" + desiredValue + ")";
+	}
+
 }

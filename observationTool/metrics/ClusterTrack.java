@@ -45,6 +45,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	public String metricName;
 	StringBuilder sb;
 	HashMap<String, Integer> prevIDs;
+	MetricVariableMapping mvm1;
 
 	public ClusterTrack(MetricInfo mi) {
 		super("ClusterTrack", mi);
@@ -116,27 +117,35 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 				}
 			}
 		}
-		averageDensity = averageDensity / counter;
-		averageClusterStateDensity = averageClusterStateDensity / counter;
-		averageArea = averageArea / counter;
+		if (counter == 0) {
+			averageArea = 0;
+			averageDensity = 0;
+			averageClusterStateDensity = 0;
+		} else {
+			averageDensity = averageDensity / counter;
+			averageClusterStateDensity = averageClusterStateDensity / counter;
+			averageArea = averageArea / counter;
+		}
+		
 		double clustersIntersecting = clusterIntersect(clusters);
 		//		System.out.println("average cluster state density: " + averageClusterStateDensity);
 		//		System.out.println("average cluster agent density: "+averageDensity);
 		//		return averageClusterStateDensity+"\t"+averageDensity+"\t"+Utilities.calculateSTDDev(csds)+"\t"+Utilities.calculateSTDDev(ads)+"\t"
 		//				+Utilities.calculateMax(csds)+"\t"+Utilities.calculateMax(ads)+"\t"+Utilities.calculateMin(csds)
 		//				+"\t"+Utilities.calculateMin(ads)+"\t"+counter+"\t"+averageArea+"\t"+prevIDs.size()+"\t"+clustersIntersecting;
-		results.put("averageClusterStateDensity", averageClusterStateDensity);
-		results.put("averageAgentDensity", averageDensity);
-		results.put("STDDEVAgentStateDensity", Utilities.calculateSTDDev(csds));
-		results.put("STDDEVAgentDensity", Utilities.calculateSTDDev(ads));
-		results.put("MaxAgentStateDensity", Utilities.calculateMax(csds));
-		results.put("MinAgentStateDensity", Utilities.calculateMin(csds));
-		results.put("MaxAgentDensity", Utilities.calculateMax(ads));
-		results.put("MinAgentDensity", Utilities.calculateMin(ads));
-		results.put("RunningClusterCount", counter);
-		results.put("AverageArea", averageArea);
-		results.put("RunningUniqueClusters", (double) prevIDs.size());
-		results.put("ClustersIntersecting", clustersIntersecting);
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		results.put("averageClusterStateDensity"+mvm1.toString(), averageClusterStateDensity);
+		results.put("averageAgentDensity"+mvm1.toString(), averageDensity);
+		results.put("STDDEVAgentStateDensity"+mvm1.toString(), Utilities.calculateSTDDev(csds));
+		results.put("STDDEVAgentDensity"+mvm1.toString(), Utilities.calculateSTDDev(ads));
+		results.put("MaxAgentStateDensity"+mvm1.toString(), Utilities.calculateMax(csds));
+		results.put("MinAgentStateDensity"+mvm1.toString(), Utilities.calculateMin(csds));
+		results.put("MaxAgentDensity"+mvm1.toString(), Utilities.calculateMax(ads));
+		results.put("MinAgentDensity"+mvm1.toString(), Utilities.calculateMin(ads));
+		results.put("RunningClusterCount"+mvm1.toString(), counter);
+		results.put("AverageArea"+mvm1.toString(), averageArea);
+		results.put("RunningUniqueClusters"+mvm1.toString(), (double) prevIDs.size());
+		results.put("ClustersIntersecting"+mvm1.toString(), clustersIntersecting);
 
 		return results;
 
@@ -144,6 +153,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 
 	public double clusterStateDensity(Cluster c) {
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		this.mvm1 = mvm1;
 		double density = c.getDensity();
 		double area = c.getArea();
 		double result = 0.0;
@@ -165,8 +175,9 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 		}
 		if (area == 0) {
 			result = 0;
+		} else {
+			result = countAlive / area;
 		}
-		result = countAlive / area;
 
 		return result;
 	}
@@ -303,6 +314,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	//How many centroids? Space divided by 4,5,6,7...X?
 	public ArrayList<Cluster> KMeans(InteractionGraph ig, int numClusters, Vector2 totalSpace) {
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		this.mvm1 = mvm1;
 		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 		ArrayList<Node> nodes = ig.getNodes();
 		//Random init
@@ -568,7 +580,11 @@ class Cluster {
 			height = maxY - minY;
 			//Density
 			double area = width * height;
-			clusterDensity = (double) getNumAgentsInCluster() / area; //Assuming each agent takes up 1x1
+			if (area == 0) {
+				clusterDensity = 0;
+			} else {
+				clusterDensity = (double) getNumAgentsInCluster() / area; //Assuming each agent takes up 1x1
+			}
 		}
 	}
 

@@ -30,4 +30,8 @@ public class MetricParameters {
 		}
 		return str;
 	}
+	
+	public String toStringNS() {
+		return "["+toString().replaceAll("\\s+","")+"]";
+	}
 }

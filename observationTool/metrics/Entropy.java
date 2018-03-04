@@ -73,7 +73,11 @@ public class Entropy extends MetricBase {
 						}
 					}
 				}
-				prob = prob / (double) neighbours.size();
+				if (neighbours.size() == 0) {
+					prob = 0;
+				} else {
+					prob = prob / (double) neighbours.size();
+				}
 				if (prob != 0) {
 					d += prob * Math.log(prob);
 				}
@@ -96,7 +100,7 @@ public class Entropy extends MetricBase {
 				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
-					System.out.println("Agent didnt exist...");
+//					System.out.println("Agent didnt exist...");
 					continue;
 				}
 				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
@@ -141,7 +145,7 @@ public class Entropy extends MetricBase {
 			if (entityIsOfType(v, mvm1)) {
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
-					System.out.println("Agent didnt exist...");
+//					System.out.println("Agent didnt exist...");
 					continue;
 				}
 				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);

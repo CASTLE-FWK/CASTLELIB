@@ -28,17 +28,17 @@ public class MetricVariableMapping {
 	public void addTypeMap(String te, String tevn, String dv) {
 		TypeMap tm = new TypeMap(te, tevn, dv);
 		typeMaps.add(tm);
-		
+
 		if (!entityMetaMap.containsKey(te)) {
 			entityMetaMap.put(te, new ArrayList<TypeMap>());
 		}
 		entityMetaMap.get(te).add(tm);
 	}
-	
-	public ArrayList<TypeMap> getSpecificTypeMap(String ent){
+
+	public ArrayList<TypeMap> getSpecificTypeMap(String ent) {
 		return entityMetaMap.get(ent);
 	}
-	
+
 	public boolean entityTypeIsContained(String t) {
 		return entityMetaMap.containsKey(t);
 	}
@@ -46,7 +46,7 @@ public class MetricVariableMapping {
 	public ArrayList<TypeMap> getTypeMaps() {
 		return typeMaps;
 	}
-	
+
 	public boolean entityIsOfType(VEntity ve) {
 		return (entityTypeIsContained(ve.getType()));
 	}
@@ -74,5 +74,18 @@ public class MetricVariableMapping {
 			score += v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue);
 		}
 		return (score == 0);
+	}
+
+	public String typeMapsToString() {
+		String str = "typeMaps:[";
+		for (TypeMap tm : typeMaps) {
+			str += tm.toString();
+		}
+		str += "]";
+		return str;
+	}
+	
+	public String toString() {
+		return "{"+metricVar+"["+typeMapsToString()+"]}";
 	}
 }
