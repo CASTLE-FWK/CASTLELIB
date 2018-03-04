@@ -34,7 +34,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
-					System.out.println("Agent didnt exist...");
+//					System.out.println("Agent didnt exist...");
 					continue;
 				}
 				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
@@ -44,7 +44,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 
 				ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
 				if (theAgentsInteractions == null) {
-					System.out.println("Issue here (1)");
+//					System.out.println("Issue here (1)");
 				}
 				adaptivityTime += theAgentsInteractions.size();
 			}
@@ -79,7 +79,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 				VEntity pv = prevAgents.get(v.getName());
 				if (pv == null) {
-					System.out.println("Agent didnt exist...");
+//					System.out.println("Agent didnt exist...");
 					continue;
 				}
 				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);

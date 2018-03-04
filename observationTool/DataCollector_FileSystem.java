@@ -225,13 +225,17 @@ public class DataCollector_FileSystem {
 		// System.out.println("stepNumber: "+stepNumber);
 		JsonArray agents = file.get(AGENTS).asArray();
 		for (int i = 0; i < agents.size(); i++) {
-			JsonObject obj = agents.get(i).asObject();
-			counter += countInteractionsFromEntity(obj);
+			if (agents.get(i).isObject()) {
+				JsonObject obj = agents.get(i).asObject();
+				counter += countInteractionsFromEntity(obj);
+			}
 		}
 		JsonArray groups = file.get(GROUPS).asArray();
 		for (int i = 0; i < groups.size(); i++) {
-			JsonObject obj = groups.get(i).asObject();
-			counter += countInteractionsFromEntity(obj);
+			if (groups.get(i).isObject()){
+				JsonObject obj = groups.get(i).asObject();
+				counter += countInteractionsFromEntity(obj);
+			}
 		}
 
 		JsonArray environments = file.get(ENVIRONMENTS).asArray();

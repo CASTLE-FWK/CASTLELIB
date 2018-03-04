@@ -24,78 +24,78 @@ import java.util.Set;
 
 import castleComponents.objects.Vector2;
 
-
 /*
  * A bunch of static utilities that could be useful in
  * the running of a simulation.
  *	//TODO: Document these.
  */
 public class Utilities {
-	
-	/*Static constants*/
+
+	/* Static constants */
 	public static String NODE_STRING_NAME = "*node";
 	public static String EDGE_STRING_NAME = "*edges";
-	
+
 	public static double NEW_AGENT_START = -Double.MAX_VALUE;
-	
+
 	public static String GENERATE_NAME = "DEFAULT";
-	
+
 	public static long uid = -1;
 
-	/*Useful methods for metrics and simulations*/
-	
-	public static String generateTimeStamp(){
+	/* Useful methods for metrics and simulations */
+
+	public static String generateTimeStamp() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd-HH-mm-ss");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}
-	
-	public static String generateNiceTimeStamp(){
+
+	public static String generateNiceTimeStamp() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss 'on' yyyy-MM-dd");
 		Date date = new Date();
 		return dateFormat.format(date);
 	}
-	
-	public static double calculateDistance2D(Vector2 vectorA, Vector2 vectorB){
-		return Math.sqrt(Math.pow(vectorA.getX() - vectorB.getX(), 2) + Math.pow(vectorA.getX() - vectorB.getX(),2));
+
+	public static double calculateDistance2D(Vector2 vectorA, Vector2 vectorB) {
+		return Math.sqrt(Math.pow(vectorA.getX() - vectorB.getX(), 2) + Math.pow(vectorA.getX() - vectorB.getX(), 2));
 	}
-	
-	public static void writeToFile(String fileContents, String absoluteFilePath, boolean append){
+
+	public static void writeToFile(String fileContents, String absoluteFilePath, boolean append) {
 		File outputFile = new File(absoluteFilePath);
 		outputFile.getParentFile().mkdirs();
-		
+
 		System.out.println("Writing file to: " + absoluteFilePath);
-		
-		try{
-			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outputFile.getAbsoluteFile(), append)));
+
+		try {
+			PrintWriter printWriter = new PrintWriter(
+					new BufferedWriter(new FileWriter(outputFile.getAbsoluteFile(), append)));
 			printWriter.print(fileContents);
 			printWriter.close();
-			
-		} catch (IOException exc){
+
+		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
 	}
-	
-	public static void createFile(String absoluteFilePath, boolean isDirectory){
+
+	public static void createFile(String absoluteFilePath, boolean isDirectory) {
 		File outputFile = new File(absoluteFilePath);
 		try {
-			if (isDirectory){
+			if (isDirectory) {
 				outputFile.mkdir();
 			} else {
 				outputFile.createNewFile();
 			}
 		} catch (IOException e) {
-			System.out.println("Could not create file at "+absoluteFilePath);
+			System.out.println("Could not create file at " + absoluteFilePath);
 			e.printStackTrace();
 		}
 	}
-	
-	public static long generateUID(){
+
+	public static long generateUID() {
 		uid++;
 		return uid;
 	}
-	
-	public static String generateID(){
+
+	public static String generateID() {
 		Long l = new Long(System.currentTimeMillis());
 		MessageDigest md;
 		try {
@@ -108,127 +108,132 @@ public class Utilities {
 			e.printStackTrace();
 		}
 		return "ERROR: FAILED ID GENERATION";
-		
+
 	}
-	
-	public static String generateTimeID(){
+
+	public static String generateTimeID() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 		LocalDateTime dateTime = LocalDateTime.now();
-		return dateTime.format(formatter)+generateRandomChar()+generateRandomChar();	
+		return dateTime.format(formatter) + generateRandomChar() + generateRandomChar();
 	}
-	
+
 	public static char generateRandomChar() {
 		return Character.toChars(RandomGen.generateRandomRangeInteger(97, 122))[0];
 	}
-	
+
 	public static String byteArrayToHexString(byte[] b) {
 		String result = "";
-		for (int i=0; i < b.length; i++) {
-			result +=
-	      	Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+		for (int i = 0; i < b.length; i++) {
+			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
 		}
 		return result;
 	}
-	
-	public static BufferedReader getFileAsBufferedReader(String filePath){
+
+	public static BufferedReader getFileAsBufferedReader(String filePath) {
 		try {
 			return new BufferedReader(new FileReader(filePath));
-		} catch (FileNotFoundException e) {			
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	public static double calculateMin(List<Double> list){
-		if (list.size() <= 0){
+
+	public static double calculateMin(List<Double> list) {
+		if (list.size() <= 0) {
 			return 0;
 		}
 		Collections.sort(list);
 		return list.get(0);
 	}
-	
-	public static double calculateMax(List<Double> list){
-		if (list.size() <= 0){
+
+	public static double calculateMax(List<Double> list) {
+		if (list.size() <= 0) {
 			return 0;
 		}
 		Collections.sort(list);
-		
-		return list.get(list.size()-1);
+
+		return list.get(list.size() - 1);
 	}
-	
-	public static double calculateMean(List<Double> list){
+
+	public static double calculateMean(List<Double> list) {
+		if (list.size() == 0) {
+			return 0;
+		}
 		double sum = 0.0;
-		for (Double d : list){
+		for (Double d : list) {
 			sum += d;
 		}
-		return (sum/(double)list.size());
+		return (sum / (double) list.size());
 	}
-	
-	public static double calculateSTDDev(List<Double> list){
+
+	public static double calculateSTDDev(List<Double> list) {
+		if (list.size() == 0) {
+			return 0;
+		}
 		double mean = calculateMean(list);
 		double temp = 0.0;
-		for (Double d : list){
-			temp += (mean - d)*(mean - d);
+		for (Double d : list) {
+			temp += (mean - d) * (mean - d);
 		}
-		double variance = temp/list.size();		
+		double variance = temp / list.size();
 		return Math.sqrt(variance);
 	}
-	
-	public static double calculateMedian(List<Double> list){
+
+	public static double calculateMedian(List<Double> list) {
 		double med = 0.0;
 		Collections.sort(list);
-		if (list.size() % 2 == 0){
-			double x = list.get(list.size()/2);
-			double y = list.get(list.size()/2 - 1);
-			med = (x+y)/2.0;
-		} else { 
-			med = list.get(list.size()/2);
+		if (list.size() % 2 == 0) {
+			double x = list.get(list.size() / 2);
+			double y = list.get(list.size() / 2 - 1);
+			med = (x + y) / 2.0;
+		} else {
+			med = list.get(list.size() / 2);
 		}
-		
-		return med;		
+
+		return med;
 	}
-	
-	public static double calculateMin(double[] list){
+
+	public static double calculateMin(double[] list) {
 		Arrays.sort(list);
 		return list[0];
 	}
-	
-	public static double calculateMax(double[] list){
+
+	public static double calculateMax(double[] list) {
 		Arrays.sort(list);
-		return list[list.length-1];
+		return list[list.length - 1];
 	}
-	
-	public static double calculateMean(double[] list){
+
+	public static double calculateMean(double[] list) {
 		double sum = 0.0;
-		for (Double d : list){
-			sum += d;		
+		for (Double d : list) {
+			sum += d;
 		}
-		return (sum/list.length);
+		return (sum / list.length);
 	}
-	
-	public static double calculateSTDDev(double[] list){
+
+	public static double calculateSTDDev(double[] list) {
 		double mean = calculateMean(list);
 		double temp = 0.0;
-		for (Double d : list){
-			temp += (mean - d)*(mean - d);
+		for (Double d : list) {
+			temp += (mean - d) * (mean - d);
 		}
-		double variance = temp/list.length;		
+		double variance = temp / list.length;
 		return Math.sqrt(variance);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static ArrayList<?> getMapAsList(HashMap<?,?> theMap){
+	public static ArrayList<?> getMapAsList(HashMap<?, ?> theMap) {
 		return new ArrayList(theMap.values());
 	}
-	
+
 	public static double roundDoubleToXDP(Double num, int dp) {
 		BigDecimal a = new BigDecimal(num);
 		BigDecimal b = a.setScale(dp, BigDecimal.ROUND_HALF_EVEN);
 		return b.doubleValue();
 	}
-	
-	public static List<String> parseFileLineXLine(String fp){
+
+	public static List<String> parseFileLineXLine(String fp) {
 		List<String> l = new ArrayList<String>();
 		BufferedReader br = Utilities.getFileAsBufferedReader(fp);
 		String line = null;
@@ -236,14 +241,14 @@ public class Utilities {
 			while ((line = br.readLine()) != null) {
 				l.add(line);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return l;
 	}
-	
+
 	public static <T> T getRandomEntryFromSet(Set<T> theSet) {
-		return (T)theSet.toArray()[RandomGen.generateRandomRangeInteger(0, theSet.size() - 1)];
+		return (T) theSet.toArray()[RandomGen.generateRandomRangeInteger(0, theSet.size() - 1)];
 	}
-	
+
 }

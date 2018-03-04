@@ -1518,7 +1518,7 @@ public class MetricRunner {
 					boolean lifeState = mvm1.isParameterEqualToDesiredValue(v);
 					VEntity pv = prevAgents.get(v.getName());
 					if (pv == null) {
-						System.out.println("Agent didnt exist...");
+//						System.out.println("Agent didnt exist...");
 						continue;
 					}
 					boolean prevState = mvm1.isParameterEqualToDesiredValue(pv);

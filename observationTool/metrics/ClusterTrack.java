@@ -163,7 +163,9 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 				}
 			}
 		}
-
+		if (area == 0) {
+			result = 0;
+		}
 		result = countAlive / area;
 
 		return result;
