@@ -48,7 +48,7 @@ public class MetricRunner {
 	static String db;
 	static String collectionID;
 	static DataCollector_FileSystem collector;
-	static String systemName = "";
+//	static String systemName = "";
 	static String experimentID = "";
 	static String initCriteria = "";
 
@@ -147,7 +147,7 @@ public class MetricRunner {
 			runtime = System.currentTimeMillis() - runtime;
 			println("Total runtime: %1$f seconds", runtime / 1000);
 			toTheDoc.append("\n#runtime\t" + runtime);
-			String dirTimeStamp = resultsDirRoot + systemName.replaceAll("\\s+", "") + "_" + Utilities.generateTimeID()
+			String dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_" + Utilities.generateTimeID()
 					+ "/";
 			// Write results to file
 			if (!testing) {
@@ -175,7 +175,7 @@ public class MetricRunner {
 		String experimentID = e.getExperimentID();
 		String experimentDataLocation = theTestSystem.getSystemDataLocation();
 		String systemName = theTestSystem.getSystemName();
-		MetricRunner.systemName = systemName; // TODO: Think about this issue
+//		MetricRunner.systemName = systemName; // TODO: Think about this issue
 
 		String systemConfiguration = theTestSystem.getConfigurationName();
 		MetricRunner.initCriteria = theTestSystem.getConfigurationString();
@@ -309,6 +309,7 @@ public class MetricRunner {
 		String metricName = "SystemComplexity";
 		String resultsName = metricName + ": " + "Change in Interaction Frequency";
 		SystemComplexity sc = new SystemComplexity(mi);
+		String systemName = si.getSystemName();
 		sb.append("#" + systemName + " System Complexity Results\n");
 		sb.append("#step\tresult\n");
 		long runtime = System.currentTimeMillis();
@@ -368,6 +369,7 @@ public class MetricRunner {
 		announce("WKV CHAN 2011 Interaction Metric");
 		String metricName = "Chan GoL Interaction Metric";
 		ChanGoLInterMetric chanGoL = new ChanGoLInterMetric(mi);
+		String systemName = si.getSystemName();
 		MetricResult chanGoLResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		chanGoLResult.addResultType(resultsNameA);
 		chanGoLResult.addResultType(resultsNameB);
@@ -479,7 +481,7 @@ public class MetricRunner {
 		print("*******O'Toole 2014 Emergence Detection*******");
 		int maxWindowSize = 20;
 		int windowTruncateSize = 5;
-		
+		String systemName = si.getSystemName();
 		OToole14Metric oToole = new OToole14Metric(maxWindowSize, windowTruncateSize, mi);
 		MetricResult oTooleResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		oTooleResult.addResultType(resultsName);
@@ -557,6 +559,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		announce("MSSE");
 		String metricName = "MSSE";
+		String systemName = si.getSystemName();
 		MetricResult msseResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		sb = new StringBuilder();
 		sb.append("#" + systemName + " MSSE Results\n");
@@ -795,6 +798,7 @@ public class MetricRunner {
 		announce("Bandwidth Recognition");
 		long runtime = 0;
 		String metricName = "Limited Bandwidth Recognition";
+		String systemName = si.getSystemName();
 		MetricResult brResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		String MLSPname = "Most Likely System Probability";
 		String cmName = "Correct Match";
@@ -1114,6 +1118,7 @@ public class MetricRunner {
 		int minDistance = totalNumberOfSteps;
 		int oscillationSize = -1;
 		int firstOscillationStart = -1;
+		String systemName = si.getSystemName();
 		MetricResult oscillResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		
 		// oscillResult.addResultType(realEventsNameEm);
@@ -1243,7 +1248,7 @@ public class MetricRunner {
 
 	public static MetricResult Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
-
+		String systemName = si.getSystemName();
 		StringBuilder sb = new StringBuilder();
 		announce("Tag and Track");
 		ClusterTrack tt = new ClusterTrack(mi);
@@ -1369,7 +1374,7 @@ public class MetricRunner {
 		String resultsName = metricName + ": " + "Entropy";
 		String secName = "Shannon Entropy Change";
 		String ceName = "Conditional Entropy";
-		
+		String systemName = si.getSystemName();
 		MetricResult eotResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		Entropy entropyCalculator = new Entropy(mi);
 		resultsName = resultsName+mp.toStringNS();
@@ -1458,6 +1463,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get("STATE_1");
 		announce("KaddoumWAT");
+		String systemName = si.getSystemName();
 		String metricName = "KaddoumWAT";
 		String resultsName = metricName + ": " + "WAT"+mvm1.toString();
 		
@@ -1527,6 +1533,7 @@ public class MetricRunner {
 		String uName = "Unavailability"+mvm1.toString();
 		
 		StringBuilder sb = new StringBuilder();
+		String systemName = si.getSystemName();
 		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		
 		// auResult.addResultType(resultsName);
@@ -1679,6 +1686,7 @@ public class MetricRunner {
 	public static MetricResult Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
+		String systemName = si.getSystemName();
 		announce("PerfSit");
 		String metricName = "PerfSit";
 		String resultsName = metricName + ": " + "PerfSit";
@@ -1734,6 +1742,7 @@ public class MetricRunner {
 		String initCrit = si.getConfigurationString();
 		Counter tcv = new Counter(mi);
 		announce(tcv.getMetricName());
+		String systemName = si.getSystemName();
 
 		String countingType = (String) mp.getParameterValue("counting-type");
 
