@@ -19,6 +19,10 @@ public class MetricParameters {
 	public Object getParameterValue(String name) {
 		return params.get(name);
 	}
+	
+	public HashMap<String, Object> getParameters(){
+		return params;
+	}
 
 	@Override
 	public String toString() {

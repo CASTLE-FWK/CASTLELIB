@@ -1,0 +1,1 @@
+typeMaps={(Vehicle[isCongested],Vehicle,isCongested,true)}	exclude=(Chan GoL 11)	metricParams={PerfSit:(neighbour-distance=1)}	
