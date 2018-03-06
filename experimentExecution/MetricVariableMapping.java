@@ -79,7 +79,7 @@ public class MetricVariableMapping {
 	public String typeMapsToString() {
 		String str = "typeMaps:[";
 		for (TypeMap tm : typeMaps) {
-			str += tm.toString();
+			str += tm.getName();
 		}
 		str += "]";
 		return str;

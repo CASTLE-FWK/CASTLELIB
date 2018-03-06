@@ -46,6 +46,7 @@ public class TypeMap {
 				+ ",desiredValue:" + desiredValue + ")";
 	}
 
+	
 	public String getName() {
 		return name;
 	}

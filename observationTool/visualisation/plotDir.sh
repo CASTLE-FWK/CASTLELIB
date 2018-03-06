@@ -1,7 +1,7 @@
 #!/bin/bash
 DIR=$1
-
-for f in $(ls $DIR/Baseline*.tsv); do
+EXPNAME=$2
+for f in $(ls $DIR/$EXPNAME*.tsv); do
 	f=${f##*/}
 	PLTDIR=${f%.*}"Plots"
 	#echo $PLTDIR
