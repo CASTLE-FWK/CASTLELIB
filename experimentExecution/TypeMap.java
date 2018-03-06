@@ -4,14 +4,16 @@ public class TypeMap {
 	private String targetEntity;
 	private String targetEntityVariableName;
 	private String desiredValue;
+	private String name;
 
 	// The over-engineering part
 	// private HashMap<String, ArrayList<String>> typesAndVars;
 	// typesAndVars = new HashMap<String, ArrayList<String>>();
-	public TypeMap(String te, String tevn, String dv) {
+	public TypeMap(String te, String tevn, String dv, String nm) {
 		setTargetEntity(te);
 		setTargetEntityVariableName(tevn);
 		setDesiredValue(dv);
+		setName(nm);
 	}
 
 	public void setTargetEntity(String targetEntity) {
@@ -42,6 +44,18 @@ public class TypeMap {
 	public String toString() {
 		return "(targetEntity:" + targetEntity + ",targetEntityVariableName:" + targetEntityVariableName
 				+ ",desiredValue:" + desiredValue + ")";
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getTargetEntity() {
+		return targetEntity;
 	}
 
 }

@@ -25,8 +25,8 @@ public class MetricVariableMapping {
 		this.metricVar = metricVar;
 	}
 
-	public void addTypeMap(String te, String tevn, String dv) {
-		TypeMap tm = new TypeMap(te, tevn, dv);
+	public void addTypeMap(String te, String tevn, String dv, String nm) {
+		TypeMap tm = new TypeMap(te, tevn, dv, nm);
 		typeMaps.add(tm);
 
 		if (!entityMetaMap.containsKey(te)) {
