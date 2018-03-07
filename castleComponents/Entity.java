@@ -469,9 +469,9 @@ public class Entity implements Runnable {
 	public Document writeEntityDataDocument() {
 		Document entity = new Document();
 		String est = getEntitySuperType();
-		entity.append(est + FRAG_ID, getID());
-		entity.append(est + FRAG_TYPE, getType());
-		entity.append(est + FRAG_NAME, getID());
+		entity.append(est.toLowerCase() + FRAG_ID, getID());
+		entity.append(est.toLowerCase() + FRAG_TYPE, getType());
+		entity.append(est.toLowerCase() + FRAG_NAME, getID());
 		entity.append(LIFETIME, -1);
 		ArrayList<Document> paramDocs = new ArrayList<Document>();
 		ArrayList<Document> fCallDocs = new ArrayList<Document>();
