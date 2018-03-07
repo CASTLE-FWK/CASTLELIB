@@ -48,7 +48,7 @@ public class MetricRunner {
 	static String db;
 	static String collectionID;
 	static DataCollector_FileSystem collector;
-//	static String systemName = "";
+	// static String systemName = "";
 	static String experimentID = "";
 	static String initCriteria = "";
 
@@ -86,80 +86,92 @@ public class MetricRunner {
 		experimentDirRoot = experimentMeta.get("experiments-directory").asString();
 		resultsDirRoot = experimentMeta.get("results-directory").asString();
 		JsonArray experimentFiles = experimentMeta.get("experiment-files").asArray();
+
+		ExecutorService masterES = Executors.newFixedThreadPool(experimentFiles.size());
 		for (JsonValue jo : experimentFiles) {
-			String line = jo.asString();
-			String experimentName = "";
-			// The file now contains a list of paths to experiment JSON files
-			toTheDoc = new StringBuilder();
+			masterES.execute(new Runnable() {
+				@Override
+				public void run() {
 
-			// Print everything out to a MetricResult object
-			allResults = new ArrayList<MetricResult>();
+					String line = jo.asString();
+					String experimentName = "";
+					// The file now contains a list of paths to experiment JSON files
+					toTheDoc = new StringBuilder();
 
-			String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
+					// Print everything out to a MetricResult object
+					allResults = new ArrayList<MetricResult>();
 
-			toTheDoc.append(notes + "\n");
-			toTheDoc.append(
-					"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
-			Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
-			print(exp.toString());
-			ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
-			System.out.println("Number of Systems to Analyse: " + theTestSystems.size());
+					String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
-			double runtime = System.currentTimeMillis();
-			ExecutorService es = Executors.newFixedThreadPool(theTestSystems.size());
-			ConcurrentHashMap<String, ArrayList<MetricResult>> threadResultsStore = new ConcurrentHashMap<String, ArrayList<MetricResult>>();
+					toTheDoc.append(notes + "\n");
+					toTheDoc.append(
+							"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
+					Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
+					print(exp.toString());
+					ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
+					System.out.println("Number of Systems to Analyse: " + theTestSystems.size());
 
-			for (int test = 0; test < theTestSystems.size(); test++) {
-				SystemInfo currTestSystem = theTestSystems.get(test);
-				String experimentDataLocation = currTestSystem.getSystemDataLocation();
-				collector.setCollection(experimentDataLocation);
-				currTestSystem.setNumberOfSteps(collector.getTerminationStep());
+					double runtime = System.currentTimeMillis();
+					ExecutorService es = Executors.newFixedThreadPool(theTestSystems.size());
+					ConcurrentHashMap<String, ArrayList<MetricResult>> threadResultsStore = new ConcurrentHashMap<String, ArrayList<MetricResult>>();
 
-				currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
-						currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
-				collector.restart(); // TODO how to handle this with Mongo
-				es.execute(new Runnable() {
-					@Override
-					public void run() {
-						threadResultsStore.put(currTestSystem.getSystemDataLocation(),
-								runAnalysis(exp, currTestSystem));
+					for (int test = 0; test < theTestSystems.size(); test++) {
+						SystemInfo currTestSystem = theTestSystems.get(test);
+						String experimentDataLocation = currTestSystem.getSystemDataLocation();
+						collector.setCollection(experimentDataLocation);
+						currTestSystem.setNumberOfSteps(collector.getTerminationStep());
+
+						currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
+								currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
+						collector.restart(); // TODO how to handle this with Mongo
+						es.execute(new Runnable() {
+							@Override
+							public void run() {
+								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
+										runAnalysis(exp, currTestSystem));
+							}
+						});
+
+						// allResults.add(currentResult); // Lets hope PBR actually behaves
+						// allResults.addAll(theseResults); //TODO This wont work threaded
 					}
-				});
+					es.shutdown();
+					while (!es.isTerminated()) {
+						// Busy wait
+					}
 
-				// allResults.add(currentResult); // Lets hope PBR actually behaves
-				// allResults.addAll(theseResults); //TODO This wont work threaded
-			}
-			es.shutdown();
-			while (!es.isTerminated()) {
-				// Busy wait
-			}
+					// Append all the results
+					for (ArrayList<MetricResult> mr : threadResultsStore.values()) {
+						MetricResult prim = mr.get(0);
+						for (int i = 1; i < mr.size(); i++) {
+							prim.append(mr.get(i));
+						}
+						allResults.add(prim);
+					}
 
-			// Append all the results
-			for (ArrayList<MetricResult> mr : threadResultsStore.values()) {
-				MetricResult prim = mr.get(0);
-				for (int i = 1; i < mr.size(); i++) {
-					prim.append(mr.get(i));
+					collector.close();
+					runtime = System.currentTimeMillis() - runtime;
+					println("Total runtime: %1$f seconds", runtime / 1000);
+					toTheDoc.append("\n#runtime\t" + runtime);
+					String dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_"
+							+ Utilities.generateTimeID() + "/";
+					// Write results to file
+					if (!testing) {
+						Utilities.writeToFile(toTheDoc.toString(),
+								dirTimeStamp + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
+					}
+					System.out.println("Number of results: " + allResults.size());
+					for (MetricResult r : allResults) {
+						Utilities.writeToFile(r.resultsToString(),
+								dirTimeStamp + r.getExperimentName().replaceAll("\\s+", "") + "_allMetrics.tsv", false);
+					}
 				}
-				allResults.add(prim);
-			}
-
-			collector.close();
-			runtime = System.currentTimeMillis() - runtime;
-			println("Total runtime: %1$f seconds", runtime / 1000);
-			toTheDoc.append("\n#runtime\t" + runtime);
-			String dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_" + Utilities.generateTimeID()
-					+ "/";
-			// Write results to file
-			if (!testing) {
-				Utilities.writeToFile(toTheDoc.toString(),
-						dirTimeStamp + "metricresults_" + Utilities.generateTimeID() + ".tsv", false);
-			}
-			System.out.println("Number of results: " + allResults.size());
-			for (MetricResult r : allResults) {
-				Utilities.writeToFile(r.resultsToString(), dirTimeStamp + r.getExperimentName().replaceAll("\\s+","") + "_allMetrics.tsv",
-						false);
-			}
+			});
 		}
+		while (!masterES.isTerminated()) {
+			//Busy wait
+		}
+		System.out.println("All Metric Runner processes have finished");
 	}
 
 	public static void ex() {
@@ -173,7 +185,7 @@ public class MetricRunner {
 		String experimentID = e.getExperimentID();
 		String experimentDataLocation = theTestSystem.getSystemDataLocation();
 		String systemName = theTestSystem.getSystemName();
-//		MetricRunner.systemName = systemName; // TODO: Think about this issue
+		// MetricRunner.systemName = systemName; // TODO: Think about this issue
 
 		String systemConfiguration = theTestSystem.getConfigurationName();
 		MetricRunner.initCriteria = theTestSystem.getConfigurationString();
@@ -288,7 +300,7 @@ public class MetricRunner {
 		 */
 		ArrayList<MetricInfo> metricsToRun = e.getMetrics();
 		ArrayList<MetricResult> metricResults = new ArrayList<MetricResult>();
-		
+
 		HashSet<String> enabledMetrics = e.getEnabledMetrics();
 		boolean usingAllMetrics = e.isUsingAllMetrics();
 		for (MetricInfo mi : metricsToRun) {
@@ -1126,21 +1138,19 @@ public class MetricRunner {
 		int firstOscillationStart = -1;
 		String systemName = si.getSystemName();
 		MetricResult oscillResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
-		
+
 		// oscillResult.addResultType(realEventsNameEm);
 		// oscillResult.addResultType(realEventsNameSt);
 		// oscillResult.addResultType(realEventsNameCr);
 		// oscillResult.addResultType(realEventsNameAd);
 		final String STATE_1 = "STATE_1";
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		resultsName = resultsName+"{"+mvm1.toString()+"}";
+		resultsName = resultsName + "{" + mvm1.toString() + "}";
 		oscillResult.addResultType(resultsName);
 		currentResult.addResultType(resultsName);
 
-		
 		double runtime = System.currentTimeMillis();
 
-		
 		boolean hit = false;
 		int bitsetCounter = 0;
 		for (int time = 1; time < totalNumberOfSteps; time++) {
@@ -1261,18 +1271,18 @@ public class MetricRunner {
 		String metricName = "TagAndTrack";
 		MetricResult ttResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get("STATE_1");
-		String averageClusterStateDensityName = "averageClusterStateDensity"+mvm1.toString();
-		String averageAgentDensityName = "averageAgentDensity"+mvm1.toString();
-		String AverageAreaName = "AverageArea"+mvm1.toString();
-		String RunningClusterCountName = "RunningClusterCount"+mvm1.toString();
-		String ClustersIntersectingName = "ClustersIntersecting"+mvm1.toString();
-		String STDDEVAgentStateDensityName = "STDDEVAgentStateDensity"+mvm1.toString();
-		String STDDEVAgentDensityName = "STDDEVAgentDensity"+mvm1.toString();
-		String MaxAgentStateDensityName = "MaxAgentStateDensity"+mvm1.toString();
-		String MinAgentStateDensityName = "MinAgentStateDensity"+mvm1.toString();
-		String MaxAgentDensityName = "MaxAgentDensity"+mvm1.toString();
-		String MinAgentDensityName = "MinAgentDensity"+mvm1.toString();
-		String RunningUniqueClustersName = "RunningUniqueClusters"+mvm1.toString();
+		String averageClusterStateDensityName = "averageClusterStateDensity" + mvm1.toString();
+		String averageAgentDensityName = "averageAgentDensity" + mvm1.toString();
+		String AverageAreaName = "AverageArea" + mvm1.toString();
+		String RunningClusterCountName = "RunningClusterCount" + mvm1.toString();
+		String ClustersIntersectingName = "ClustersIntersecting" + mvm1.toString();
+		String STDDEVAgentStateDensityName = "STDDEVAgentStateDensity" + mvm1.toString();
+		String STDDEVAgentDensityName = "STDDEVAgentDensity" + mvm1.toString();
+		String MaxAgentStateDensityName = "MaxAgentStateDensity" + mvm1.toString();
+		String MinAgentStateDensityName = "MinAgentStateDensity" + mvm1.toString();
+		String MaxAgentDensityName = "MaxAgentDensity" + mvm1.toString();
+		String MinAgentDensityName = "MinAgentDensity" + mvm1.toString();
+		String RunningUniqueClustersName = "RunningUniqueClusters" + mvm1.toString();
 		ttResult.addResultType(averageClusterStateDensityName);
 		ttResult.addResultType(averageAgentDensityName);
 		ttResult.addResultType(STDDEVAgentStateDensityName);
@@ -1383,10 +1393,10 @@ public class MetricRunner {
 		String systemName = si.getSystemName();
 		MetricResult eotResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
 		Entropy entropyCalculator = new Entropy(mi);
-		resultsName = resultsName+mp.toStringNS();
-		ceName = ceName+mp.toStringNS();
-		secName = secName+mp.toStringNS();
-		
+		resultsName = resultsName + mp.toStringNS();
+		ceName = ceName + mp.toStringNS();
+		secName = secName + mp.toStringNS();
+
 		eotResult.addResultType(resultsName);
 		eotResult.addResultType(ceName);
 		eotResult.addResultType(secName);
@@ -1471,14 +1481,14 @@ public class MetricRunner {
 		announce("KaddoumWAT");
 		String systemName = si.getSystemName();
 		String metricName = "KaddoumWAT";
-		String resultsName = metricName + ": " + "WAT"+mvm1.toString();
-		
+		String resultsName = metricName + ": " + "WAT" + mvm1.toString();
+
 		StringBuilder sb = new StringBuilder();
 		SelfAdaptiveSystems sas = new SelfAdaptiveSystems(mi);
-		
+
 		MetricResult watResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
 		watResult.addResultType(resultsName);
-		
+
 		// watResult.addResultType(realEventsNameEm);
 		// watResult.addResultType(realEventsNameSt);
 		// watResult.addResultType(realEventsNameCr);
@@ -1533,15 +1543,15 @@ public class MetricRunner {
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
 		String metricName = "VillegasAU";
 		String resultsName = metricName + ": " + "VillegasAU";
-		String mttrName = "MTTR"+mvm1.toString();
-		String mttfName = "MTTF"+mvm1.toString();
-		String aName = "Availability"+mvm1.toString();
-		String uName = "Unavailability"+mvm1.toString();
-		
+		String mttrName = "MTTR" + mvm1.toString();
+		String mttfName = "MTTF" + mvm1.toString();
+		String aName = "Availability" + mvm1.toString();
+		String uName = "Unavailability" + mvm1.toString();
+
 		StringBuilder sb = new StringBuilder();
 		String systemName = si.getSystemName();
 		MetricResult auResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, resultsDirRoot);
-		
+
 		// auResult.addResultType(resultsName);
 		auResult.addResultType(aName);
 		auResult.addResultType(uName);
@@ -1554,8 +1564,6 @@ public class MetricRunner {
 
 		currentResult.addResultType(aName);
 		currentResult.addResultType(uName);
-
-		
 
 		int consecutiveDowntime = 2; // The shortest amount of consecutive down time
 		HashMap<String, Integer> theAgentsDowntime = new HashMap<String, Integer>();
@@ -1699,7 +1707,7 @@ public class MetricRunner {
 		StringBuilder sb = new StringBuilder();
 		SelfAdaptiveSystems sas = new SelfAdaptiveSystems(mi);
 		MetricResult perfsitResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, resultsDirRoot);
-		resultsName = resultsName+mp.toStringNS();
+		resultsName = resultsName + mp.toStringNS();
 		// perfsitResult.addResultType(realEventsNameEm);
 		// perfsitResult.addResultType(realEventsNameSt);
 		// perfsitResult.addResultType(realEventsNameCr);
