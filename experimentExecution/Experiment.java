@@ -1,6 +1,7 @@
 package experimentExecution;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Experiment {
 	String experimentID;
@@ -8,13 +9,37 @@ public class Experiment {
 	String description;
 	ArrayList<MetricInfo> metricsUsed;
 
+	
+	HashSet<String> enabledMetrics;
+	boolean usingAllMetrics = false;
+
 	public Experiment(String experimentID, String description) {
 		metricsUsed = new ArrayList<MetricInfo>();
 		this.experimentID = experimentID;
 		this.description = description;
 		theTestSystems = new ArrayList<SystemInfo>();
+		enabledMetrics = new HashSet<String>();
+	}
+	
+	public void addEnabledMetric(String s) {
+		if (s.compareToIgnoreCase("ALL") == 0) {
+			usingAllMetrics = true;
+		} else {
+			enabledMetrics.add(s);
+		}
+	}
+	
+	public HashSet<String> getEnabledMetrics(){
+		return enabledMetrics;
+	}
+	public boolean isUsingAllMetrics() {
+		return usingAllMetrics;
 	}
 
+	public void setUsingAllMetrics(boolean t) {
+		usingAllMetrics = t;
+	}
+	
 	public void addMetricInfos(ArrayList<MetricInfo> MetricInfos) {
 		metricsUsed = MetricInfos;
 	}

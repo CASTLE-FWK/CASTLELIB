@@ -159,9 +159,7 @@ public class MetricRunner {
 				Utilities.writeToFile(r.resultsToString(), dirTimeStamp + r.getExperimentName().replaceAll("\\s+","") + "_allMetrics.tsv",
 						false);
 			}
-			ex();
 		}
-
 	}
 
 	public static void ex() {
@@ -290,10 +288,18 @@ public class MetricRunner {
 		 */
 		ArrayList<MetricInfo> metricsToRun = e.getMetrics();
 		ArrayList<MetricResult> metricResults = new ArrayList<MetricResult>();
+		
+		HashSet<String> enabledMetrics = e.getEnabledMetrics();
+		boolean usingAllMetrics = e.isUsingAllMetrics();
 		for (MetricInfo mi : metricsToRun) {
-			// println(mi.parametersToString());
-			// boolean needsTraining = mi.needsTraining();
-			metricResults.addAll(metricRunner(theTestSystem, mi, systemString));
+			if (!usingAllMetrics) {
+				String metricName = mi.getMetricName();
+				if (enabledMetrics.contains(metricName)) {
+					metricResults.addAll(metricRunner(theTestSystem, mi, systemString));
+				}
+			} else {
+				metricResults.addAll(metricRunner(theTestSystem, mi, systemString));
+			}
 		}
 		println("metricsToRun is " + metricsToRun.size());
 		println("finished. " + metricResults.size() + " have been stored.");

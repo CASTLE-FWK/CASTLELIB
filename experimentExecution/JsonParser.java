@@ -40,6 +40,15 @@ public class JsonParser {
 						obj.get("Configuration").asObject().get("Configuration-name").asString(),
 						obj.get("Configuration").asObject().get("Dimensions").asString(),
 						obj.get("System-storage-location").asString(), obj.get("System-storage-type").asString()));
+				
+				if (!obj.get("enabled-metrics").isNull()) {
+					JsonArray enabledMetrics = obj.get("enabled-metrics").asArray();
+					for (int j = 0; j < enabledMetrics.size(); j++) {
+						anExperiment.addEnabledMetric(enabledMetrics.get(j).asString());
+					}
+				} else {
+					anExperiment.setUsingAllMetrics(true);
+				}
 			}
 			anExperiment.addMetricInfos(parseMetricInfoForExperiment(object.get("Metrics-to-use").asArray()));
 
