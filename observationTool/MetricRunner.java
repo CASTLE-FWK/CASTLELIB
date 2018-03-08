@@ -48,7 +48,6 @@ public class MetricRunner {
 
 	static String db;
 	static String collectionID;
-	static DataCollector_FileSystem collector;
 	// static String systemName = "";
 	static String experimentID = "";
 	static String initCriteria = "";
@@ -80,7 +79,7 @@ public class MetricRunner {
 		String analysisToRun = args[0];
 		testing = Boolean.parseBoolean(args[1]);
 		db = "simulations"; // WRONG
-		collector = new DataCollector_FileSystem(db);
+		
 		JsonObject experimentMeta = JsonParser.parseFileAsJson(analysisToRun);
 
 		experimentDirRoot = experimentMeta.get("experiments-directory").asString();
@@ -100,7 +99,7 @@ public class MetricRunner {
 
 					// Print everything out to a MetricResult object
 					ArrayList<MetricResult> allResults = new ArrayList<MetricResult>();
-
+					DataCollector_FileSystem collector = new DataCollector_FileSystem(db);
 					String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
 					toTheDoc.append(notes + "\n");
@@ -128,7 +127,7 @@ public class MetricRunner {
 							@Override
 							public void run() {
 								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
-										runAnalysis(exp, currTestSystem));
+										runAnalysis(exp, currTestSystem, collector));
 							}
 						});
 
@@ -180,7 +179,7 @@ public class MetricRunner {
 	}
 
 	// This is what we want to thread
-	public static ArrayList<MetricResult> runAnalysis(Experiment e, SystemInfo thisTestSystem) {
+	public static ArrayList<MetricResult> runAnalysis(Experiment e, SystemInfo thisTestSystem, DataCollector_FileSystem collector) {
 		SystemInfo theTestSystem = thisTestSystem;
 		String experimentID = e.getExperimentID();
 		String experimentDataLocation = theTestSystem.getSystemDataLocation();
@@ -308,10 +307,10 @@ public class MetricRunner {
 			if (!usingAllMetrics) {
 				String metricName = mi.getMetricName();
 				if (enabledMetrics.contains(metricName)) {
-					metricResults.addAll(metricRunner(theTestSystem, mi, systemString));
+					metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
 				}
 			} else {
-				metricResults.addAll(metricRunner(theTestSystem, mi, systemString));
+				metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
 			}
 		}
 		println("metricsToRun is " + metricsToRun.size());
@@ -319,7 +318,7 @@ public class MetricRunner {
 		return metricResults;
 	}
 
-	public static MetricResult Metric_SystemComplexity(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_SystemComplexity(SystemInfo si, MetricInfo mi, DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 
@@ -377,7 +376,7 @@ public class MetricRunner {
 		return scResult;
 	}
 
-	public static MetricResult Metric_ChanGoLIM(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_ChanGoLIM(SystemInfo si, MetricInfo mi,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		StringBuilder sb = new StringBuilder();
@@ -489,7 +488,7 @@ public class MetricRunner {
 
 	}
 
-	public static MetricResult Metric_OToole14(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_OToole14(SystemInfo si, MetricInfo mi,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		// Run metric: OToole 2014 Emergence Detection
@@ -570,7 +569,7 @@ public class MetricRunner {
 		return oTooleResult;
 	}
 
-	public static MetricResult Metric_MSSE(SystemInfo si, MetricInfo mi, MetricParameters mps) {
+	public static MetricResult Metric_MSSE(SystemInfo si, MetricInfo mi, MetricParameters mps,  DataCollector_FileSystem collector) {
 		StringBuilder sb = new StringBuilder();
 		long runtime = 0;
 
@@ -809,7 +808,7 @@ public class MetricRunner {
 		return msseResult;
 	}
 
-	public static MetricResult Metric_BR(SystemInfo si, MetricInfo mi, MetricParameters mps) {
+	public static MetricResult Metric_BR(SystemInfo si, MetricInfo mi, MetricParameters mps,  DataCollector_FileSystem collector) {
 		// What is the next metric to go here
 		// Run Metric: Bandwidth Recognition
 		int totalNumberOfSteps = si.getNumberOfSteps();
@@ -1122,7 +1121,7 @@ public class MetricRunner {
 
 	}
 
-	public static MetricResult Metric_OscillatorDetect(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_OscillatorDetect(SystemInfo si, MetricInfo mi,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("Oscillation Detector");
@@ -1263,7 +1262,7 @@ public class MetricRunner {
 
 	}
 
-	public static MetricResult Metric_TagAndTrack(SystemInfo si, MetricInfo mi) {
+	public static MetricResult Metric_TagAndTrack(SystemInfo si, MetricInfo mi,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String systemName = si.getSystemName();
 		StringBuilder sb = new StringBuilder();
@@ -1383,7 +1382,7 @@ public class MetricRunner {
 		return ttResult;
 	}
 
-	public static MetricResult Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_EntropyOverTime(MetricInfo mi, SystemInfo si, MetricParameters mp,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("Entropy Over Time");
@@ -1475,7 +1474,7 @@ public class MetricRunner {
 	 * @param si
 	 */
 	// TODO: Put into its own Metric class file
-	public static MetricResult Metric_KaddoumWAT(MetricInfo mi, SystemInfo si) {
+	public static MetricResult Metric_KaddoumWAT(MetricInfo mi, SystemInfo si,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get("STATE_1");
@@ -1536,7 +1535,7 @@ public class MetricRunner {
 
 	// TODO This one needs to be ported across into the SAS class but its so very
 	// nasty
-	public static MetricResult Metric_VillegasAU(MetricInfo mi, SystemInfo si) {
+	public static MetricResult Metric_VillegasAU(MetricInfo mi, SystemInfo si,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		announce("VillegasAU");
@@ -1698,7 +1697,7 @@ public class MetricRunner {
 		return auResult;
 	}
 
-	public static MetricResult Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_PerfSit(MetricInfo mi, SystemInfo si, MetricParameters mp,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		String systemName = si.getSystemName();
@@ -1752,7 +1751,7 @@ public class MetricRunner {
 		return perfsitResult;
 	}
 
-	public static MetricResult Metric_Counter(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_Counter(MetricInfo mi, SystemInfo si, MetricParameters mp,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String initCrit = si.getConfigurationString();
 		Counter tcv = new Counter(mi);
@@ -1772,12 +1771,13 @@ public class MetricRunner {
 		return tcvResult;
 	}
 	
-	public static MetricResult Metric_SimpleStatistics(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+	public static MetricResult Metric_SimpleStatistics(MetricInfo mi, SystemInfo si, MetricParameters mp,  DataCollector_FileSystem collector) {
 		int totalNumberOfSteps = si.getNumberOfSteps();
 		String systemName = si.getSystemName();
 		SimpleStatistic ss = new SimpleStatistic(mi);
 		announce(ss.getMetricName());
 		MetricResult ssResult = new MetricResult(systemName, ss.getMetricName(), totalNumberOfSteps, si, resultsDirRoot);
+		ss.setCollector(collector);
 		ss.setResultStore(ssResult);
 		ss.setup(totalNumberOfSteps);
 		ss.run();
@@ -1928,54 +1928,54 @@ public class MetricRunner {
 	}
 
 	// TODO: Make these not magic
-	public static ArrayList<MetricResult> metricRunner(SystemInfo testSystem, MetricInfo mi, String initString) {
+	public static ArrayList<MetricResult> metricRunner(SystemInfo testSystem, MetricInfo mi, String initString, DataCollector_FileSystem collector) {
 		String metricName = mi.getMetricName();
 		ArrayList<MetricResult> mr = new ArrayList<MetricResult>();
 		switch (metricName) {
 		case "System Complexity":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_SystemComplexity(testSystem, mi)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_SystemComplexity(testSystem, mi, collector)));
 		case "Chan GoL 11":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_ChanGoLIM(testSystem, mi)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_ChanGoLIM(testSystem, mi, collector)));
 		case "OToole 14":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_OToole14(testSystem, mi)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_OToole14(testSystem, mi, collector)));
 		case "Oscillation Detection":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_OscillatorDetect(testSystem, mi)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_OscillatorDetect(testSystem, mi, collector)));
 		case "Tag & Track":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_TagAndTrack(testSystem, mi)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_TagAndTrack(testSystem, mi, collector)));
 		case "Multi-Scale-Shannon-Entropy":
 			ArrayList<MetricParameters> mpset = mi.getMetricParameters();
 			for (int i = 0; i < mpset.size(); i++) {
-				mr.add(Metric_MSSE(testSystem, mi, mpset.get(i)));
+				mr.add(Metric_MSSE(testSystem, mi, mpset.get(i), collector));
 			}
 			return mr;
 		case "Limited Bandwidth Recognition":
 			ArrayList<MetricParameters> mpset_lbr = mi.getMetricParameters();
 			for (int i = 0; i < mpset_lbr.size(); i++) {
-				mr.add(Metric_BR(testSystem, mi, mpset_lbr.get(i)));
+				mr.add(Metric_BR(testSystem, mi, mpset_lbr.get(i), collector));
 			}
 			return mr;
 		case "Entropy Over Time":
 			ArrayList<MetricParameters> mpset_eot = mi.getMetricParameters();
 			for (int i = 0; i < mpset_eot.size(); i++) {
-				mr.add(Metric_EntropyOverTime(mi, testSystem, mpset_eot.get(i)));
+				mr.add(Metric_EntropyOverTime(mi, testSystem, mpset_eot.get(i), collector));
 			}
 			return mr;
 		case "KaddoumWAT":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_KaddoumWAT(mi, testSystem)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_KaddoumWAT(mi, testSystem, collector)));
 		case "VillegasAU":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_VillegasAU(mi, testSystem)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_VillegasAU(mi, testSystem, collector)));
 		case "PerfSit":
 			ArrayList<MetricParameters> mpset_ps = mi.getMetricParameters();
 			for (int i = 0; i < mpset_ps.size(); i++) {
-				mr.add(Metric_PerfSit(mi, testSystem, mpset_ps.get(i)));
+				mr.add(Metric_PerfSit(mi, testSystem, mpset_ps.get(i), collector));
 			}
 			return mr;
 		case "Counter":
 			ArrayList<MetricParameters> mpset_cou = mi.getMetricParameters();
 			MetricParameters mp = mpset_cou.get(0);
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_Counter(mi, testSystem, mp)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_Counter(mi, testSystem, mp, collector)));
 		case "SimpleStatistic":
-			return new ArrayList<MetricResult>(Arrays.asList(Metric_SimpleStatistics(mi, testSystem, null)));
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_SimpleStatistics(mi, testSystem, null, collector)));
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);
 			return null;
