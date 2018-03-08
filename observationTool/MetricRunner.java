@@ -8,6 +8,7 @@ import observationTool.metrics.MSSE_State;
 import observationTool.metrics.MetricParameters;
 import observationTool.metrics.OToole14Metric;
 import observationTool.metrics.SelfAdaptiveSystems;
+import observationTool.metrics.SimpleStatistic;
 import observationTool.metrics.SystemComplexity;
 import observationTool.metrics.transportationNetwork.Counter;
 import observationTool.results.AccuracyResults;
@@ -1766,20 +1767,26 @@ public class MetricRunner {
 		tcv.setResultStore(tcvResult);
 
 		tcv.run();
-		tcv.getResults();
-		// tcvResult.addResultType("Counter");
-		// for (int time = 1; time < totalNumberOfSteps; time++) {
-		// ArrayList<VEntity> agents = collector.buildVAgentList(time);
-		// if (isDouble) {
-		// double count = tcv.countDouble(agents);
-		// tcvResult.addResultAtStep("Counter(Double)", count, time);
-		// } else {
-		// int count = tcv.countInt(agents);
-		// tcvResult.addResultAtStep("Counter(Integer)", count, time);
-		// }
-		// }
+		tcvResult = tcv.getResults();
 		return tcvResult;
-
+	}
+	
+	public static MetricResult Metric_SimpleStatistics(MetricInfo mi, SystemInfo si, MetricParameters mp) {
+		int totalNumberOfSteps = si.getNumberOfSteps();
+		String systemName = si.getSystemName();
+		SimpleStatistic ss = new SimpleStatistic(mi);
+		announce(ss.getMetricName());
+		MetricResult ssResult = new MetricResult(systemName, ss.getMetricName(), totalNumberOfSteps, si, resultsDirRoot);
+		ss.setResultStore(ssResult);
+		ss.setup(totalNumberOfSteps);
+		ss.run();
+		
+		ssResult = ss.getResults();
+		
+		return ssResult;
+		
+		
+		
 	}
 
 	/**
@@ -1966,6 +1973,8 @@ public class MetricRunner {
 			ArrayList<MetricParameters> mpset_cou = mi.getMetricParameters();
 			MetricParameters mp = mpset_cou.get(0);
 			return new ArrayList<MetricResult>(Arrays.asList(Metric_Counter(mi, testSystem, mp)));
+		case "SimpleStatistic":
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_SimpleStatistics(mi, testSystem, null)));
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);
 			return null;
