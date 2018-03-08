@@ -71,10 +71,9 @@ public class MetricRunner {
 	static boolean testing = false;
 	static boolean noAccuracyCalculations = false;
 
-	static ArrayList<MetricResult> allResults;
+//	static ArrayList<MetricResult> allResults;
 	static MetricResult currentResult;
 
-	static StringBuilder toTheDoc;
 
 	public static void main(String[] args) {
 		String analysisToRun = args[0];
@@ -96,10 +95,10 @@ public class MetricRunner {
 					String line = jo.asString();
 					String experimentName = "";
 					// The file now contains a list of paths to experiment JSON files
-					toTheDoc = new StringBuilder();
+					StringBuilder toTheDoc = new StringBuilder();
 
 					// Print everything out to a MetricResult object
-					allResults = new ArrayList<MetricResult>();
+					ArrayList<MetricResult> allResults = new ArrayList<MetricResult>();
 
 					String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
@@ -1908,7 +1907,7 @@ public class MetricRunner {
 			sb.append(initCriteria + "\t" + crResults);
 			sb.append("\n");
 			sb.append(initCriteria + "\t" + adResults);
-			toTheDoc.append(sb + "\n");
+//			toTheDoc.append(sb + "\n");
 
 			println(header);
 			println(emResults);
