@@ -13,8 +13,9 @@ public class MetricNames {
 	public final static String VILLEGAS = "VillegasAU";
 	public final static String PERFSIT = "PerfSit";
 	public final static String COUNTER = "Counter";
+	public final static String SIMPLESTATISTIC = "SimpleStatistic";
 	
 	public static String[] getListOfAllAvailableMetric() {
-		return new String[]{SYSCOMP,CHANGOL11,OTOOLE14, OD, CLUSTER, MSSE, LBR, ENTROPY, WAT, VILLEGAS, PERFSIT, COUNTER};
+		return new String[]{SYSCOMP,CHANGOL11,OTOOLE14, OD, CLUSTER, MSSE, LBR, ENTROPY, WAT, VILLEGAS, PERFSIT, COUNTER, SIMPLESTATISTIC};
 	}
 }
