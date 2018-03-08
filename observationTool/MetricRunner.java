@@ -303,6 +303,7 @@ public class MetricRunner {
 
 		HashSet<String> enabledMetrics = e.getEnabledMetrics();
 		boolean usingAllMetrics = e.isUsingAllMetrics();
+		System.out.println(e.metricsBeingUsed());
 		for (MetricInfo mi : metricsToRun) {
 			if (!usingAllMetrics) {
 				String metricName = mi.getMetricName();

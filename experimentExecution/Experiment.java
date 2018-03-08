@@ -29,6 +29,16 @@ public class Experiment {
 		}
 	}
 	
+	public String metricsBeingUsed() {
+		String str = "Metrics being used: [";
+		if (usingAllMetrics) {
+			str += "ALL ]\n";
+		} else {
+			str += enabledMetrics.toString()+" ]\n";
+		}
+		return str;
+	}
+	
 	public HashSet<String> getEnabledMetrics(){
 		return enabledMetrics;
 	}
