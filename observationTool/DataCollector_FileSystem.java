@@ -54,8 +54,7 @@ public class DataCollector_FileSystem {
 
 	// Some speed up things
 	ConcurrentHashMap<Integer, Integer> totalNumberOfInteractionsInStep;
-	
-	
+
 	public DataCollector_FileSystem(String fp) {
 		setCollection(fp);
 		totalNumberOfInteractionsInStep = new ConcurrentHashMap<Integer, Integer>();
@@ -232,7 +231,7 @@ public class DataCollector_FileSystem {
 		}
 		JsonArray groups = file.get(GROUPS).asArray();
 		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).isObject()){
+			if (groups.get(i).isObject()) {
 				JsonObject obj = groups.get(i).asObject();
 				counter += countInteractionsFromEntity(obj);
 			}
@@ -259,6 +258,11 @@ public class DataCollector_FileSystem {
 
 	public int countNumberOfGroupsInStep(int stepNumber) {
 		return countEntityType(stepNumber, GROUPS);
+	}
+
+	public int countAllEntitiesInStep(int stepNumber) {
+		return countNumberOfAgentsInStep(stepNumber) + countNumberOfEnvironmentsInStep(stepNumber)
+				+ countNumberOfGroupsInStep(stepNumber);
 	}
 
 	public int getTerminationStep() {
