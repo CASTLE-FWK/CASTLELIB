@@ -113,11 +113,3 @@ for key in datadict:
 	plt.close()
 
 print("Finished plotting. Plot files are in "+sd)
-
-
-
-
-# fig = plt.figure()
-# fig.suptitle('asd')
-# fig, ax_list = plt.subplots(2,2)
-# plt.show()
