@@ -65,5 +65,9 @@ public class HashMap<K, T> extends ConcurrentHashMap<K, T> {
 	public List<T> values() {
 		return new List<T>(super.values());
 	}
+	
+	public T get(Object v) {
+		return super.remove(v);
+	}
 
 }

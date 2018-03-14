@@ -297,6 +297,8 @@ public class Entity implements Runnable {
 
 	public void phase_Cleanup() {
 		writeModelData();
+		actionTriggers.addAll(actionTriggersToAdd);
+		actionTriggersToAdd.clear();
 	}
 
 	public void phase_Setup() {

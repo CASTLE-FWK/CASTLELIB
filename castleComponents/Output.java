@@ -165,7 +165,8 @@ public class Output {
 	}
 
 	public void sendStringToFile(String filePath, String log, boolean append) {
-		new ThreadedFileWriter(filePath, log, append).run();
+		if (filePath != null)
+			new ThreadedFileWriter(filePath, log, append).run();
 	}
 
 	public void setupDB(String systemName, String executionID, String databaseName) {
