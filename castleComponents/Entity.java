@@ -199,6 +199,8 @@ public class Entity implements Runnable {
 			errLog("Parameter "+paramName+" was not found in the "+getType()+" entity type");
 			return null;
 		}
+//		System.out.println("err: "+paramName+" in "+getType());
+//		System.out.println(parametersToString());
 		return parameters.get(paramName).getCurrentValue();
 	}
 	

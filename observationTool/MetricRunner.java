@@ -299,19 +299,57 @@ public class MetricRunner {
 		 */
 		ArrayList<MetricInfo> metricsToRun = e.getMetrics();
 		ArrayList<MetricResult> metricResults = new ArrayList<MetricResult>();
+		ConcurrentHashMap<String, ArrayList<MetricResult>> threadedResultStorage = new ConcurrentHashMap<String, ArrayList<MetricResult>>();
+		ExecutorService es4 = Executors.newFixedThreadPool(metricsToRun.size());
 
 		HashSet<String> enabledMetrics = e.getEnabledMetrics();
 		boolean usingAllMetrics = e.isUsingAllMetrics();
 		System.out.println(e.metricsBeingUsed());
+	
 		for (MetricInfo mi : metricsToRun) {
-			if (!usingAllMetrics) {
-				String metricName = mi.getMetricName();
-				if (enabledMetrics.contains(metricName)) {
-					metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
-				}
-			} else {
-				metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
+			String metricName = mi.getMetricName();
+			if (!threadedResultStorage.containsKey(metricName)) {
+				threadedResultStorage.put(metricName, new ArrayList<MetricResult>());
 			}
+			
+			if (!usingAllMetrics) {
+				if (enabledMetrics.contains(metricName)) {
+				
+					es4.execute(new Runnable() {
+						@Override
+						public void run() {
+							ArrayList<MetricResult> mrs =metricRunner(theTestSystem, mi, systemString, collector); 
+							threadedResultStorage.get(mi.getMetricName()).addAll(mrs);
+							
+						}
+					});
+//					metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
+					
+				}
+				
+				
+				
+			} else {
+				es4.execute(new Runnable() {
+					@Override
+					public void run() {
+						ArrayList<MetricResult> mrs =metricRunner(theTestSystem, mi, systemString, collector); 
+						threadedResultStorage.get(mi.getMetricName()).addAll(mrs);
+						
+					}
+				});
+//				metricResults.addAll(metricRunner(theTestSystem, mi, systemString, collector));
+			}
+		}
+		
+		
+		
+		//Once finished add all the metricResults
+		while (!es4.isTerminated()) {
+			
+		}
+		for (ArrayList<MetricResult> mr : threadedResultStorage.values()) {
+			metricResults.addAll(mr);
 		}
 		println("metricsToRun is " + metricsToRun.size());
 		println("finished. " + metricResults.size() + " have been stored.");
