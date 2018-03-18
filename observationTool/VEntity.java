@@ -4,8 +4,8 @@ import java.util.Comparator;
 
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
-import stdSimLib.HashMap;
 import stdSimLib.Parameter;
+import java.util.HashMap;
 
 //This is a virtual Agent. Identical to an Agent it just allows the MetricRunner to process already stored information
 
@@ -34,6 +34,7 @@ public class VEntity extends Entity {
 		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());
 	}
 
+	@Override
 	public void addParameterFromString(String name, String type, String value) {
 		if (name.compareToIgnoreCase("Position") == 0 || name.compareToIgnoreCase("Location") == 0) {
 			position = new Vector2(value);
@@ -47,11 +48,11 @@ public class VEntity extends Entity {
 
 	@Override
 	public String toString() {
-		return entityID.toString();
+		return super.toString();
 	}
 
 	public static Comparator<VEntity> sortByName() {
-		Comparator comp = new Comparator<VEntity>() {
+		Comparator<VEntity> comp = new Comparator<VEntity>() {
 			@Override
 			public int compare(VEntity va1, VEntity va2) {
 				return va1.getID().compareTo(va2.getID());

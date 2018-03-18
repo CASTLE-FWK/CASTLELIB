@@ -82,7 +82,11 @@ public class Node {
 	}
 
 	public Node(Entity agent) {
-		this.vAgent = new VEntity(agent);
+		if (agent instanceof VEntity) {
+			this.vAgent = (VEntity) agent;
+		} else {
+			this.vAgent = new VEntity(agent);
+		}
 		this.name = agent.getID();
 		if (agent.getPosition() == null) {
 			this.position = new Vector2();
@@ -296,6 +300,10 @@ public class Node {
 	// ************Only useful if they have VAgents stored
 
 	public VEntity getVAgent() {
+		if (vAgent == null) {
+			System.err.println("Node Warning: No VEntities have been established. Returning null.");
+			return null;
+		}
 		return vAgent;
 	}
 

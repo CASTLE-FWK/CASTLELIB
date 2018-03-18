@@ -59,6 +59,12 @@ public class DataCollector_FileSystem {
 		setCollection(fp);
 		totalNumberOfInteractionsInStep = new ConcurrentHashMap<Integer, Integer>();
 	}
+	
+	public DataCollector_FileSystem(DataCollector_FileSystem c) {
+		String fpr = c.getFilePathRoot();
+		setCollection(fpr);
+		totalNumberOfInteractionsInStep = new ConcurrentHashMap<Integer, Integer>();
+	}
 
 	public void setCollection(String fp) {
 		filePathRoot = fp;
@@ -70,6 +76,7 @@ public class DataCollector_FileSystem {
 	public HashMap<String, String> getInitialisationParameters() {
 		HashMap<String, String> ip = new HashMap<String, String>();
 		JsonObject obj = parseFile(initParamFilePath);
+		//TODO
 		return ip;
 	}
 
@@ -158,9 +165,12 @@ public class DataCollector_FileSystem {
 				String pName = d.get(PARAMNAME).asString();
 				String pType = d.get(PARAMTYPE).asString();
 				String pValue = d.get(PARAMVAL).asString();
+
 				tmpVA.addParameterFromString(pName, pType, pValue);
 			}
 			vAgents.put(tmpVA.getName(), tmpVA);
+			
+			
 		}
 		return vAgents;
 	}
@@ -168,6 +178,8 @@ public class DataCollector_FileSystem {
 	public InteractionGraph buildInteractionGraph(int stepNumber) {
 		InteractionGraph ig = new InteractionGraph();
 		HashMap<String, VEntity> agMap = buildVAgentMap(stepNumber);
+		
+		
 		ArrayList<Interaction> interactions = getAllInteractionsFromStep(stepNumber);
 		Iterator<Entry<String, VEntity>> it = agMap.entrySet().iterator();
 		while (it.hasNext()) {
@@ -313,6 +325,14 @@ public class DataCollector_FileSystem {
 
 	// Unused
 	public void restart() {
+	}
+
+	public String getFilePathRoot() {
+		return filePathRoot;
+	}
+
+	public void setFilePathRoot(String filePathRoot) {
+		this.filePathRoot = filePathRoot;
 	}
 
 	public void close() {

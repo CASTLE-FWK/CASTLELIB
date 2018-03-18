@@ -122,13 +122,16 @@ public class MetricRunner {
 						currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
 								currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
 						collector.restart(); // TODO how to handle this with Mongo
+						DataCollector_FileSystem newColl = new DataCollector_FileSystem(collector);
 						es.execute(new Runnable() {
 							@Override
 							public void run() {
 								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
-										runAnalysis(exp, currTestSystem, collector));
+										runAnalysis(exp, currTestSystem, newColl));
 							}
 						});
+						
+						
 
 						// allResults.add(//currentResult); // Lets hope PBR actually behaves
 						// allResults.addAll(theseResults); //TODO This wont work threaded
@@ -147,7 +150,7 @@ public class MetricRunner {
 						allResults.add(prim);
 					}
 
-					collector.close();
+//					collector.close();
 					runtime = System.currentTimeMillis() - runtime;
 					println("Total runtime: %1$f seconds", runtime / 1000);
 					toTheDoc.append("\n#runtime\t" + runtime);
@@ -166,6 +169,7 @@ public class MetricRunner {
 				}
 			});
 		}
+		masterES.shutdown();
 		while (!masterES.isTerminated()) {
 			// Busy wait
 		}
@@ -318,7 +322,7 @@ public class MetricRunner {
 					es4.execute(new Runnable() {
 						@Override
 						public void run() {
-							ArrayList<MetricResult> mrs =metricRunner(theTestSystem, mi, systemString, collector); 
+							ArrayList<MetricResult> mrs = metricRunner(theTestSystem, mi, systemString, collector); 
 							threadedResultStorage.get(mi.getMetricName()).addAll(mrs);
 							
 						}
@@ -333,7 +337,7 @@ public class MetricRunner {
 				es4.execute(new Runnable() {
 					@Override
 					public void run() {
-						ArrayList<MetricResult> mrs =metricRunner(theTestSystem, mi, systemString, collector); 
+						ArrayList<MetricResult> mrs = metricRunner(theTestSystem, mi, systemString, collector); 
 						threadedResultStorage.get(mi.getMetricName()).addAll(mrs);
 						
 					}
@@ -343,10 +347,9 @@ public class MetricRunner {
 		}
 		
 		
-		
+		es4.shutdown();
 		//Once finished add all the metricResults
 		while (!es4.isTerminated()) {
-			
 		}
 		for (ArrayList<MetricResult> mr : threadedResultStorage.values()) {
 			metricResults.addAll(mr);

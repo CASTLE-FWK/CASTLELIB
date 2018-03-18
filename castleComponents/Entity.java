@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bson.Document;
@@ -13,11 +14,8 @@ import castleComponents.objects.Vector2;
 import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureType;
 import castleComponents.Interaction.InteractionType;
-import stdSimLib.HashMap;
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
-import com.eclipsesource.json.*;
-import com.eclipsesource.json.JsonObject.Member;
 
 public class Entity implements Runnable {
 
@@ -44,8 +42,11 @@ public class Entity implements Runnable {
 	protected boolean ready = false;
 	protected ArrayList<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
-	
-	public enum EntityType {Agent, Group, Environment};
+
+	public enum EntityType {
+		Agent, Group, Environment
+	};
+
 	EntityType entitySuperType;
 
 	boolean agentDestroyed = false;
@@ -67,11 +68,11 @@ public class Entity implements Runnable {
 		this.entityType = type;
 		init();
 	}
-	
+
 	public void setEntitySuperType(EntityType t) {
 		entitySuperType = t;
 	}
-	
+
 	public String getEntitySuperType() {
 		return entitySuperType.toString();
 	}
@@ -139,7 +140,17 @@ public class Entity implements Runnable {
 	}
 
 	public void addParameterFromString(String name, String type, String value) {
+		if (name.compareToIgnoreCase("isCongested") == 0) {
+			if (value.equalsIgnoreCase("null") || type.equalsIgnoreCase("null")) {
+				Parameter<String> p = new Parameter<String>(value, name, type);
+				System.out.println("TS: " + p.toString());
+			}
+
+		}
 		parameters.put(name, new Parameter<String>(value, name, type));
+		// if (name.equalsIgnoreCase("isCongested")) {
+		// System.out.println(parameters.get("isCongested"));
+		// }
 	}
 
 	public void addQueryInteraction(Entity entityTo, String name) {
@@ -196,46 +207,16 @@ public class Entity implements Runnable {
 
 	public String getParameterValueFromStringAsString(String paramName) {
 		if (!parameters.containsKey(paramName)) {
-			errLog("Parameter "+paramName+" was not found in the "+getType()+" entity type");
+			errLog("Parameter " + paramName + " was not found in the " + getType() + " entity type. " + getID());
+
 			return null;
 		}
-//		System.out.println("err: "+paramName+" in "+getType());
-//		System.out.println(parametersToString());
+
 		return parameters.get(paramName).getCurrentValue();
 	}
-	
+
 	public boolean containsParameter(String paramName) {
 		return parameters.containsKey(paramName);
-	}
-
-	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange) {
-		ArrayList<Vector2> points = new ArrayList<Vector2>();
-		double halfTheta = theta / 0.5;
-		double lastAngle = 180 - 90 - halfTheta;
-		double slope = pos.calculateSlope(vRange);
-
-		// Boy this is some baaaad year 8 maths
-		// Calcs for 1 half of triangle
-		double adj = pos.calculateDistance(vRange.add((pos)));
-		double opp = Math.tan(halfTheta) * adj;
-		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); // √
-		double wideSide = opp * 2.0; // √
-
-		double cY = Math.pow(adj, 2) + Math.pow(hypot, 2) - Math.pow(opp, 2);
-		double cX = Math.sqrt((Math.pow(hypot, 2) - (Math.pow(cY, 2))));
-		Vector2 point1 = new Vector2(cY, cX);
-		Vector2 point2 = pos.getDifference(point1).negate();
-
-		// Now we have the 3 points, we can iterate through to find each valid point
-		// Root to p1
-		double minX = Utilities.calculateMin(new double[] { pos.getX(), point1.getX() });
-		double maxX = Utilities.calculateMax(new double[] { pos.getX(), point1.getX() });
-		double minY = Utilities.calculateMin(new double[] { pos.getY(), point1.getY() });
-		double maxY = Utilities.calculateMax(new double[] { pos.getY(), point1.getY() });
-
-		// Root to p2
-
-		return points;
 	}
 
 	public Vector2 getPosition() {
@@ -285,7 +266,7 @@ public class Entity implements Runnable {
 	}
 
 	public String parametersToString() {
-		StringBuilder sb = new StringBuilder("PARAMETERS [\n");
+		StringBuilder sb = new StringBuilder("PARAMETERS =  [\n");
 		for (String s : parameters.keySet()) {
 			sb.append("\t").append(parameters.get(s)).append("\n");
 		}
@@ -344,6 +325,36 @@ public class Entity implements Runnable {
 			throwCASTLEError("unknown message type", "receiveMessage", this.getClass().getName());
 			break;
 		}
+	}
+
+	public List<Vector2> getPointsInVisionCone(Vector2 pos, double theta, Vector2 vRange) {
+		ArrayList<Vector2> points = new ArrayList<Vector2>();
+		double halfTheta = theta / 0.5;
+		double lastAngle = 180 - 90 - halfTheta;
+		double slope = pos.calculateSlope(vRange);
+
+		// Boy this is some baaaad year 8 maths
+		// Calcs for 1 half of triangle
+		double adj = pos.calculateDistance(vRange.add((pos)));
+		double opp = Math.tan(halfTheta) * adj;
+		double hypot = Math.sqrt(Math.pow(adj, 2) + Math.pow(opp, 2)); // √
+		double wideSide = opp * 2.0; // √
+
+		double cY = Math.pow(adj, 2) + Math.pow(hypot, 2) - Math.pow(opp, 2);
+		double cX = Math.sqrt((Math.pow(hypot, 2) - (Math.pow(cY, 2))));
+		Vector2 point1 = new Vector2(cY, cX);
+		Vector2 point2 = pos.getDifference(point1).negate();
+
+		// Now we have the 3 points, we can iterate through to find each valid point
+		// Root to p1
+		double minX = Utilities.calculateMin(new double[] { pos.getX(), point1.getX() });
+		double maxX = Utilities.calculateMax(new double[] { pos.getX(), point1.getX() });
+		double minY = Utilities.calculateMin(new double[] { pos.getY(), point1.getY() });
+		double maxY = Utilities.calculateMax(new double[] { pos.getY(), point1.getY() });
+
+		// Root to p2
+
+		return points;
 	}
 
 	@Override
@@ -464,7 +475,7 @@ public class Entity implements Runnable {
 	final String FEATURE_NAME = "feature-name";
 	final String FEATURE_TYPE = "feature-type";
 	final String FEATURE_CALL_NUM = "feature-call#";
-	
+
 	final String FRAG_ID = "-ID";
 	final String FRAG_TYPE = "-type";
 	final String FRAG_NAME = "-name";
