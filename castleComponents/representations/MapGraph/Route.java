@@ -139,6 +139,7 @@ public class Route {
 			totalDistance += e.getDistanceInKM();
 		}
 		heading = getHeading();
+		
 
 	}
 

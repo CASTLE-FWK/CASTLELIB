@@ -583,11 +583,8 @@ public class MapGraph {
 		}
 
 		if (remainDist > 0 && remainDist <= range) {
-			// errLog("getEntitiesInRangeOfType is incomplete. Especially here. RD: " +
-			// remainDist);
-			// errLog(e.getID() + " route stats: " + route.stats());
 			if (remainDist > 5) {
-				System.exit(0);
+				errLog("I don't know what this is");
 			}
 			// Get the next edge in the route
 			Edge nextEdge = route.getFollowingEdge(currEdge);
