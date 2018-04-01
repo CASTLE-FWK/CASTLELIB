@@ -5,7 +5,7 @@ import java.util.HashMap;
 import castleComponents.Entity;
 
 public class Park {
-	int maxCapacity = 500;
+	int maxCapacity = 50000;
 	int currentCapacity = 0;
 	HashMap<String, Entity> currentOccupants;
 
