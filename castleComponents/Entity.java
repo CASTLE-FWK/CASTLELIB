@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.Document;
 
@@ -34,7 +35,7 @@ public class Entity implements Runnable {
 	final String ENVIRONMENT = "environment";
 	protected HashMap<String, Feature> featuresInLastInterval;
 	final String GROUP = "group";
-	protected HashMap<String, Interaction> interactionsInLastInterval;
+	protected ConcurrentHashMap<String, Interaction> interactionsInLastInterval;
 	protected Logger logger;
 	protected Output output;
 	protected HashMap<String, Parameter<?>> parameters;
@@ -230,7 +231,7 @@ public class Entity implements Runnable {
 	public void init() {
 		currentPhase = Phase.SETUP;
 		parameters = new HashMap<String, Parameter<?>>();
-		interactionsInLastInterval = new HashMap<String, Interaction>();
+		interactionsInLastInterval = new ConcurrentHashMap<String, Interaction>();
 		featuresInLastInterval = new HashMap<String, Feature>();
 		setupTriggers = new ArrayList<Trigger>();
 		setupTriggersToAdd = new ArrayList<Trigger>();
