@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;
@@ -296,6 +297,9 @@ public class DataCollector_FileSystem {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.err.println("the file path :"+fp);
 		}
 		return null;
 	}
