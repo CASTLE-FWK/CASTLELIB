@@ -31,7 +31,11 @@ public class VEntity extends Entity {
 	public VEntity(Entity newV) {
 		super(newV.getType(), newV.getID());
 		this.name = newV.getID();
-		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());
+		HashMap<String, Parameter<?>> oldParams = newV.getParameters();
+		for (String s : oldParams.keySet()) {
+			addParameterFromString(s, oldParams.get(s).getType(), oldParams.get(s).getCurrentValue());
+		}
+//		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());
 	}
 
 	@Override
