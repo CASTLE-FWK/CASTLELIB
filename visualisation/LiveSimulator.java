@@ -53,8 +53,9 @@ public class LiveSimulator {
 
 	// Phorcys stuff
 	// API phorcysAccess;
-	PNG png;
+	PNG png;     //TODO: add colour/state config string, overlay (.e.g multiple PNG)
 	Mesh mesh;
+	
 
 	public LiveSimulator(Vector2 size) {
 		// Init some form of pane (or connect to phorcys...)
