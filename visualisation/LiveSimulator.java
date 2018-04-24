@@ -71,6 +71,9 @@ public class LiveSimulator {
 		png.setLabels("OLOLOLO");
 
 	}
+	
+	//TODO: Send PNG from file
+	//TODO: Opacity
 
 	public void newStep(int time, ArrayList<VEntity> agents, ArrayList<Interaction> interactions,
 			HashMap<String, VEntity> agtMap) {
@@ -125,6 +128,36 @@ public class LiveSimulator {
 
 	}
 
+	
+	//TODO How can we do this?
+	//Tuples <Parameter Name, Value/Range, Colour/ColourRange>
+	
+	//In CASL:
+	/*
+	 * Set:
+	 * CASL.COLOR[SET]["state"]("val1", RED, "val2", BLUE);
+	 * CASL.COLOR[SET]["state"]("val1", (25,24,12), "val2", BLUE);
+	 * 
+	 * Boolean:
+	 * CASL.COLOR[BOOLEAN]["Alive"](BLACK, WHITE) 
+	 * 
+	 * Range:
+	 * CASL.COLOR[RANGE]["theInt"](0,100, RED, GREEN)
+	 * 
+	 */
+	
+	//In generated code:
+	/*
+	 * List<EntityColors> entityColors
+	 * drawAgentOnGrid(agent, entityColors);
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
+	//e.g. drawAgentOnGrid(theAgent, List<EntityColor> entityColors);
 	public void drawAgentOnGrid(VEntity agt) {
 		Vector2 pos = agt.getPosition();
 		Color currColor;
