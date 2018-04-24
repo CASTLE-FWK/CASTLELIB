@@ -1,7 +1,6 @@
 package castleComponents.visualisation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.awt.Color;
 import java.awt.color.*;
 
@@ -19,12 +18,30 @@ public class EntityColor {
 	ArrayList<ColorPair> pairs;
 
 	// For Range
+	ColorRange colorRange;
 
-	public EntityColor(String targetParam, String colorType) {
+	public EntityColor(String targetParam, String colorTypeStr) {
 		this.targetParam = targetParam;
+		colorType = ColorType.valueOf(colorTypeStr);
+		if (colorType == ColorType.RANGE) {
+
+		} else {
+			pairs = new ArrayList<ColorPair>();
+		}
 
 	}
 
+	public void addSet(String value, Color c) {
+		if (colorType == ColorType.SET) {
+			pairs.add(new ColorPair(value, c));
+		} else if (colorType == ColorType.BOOLEAN) {
+			if (pairs.size() >= 2) {
+				//clear and replace
+				pairs.clear();
+			}
+			pairs.add(new ColorPair(value, c));
+		}
+	}
 }
 
 class ColorPair {
@@ -39,5 +56,20 @@ class ColorPair {
 }
 
 class ColorRange {
-	//????
+	int min;
+	int max;
+	int diff;
+	Color minColor;
+	Color maxColor;
+
+	public ColorRange(int min, int max, Color minC, Color maxC) {
+		this.min = min;
+		this.max = max;
+		diff = this.max - this.min;
+		this.minColor = minC;
+		this.maxColor = maxC;
+
+	}
+	// TODO getset
+	// TODO gradient
 }
