@@ -14,6 +14,7 @@ import castleComponents.Agent;
 import castleComponents.Entity;
 import castleComponents.Interaction;
 import castleComponents.objects.Vector2;
+import castleComponents.visualisation.EntityColor;
 import visualisation.phorcys.API;
 import visualisation.phorcys.Mesh;
 import visualisation.phorcys.PNG;
@@ -127,10 +128,6 @@ public class LiveSimulator {
 		}
 
 	}
-
-	
-	//TODO How can we do this?
-	//Tuples <Parameter Name, Value/Range, Colour/ColourRange>
 	
 	//In CASL:
 	/*
@@ -150,11 +147,6 @@ public class LiveSimulator {
 	/*
 	 * List<EntityColors> entityColors
 	 * drawAgentOnGrid(agent, entityColors);
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 */
 	
 	//e.g. drawAgentOnGrid(theAgent, List<EntityColor> entityColors);
@@ -176,6 +168,15 @@ public class LiveSimulator {
 		// mesh.addEntityToMap(agt.getName(), pos.getX()/dimensions.getX(),
 		// pos.getY()/dimensions.getY(), 0, colourAsThreeString);
 
+	}
+	
+	public void drawAgentOnGrid(VEntity ent, ArrayList<EntityColor> entityColors) {
+		Vector2 pos = ent.getPosition();
+		Color currColor = Color.WHITE;
+		for (EntityColor ec : entityColors) {
+			//TODO this
+		}
+		png.addElementToImage((int) pos.getX(), (int) pos.getY(), currColor);
 	}
 
 	// void drawSimpleMetrics(int time, ArrayList<VEntity> currAgents){

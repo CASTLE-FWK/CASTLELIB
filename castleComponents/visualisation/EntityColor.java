@@ -2,7 +2,6 @@ package castleComponents.visualisation;
 
 import java.util.ArrayList;
 import java.awt.Color;
-import java.awt.color.*;
 
 public class EntityColor {
 
@@ -31,12 +30,17 @@ public class EntityColor {
 
 	}
 
+	public void addSet(String value, int r, int g, int b) {
+		Color c = new Color(r, g, b);
+		addSet(value, c);
+	}
+
 	public void addSet(String value, Color c) {
 		if (colorType == ColorType.SET) {
 			pairs.add(new ColorPair(value, c));
 		} else if (colorType == ColorType.BOOLEAN) {
 			if (pairs.size() >= 2) {
-				//clear and replace
+				// clear and replace
 				pairs.clear();
 			}
 			pairs.add(new ColorPair(value, c));
@@ -45,6 +49,22 @@ public class EntityColor {
 }
 
 class ColorPair {
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 	String value;
 	Color color;
 
@@ -52,7 +72,6 @@ class ColorPair {
 		this.value = val;
 		this.color = c;
 	}
-	// getset
 }
 
 class ColorRange {
@@ -70,6 +89,45 @@ class ColorRange {
 		this.maxColor = maxC;
 
 	}
-	// TODO getset
 	// TODO gradient
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public void setMax(int max) {
+		this.max = max;
+	}
+
+	public int getDiff() {
+		return diff;
+	}
+
+	public void setDiff(int diff) {
+		this.diff = diff;
+	}
+
+	public Color getMinColor() {
+		return minColor;
+	}
+
+	public void setMinColor(Color minColor) {
+		this.minColor = minColor;
+	}
+
+	public Color getMaxColor() {
+		return maxColor;
+	}
+
+	public void setMaxColor(Color maxColor) {
+		this.maxColor = maxColor;
+	}
 }
