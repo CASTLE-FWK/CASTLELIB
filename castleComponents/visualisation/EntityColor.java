@@ -1,6 +1,7 @@
 package castleComponents.visualisation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.Color;
 
 public class EntityColor {
@@ -14,7 +15,7 @@ public class EntityColor {
 	ColorType colorType;
 
 	// For Set and boolean (its a special set)
-	ArrayList<ColorPair> pairs;
+	HashMap<String, ColorPair> pairs;
 
 	// For Range
 	ColorRange colorRange;
@@ -25,7 +26,7 @@ public class EntityColor {
 		if (colorType == ColorType.RANGE) {
 
 		} else {
-			pairs = new ArrayList<ColorPair>();
+			pairs = new HashMap<String, ColorPair>();
 		}
 
 	}
@@ -37,14 +38,22 @@ public class EntityColor {
 
 	public void addSet(String value, Color c) {
 		if (colorType == ColorType.SET) {
-			pairs.add(new ColorPair(value, c));
+			pairs.put(value, new ColorPair(value, c));
 		} else if (colorType == ColorType.BOOLEAN) {
 			if (pairs.size() >= 2) {
 				// clear and replace
 				pairs.clear();
 			}
-			pairs.add(new ColorPair(value, c));
+			pairs.put(value, new ColorPair(value, c));
 		}
+	}
+	
+	public String getTargetParam() {
+		return targetParam;
+	}
+	
+	public Color getColor(String val) {
+		return pairs.get(val).getColor();
 	}
 }
 

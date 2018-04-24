@@ -170,12 +170,12 @@ public class LiveSimulator {
 
 	}
 	
-	public void drawAgentOnGrid(VEntity ent, ArrayList<EntityColor> entityColors) {
+	public void drawAgentOnGrid(VEntity ent, EntityColor ec) {
 		Vector2 pos = ent.getPosition();
 		Color currColor = Color.WHITE;
-		for (EntityColor ec : entityColors) {
-			//TODO this
-		}
+		String val = ent.getParameterValueFromStringAsString(ec.getTargetParam());
+		currColor = ec.getColor(val);
+		
 		png.addElementToImage((int) pos.getX(), (int) pos.getY(), currColor);
 	}
 
