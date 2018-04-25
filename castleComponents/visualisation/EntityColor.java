@@ -47,18 +47,30 @@ public class EntityColor {
 			pairs.put(value, new ColorPair(value, c));
 		}
 	}
+	
+	
 	public void addSet(String val, String col) {
 		Color c = getColor(col);
 		addSet(val, c);
 	}
 
+	public void setRange(int min, int max, Color minCol, Color maxCol) {
+		colorRange = new ColorRange(min, max, minCol, maxCol);
+	}
+	
 	public String getTargetParam() {
 		return targetParam;
 	}
 
 	public Color getColorOfVal(String val) {
-		return pairs.get(val).getColor();
+		if (colorType == ColorType.RANGE) {
+			return colorRange.getCurrentColor(Integer.parseInt(val));
+		} else {
+			return pairs.get(val).getColor();
+		}
 	}
+	
+	
 
 	Color getColor(String col) {
 		Color color;
@@ -149,9 +161,16 @@ class ColorRange {
 		diff = this.max - this.min;
 		this.minColor = minC;
 		this.maxColor = maxC;
-
 	}
-	// TODO gradient
+	
+	public Color getCurrentColor(int currVal) {
+		float ratio = (float)currVal / (float)diff;
+		 int red = (int) (maxColor.getRed() * ratio + minColor.getRed() * (1 - ratio));
+         int green = (int) (maxColor.getGreen() * ratio + minColor.getGreen() * (1 - ratio));
+         int blue = (int) (maxColor.getBlue() * ratio + minColor.getBlue() * (1 - ratio));
+		
+		return new Color(red, green, blue);
+	}
 
 	public int getMin() {
 		return min;
