@@ -24,7 +24,7 @@ public class EntityColor {
 		this.targetParam = targetParam;
 		colorType = ColorType.valueOf(colorTypeStr);
 		if (colorType == ColorType.RANGE) {
-
+			// TODO
 		} else {
 			pairs = new HashMap<String, ColorPair>();
 		}
@@ -47,13 +47,66 @@ public class EntityColor {
 			pairs.put(value, new ColorPair(value, c));
 		}
 	}
-	
+	public void addSet(String val, String col) {
+		Color c = getColor(col);
+		addSet(val, c);
+	}
+
 	public String getTargetParam() {
 		return targetParam;
 	}
-	
-	public Color getColor(String val) {
+
+	public Color getColorOfVal(String val) {
 		return pairs.get(val).getColor();
+	}
+
+	Color getColor(String col) {
+		Color color;
+		switch (col.toLowerCase()) {
+		case "black":
+			color = Color.BLACK;
+			break;
+		case "blue":
+			color = Color.BLUE;
+			break;
+		case "cyan":
+			color = Color.CYAN;
+			break;
+		case "darkgray":
+			color = Color.DARK_GRAY;
+			break;
+		case "gray":
+			color = Color.GRAY;
+			break;
+		case "green":
+			color = Color.GREEN;
+			break;
+		case "yellow":
+			color = Color.YELLOW;
+			break;
+		case "lightgray":
+			color = Color.LIGHT_GRAY;
+			break;
+		case "magneta":
+			color = Color.MAGENTA;
+			break;
+		case "orange":
+			color = Color.ORANGE;
+			break;
+		case "pink":
+			color = Color.PINK;
+			break;
+		case "red":
+			color = Color.RED;
+			break;
+		case "white":
+			color = Color.WHITE;
+			break;
+		default:
+			color = Color.WHITE;
+			break;
+		}
+		return color;
 	}
 }
 

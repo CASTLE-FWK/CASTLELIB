@@ -174,7 +174,7 @@ public class LiveSimulator {
 		Vector2 pos = ent.getPosition();
 		Color currColor = Color.WHITE;
 		String val = ent.getParameterValueFromStringAsString(ec.getTargetParam());
-		currColor = ec.getColor(val);
+		currColor = ec.getColorOfVal(val);
 		
 		png.addElementToImage((int) pos.getX(), (int) pos.getY(), currColor);
 	}
