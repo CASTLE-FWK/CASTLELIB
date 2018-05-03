@@ -169,6 +169,9 @@ public class Grid<E> implements Representation<E> {
 	}
 
 	public void place() {
+		
+		//TODO FIX
+		
 		// System.out.println("GRID PLACE FUNCTION CALL");
 		// Create the Cell with only Entity instantiation
 		// Figure out the class
@@ -222,6 +225,18 @@ public class Grid<E> implements Representation<E> {
 	// return null;
 	// }
 
+	public List<E> getAll() {
+		ArrayList<E> list = new ArrayList<E>();
+		E[][] gGrid = getGrid();
+		for (int i = 0; i < gGrid[0].length; i++) {
+			for (int j = 0; j < gGrid.length; j++) {
+				list.add(grid[j][i]);
+			}
+		}
+		return list;
+		
+	}
+	
 	public List<E> getAll(GridPositions gp) {
 		E[] arr = getAllAsArray(gp);
 		ArrayList<E> list = new ArrayList<E>();

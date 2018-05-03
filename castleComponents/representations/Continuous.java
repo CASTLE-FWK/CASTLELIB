@@ -58,6 +58,7 @@ public class Continuous<E> implements Representation<E>{
 	 * @param dist
 	 * @return
 	 */
+	//TODO: rename to get neighbours in bounding box
 	public List<E> getNeighborsFromVector(Vector2 pos, double dist){
 		ArrayList<E> items = new ArrayList<E>();
 		

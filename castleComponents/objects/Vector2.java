@@ -76,6 +76,11 @@ public class Vector2 implements java.io.Serializable {
 		this.x = 0;
 		this.y = 0;
 	}
+	public Vector2 copy(Vector2 v) {
+		setX(v.getX());
+		setY(v.getY());
+		return this;
+	}
 	
 	public double length() {
 		return Math.abs(x - y);
@@ -302,5 +307,13 @@ public class Vector2 implements java.io.Serializable {
 	}
 	public void setNullPoint(boolean b){
 		nullPoint = b;
+	}
+
+	public Vector2 getCenter() {
+		return new Vector2(getX() / 2.0, getY() / 2.0);
+	}
+	
+	public double getProduct() {
+		return getX() * getY();
 	}
 }
