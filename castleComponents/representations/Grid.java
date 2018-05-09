@@ -225,8 +225,8 @@ public class Grid<E> implements Representation<E> {
 	// return null;
 	// }
 
-	public List<E> getAll() {
-		ArrayList<E> list = new ArrayList<E>();
+	public castleComponents.objects.List<E> getAll() {
+		castleComponents.objects.List<E> list = new castleComponents.objects.List<E>();
 		E[][] gGrid = getGrid();
 		for (int i = 0; i < gGrid[0].length; i++) {
 			for (int j = 0; j < gGrid.length; j++) {
