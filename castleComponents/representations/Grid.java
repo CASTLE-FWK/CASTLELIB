@@ -88,6 +88,7 @@ public class Grid<E> implements Representation<E> {
 			}
 		}
 	}
+	
 
 	public void setEntityAtPos(Vector2 pos, E e) {
 		int x = (int) pos.getX();
