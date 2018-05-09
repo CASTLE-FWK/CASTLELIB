@@ -348,12 +348,12 @@ public class Grid<E> implements Representation<E> {
 
 	// This is great and fast, but we lose all perspective of where the neighbors
 	// are
-	public List<E> getNeighboursFromVector(Vector2 v, int depth) {
+	public castleComponents.objects.List<E> getNeighboursFromVector(Vector2 v, int depth) {
 		return getNeighbours((int) v.getX(), (int) v.getY(), depth);
 	}
 
-	public List<E> getNeighbours(int x, int y, int depth) {
-		ArrayList<E> neighbours = new ArrayList<E>();
+	public castleComponents.objects.List<E> getNeighbours(int x, int y, int depth) {
+		castleComponents.objects.List<E> neighbours = new castleComponents.objects.List<E>();
 		neighbours.add(getNeighbour_U(x, y));
 		neighbours.add(getNeighbour_UR(x, y));
 		neighbours.add(getNeighbour_R(x, y));
