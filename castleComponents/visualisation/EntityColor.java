@@ -2,12 +2,17 @@ package castleComponents.visualisation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import castleComponents.objects.Vector2;
+
 import java.awt.Color;
 
 public class EntityColor {
 
 	String targetParam;
 
+	String positionParam;
+	
 	enum ColorType {
 		SET, BOOLEAN, RANGE
 	};
@@ -30,7 +35,15 @@ public class EntityColor {
 		}
 
 	}
-
+	
+	public void setPositionParam(String v) {
+		positionParam = v;
+	}
+	
+	public String getPositionParam() {
+		return positionParam;
+	}
+	
 	public void addSet(String value, int r, int g, int b) {
 		Color c = new Color(r, g, b);
 		addSet(value, c);

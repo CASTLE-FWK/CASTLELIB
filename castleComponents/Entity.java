@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bson.Document;
 
 import castleComponents.objects.Vector2;
+import castleComponents.visualisation.EntityColor;
 import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureType;
 import castleComponents.Interaction.InteractionType;
@@ -51,6 +52,21 @@ public class Entity implements Runnable {
 	EntityType entitySuperType;
 
 	boolean agentDestroyed = false;
+	
+	
+	//For vis
+	protected EntityColor entityColor = null;
+	
+	public void setEntityColor(EntityColor ec) {
+		this.entityColor = ec;
+	}
+	public EntityColor getEntityColor() {
+		return entityColor;
+	}
+	public boolean isVisualising() {
+		return (entityColor != null);
+	}
+
 
 	public Entity(String type, EntityID eid) {
 		this.entityID = new EntityID(eid);
