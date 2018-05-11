@@ -33,10 +33,11 @@ public class Grid<E> implements Representation<E> {
 	List<E> allContainedEntities;
 
 	Class<E> theClass;
-	
+
 	public void setWrap(boolean b) {
 		wraps = b;
 	}
+
 	public boolean isWrapped() {
 		return wraps;
 	}
@@ -58,11 +59,13 @@ public class Grid<E> implements Representation<E> {
 
 		allContainedEntities = new ArrayList<E>();
 	}
+
 	public boolean isOutOfBounds(Vector2 v) {
-		int x = (int)v.getX();
-		int y = (int)v.getY();
+		int x = (int) v.getX();
+		int y = (int) v.getY();
 		return (x >= X || y >= Y || x < 0 || y < 0);
 	}
+
 	// TODO: Set phantom size
 	public Grid() {
 		allContainedEntities = new ArrayList<E>();
@@ -88,7 +91,6 @@ public class Grid<E> implements Representation<E> {
 			}
 		}
 	}
-	
 
 	public void setEntityAtPos(Vector2 pos, E e) {
 		int x = (int) pos.getX();
@@ -170,9 +172,9 @@ public class Grid<E> implements Representation<E> {
 	}
 
 	public void place() {
-		
-		//TODO FIX
-		
+
+		// TODO FIX
+
 		// System.out.println("GRID PLACE FUNCTION CALL");
 		// Create the Cell with only Entity instantiation
 		// Figure out the class
@@ -235,9 +237,9 @@ public class Grid<E> implements Representation<E> {
 			}
 		}
 		return list;
-		
+
 	}
-	
+
 	public List<E> getAll(GridPositions gp) {
 		E[] arr = getAllAsArray(gp);
 		ArrayList<E> list = new ArrayList<E>();
@@ -377,7 +379,7 @@ public class Grid<E> implements Representation<E> {
 			if (y >= Y || y < 0 || x >= X || x < 0) {
 				return null;
 			}
-			
+
 			if (y == 0) {
 				if (wraps)
 					return grid[x][Y - 1];
@@ -440,7 +442,7 @@ public class Grid<E> implements Representation<E> {
 			if (x == X - 1) {
 				if (wraps)
 					return grid[0][y];
-				else 
+				else
 					return null;
 			} else {
 				return grid[x + 1][y];

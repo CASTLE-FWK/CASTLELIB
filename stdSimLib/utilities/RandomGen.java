@@ -18,7 +18,7 @@ public class RandomGen {
 			return min;
 		}
 		
-		return (min + (random.nextDouble() * ((max - min) + 1))); 
+		return (min + (random.nextDouble() * ((max - min)))); 
 	}
 	
 	public static int generateRandomRangeInteger(int min, int max){
