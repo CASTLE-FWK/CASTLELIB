@@ -59,8 +59,8 @@ public class Continuous<E> implements Representation<E>{
 	 * @return
 	 */
 	//TODO: rename to get neighbours in bounding box
-	public List<E> getNeighborsFromVector(Vector2 pos, double dist){
-		ArrayList<E> items = new ArrayList<E>();
+	public castleComponents.objects.List<E> getNeighborsFromVector(Vector2 pos, double dist){
+		castleComponents.objects.List<E> items = new castleComponents.objects.List<E>();
 		
 		Range2D range = new Range2D(
 				new Vector2(pos.getX() - dist, pos.getY() - dist), 
