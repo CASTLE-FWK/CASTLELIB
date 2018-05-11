@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bson.Document;
 
 import castleComponents.objects.Vector2;
-import castleComponents.visualisation.EntityColor;
+import castleComponents.visualisation.EntityDisplay;
 import dataGenerator.OutputToJSON_Mongo;
 import castleComponents.Enums.FeatureType;
 import castleComponents.Interaction.InteractionType;
@@ -55,12 +55,12 @@ public class Entity implements Runnable {
 	
 	
 	//For vis
-	protected EntityColor entityColor = null;
+	protected EntityDisplay entityColor = null;
 	
-	public void setEntityColor(EntityColor ec) {
+	public void setEntityColor(EntityDisplay ec) {
 		this.entityColor = ec;
 	}
-	public EntityColor getEntityColor() {
+	public EntityDisplay getEntityColor() {
 		return entityColor;
 	}
 	public boolean isVisualising() {

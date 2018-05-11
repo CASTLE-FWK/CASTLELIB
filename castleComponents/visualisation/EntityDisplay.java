@@ -7,7 +7,7 @@ import castleComponents.objects.Vector2;
 
 import java.awt.Color;
 
-public class EntityColor {
+public class EntityDisplay {
 
 	String targetParam;
 
@@ -25,7 +25,7 @@ public class EntityColor {
 	// For Range
 	ColorRange colorRange;
 
-	public EntityColor(String targetParam, String colorTypeStr) {
+	public EntityDisplay(String targetParam, String colorTypeStr) {
 		this.targetParam = targetParam;
 		colorType = ColorType.valueOf(colorTypeStr);
 		if (colorType == ColorType.RANGE) {
