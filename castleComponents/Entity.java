@@ -57,10 +57,10 @@ public class Entity implements Runnable {
 	//For vis
 	protected EntityDisplay entityColor = null;
 	
-	public void setEntityColor(EntityDisplay ec) {
+	public void setEntityDisplay(EntityDisplay ec) {
 		this.entityColor = ec;
 	}
-	public EntityDisplay getEntityColor() {
+	public EntityDisplay getEntityDisplay() {
 		return entityColor;
 	}
 	public boolean isVisualising() {

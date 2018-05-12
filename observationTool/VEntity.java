@@ -20,6 +20,7 @@ public class VEntity extends Entity {
 	public VEntity(String name, String type, String uid) {
 		super(type, uid);
 		this.name = name;
+		
 	}
  
 	public VEntity(VEntity v) {
@@ -34,7 +35,9 @@ public class VEntity extends Entity {
 		HashMap<String, Parameter<?>> oldParams = newV.getParameters();
 		for (String s : oldParams.keySet()) {
 			addParameterFromString(s, oldParams.get(s).getType(), oldParams.get(s).getCurrentValue());
+//			addParameter(s, oldParams.get(s).getType(), oldParams.get(s).getCurrentValue());
 		}
+		entityColor = newV.getEntityDisplay();
 //		parameters = new HashMap<String, Parameter<?>>(newV.getParameters());
 	}
 

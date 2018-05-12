@@ -54,9 +54,8 @@ public class LiveSimulator {
 
 	// Phorcys stuff
 	// API phorcysAccess;
-	PNG png;     //TODO: add colour/state config string, overlay (.e.g multiple PNG)
+	PNG png; // TODO: add colour/state config string, overlay (.e.g multiple PNG)
 	Mesh mesh;
-	
 
 	public LiveSimulator(Vector2 size) {
 		// Init some form of pane (or connect to phorcys...)
@@ -72,9 +71,9 @@ public class LiveSimulator {
 		png.setLabels("OLOLOLO");
 
 	}
-	
-	//TODO: Send PNG from file
-	//TODO: Opacity
+
+	// TODO: Send PNG from file
+	// TODO: Opacity
 
 	public void newStep(int time, ArrayList<VEntity> agents, ArrayList<Interaction> interactions,
 			HashMap<String, VEntity> agtMap) {
@@ -108,7 +107,7 @@ public class LiveSimulator {
 			// drawSimpleMetrics(time, agents);
 		}
 	}
-	
+
 	public void newStep(int time, ArrayList<VEntity> agents) {
 		currentTime = time;
 
@@ -116,7 +115,8 @@ public class LiveSimulator {
 		png.newImage();
 		// Display things
 		for (Entity agt : agents) {
-			drawAgentOnGrid((VEntity) agt);
+			VEntity va = (VEntity) agt;
+			drawAgentOnGrid(va, va.getEntityDisplay());
 		}
 		png.prepImage();
 
@@ -128,28 +128,24 @@ public class LiveSimulator {
 		}
 
 	}
-	
-	//In CASL:
+
+	// In CASL:
 	/*
-	 * Set:
-	 * CASL.COLOR[SET]["state"]("val1", RED, "val2", BLUE);
+	 * Set: CASL.COLOR[SET]["state"]("val1", RED, "val2", BLUE);
 	 * CASL.COLOR[SET]["state"]("val1", (25,24,12), "val2", BLUE);
 	 * 
-	 * Boolean:
-	 * CASL.COLOR[BOOLEAN]["Alive"](BLACK, WHITE) 
+	 * Boolean: CASL.COLOR[BOOLEAN]["Alive"](BLACK, WHITE)
 	 * 
-	 * Range:
-	 * CASL.COLOR[RANGE]["theInt"](0,100, RED, GREEN)
+	 * Range: CASL.COLOR[RANGE]["theInt"](0,100, RED, GREEN)
 	 * 
 	 */
-	
-	//In generated code:
+
+	// In generated code:
 	/*
-	 * List<EntityColors> entityColors
-	 * drawAgentOnGrid(agent, entityColors);
+	 * List<EntityColors> entityColors drawAgentOnGrid(agent, entityColors);
 	 */
-	
-	//e.g. drawAgentOnGrid(theAgent, List<EntityColor> entityColors);
+
+	// e.g. drawAgentOnGrid(theAgent, List<EntityColor> entityColors);
 	public void drawAgentOnGrid(VEntity agt) {
 		Vector2 pos = agt.getPosition();
 		Color currColor;
@@ -169,13 +165,13 @@ public class LiveSimulator {
 		// pos.getY()/dimensions.getY(), 0, colourAsThreeString);
 
 	}
-	
+
 	public void drawAgentOnGrid(VEntity ent, EntityDisplay ec) {
-		Vector2 pos = (Vector2) ent.getParameterValueFromString(ec.getPositionParam());
+		Vector2 pos = new Vector2((String) ent.getParameterValueFromString(ec.getPositionParam()));
 		Color currColor = Color.WHITE;
 		String val = ent.getParameterValueFromStringAsString(ec.getTargetParam());
 		currColor = ec.getColorOfVal(val);
-		
+		System.out.println(ent.getEntityID()+": "+pos);
 		png.addElementToImage((int) pos.getX(), (int) pos.getY(), currColor);
 	}
 
