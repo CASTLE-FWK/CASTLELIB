@@ -45,10 +45,10 @@ public class PNG {
 		height = h;
 		img = new int[(int) width * (int) height];
 		invisibleImg = new int[(int) width * (int) height];
-		Color initColor = new Color(255,255,255,0);
+		Color initColor = new Color(255, 255, 255, 0);
 		int initVal = rgbaToInt(initColor.getRed(), initColor.getGreen(), initColor.getBlue(), initColor.getAlpha());
 		for (int i = 0; i < invisibleImg.length; i++) {
-			invisibleImg[i] = 0xFFFFFF00; //255,255,255,0
+			invisibleImg[i] = 0x00FFFFFF; // 255,255,255,0
 		}
 	}
 
@@ -70,34 +70,41 @@ public class PNG {
 		imgFile.setRGB(0, 0, (int) width, (int) height, img, 0, (int) width);
 	}
 
-	public void addElementToImage(int x, int y, Color col) {
-		//TODO: Add torus drawing ability
+	public void addElementToImage(int xt, int yt, Color col) {
+		// TODO: Add torus drawing ability
+		// Need to clamp
+		System.out.println("width: "+width+" height: "+height);
+		int x = xt%(int)width;
+		int y = yt%(int)height;
+		
 		
 		if (x < 0) {
-			//TODO
-			x = (int)width + x;
+			x = (int) width + x;
+		} else if (x > width) {
+			int diff = (int) x - (int) width;
+			x = diff;
 		}
-		
+
 		if (y < 0) {
-			//TODO
-			y = (int)height + y;
+			y = (int) height + y;
+		} else if (y > height) {
+			int diff = (int) y - (int) height;
+			y = diff;
 		}
-		
-		
-		img[(((int) height - 1 - y) * (int) width) + x] = rgbToInt(col.getRed(), col.getGreen(), col.getBlue());
-		System.out.println("rgbaToInt: "+rgbaToInt(col.getRed(), col.getGreen(), col.getBlue(), 0));
+		System.out.println("pos: " + x + "," + y);
+		img[(((int) height - 1 - y) * (int) width) + x] = rgbaToInt(col.getRed(), col.getGreen(), col.getBlue(), 255);
 	}
 
 	public void newImage() {
-//		img = new int[(int) width * (int) height];
+		// img = new int[(int) width * (int) height];
 		img = Arrays.copyOf(invisibleImg, invisibleImg.length);
-//		for (int i = 0; i < img.length; i++) {
-//			img[i] = rgbaToInt(255, 255, 255, 0);
-//		}
+		// for (int i = 0; i < img.length; i++) {
+		// img[i] = rgbaToInt(255, 255, 255, 0);
+		// }
 	}
 
 	public void prepImage() {
-		imgFile = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_RGB);
+		imgFile = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
 		imgFile.setRGB(0, 0, (int) width, (int) height, img, 0, (int) width);
 	}
 
@@ -120,13 +127,13 @@ public class PNG {
 	public int rgbToInt(int r, int g, int b) {
 		return (r << 16) | (g << 8) | b;
 	}
-	
+
 	public int rgbaToInt(int r, int g, int b, int a) {
 		r = r & 0xFF;
 		g = g & 0xFF;
 		b = b & 0xFF;
 		a = a & 0xFF;
-		return (r << 24) | (g << 16) | ( b << 8) | a;
+		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
 	public PNG(BufferedImage img) {
@@ -182,7 +189,7 @@ public class PNG {
 			throw new UncheckedIOException(ioe);
 		}
 	}
-	
+
 	public void test() {
 		System.out.println("Red & Magenta RGB to int");
 		Color cr = Color.RED;
@@ -195,18 +202,18 @@ public class PNG {
 		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), cr.getAlpha()));
 		cr = Color.MAGENTA;
 		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), cr.getAlpha()));
-		
+
 		System.out.println("Red & Magenta RGBA to int (alpha = 0)");
 		cr = Color.RED;
 		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), 0));
 		cr = Color.MAGENTA;
 		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), 0));
-		
+
 		System.out.println("white with 0 alpha");
 		cr = Color.WHITE;
 		System.out.println(rgbaToInt(255, 255, 255, 0));
 	}
-	
+
 	// Pinched from SO
 	// http://stackoverflow.com/questions/7178937/java-bufferedimage-to-png-format-base64-string
 	/*
