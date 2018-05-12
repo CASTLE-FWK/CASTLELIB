@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 
 import com.eclipsesource.json.JsonArray;
@@ -26,6 +27,8 @@ public class PNG {
 	double scaleW = 1.0;
 	double scaleH = 1.0;;
 
+	int[] invisibleImg;
+
 	public PNG(String location) {
 		try {
 			imgFile = ImageIO.read(new File(location));
@@ -41,7 +44,12 @@ public class PNG {
 		width = w;
 		height = h;
 		img = new int[(int) width * (int) height];
-		// golTEST();
+		invisibleImg = new int[(int) width * (int) height];
+		Color initColor = new Color(255,255,255,0);
+		int initVal = rgbaToInt(initColor.getRed(), initColor.getGreen(), initColor.getBlue(), initColor.getAlpha());
+		for (int i = 0; i < invisibleImg.length; i++) {
+			invisibleImg[i] = 0xFFFFFF00; //255,255,255,0
+		}
 	}
 
 	public void setScale(double w, double h) {
@@ -77,10 +85,15 @@ public class PNG {
 		
 		
 		img[(((int) height - 1 - y) * (int) width) + x] = rgbToInt(col.getRed(), col.getGreen(), col.getBlue());
+		System.out.println("rgbaToInt: "+rgbaToInt(col.getRed(), col.getGreen(), col.getBlue(), 0));
 	}
 
 	public void newImage() {
-		img = new int[(int) width * (int) height];
+//		img = new int[(int) width * (int) height];
+		img = Arrays.copyOf(invisibleImg, invisibleImg.length);
+//		for (int i = 0; i < img.length; i++) {
+//			img[i] = rgbaToInt(255, 255, 255, 0);
+//		}
 	}
 
 	public void prepImage() {
@@ -106,6 +119,14 @@ public class PNG {
 
 	public int rgbToInt(int r, int g, int b) {
 		return (r << 16) | (g << 8) | b;
+	}
+	
+	public int rgbaToInt(int r, int g, int b, int a) {
+		r = r & 0xFF;
+		g = g & 0xFF;
+		b = b & 0xFF;
+		a = a & 0xFF;
+		return (r << 24) | (g << 16) | ( b << 8) | a;
 	}
 
 	public PNG(BufferedImage img) {
@@ -161,6 +182,31 @@ public class PNG {
 			throw new UncheckedIOException(ioe);
 		}
 	}
+	
+	public void test() {
+		System.out.println("Red & Magenta RGB to int");
+		Color cr = Color.RED;
+		System.out.println(rgbToInt(cr.getRed(), cr.getBlue(), cr.getGreen()));
+		cr = Color.MAGENTA;
+		System.out.println(rgbToInt(cr.getRed(), cr.getBlue(), cr.getGreen()));
+
+		System.out.println("Red & Magenta RGBA to int");
+		cr = Color.RED;
+		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), cr.getAlpha()));
+		cr = Color.MAGENTA;
+		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), cr.getAlpha()));
+		
+		System.out.println("Red & Magenta RGBA to int (alpha = 0)");
+		cr = Color.RED;
+		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), 0));
+		cr = Color.MAGENTA;
+		System.out.println(rgbaToInt(cr.getRed(), cr.getBlue(), cr.getGreen(), 0));
+		
+		System.out.println("white with 0 alpha");
+		cr = Color.WHITE;
+		System.out.println(rgbaToInt(255, 255, 255, 0));
+	}
+	
 	// Pinched from SO
 	// http://stackoverflow.com/questions/7178937/java-bufferedimage-to-png-format-base64-string
 	/*

@@ -6,7 +6,8 @@ public class Test {
 	
 	static Random rand = new Random();
 	public static void main(String[] args){
-		
+		PNG png = new PNG(50,50);
+		png.test();
 //		//Text box testing
 //		try {
 //			String txt_win = API.text("", "JAVA TEXT BOX", "HELLO BANANA FACE");
@@ -90,33 +91,33 @@ public class Test {
 		
 		
 		//Mesh testing
-		Mesh mesh = new Mesh();
-		int dummyEntities = 10000;
-		for (int i = 0; i < dummyEntities; i++){
-			mesh.addEntity("ent_"+i, Utilities.generateRandomDouble()-0.5, Utilities.generateRandomDouble()-0.5, 0);
-		}
-		
-		String mesh_win = API.mesh(null, "mesh test", mesh.toJson());
-		String count_win = API.text(null, "Current Step", "");
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Mesh mesh = new Mesh();
+//		int dummyEntities = 10000;
+//		for (int i = 0; i < dummyEntities; i++){
+//			mesh.addEntity("ent_"+i, Utilities.generateRandomDouble()-0.5, Utilities.generateRandomDouble()-0.5, 0);
+//		}
 //		
-		for (int i = 0; i < 1000; i++){
-			mesh.shiftEntities(-0.05, 0.05);
-			API.mesh(mesh_win, "mesh test", mesh.toJson());
-			API.text(count_win, "Current Step", "Step "+i);
-//			try {
-//				Thread.sleep(800);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-		}
-		
+//		String mesh_win = API.mesh(null, "mesh test", mesh.toJson());
+//		String count_win = API.text(null, "Current Step", "");
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+////		
+//		for (int i = 0; i < 1000; i++){
+//			mesh.shiftEntities(-0.05, 0.05);
+//			API.mesh(mesh_win, "mesh test", mesh.toJson());
+//			API.text(count_win, "Current Step", "Step "+i);
+////			try {
+////				Thread.sleep(800);
+////			} catch (InterruptedException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
+//		}
+//		
 
 		
 	}
