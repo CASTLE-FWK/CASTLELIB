@@ -122,6 +122,25 @@ public class Vector2 implements java.io.Serializable {
 		this.y += y;
 		return this;
 	}
+	
+	public void clampX(Vector2 range) {
+		if (x < range.getX()) {
+			x = range.getX();
+		} else if (x > range.getY()) {
+			x = range.getY();
+		}
+	}
+	public void clampY(Vector2 range) {
+		if (y < range.getX()) {
+			y = range.getX();
+		} else if (y > range.getY()) {
+			y = range.getY();
+		}
+	}
+	public void clamp(Vector2 xR, Vector2 yR) {
+		clampX(xR);
+		clampY(yR);
+	}
 
 	public double dotProduct(Vector2 v) {
 		return (this.x * v.x + this.y * v.y);
