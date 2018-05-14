@@ -171,7 +171,6 @@ public class LiveSimulator {
 		Color currColor = Color.WHITE;
 		String val = ent.getParameterValueFromStringAsString(ec.getTargetParam());
 		currColor = ec.getColorOfVal(val);
-		System.out.println(ent.getEntityID()+": "+pos);
 		png.addElementToImage((int) pos.getX(), (int) pos.getY(), currColor);
 	}
 

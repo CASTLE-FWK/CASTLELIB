@@ -73,7 +73,7 @@ public class PNG {
 	public void addElementToImage(int xt, int yt, Color col) {
 		// TODO: Add torus drawing ability
 		// Need to clamp
-		System.out.println("width: "+width+" height: "+height);
+//		System.out.println("xt: "+xt+" yt: "+yt);
 		int x = xt%(int)width;
 		int y = yt%(int)height;
 		
@@ -91,7 +91,7 @@ public class PNG {
 			int diff = (int) y - (int) height;
 			y = diff;
 		}
-		System.out.println("pos: " + x + "," + y);
+//		System.out.println("pos: " + x + "," + y);
 		img[(((int) height - 1 - y) * (int) width) + x] = rgbaToInt(col.getRed(), col.getGreen(), col.getBlue(), 255);
 	}
 
