@@ -66,10 +66,14 @@ public class RandomGen {
 
 	// TODO: This is probably more useless than originally thought.
 	public static Vector2 randomiseVectorInteger(int xMin, int xMax, int yMin, int yMax) {
-		double X = generateRandomRangeInteger(xMin, xMax);
-		double Y = generateRandomRangeInteger(yMin, yMax);
+		double X = generateRandomRangeInteger(xMin, yMin);
+		double Y = generateRandomRangeInteger(xMax, yMax);
 
 		return new Vector2(X, Y);
+	}
+	
+	public static Vector2 randomiseVectorInteger(Vector2 xVec, Vector2 yVec) {
+		return randomiseVectorInteger((int)xVec.getX(), (int)xVec.getY(), (int)yVec.getX(), (int)yVec.getY());
 	}
 
 	// TODO: Explain this one well.
