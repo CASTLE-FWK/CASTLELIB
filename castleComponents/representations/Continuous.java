@@ -68,22 +68,25 @@ public class Continuous<E> implements Representation<E>{
 				new Vector2(pos.getX() - dist, pos.getY() + dist),
 				new Vector2(pos.getX() + dist, pos.getY() + dist)
 		);
-//		System.out.println(range.getDimensions().toString());
 		
 		//Find all entities that intersect here
-		
-		ArrayList<Vector2> positions = new ArrayList<Vector2>(entityLocationMap.values());
-		for (Vector2 v : positions){
-			if (range.containsPoint(v)){
-				//Get all entities at that location
-				items.addAll(
-						entityLocationMap.entrySet()
-						.parallelStream()
-						.filter(entry -> Objects.equals(entry.getValue(), v))
-						.map(Map.Entry::getKey)
-						.collect(Collectors.toSet()));
+		for (E v : entityLocationMap.keySet()) {
+			if (range.containsPoint(entityLocationMap.get(v))){
+				items.add(v);
 			}
 		}
+//		
+//		for (Vector2 v : positions){
+//			if (range.containsPoint(v)){
+//				//Get all entities at that location
+//				items.addAll(
+//						entityLocationMap.entrySet()
+//						.parallelStream()
+//						.filter(entry -> Objects.equals(entry.getValue(), v))
+//						.map(Map.Entry::getKey)
+//						.collect(Collectors.toSet()));
+//			}
+//		}
 		
 		
 		

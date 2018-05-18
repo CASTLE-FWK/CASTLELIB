@@ -1,13 +1,29 @@
 package castleComponents;
 
+
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bson.BsonBinaryWriter;
+import org.bson.ByteBuf;
 import org.bson.Document;
+import org.bson.io.BasicOutputBuffer;
+import org.bson.io.OutputBuffer;
+
+import com.mongodb.BasicDBObject;
 
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
+
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import org.bson.BasicBSONEncoder;
+import com.mongodb.DBObject;
 
 public class Logger {
 
@@ -94,13 +110,14 @@ public class Logger {
 
 			if (doc != null) {
 				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(), false);
+//				try {
+//					BSONFileWriter bfo = new BSONFileWriter(systemStepInfoDir + "/Step" + stepNumber + ".bson");
+//					bfo.write(new BasicDBObject(doc));
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
-			//
-			// if (stringBuilder.length() != 0) {
-			// output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json",
-			// stringBuilder.toString(),
-			// false);
-			// }
 		}
 	}
 
@@ -246,3 +263,22 @@ public class Logger {
 		return systemTerminationInfoPath;
 	}
 }
+
+class BSONFileWriter {
+
+	   private final String path;
+	   private final BasicBSONEncoder encoder;
+
+	   public BSONFileWriter(String path) {
+	      this.path = path;
+	      this.encoder = new BasicBSONEncoder();
+	   }
+
+	   public void write(DBObject dbo) throws IOException {
+
+	      Files.write(Paths.get(path), encoder.encode(dbo),
+	            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+	   }
+
+	}

@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 import castleComponents.objects.Vector2;
 
 /*
@@ -249,6 +252,16 @@ public class Utilities {
 
 	public static <T> T getRandomEntryFromSet(Set<T> theSet) {
 		return (T) theSet.toArray()[RandomGen.generateRandomRangeInteger(0, theSet.size() - 1)];
+	}
+	
+	public static JsonObject parseFileAsJson(String filePath) {
+		try {
+			return Json.parse((new FileReader(filePath))).asObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

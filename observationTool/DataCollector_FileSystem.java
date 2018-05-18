@@ -208,11 +208,16 @@ public class DataCollector_FileSystem {
 			JsonObject obj = agents.get(i).asObject();
 			interactions.addAll(getInteractionsFromEntity(obj));
 		}
-		JsonArray groups = file.get(GROUPS).asArray();
-		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).isObject()) {
-				JsonObject obj = groups.get(i).asObject();
-				interactions.addAll(getInteractionsFromEntity(obj));
+		
+		
+		
+		if (file.get(GROUPS) != null) {
+			JsonArray groups = file.get(GROUPS).asArray();
+			for (int i = 0; i < groups.size(); i++) {
+				if (groups.get(i).isObject()) {
+					JsonObject obj = groups.get(i).asObject();
+					interactions.addAll(getInteractionsFromEntity(obj));
+				}
 			}
 		}
 
@@ -242,11 +247,14 @@ public class DataCollector_FileSystem {
 				counter += countInteractionsFromEntity(obj);
 			}
 		}
-		JsonArray groups = file.get(GROUPS).asArray();
-		for (int i = 0; i < groups.size(); i++) {
-			if (groups.get(i).isObject()) {
-				JsonObject obj = groups.get(i).asObject();
-				counter += countInteractionsFromEntity(obj);
+		
+		if (file.get(GROUPS) != null) {
+			JsonArray groups = file.get(GROUPS).asArray();
+			for (int i = 0; i < groups.size(); i++) {
+				if (groups.get(i).isObject()) {
+					JsonObject obj = groups.get(i).asObject();
+					counter += countInteractionsFromEntity(obj);
+				}
 			}
 		}
 

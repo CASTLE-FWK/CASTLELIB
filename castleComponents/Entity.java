@@ -549,6 +549,10 @@ public class Entity implements Runnable {
 	public String writeEntityDataToString() {
 		return writeEntityDataDocument().toJson();
 	}
+	
+	public String writeEntityDataToBSONString() {
+		return writeEntityDataDocument().toString();
+	}
 
 	public void writeModelData() {
 		if (!agentDestroyed)

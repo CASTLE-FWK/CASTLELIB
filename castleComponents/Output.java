@@ -153,8 +153,9 @@ public class Output {
 				} else {
 					superType = "UNKNOWN";
 				}
+				//TODO: Why do we have both??
 				logger.logToFileFromDocument(superType, e.writeEntityDataDocument());
-				logger.logToFile(e.writeEntityDataToString());
+				//logger.logToFile(e.writeEntityDataToString());
 			}
 		}
 		if (!dbOutputMuted) {
