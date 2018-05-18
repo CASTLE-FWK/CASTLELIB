@@ -19,6 +19,7 @@ import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
 import stdSimLib.Interaction;
+import stdSimLib.utilities.Utilities;
 
 public class DataCollector_FileSystem {
 
@@ -28,7 +29,7 @@ public class DataCollector_FileSystem {
 	String filepathStepsRoot = "";
 	String terminationStatsFilePath = "";
 	final String STEP = "Step";
-	final String JSON = ".json";
+	final String JSON = ".json.gz";
 	final String AGENTS = "Agent";
 	final String ENVIRONMENTS = "Environment";
 	final String GROUPS = "Group";
@@ -297,10 +298,32 @@ public class DataCollector_FileSystem {
 	public String buildFilePath(int stepNumber) {
 		return filepathStepsRoot + "/" + STEP + stepNumber + JSON;
 	}
-
+	
 	public JsonObject parseFile(String fp) {
+		if (fp.endsWith(".gz")) {
+			return parseCompressedFile(fp);
+		} else {
+			return parseRawFile(fp);
+		}
+	}
+
+	public JsonObject parseRawFile(String fp) {
 		try {
 			return Json.parse((new FileReader(fp))).asObject();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.err.println("the file path :"+fp);
+		}
+		return null;
+	}
+	
+	public JsonObject parseCompressedFile(String fp) {
+		try {
+			return Json.parse(Utilities.decompressStringFromFile(fp)).asObject();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

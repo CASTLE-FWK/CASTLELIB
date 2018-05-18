@@ -1,6 +1,5 @@
 package castleComponents;
 
-
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import com.mongodb.BasicDBObject;
 
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
-
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,14 +107,10 @@ public class Logger {
 			}
 
 			if (doc != null) {
-				output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson(), false);
-//				try {
-//					BSONFileWriter bfo = new BSONFileWriter(systemStepInfoDir + "/Step" + stepNumber + ".bson");
-//					bfo.write(new BasicDBObject(doc));
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+
+				// output.sendStringToFile(systemStepInfoDir + "/Step" + stepNumber + ".json",
+				// Utilities.compressString(doc.toJson()), false);
+				output.sendStringToCompressedFile(systemStepInfoDir + "/Step" + stepNumber + ".json", doc.toJson());
 			}
 		}
 	}
@@ -192,7 +186,8 @@ public class Logger {
 	// Sets up the log path (should be fully automated)
 	public void setUpLog(String str) {
 		systemLogPath = str;
-		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID().replaceAll("\\s+", "")+Utilities.generateRandomChar()+Utilities.generateRandomChar();
+		systemOutputDirPath = systemLogPath + "/" + simInfo.getExecutionID().replaceAll("\\s+", "")
+				+ Utilities.generateRandomChar() + Utilities.generateRandomChar();
 		systemSpecPath = systemOutputDirPath + "/systemInitialization.json";
 		systemLogDirPath = systemOutputDirPath + "/systemLog.txt";
 		systemStepInfoDir = systemOutputDirPath + "/steps";
@@ -214,13 +209,15 @@ public class Logger {
 			output.initialiseLoggingPath(systemLogDirPath, false);
 		}
 	}
-	
+
 	public void endOfSimulation(int finalStep, long elapsedTime, int totalSteps) {
 		Document dd = new Document("_id", "termination-statistics").append("termination-step", finalStep)
 				.append("%-of-execution-finished", (((double) finalStep) / ((double) totalSteps) * 100))
 				.append("elapsed-time", elapsedTime);
-		output.sendStringToFile(systemTerminationInfoPath, dd.toJson(), false);
-		
+		output.sendStringToCompressedFile(systemTerminationInfoPath, dd.toJson());
+		// output.sendStringToFile(systemTerminationInfoPath,
+		// Utilities.compressString(dd.toJson()), false);
+
 	}
 
 	public void writeSystemSpecs(String sysName, String sysDescription, List<Parameter<?>> params) {
@@ -243,20 +240,20 @@ public class Logger {
 		dd.append("name", si.getSystemName());
 		dd.append("description", si.getDescription());
 		dd.append("execution-start-time", si.getTimeStamp());
-		
+
 		ArrayList<Document> pdList = new ArrayList<Document>();
 		for (Parameter<?> p : params) {
 			String name = p.getName();
 			String value = p.getCurrentValue();
 			String type = p.getType();
-			Document pdd = new Document("parameter-name", name).append("parameter-value", value).append("parameter-type", type);
+			Document pdd = new Document("parameter-name", name).append("parameter-value", value)
+					.append("parameter-type", type);
 			pdList.add(pdd);
 		}
-		
+
 		dd.append("initialisation-parameters", pdList);
 		output.sendStringToFile(systemSpecPath, dd.toJson(), false);
-		
-		
+
 	}
 
 	public String getSystemTerminationInfoPath() {
@@ -266,19 +263,18 @@ public class Logger {
 
 class BSONFileWriter {
 
-	   private final String path;
-	   private final BasicBSONEncoder encoder;
+	private final String path;
+	private final BasicBSONEncoder encoder;
 
-	   public BSONFileWriter(String path) {
-	      this.path = path;
-	      this.encoder = new BasicBSONEncoder();
-	   }
+	public BSONFileWriter(String path) {
+		this.path = path;
+		this.encoder = new BasicBSONEncoder();
+	}
 
-	   public void write(DBObject dbo) throws IOException {
+	public void write(DBObject dbo) throws IOException {
 
-	      Files.write(Paths.get(path), encoder.encode(dbo),
-	            StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-
-	   }
+		Files.write(Paths.get(path), encoder.encode(dbo), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
 	}
+
+}

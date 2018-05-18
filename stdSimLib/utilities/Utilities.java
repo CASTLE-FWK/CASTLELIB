@@ -2,12 +2,19 @@ package stdSimLib.utilities;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,6 +28,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
@@ -250,10 +259,47 @@ public class Utilities {
 		return l;
 	}
 
+	public static void compressStringToFile(String str, String fp) throws IOException {
+		String cfp = fp + ".gz";
+		FileOutputStream output = new FileOutputStream(cfp);
+		try {
+			Writer writer = new OutputStreamWriter(new GZIPOutputStream(output), "UTF-8");
+			System.out.println("writing compressed file to "+cfp);
+			try {
+				writer.write(str);
+			} finally {
+				writer.close();
+			}
+		} finally {
+			output.close();
+		}
+	}
+
+	public static String decompressStringFromFile(String filePath) throws IOException {
+		final StringBuilder outStr = new StringBuilder();
+		if ((filePath == null) || (filePath.length() == 0)) {
+			return "";
+		}
+		final GZIPInputStream gis = new GZIPInputStream(new FileInputStream(filePath));
+		final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gis, "UTF-8"));
+
+		String line;
+		while ((line = bufferedReader.readLine()) != null) {
+			outStr.append(line);
+		}
+		bufferedReader.close();
+		return outStr.toString();
+	}
+
+	public static boolean isCompressed(final byte[] compressed) {
+		return (compressed[0] == (byte) (GZIPInputStream.GZIP_MAGIC))
+				&& (compressed[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8));
+	}
+
 	public static <T> T getRandomEntryFromSet(Set<T> theSet) {
 		return (T) theSet.toArray()[RandomGen.generateRandomRangeInteger(0, theSet.size() - 1)];
 	}
-	
+
 	public static JsonObject parseFileAsJson(String filePath) {
 		try {
 			return Json.parse((new FileReader(filePath))).asObject();

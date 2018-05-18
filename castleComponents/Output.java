@@ -1,5 +1,6 @@
 package castleComponents;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bson.Document;
@@ -168,6 +169,15 @@ public class Output {
 	public void sendStringToFile(String filePath, String log, boolean append) {
 		if (filePath != null)
 			new ThreadedFileWriter(filePath, log, append).run();
+	}
+	
+	public void sendStringToCompressedFile(String filePath, String log) {
+		try {
+			Utilities.compressStringToFile(log, filePath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void setupDB(String systemName, String executionID, String databaseName) {
