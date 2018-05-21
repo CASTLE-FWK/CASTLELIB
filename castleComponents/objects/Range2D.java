@@ -161,6 +161,16 @@ public class Range2D {
 		return nr;
 	}
 	
+	public static Range2D createRange(Vector2 pos, double dist) {
+		Range2D range = new Range2D(
+				new Vector2(pos.getX() - dist, pos.getY() - dist), 
+				new Vector2(pos.getX() + dist, pos.getY() - dist),
+				new Vector2(pos.getX() - dist, pos.getY() + dist),
+				new Vector2(pos.getX() + dist, pos.getY() + dist)
+		);
+		return range;
+	}
+	
 	
 	public static Range2D parseFromString(String str) {
 		//is of the form:(<0,0><0,3><3,0><3,3>)

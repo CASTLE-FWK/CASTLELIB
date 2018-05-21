@@ -12,7 +12,6 @@ public class HashMap<K, T> extends ConcurrentHashMap<K, T> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
 	public HashMap() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -65,7 +64,7 @@ public class HashMap<K, T> extends ConcurrentHashMap<K, T> {
 	public List<T> values() {
 		return new List<T>(super.values());
 	}
-	
+
 	public T get(Object v) {
 		return super.remove(v);
 	}

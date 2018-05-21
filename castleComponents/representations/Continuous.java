@@ -1,7 +1,6 @@
 package castleComponents.representations;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.stream.Collectors;
 
 import castleComponents.objects.Range2D;
 import castleComponents.objects.Vector2;
+import stdSimLib.HashMap;
 import stdSimLib.utilities.Utilities;
 
 public class Continuous<E> implements Representation<E>{
@@ -45,11 +45,17 @@ public class Continuous<E> implements Representation<E>{
 	}
 	
 	public void moveTo(E obj, Vector2 newPos){
-		add(obj, newPos);
+		if (entityLocationMap.containsKey(obj)) {
+			add(obj, newPos);
+		}
 	}
 	
 	public void moveByVector(E obj, Vector2 shiftPos){
 		add(obj, entityLocationMap.get(obj).add(shiftPos));
+	}
+	
+	public HashMap<E, Vector2> getEntityLocationMap(){
+		return entityLocationMap;
 	}
 	
 	/**
