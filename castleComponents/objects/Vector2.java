@@ -141,6 +141,16 @@ public class Vector2 implements java.io.Serializable {
 		clampX(xR);
 		clampY(yR);
 	}
+	
+	public void floor() {
+		x = Math.floor(x);
+		y = Math.floor(y);
+	}
+	
+	public void ceil() {
+		x = Math.ceil(x);
+		y = Math.ceil(y);
+	}
 
 	public double dotProduct(Vector2 v) {
 		return (this.x * v.x + this.y * v.y);

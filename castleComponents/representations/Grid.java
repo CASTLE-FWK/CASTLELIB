@@ -161,6 +161,29 @@ public class Grid<E> implements Representation<E> {
 		// System.out.println("size: "+getDimensions().toString());
 		// System.out.println("GRID INIT FUNCTION CALLB");
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void init(Vector2 layoutXY, Object o) {
+		System.out.println("gridbeep");
+		Class<E> cl = (Class<E>) o.getClass();
+		System.out.println("getName: "+cl.getName());
+		this.X = (int) layoutXY.getX();
+		this.Y = (int) layoutXY.getY();
+		// setPhantomState(this.layoutParameters.allowPhantoms());
+
+		// Check for 0 sized dimensions and fix
+		if (X == 0) {
+			X = 1;
+		}
+		if (Y == 0) {
+			Y = 1;
+		}
+		// Allow the grid to store Entities of the type specified in the layout
+		// parameters
+		final E[][] grid = (E[][]) Array.newInstance(cl, X, Y);
+		this.grid = grid;
+		System.out.println("gridbeep2");
+	}
 
 	public void initializeAllCells(E e) {
 		E[][] gGrid = getGrid();
