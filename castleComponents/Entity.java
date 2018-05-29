@@ -410,7 +410,7 @@ public class Entity implements Runnable {
 		output = out;
 	}
 
-	public void setPosition(Vector2 p) {
+	public void setEntityPosition(Vector2 p) {
 		position = new Vector2(p);
 	}
 

@@ -172,7 +172,7 @@ public class Agent extends Entity {
 	 * @param position
 	 *            the position to set
 	 */
-	public void setPosition(Vector2 position) {
+	public void setEntityPosition(Vector2 position) {
 		this.position = new Vector2(position);
 	}
 

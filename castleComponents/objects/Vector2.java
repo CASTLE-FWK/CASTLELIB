@@ -122,7 +122,13 @@ public class Vector2 implements java.io.Serializable {
 		this.y += y;
 		return this;
 	}
-	
+
+	public Vector2 subtract(double x, double y) {
+		this.x -= x;
+		this.y -= y;
+		return this;
+	}
+
 	public void clampX(Vector2 range) {
 		if (x < range.getX()) {
 			x = range.getX();
@@ -130,6 +136,7 @@ public class Vector2 implements java.io.Serializable {
 			x = range.getY();
 		}
 	}
+
 	public void clampY(Vector2 range) {
 		if (y < range.getX()) {
 			y = range.getX();
@@ -137,16 +144,25 @@ public class Vector2 implements java.io.Serializable {
 			y = range.getY();
 		}
 	}
+
 	public void clamp(Vector2 xR, Vector2 yR) {
 		clampX(xR);
 		clampY(yR);
 	}
-	
+
+	public void clamp(Vector2 xyR) {
+		Vector2 xvr = new Vector2(0, xyR.getX());
+		Vector2 yvr = new Vector2(0, xyR.getY());
+
+		clampX(xvr);
+		clampY(yvr);
+	}
+
 	public void floor() {
 		x = Math.floor(x);
 		y = Math.floor(y);
 	}
-	
+
 	public void ceil() {
 		x = Math.ceil(x);
 		y = Math.ceil(y);
