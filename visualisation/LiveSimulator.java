@@ -81,6 +81,7 @@ public class LiveSimulator {
 
 		// ReInit
 		png.newImage();
+		
 		// Display things
 		for (Entity agt : agents) {
 			drawAgentOnGrid((VEntity) agt);
@@ -113,6 +114,7 @@ public class LiveSimulator {
 
 		// ReInit
 		png.newImage();
+//		System.err.println("stats: "+png.stats());
 		// Display things
 		for (Entity agt : agents) {
 			VEntity va = (VEntity) agt;

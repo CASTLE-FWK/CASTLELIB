@@ -56,6 +56,10 @@ public class PNG {
 		scaleW = w;
 		scaleH = h;
 	}
+	
+	public String stats() {
+		return "PNG [width=" + width + ", height=" + height + ", scaleW=" + scaleW + ", scaleH=" + scaleH + "]";
+	}
 
 	public void createImage() {
 		int incr = 0;
@@ -74,8 +78,8 @@ public class PNG {
 		// TODO: Add torus drawing ability
 		// Need to clamp
 //		System.out.println("xt: "+xt+" yt: "+yt);
-		int x = xt%(int)width;
-		int y = yt%(int)height;
+		int x = xt % (int)width;
+		int y = yt % (int)height;
 		
 		
 		if (x < 0) {
