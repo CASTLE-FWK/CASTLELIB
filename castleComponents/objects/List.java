@@ -56,6 +56,9 @@ public class List<T> extends ArrayList<T> {
 	}
 	
 	public T getLast() {
+		if (size() == 0) {
+			return null;
+		}
 		return get(size() -1);
 	}
 	
