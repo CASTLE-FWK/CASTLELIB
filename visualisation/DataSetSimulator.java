@@ -1,6 +1,7 @@
 package visualisation;
 
 import interactionGraph.InteractionGraph;
+import observationTool.DataCollector_FileSystem;
 import observationTool.DataCollector_MongoDB;
 import observationTool.VEntity;
 import observationTool.metrics.ClusterTrack;
@@ -44,7 +45,7 @@ public class DataSetSimulator {
 	HashMap<String,VAgentSpec> specs; //<AgentName, VAgentSpec>
 	int numberOfSteps;
 	int currentTime = 0;
-	DataCollector_MongoDB collector;
+	DataCollector_FileSystem collector;
 	String windowID = null;
 	Vector2 dimensions;
 	boolean cycling = false;
@@ -169,7 +170,7 @@ public class DataSetSimulator {
 	public void newSimulation(String datasetID){
 		this.datasetID = datasetID;
 		//Connect to DB
-		collector = new DataCollector_MongoDB(db);
+		collector = new DataCollector_FileSystem(db);
 		//Get access to the desired dataset
 		collector.setCollection(this.datasetID);
 		
@@ -177,19 +178,21 @@ public class DataSetSimulator {
 		
 		//Get useful information about the system
 		numberOfSteps = collector.getTerminationStep();
-		ArrayList<Document> sysParams = collector.getInitialisationParameters();
-		dimensions = new Vector2();
+		HashMap<String, String> params = collector.getInitialisationParameters();;
+
+		
+		dimensions = new Vector2(100,100);
 		String initName = "";
 		int numberOfCells = 0;
-		for (Document doc : sysParams){
-			if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0){
-				dimensions.setX(Integer.parseInt(doc.getString("parameter-value")));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0){
-				dimensions.setY(Integer.parseInt(doc.getString("parameter-value")));
-			} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0){
-				initName = doc.getString("parameter-value");
-			}
-		}
+//		for (Document doc : sysParams){
+//			if (doc.getString("parameter-name").compareToIgnoreCase("Size (X)") == 0){
+//				dimensions.setX(Integer.parseInt(doc.getString("parameter-value")));
+//			} else if (doc.getString("parameter-name").compareToIgnoreCase("Size(Y)") == 0){
+//				dimensions.setY(Integer.parseInt(doc.getString("parameter-value")));
+//			} else if (doc.getString("parameter-name").compareToIgnoreCase("initPath") == 0){
+//				initName = doc.getString("parameter-value");
+//			}
+//		}
 		theAgentsDowntime = new HashMap<String, Integer>();
 		theAgentsUptime = new HashMap<String, Integer>();
 		bitsOverTime = new ArrayList<BitSet>(numberOfSteps);
@@ -233,63 +236,63 @@ public class DataSetSimulator {
 	}	
 	
 	/***** METRIC PRINTING ******/
-	void drawSimpleMetrics(int time, ArrayList<VEntity> currAgents, DataCollector_MongoDB collector){
-		//System Complexity
-		SystemComplexity sc = new SystemComplexity();
-		ArrayList<VEntity> agentList_t = currAgents;
-//		HashMap<String, VAgent> agentMap_t = collector.buildVAgentMap(time);
-		ArrayList<Interaction> interactions_t = collector.getAllInteractionsFromStep(time);
-//		InteractionGraph ig_t = collector.buildInteractionGraph(time);
-		
-//		ArrayList<VAgent> agentList_tm1 = collector.buildVAgentList(time-1);
-		HashMap<String, VEntity> agentMap_tm1 = collector.buildVAgentMap(time-1);
-		ArrayList<Interaction> interactions_tm1 = collector.getAllInteractionsFromStep(time-1);
-		HashMap<String, ArrayList<Interaction>> interactionsMap_tm1 = collector.getAgentInteractionMap(time-1);
-//		ig_t = collector.buildInteractionGraph(time);
-		
-		//SystemComplexity
-		sc.runMetric(interactions_tm1.size(), interactions_t.size());
-		double currentResults = (double)sc.getLatestResult();
-		scPlot.addPoints(time,currentResults);
-		displayPlot(scPlot);
-		
-		//Entropy: SE, SE (Change), CE, 
-		Entropy entropyCalculator = new Entropy();
-		
-		double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agentList_t, dimensions);
-		double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agentList_t, agentMap_tm1);
-		double conditionalEntropy = entropyCalculator.conditionalEntropy(agentList_t, agentMap_tm1, dimensions);
-		entPlot.addPoints(time,shannonEntropy,shannonEntropyChange,conditionalEntropy);
-		displayPlot(entPlot);
-		
-		//Kaddoum WAT		
-		double workingTime = agentList_t.size() * 8;
-		double watScore = SelfAdaptiveSystems.KaddoumWAT(agentList_t, agentMap_tm1, interactionsMap_tm1, workingTime);
-		watPlot.addPoints(time, watScore);
-		displayPlot(watPlot);
-		
-		//PerfSit
-		double perfSit = SelfAdaptiveSystems.PerfSit(agentList_t, agentMap_tm1, dimensions);
-		perfPlot.addPoints(time,perfSit);
-		displayPlot(perfPlot);
-		
-		//AU
-		double[] AU = Metric_VillegasAU(agentList_t, agentMap_tm1);
-		AUPlot.addPoints(time,AU[0],AU[1]);
-		displayPlot(AUPlot);
-		
-		//OD
-		int OD = OscillationDetector(agentList_t);
-		ODPlot.addPoints(time,OD);
-		displayPlot(ODPlot);
-		
-		//ClusterTrack
-//		ClusterTrack tt = new ClusterTrack();
-//		HashMap<String, Double> ttRes = tt.examineClusters(tt.dfsHelper(ig_t));
-//		//"averageArea","clustersIntersecting","RunningUniqueClusters","averageAgentDensity");
-//		TTPlot.addPoints(time,ttRes.get("AverageArea"),ttRes.get("ClustersIntersecting"),ttRes.get("RunningUniqueClusters"),ttRes.get("averageAgentDensity"));
-//		displayPlot(TTPlot);
-	}
+//	void drawSimpleMetrics(int time, ArrayList<VEntity> currAgents, DataCollector_MongoDB collector){
+//		//System Complexity
+//		SystemComplexity sc = new SystemComplexity();
+//		ArrayList<VEntity> agentList_t = currAgents;
+////		HashMap<String, VAgent> agentMap_t = collector.buildVAgentMap(time);
+//		ArrayList<Interaction> interactions_t = collector.getAllInteractionsFromStep(time);
+////		InteractionGraph ig_t = collector.buildInteractionGraph(time);
+//		
+////		ArrayList<VAgent> agentList_tm1 = collector.buildVAgentList(time-1);
+//		HashMap<String, VEntity> agentMap_tm1 = collector.buildVAgentMap(time-1);
+//		ArrayList<Interaction> interactions_tm1 = collector.getAllInteractionsFromStep(time-1);
+//		HashMap<String, ArrayList<Interaction>> interactionsMap_tm1 = collector.getAgentInteractionMap(time-1);
+////		ig_t = collector.buildInteractionGraph(time);
+//		
+//		//SystemComplexity
+//		sc.runMetric(interactions_tm1.size(), interactions_t.size());
+//		double currentResults = (double)sc.getLatestResult();
+//		scPlot.addPoints(time,currentResults);
+//		displayPlot(scPlot);
+//		
+//		//Entropy: SE, SE (Change), CE, 
+//		Entropy entropyCalculator = new Entropy();
+//		
+//		double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agentList_t, dimensions);
+//		double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agentList_t, agentMap_tm1);
+//		double conditionalEntropy = entropyCalculator.conditionalEntropy(agentList_t, agentMap_tm1, dimensions);
+//		entPlot.addPoints(time,shannonEntropy,shannonEntropyChange,conditionalEntropy);
+//		displayPlot(entPlot);
+//		
+//		//Kaddoum WAT		
+//		double workingTime = agentList_t.size() * 8;
+//		double watScore = SelfAdaptiveSystems.KaddoumWAT(agentList_t, agentMap_tm1, interactionsMap_tm1, workingTime);
+//		watPlot.addPoints(time, watScore);
+//		displayPlot(watPlot);
+//		
+//		//PerfSit
+//		double perfSit = SelfAdaptiveSystems.PerfSit(agentList_t, agentMap_tm1, dimensions);
+//		perfPlot.addPoints(time,perfSit);
+//		displayPlot(perfPlot);
+//		
+//		//AU
+//		double[] AU = Metric_VillegasAU(agentList_t, agentMap_tm1);
+//		AUPlot.addPoints(time,AU[0],AU[1]);
+//		displayPlot(AUPlot);
+//		
+//		//OD
+//		int OD = OscillationDetector(agentList_t);
+//		ODPlot.addPoints(time,OD);
+//		displayPlot(ODPlot);
+//		
+//		//ClusterTrack
+////		ClusterTrack tt = new ClusterTrack();
+////		HashMap<String, Double> ttRes = tt.examineClusters(tt.dfsHelper(ig_t));
+////		//"averageArea","clustersIntersecting","RunningUniqueClusters","averageAgentDensity");
+////		TTPlot.addPoints(time,ttRes.get("AverageArea"),ttRes.get("ClustersIntersecting"),ttRes.get("RunningUniqueClusters"),ttRes.get("averageAgentDensity"));
+////		displayPlot(TTPlot);
+//	}
 	
 	void displayPlot(Plot2DHelper plot){
 		if (plot.getWindowID() == null){
