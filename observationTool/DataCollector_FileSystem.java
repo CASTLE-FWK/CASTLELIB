@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 import interactionGraph.Edge;
@@ -291,6 +292,13 @@ public class DataCollector_FileSystem {
 	public int getTerminationStep() {
 		JsonObject obj = parseFile(terminationStatsFilePath);
 		return obj.getInt("termination-step", -1);
+	}
+	
+	public long getElapsedTime() {
+		JsonObject obj = parseFile(terminationStatsFilePath);
+		JsonObject raw = (JsonObject) obj.get("elapsed-time");
+		long num = Long.parseLong(raw.getString("$numberLong", "-1"));
+		return num;
 	}
 
 	/*****************************************************************/

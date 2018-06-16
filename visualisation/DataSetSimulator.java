@@ -124,6 +124,8 @@ public class DataSetSimulator {
 		//Display things
 		for (VEntity agt : agents){
 			drawAgentOnGrid(agt);
+			
+			
 		}
 		png.prepImage();
 		
@@ -150,13 +152,29 @@ public class DataSetSimulator {
 	
 	public void drawAgentOnGrid(VEntity agt){
 		Vector2 pos = agt.getPosition();
-		Color currColor;
+		Color currColor = Color.WHITE;
 		//HARDCODE BECAUSE FUCK IT
-		if (agt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0){
-			currColor = Color.BLACK;
-		} else {
-			currColor = Color.WHITE;
+		if (agt.containsParameter("Alive")) {
+			if (agt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0){
+				currColor = Color.BLACK;
+			} else {
+				currColor = Color.WHITE;
+			}
 		}
+		
+		//Here we go the colours things
+		//Since time is important, we will hardcode
+		
+		//Ants
+		if (agt.containsParameter("hasFood")) {
+			if (agt.getParameterValueFromStringAsString("hasFood").compareToIgnoreCase("true") == 0){
+				currColor = Color.RED;
+			} else {
+				currColor = Color.BLACK;
+			}
+		}
+
+		
 		String colourAsThreeString = "rgb("+currColor.getRed()+","+currColor.getGreen()+","+currColor.getBlue()+")";
 		//How do we draw it on a grid?
 		//We use Phorcys PNG
@@ -178,7 +196,7 @@ public class DataSetSimulator {
 		
 		//Get useful information about the system
 		numberOfSteps = collector.getTerminationStep();
-		HashMap<String, String> params = collector.getInitialisationParameters();;
+		HashMap<String, String> params = collector.getInitialisationParameters();
 
 		
 		dimensions = new Vector2(100,100);
@@ -302,153 +320,154 @@ public class DataSetSimulator {
 			API.plot2D(plot.getWindowID(), plot.getName(), plot.getPlot());
 		}
 	}
-	public double[] Metric_VillegasAU(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents ){
-
-		
-		double MTTF = 0.0; //mean time to fail
-		//What if we consider that a failure is a non-statechange for some consec
-		//What if we consider that a faiure is the length of time with non-consecutive changes
-		int failCounter = 0;
-		
-		double MTTR = 0.0; //mean time to recover
-		double A = 0.0;
-		double U = 0.0;
-		//What if we consider that a recovery is the length of a failure
-		int recoveryCounter = 0;
-		
-		for (VEntity v : agents){
-			boolean lifeState = v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			VEntity pv = prevAgents.get(v.getName());
-			if (pv == null){
-				System.out.println("Agent didnt exist...");
-				continue;
-			}
-			boolean prevState = pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
-			if (lifeState  == prevState){
-				Integer agentUpTime = theAgentsUptime.get(v.getName());
-				Integer agentDowntime = theAgentsDowntime.get(v.getName());
-				
-				if (agentUpTime == null){
-					theAgentsUptime.put(v.getName(), 0);
-//						agentUpTime = theAgentsUptime.get(v.getName());
-				}
-				if (agentDowntime == null){
-					theAgentsDowntime.put(v.getName(),0);
-//						agentDowntime = theAgentsDowntime.get(v.getName());
-				}
-				if (agentDowntime != null && agentUpTime != null){
-					//Has now entered a "downtime" state
-					if (agentDowntime == consecutiveDowntime){
-						MTTF += agentUpTime;
-						failCounter++;
-						theAgentsUptime.put(v.getName(),0);
-						theAgentsDowntime.put(v.getName(), agentDowntime + 1);
-//							System.out.println("MTTF: "+MTTF);
-					} else {
-//							theAgentsUptime.put(v.getName(), 0);
-						theAgentsDowntime.put(v.getName(), agentDowntime + 1);
-					}
-				}
-
-			} else {
-				Integer agentUpTime = theAgentsUptime.get(v.getName());
-				Integer agentDowntime = theAgentsDowntime.get(v.getName());
-				
-				if (agentUpTime == null){
-					theAgentsUptime.put(v.getName(), 0);
-//						agentUpTime = theAgentsUptime.get(v.getName());
-				}
-				if (agentDowntime == null){
-					theAgentsDowntime.put(v.getName(),0);
-//						agentDowntime = theAgentsDowntime.get(v.getName());
-				}
-				
-				if (agentDowntime != null && agentUpTime != null){
-					if (agentDowntime >= consecutiveDowntime){
-						MTTR += agentDowntime;
-						recoveryCounter++;
-						theAgentsDowntime.put(v.getName(),0);
-						theAgentsUptime.put(v.getName(), agentUpTime + 1);
-					} else {
-						theAgentsDowntime.put(v.getName(),0);
-						theAgentsUptime.put(v.getName(), agentUpTime + 1);
-					}
-				}										
-			}				
-		}
-		
-		if (failCounter == 0){
-			MTTF = 0;
-		} else {
-			MTTF = MTTF / (double)failCounter;
-		}
-		if (recoveryCounter == 0){
-			MTTR = 0; 
-		} else {
-			MTTR = MTTR / (double)recoveryCounter;
-		}
-		
-		if ((MTTR + MTTF) == 0){
-			A = 0.5;
-			U = 0.5;
-		} else {
-			A = MTTF / (MTTF + MTTR); //availability
-			U = MTTR / (MTTF + MTTR); //unavailability
-			//A + U = 1				
-		}
-		double[] res = new double[2];
-		res[0] = A;
-		res[1] = U;
-		return res;
-		
-
-	}
-	
-	
-	public int OscillationDetector(ArrayList<VEntity> agents){
-		Collections.sort(agents,VEntity.sortByName()); //Sort by name or position?
-		BitSet bs = new BitSet(agents.size());
-		
-		for (int i = 0; i < agents.size(); i++){
-			bs.set(i, agents.get(i).getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0);
-		}
-		bitsOverTime.add(bitsetCounter, bs);
-		boolean hit = false;
-		
-		for (int t = bitsetCounter - 1; t >= 0; t--){
-			BitSet xor = (BitSet) bitsOverTime.get(t).clone();
-			xor.xor(bs);
-			int diff = xor.length()-1;
-			if (diff == -1){
-				if (!hit){
-					int dist = currentTime - t;
-//						if (dist > distance){
-//							distance = dist;
-//							maxDistStart = t;
-//						} 
-//						
-//						if (dist < minDistance){
-//							minDistance = dist;
-//						}
-					hit = true;
-				}
-//					if (t == currentTime - 1) {
-//						consecutive++;
+//	public double[] Metric_VillegasAU(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents ){
+//
+//		
+//		double MTTF = 0.0; //mean time to fail
+//		//What if we consider that a failure is a non-statechange for some consec
+//		//What if we consider that a faiure is the length of time with non-consecutive changes
+//		int failCounter = 0;
+//		
+//		double MTTR = 0.0; //mean time to recover
+//		double A = 0.0;
+//		double U = 0.0;
+//		//What if we consider that a recovery is the length of a failure
+//		int recoveryCounter = 0;
+//		
+//		for (VEntity v : agents){
+//			boolean lifeState = v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
+//			VEntity pv = prevAgents.get(v.getName());
+//			if (pv == null){
+//				System.out.println("Agent didnt exist...");
+//				continue;
+//			}
+//			boolean prevState = pv.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0;
+//			if (lifeState  == prevState){
+//				Integer agentUpTime = theAgentsUptime.get(v.getName());
+//				Integer agentDowntime = theAgentsDowntime.get(v.getName());
+//				
+//				if (agentUpTime == null){
+//					theAgentsUptime.put(v.getName(), 0);
+////						agentUpTime = theAgentsUptime.get(v.getName());
+//				}
+//				if (agentDowntime == null){
+//					theAgentsDowntime.put(v.getName(),0);
+////						agentDowntime = theAgentsDowntime.get(v.getName());
+//				}
+//				if (agentDowntime != null && agentUpTime != null){
+//					//Has now entered a "downtime" state
+//					if (agentDowntime == consecutiveDowntime){
+//						MTTF += agentUpTime;
+//						failCounter++;
+//						theAgentsUptime.put(v.getName(),0);
+//						theAgentsDowntime.put(v.getName(), agentDowntime + 1);
+////							System.out.println("MTTF: "+MTTF);
+//					} else {
+////							theAgentsUptime.put(v.getName(), 0);
+//						theAgentsDowntime.put(v.getName(), agentDowntime + 1);
 //					}
+//				}
+//
+//			} else {
+//				Integer agentUpTime = theAgentsUptime.get(v.getName());
+//				Integer agentDowntime = theAgentsDowntime.get(v.getName());
+//				
+//				if (agentUpTime == null){
+//					theAgentsUptime.put(v.getName(), 0);
+////						agentUpTime = theAgentsUptime.get(v.getName());
+//				}
+//				if (agentDowntime == null){
+//					theAgentsDowntime.put(v.getName(),0);
+////						agentDowntime = theAgentsDowntime.get(v.getName());
+//				}
+//				
+//				if (agentDowntime != null && agentUpTime != null){
+//					if (agentDowntime >= consecutiveDowntime){
+//						MTTR += agentDowntime;
+//						recoveryCounter++;
+//						theAgentsDowntime.put(v.getName(),0);
+//						theAgentsUptime.put(v.getName(), agentUpTime + 1);
+//					} else {
+//						theAgentsDowntime.put(v.getName(),0);
+//						theAgentsUptime.put(v.getName(), agentUpTime + 1);
+//					}
+//				}										
+//			}				
+//		}
+//		
+//		if (failCounter == 0){
+//			MTTF = 0;
+//		} else {
+//			MTTF = MTTF / (double)failCounter;
+//		}
+//		if (recoveryCounter == 0){
+//			MTTR = 0; 
+//		} else {
+//			MTTR = MTTR / (double)recoveryCounter;
+//		}
+//		
+//		if ((MTTR + MTTF) == 0){
+//			A = 0.5;
+//			U = 0.5;
+//		} else {
+//			A = MTTF / (MTTF + MTTR); //availability
+//			U = MTTR / (MTTF + MTTR); //unavailability
+//			//A + U = 1				
+//		}
+//		double[] res = new double[2];
+//		res[0] = A;
+//		res[1] = U;
+//		return res;
+//		
+//
+//	}
+//	
+//	
+//	public int OscillationDetector(ArrayList<VEntity> agents){
+//		Collections.sort(agents,VEntity.sortByName()); //Sort by name or position?
+//		BitSet bs = new BitSet(agents.size());
+//		
+//		for (int i = 0; i < agents.size(); i++){
+//			bs.set(i, agents.get(i).getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0);
+//		}
+//		bitsOverTime.add(bitsetCounter, bs);
+//		boolean hit = false;
+//		
+//		for (int t = bitsetCounter - 1; t >= 0; t--){
+//			BitSet xor = (BitSet) bitsOverTime.get(t).clone();
+//			xor.xor(bs);
+//			int diff = xor.length()-1;
+//			if (diff == -1){
+//				if (!hit){
+//					int dist = currentTime - t;
+////						if (dist > distance){
+////							distance = dist;
+////							maxDistStart = t;
+////						} 
+////						
+////						if (dist < minDistance){
+////							minDistance = dist;
+////						}
+//					hit = true;
+//				}
+////					if (t == currentTime - 1) {
+////						consecutive++;
+////					}
+//
+//				if (hit){
+//					break;
+//				}		
+//			}
+//		}
+//		
+//		bitsetCounter++;
+//		if (hit){
+//			return 1;
+//		} else {
+//			return 0;
+//		}
+//	}
 
-				if (hit){
-					break;
-				}		
-			}
-		}
-		
-		bitsetCounter++;
-		if (hit){
-			return 1;
-		} else {
-			return 0;
-		}
-	}
 }
 
 

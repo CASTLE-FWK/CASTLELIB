@@ -13,13 +13,15 @@ public class VisualisationClient {
 	final static String RANDOM3 = "game_of_life_20160731144233pq";
 	final static String RANDOM671 = "game_of_life_20160801101601ha";
 	
+	final static String ACTEST = "/home/lachlan/tmp/ac/AntColony-AntColony-18-06-09-20-42-14bz";
+	
 	
 	public static void main(String[] args){
 		DataSetSimulator dss = new DataSetSimulator();
 		DSSCycler cycler = new DSSCycler(dss);
 		cycler.setTimeGap(timeGap);
 		
-		dss.newSimulation(RANDOM3);
+		dss.newSimulation(ACTEST);
 		dss.begin();
 		Scanner keyboard = new Scanner(System.in);
 		char keyGet = 'x';
