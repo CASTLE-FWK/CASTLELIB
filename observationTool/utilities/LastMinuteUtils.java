@@ -18,6 +18,8 @@ public class LastMinuteUtils {
 	}
 	
 	//1: Get all elapsed times from a list of paths
+	//from experiments that dump their termination stats out
+	//and have been converted from json.gz to json
 	public static String elapsedTimes(String pathstxtFP) {
 		List<String> paths = new List<String>(Utilities.parseFileLineXLine(pathstxtFP));
 		String out = "Name\tTime\n";
