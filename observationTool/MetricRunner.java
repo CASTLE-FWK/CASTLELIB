@@ -196,23 +196,23 @@ public class MetricRunner {
 
 		collector.setCollection(experimentDataLocation);
 
-		HashMap<String, String> sysParams = collector.getInitialisationParameters();
-		areaX = 0;
-		areaY = 0;
+//		HashMap<String, String> sysParams = collector.getInitialisationParameters();
+//		areaX = 0;
+//		areaY = 0;
 		String initName = "";
 		int numberOfAgents = 0;
-		if (sysParams.containsKey("Size (X)")) {
-			areaX = Integer.parseInt(sysParams.get("Size (X)"));
-		}
-		if (sysParams.containsKey("Size (Y)")) {
-			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
-		}
-		if (sysParams.containsKey("initPath")) {
-			initName = sysParams.get("initPath");
-		}
-		if (sysParams.containsKey("cellPopulation")) {
-			numberOfAgents = Integer.parseInt("cellPopulation");
-		}
+//		if (sysParams.containsKey("Size (X)")) {
+//			areaX = Integer.parseInt(sysParams.get("Size (X)"));
+//		}
+//		if (sysParams.containsKey("Size (Y)")) {
+//			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
+//		}
+//		if (sysParams.containsKey("initPath")) {
+//			initName = sysParams.get("initPath");
+//		}
+//		if (sysParams.containsKey("cellPopulation")) {
+//			numberOfAgents = Integer.parseInt("cellPopulation");
+//		}
 
 		// Print out dataset information
 		println("*******DATASET INFORMATION*******");
