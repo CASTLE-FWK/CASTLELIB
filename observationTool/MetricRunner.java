@@ -52,8 +52,8 @@ public class MetricRunner {
 	static String experimentID = "";
 	static String initCriteria = "";
 
-	static String experimentDirRoot = "/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/";
-	static String resultsDirRoot = "/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/results/";
+	static String experimentDirRoot = "NOT A DIRECTORY";
+	static String resultsDirRoot = "STILL NOT A DIRECTORY";
 
 	static int[] realEvents_emergence;
 	static int[] realEvents_stability;

@@ -164,9 +164,7 @@ public class Grid<E> implements Representation<E> {
 	
 	@SuppressWarnings("unchecked")
 	public void init(Vector2 layoutXY, Object o) {
-		System.out.println("gridbeep");
 		Class<E> cl = (Class<E>) o.getClass();
-		System.out.println("getName: "+cl.getName());
 		this.X = (int) layoutXY.getX();
 		this.Y = (int) layoutXY.getY();
 		// setPhantomState(this.layoutParameters.allowPhantoms());
@@ -182,7 +180,6 @@ public class Grid<E> implements Representation<E> {
 		// parameters
 		final E[][] grid = (E[][]) Array.newInstance(cl, X, Y);
 		this.grid = grid;
-		System.out.println("gridbeep2");
 	}
 
 	public void initializeAllCells(E e) {

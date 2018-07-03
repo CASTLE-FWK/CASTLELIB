@@ -97,9 +97,4 @@ public class SemanticGroup extends Entity {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "CAPSULE SUPERCLASS (OVERRIDE THIS)";
-	}
-
 }

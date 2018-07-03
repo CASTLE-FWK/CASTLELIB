@@ -262,7 +262,7 @@ public class Entity implements Runnable {
 
 	}
 
-	public void log(String str) {
+	public void log(Object str) {
 		if (output == null) {
 			errLog("output is null");
 		}
@@ -412,6 +412,10 @@ public class Entity implements Runnable {
 
 	public void setEntityPosition(Vector2 p) {
 		position = new Vector2(p);
+	}
+	
+	public Vector2 getEntityPosition() {
+		return position;
 	}
 
 	public void throwCASTLEError(String desc, String location, String clazz) {
