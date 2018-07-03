@@ -24,7 +24,7 @@ public class VisualisationClient {
 			System.err.println("No args. Dying");
 			System.exit(0);
 		}
-		String simPath = args[0];
+		String simPath = args[0].trim();
 		
 		cycler.setTimeGap(timeGap);
 		

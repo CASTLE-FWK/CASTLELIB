@@ -78,7 +78,7 @@ public class DataCollector_FileSystem {
 
 	public HashMap<String, String> getInitialisationParameters() {
 		HashMap<String, String> ip = new HashMap<String, String>();
-		JsonObject obj = parseFile(initParamFilePath);
+//		JsonObject obj = parseFile(initParamFilePath);
 		//TODO
 		System.err.println("incomplete");
 		return ip;

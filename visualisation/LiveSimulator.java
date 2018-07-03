@@ -151,7 +151,8 @@ public class LiveSimulator {
 	public void drawAgentOnGrid(VEntity agt) {
 		Vector2 pos = agt.getPosition();
 		Color currColor;
-		// HARDCODE BECAUSE FUCK IT
+
+		//TODO: HARDCODE BECAUSE FUCK IT
 		if (agt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
 			currColor = Color.BLACK;
 		} else {
