@@ -35,7 +35,7 @@ public class Output {
 
 	private Logger logger;
 	boolean loggerMuted = false;
-	
+
 	Document runningDoc;
 
 	public Output(SimulationInfo si) {
@@ -64,6 +64,17 @@ public class Output {
 
 	public void setup(boolean ltf, boolean ltc, boolean ltd, String logFilePath, boolean wdf, boolean wdc,
 			boolean wddb) {
+		if (ltf || wdf) {
+			if (logFilePath == null) {
+				ltf = false;
+				wdf = false;
+				errLog("No logFilePath provided, disabling writing to file.");
+			} else if (logFilePath.length() <= 0) {
+				ltf = false;
+				wdf = false;
+				errLog("No logFilePath provided, disabling writing to file.");
+			}
+		}
 		loggingToFile = ltf;
 		loggingToConsole = ltc;
 		loggingToDB = ltd;
@@ -88,9 +99,10 @@ public class Output {
 			}
 		}
 		if (!loggerMuted) {
-			if (writingModelDataToFile) {
-				logger.writeSystemSpecsToFile(si, params);
-			}
+			
+		}
+		if (writingModelDataToFile) {
+			logger.writeSystemSpecsToFile(si, params);
 		}
 	}
 
@@ -154,9 +166,9 @@ public class Output {
 				} else {
 					superType = "UNKNOWN";
 				}
-				//TODO: Why do we have both??
+				// TODO: Why do we have both??
 				logger.logToFileFromDocument(superType, e.writeEntityDataDocument());
-				//logger.logToFile(e.writeEntityDataToString());
+				// logger.logToFile(e.writeEntityDataToString());
 			}
 		}
 		if (!dbOutputMuted) {
@@ -170,7 +182,7 @@ public class Output {
 		if (filePath != null)
 			new ThreadedFileWriter(filePath, log, append).run();
 	}
-	
+
 	public void sendStringToCompressedFile(String filePath, String log) {
 		try {
 			Utilities.compressStringToFile(log, filePath);

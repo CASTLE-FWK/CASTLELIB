@@ -28,8 +28,8 @@ public class NetworkNode<E> {
 	
 	public NetworkNode(E e){
 		this.entity = e;
-		this.x = this.position.getX();
-		this.y = this.position.getY();	
+//		this.x = this.position.getX();
+//		this.y = this.position.getY();	
 		outgoingInteraction = 0;
 		incomingInteraction = 0;
 		outgoingTotalWeight = 0;
@@ -37,6 +37,11 @@ public class NetworkNode<E> {
 		incomingEdges = new ArrayList<NetworkEdge>();
 		outgoingEdges = new ArrayList<NetworkEdge>();
 		connectedNodes = new HashSet<NetworkNode>();
+	}
+	
+	public void setPosition(Vector2 v) {
+		this.x = v.getX();
+		this.y = v.getY();
 	}
 
 	/**

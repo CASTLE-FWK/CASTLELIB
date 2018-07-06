@@ -85,23 +85,6 @@ public class Continuous<E> implements Representation<E> {
 				items.add(v);
 			}
 		}
-		//
-		// for (Vector2 v : positions){
-		// if (range.containsPoint(v)){
-		// //Get all entities at that location
-		// items.addAll(
-		// entityLocationMap.entrySet()
-		// .parallelStream()
-		// .filter(entry -> Objects.equals(entry.getValue(), v))
-		// .map(Map.Entry::getKey)
-		// .collect(Collectors.toSet()));
-		// }
-		// }
-
-		// ArrayList<Vector2> possiblePositions = pos.possibleOffsets(dist);
-		// for (Vector2 v : possiblePositions){
-		// items.addAll(getObjectsAtLocation(v.getX(), v.getY()));
-		// }
 
 		return items;
 	}
@@ -187,7 +170,12 @@ public class Continuous<E> implements Representation<E> {
 	@Override
 	public boolean addEntity(E e, Vector2 p) {
 		// TODO Auto-generated method stub
-		return false;
+		add(e,p);
+		return true;
+	}
+	
+	public String toString() {
+		return getClass() +"=dims: "+dimensions+", population size:"+size();
 	}
 
 	// public void updatePositions(){

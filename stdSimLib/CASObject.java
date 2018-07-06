@@ -9,5 +9,9 @@ public class CASObject {
 	public void print(String str){
 		System.out.println(str);
 	}
+	
+	public void errLog(Object o) {
+		System.err.println(objectName+" Warning: "+o.toString());
+	}
 
 }

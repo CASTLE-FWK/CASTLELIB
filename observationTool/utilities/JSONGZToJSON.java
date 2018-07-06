@@ -12,7 +12,7 @@ public class JSONGZToJSON {
 	public static void main(String[] args) {
 		//testing
 //		convertGZtoJSON("/home/lachlan/tmp/ac/AntColony-AntColony-18-06-09-20-42-14bz/steps/Step84.json.gz", "/home/lachlan/tmp/ac/AntColony-AntColony-18-06-09-20-42-14bz/steps/Step84.json");
-		batchGZtoJSON("/home/lachlan/tmp/ac/AntColony-AntColony-18-06-09-20-42-14bz/steps/conv.txt");
+		batchGZtoJSON("/home/lachlan/repos/repastModels/AntColony/AntColony/res/AntColony-AntColony-18-07-04-11-16-41sg/stepList.txt");
 	}
 	
 	public static void convertGZtoJSON(String inFP, String outFP) {
