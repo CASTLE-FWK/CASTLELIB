@@ -1,18 +1,11 @@
 package castleComponents;
 
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
-import org.bson.BsonBinaryWriter;
-import org.bson.ByteBuf;
 import org.bson.Document;
-import org.bson.io.BasicOutputBuffer;
-import org.bson.io.OutputBuffer;
-
-import com.mongodb.BasicDBObject;
-
 import stdSimLib.Parameter;
 import stdSimLib.utilities.Utilities;
 
@@ -41,14 +34,14 @@ public class Logger {
 	private SimulationInfo simInfo;
 
 	Document doc;
-	private HashMap<String, ArrayList<Document>> documentStorage;
+	private ConcurrentHashMap<String, List<Document>> documentStorage;
 
 	private String systemTerminationInfoPath;
 
 	public Logger(Output op, SimulationInfo simInfo) {
 		this.output = op;
 		this.simInfo = simInfo;
-		documentStorage = new HashMap<String, ArrayList<Document>>();
+		documentStorage = new ConcurrentHashMap<String, List<Document>>();
 	}
 
 	public void setOutput(Output op) {
@@ -89,7 +82,7 @@ public class Logger {
 		// stringBuilder.append("Step " + stepNumber + "\n");
 		stringBuilder.append("{ \"Step-Number\" : " + stepNumber + " }\n");
 		doc = new Document();
-		documentStorage = new HashMap<String, ArrayList<Document>>();
+		documentStorage = new ConcurrentHashMap<String, List<Document>>();
 		doc.append("step-number", stepNumber);
 	}
 
@@ -165,9 +158,13 @@ public class Logger {
 	}
 
 	public void logToFileFromDocument(String key, Document d) {
-		ArrayList<Document> docs = documentStorage.get(key);
+		if (d == null) {
+			System.err.println("d is null");
+			System.exit(0);
+		}
+		List<Document> docs = documentStorage.get(key);
 		if (docs == null) {
-			docs = new ArrayList<Document>();
+			docs = Collections.synchronizedList(new ArrayList<Document>());
 			documentStorage.put(key, docs);
 			docs = documentStorage.get(key);
 		}
