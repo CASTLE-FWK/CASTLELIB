@@ -14,7 +14,7 @@ public class VisualisationClient {
 	final static String RANDOM671 = "game_of_life_20160801101601ha";
 	
 	
-	final static String ACTEST = "/home/lachlan/tmp/ac/AntColony-AntColony-18-06-09-20-42-14bz";
+	final static String ACTEST = "/home/lachlan/repos/repastModels/runtime/output/ac/baseline-strong/AntColony-AntColony-18-07-05-17-06-59bx";
 	
 	
 	public static void main(String[] args){

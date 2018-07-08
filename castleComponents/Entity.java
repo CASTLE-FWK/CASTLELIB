@@ -1,6 +1,7 @@
 package castleComponents;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -21,10 +22,10 @@ import stdSimLib.utilities.Utilities;
 
 public class Entity implements Runnable {
 
-	protected ArrayList<Trigger> actionTriggers;
+	protected List<Trigger> actionTriggers;
 	protected ArrayList<Trigger> actionTriggersToAdd;
 	final String AGENT = "agent";
-	protected ArrayList<Trigger> cleanupTriggers;
+	protected List<Trigger> cleanupTriggers;
 	protected ArrayList<Trigger> cleanupTriggersToAdd;
 	final char COMMA = ',';
 	final char NL = '\n';
@@ -42,7 +43,7 @@ public class Entity implements Runnable {
 	protected HashMap<String, Parameter<?>> parameters;
 	protected Vector2 position = new Vector2();
 	protected boolean ready = false;
-	protected ArrayList<Trigger> setupTriggers;
+	protected List<Trigger> setupTriggers;
 	protected ArrayList<Trigger> setupTriggersToAdd;
 
 	public enum EntityType {
@@ -132,6 +133,10 @@ public class Entity implements Runnable {
 			interactionsInLastInterval.put(interaction.getID(), interaction);
 		} else {
 			storedInteraction.incrementOccurrence();
+		}
+		if (entityTo == null) {
+			System.err.println("nulll11");
+			System.exit(0);
 		}
 	}
 
@@ -249,11 +254,11 @@ public class Entity implements Runnable {
 		parameters = new HashMap<String, Parameter<?>>();
 		interactionsInLastInterval = new ConcurrentHashMap<String, Interaction>();
 		featuresInLastInterval = new HashMap<String, Feature>();
-		setupTriggers = new ArrayList<Trigger>();
+		setupTriggers = Collections.synchronizedList(new ArrayList<Trigger>());
 		setupTriggersToAdd = new ArrayList<Trigger>();
-		cleanupTriggers = new ArrayList<Trigger>();
+		cleanupTriggers = Collections.synchronizedList(new ArrayList<Trigger>());
 		cleanupTriggersToAdd = new ArrayList<Trigger>();
-		actionTriggers = new ArrayList<Trigger>();
+		actionTriggers = Collections.synchronizedList(new ArrayList<Trigger>());
 		actionTriggersToAdd = new ArrayList<Trigger>();
 		position = new Vector2();
 	}
