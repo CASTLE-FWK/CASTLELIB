@@ -2,7 +2,7 @@ package visualisation;
 //
 import java.util.Scanner;
 public class VisualisationClient {
-	static double timeGap = 500;
+	static double timeGap = 100;
 	
 	final static String PULSAR = "game_of_life_20160731143812bv";
 	final static String GLIDER = "game_of_life_20160731143838pk";

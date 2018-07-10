@@ -257,27 +257,79 @@ public class MetricRunner {
 		String realEventEmergenceFile = experimentDataLocation + REAL_EM_LOCATION;
 		List<String> realEm = Utilities.parseFileLineXLine(realEventEmergenceFile);
 		for (String s : realEm) {
-			int i = Integer.parseInt(s);
-			realEvents_emergence[i] = 1;
+			if (s.contains("-")) {
+				String[] ss = s.split("-");
+				int start = Integer.parseInt(ss[0]);
+				int fin = Integer.parseInt(ss[1]);
+				for (int i = start; i <= fin; i++) {
+					if (i >= realEvents_emergence.length) {
+						break;
+					} else {
+						realEvents_emergence[i] = 1;
+					}
+				}
+			} else {
+				int i = Integer.parseInt(s);
+				realEvents_emergence[i] = 1;
+			}
 		}
 
 		String realEventStabilityFile = experimentDataLocation + REAL_ST_LOCATION;
 		List<String> realSt = Utilities.parseFileLineXLine(realEventStabilityFile);
 		for (String s : realSt) {
-			int i = Integer.parseInt(s);
-			realEvents_stability[i] = 1;
+			if (s.contains("-")) {
+				String[] ss = s.split("-");
+				int start = Integer.parseInt(ss[0]);
+				int fin = Integer.parseInt(ss[1]);
+				for (int i = start; i <= fin; i++) {
+					if (i >= realEvents_stability.length) {
+						break;
+					} else {
+						realEvents_stability[i] = 1;
+					}
+				}
+			} else {
+				int i = Integer.parseInt(s);
+				realEvents_stability[i] = 1;
+			}
 		}
 		String realEventCriticalityFile = experimentDataLocation + REAL_CR_LOCATION;
 		List<String> realCr = Utilities.parseFileLineXLine(realEventCriticalityFile);
 		for (String s : realCr) {
-			int i = Integer.parseInt(s);
-			realEvents_criticality[i] = 1;
+			if (s.contains("-")) {
+				String[] ss = s.split("-");
+				int start = Integer.parseInt(ss[0]);
+				int fin = Integer.parseInt(ss[1]);
+				for (int i = start; i <= fin; i++) {
+					if (i >= realEvents_criticality.length) {
+						break;
+					} else {
+						realEvents_criticality[i] = 1;
+					}
+				}
+			} else {
+				int i = Integer.parseInt(s);
+				realEvents_criticality[i] = 1;
+			}
 		}
 		String realEventAdaptabilityFile = experimentDataLocation + REAL_AD_LOCATION;
 		List<String> realAd = Utilities.parseFileLineXLine(realEventAdaptabilityFile);
 		for (String s : realAd) {
-			int i = Integer.parseInt(s);
-			realEvents_adaptability[i] = 1;
+			if (s.contains("-")) {
+				String[] ss = s.split("-");
+				int start = Integer.parseInt(ss[0]);
+				int fin = Integer.parseInt(ss[1]);
+				for (int i = start; i <= fin; i++) {
+					if (i >= realEvents_adaptability.length) {
+						break;
+					} else {
+						realEvents_adaptability[i] = 1;
+					}
+				}
+			} else {
+				int i = Integer.parseInt(s);
+				realEvents_adaptability[i] = 1;
+			}
 		}
 
 		// Import corresponding real event files

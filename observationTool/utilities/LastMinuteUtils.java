@@ -1,5 +1,7 @@
 package observationTool.utilities;
 
+import java.io.BufferedReader;
+
 import castleComponents.objects.List;
 import observationTool.DataCollector_FileSystem;
 import stdSimLib.utilities.Utilities;
@@ -19,8 +21,9 @@ public class LastMinuteUtils {
 		// String s = elapsedTimes(TEST);
 		// System.out.println(s);
 
-		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/ac/list.txt",
-				"/home/lachlan/repos/repastModels/AntColony/AntColony/experiments/metrics.json", "AntColony");
+//		String s = buildExperimentFile("/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/list.txt",
+//				"/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/metrics.json", "SocialNetwork");
+		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/fobsg/slurm/list.txt", "FoB");
 		System.out.println(s);
 	}
 
@@ -79,6 +82,38 @@ public class LastMinuteUtils {
 		List<String> metricsJson = new List<String>(Utilities.parseFileLineXLine(pathToMetricsJSON));
 		for (String s : metricsJson) {
 			out += s + "\n";
+		}
+		return out;
+	}
+	
+	
+	public static String pullRuntimesFromSlurmOuts(String pathsTXT, String sysname) {
+		String out = "SystemName,SystemConfig,Runtime(ms)\n";
+		final String COMMA = ",";
+		final String NL = "\n";
+		List<String> paths = new List<String>(Utilities.parseFileLineXLine(pathsTXT));
+		for (String s : paths) {
+			BufferedReader br = Utilities.getFileAsBufferedReader(s);
+			String line = null;
+			String infoLine = "";
+			try {
+				while ((line = br.readLine()) != null) {
+					if (line.startsWith("name=")) {
+						infoLine = line;
+						break;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (infoLine.length() > 0) {
+				//Parse infoLine
+				String[] ss = infoLine.split(",");
+				String n = ss[0].replace("name=", "");
+				String rt = ss[1].replace("runtime=", "");
+				String cn = ss[2].replace("config-name=","");
+				out += n+COMMA+cn+COMMA+rt+NL;
+			}
 		}
 		return out;
 	}
