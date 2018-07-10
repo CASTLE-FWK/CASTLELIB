@@ -75,7 +75,7 @@ public class MetricVariableMapping {
 		}
 		return (score == 0);
 	}
-	
+
 	public String getDesiredValueFromName(String n) {
 		ArrayList<TypeMap> tmList = getSpecificTypeMap(n);
 		for (TypeMap tm : tmList) {
@@ -85,7 +85,6 @@ public class MetricVariableMapping {
 		}
 		return null;
 	}
-	
 
 	public String typeMapsToString() {
 		String str = "typeMaps:[";
@@ -95,8 +94,8 @@ public class MetricVariableMapping {
 		str += "]";
 		return str;
 	}
-	
+
 	public String toString() {
-		return "{"+metricVar+"["+typeMapsToString()+"]}";
+		return "{" + metricVar + "[" + typeMapsToString() + "]}";
 	}
 }

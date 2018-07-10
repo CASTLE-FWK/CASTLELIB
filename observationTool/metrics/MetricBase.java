@@ -79,7 +79,7 @@ public class MetricBase {
 	public String getMetricName() {
 		return this.metricName;
 	}
-	
+
 	public String mvmsToString() {
 		String str = "{";
 		for (MetricVariableMapping mvm : metricVariableMappings.values()) {

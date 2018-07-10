@@ -11,33 +11,39 @@ import stdSimLib.utilities.Utilities;
 //TODO: Need to do something about results stored as Strings...
 public class MetricResult {
 	private String systemName;
+
 	public String getSystemName() {
 		return systemName;
 	}
+
 	private String metricName;
 	private HashSet<String> resultNames;
 	private HashSet<String> stringResultNames;
-	public HashSet<String> getStringResultNames(){
+
+	public HashSet<String> getStringResultNames() {
 		return stringResultNames;
 	}
+
 	private HashMap<String, Double[]> results;
 	private HashMap<String, String[]> stringResults;
-	public HashMap<String, String[]> getStringResults(){
+
+	public HashMap<String, String[]> getStringResults() {
 		return stringResults;
 	}
-	
+
 	private double runtime = 0.0;
 	private int numberOfSteps = 0;
 	private AccuracyResults theResult;
 	private int numberOfRealInstances = 0;
 	String[] printingOrder;
+
 	public String[] getPrintingOrder() {
 		return printingOrder;
 	}
 
 	private String resultsDir = "/Users/lachlan/repos/interlib/observationModule/results/";
 
-	//TODO: SI HACK IS LAZY. NEED TO MAKE NICER
+	// TODO: SI HACK IS LAZY. NEED TO MAKE NICER
 	public MetricResult(String sysName, String metricName, int totalNumberOfSteps, SystemInfo si, String resultsDir) {
 		this.systemName = sysName;
 		this.metricName = metricName;
@@ -52,7 +58,7 @@ public class MetricResult {
 		this.resultsDir += sysName.replaceAll("\\s+", "") + "/" + metricName.replaceAll("\\s+", "") + "/best/"
 				+ si.getConfigurationString() + "_";
 	}
-	
+
 	public void append(MetricResult mr) {
 		if (systemName.compareToIgnoreCase(mr.getSystemName()) != 0) {
 			System.out.println("Cannot append results from 2 different systems.");
@@ -71,7 +77,7 @@ public class MetricResult {
 		for (String s : mr.getPrintingOrder()) {
 			addPrintingOrder(s);
 		}
-		
+
 	}
 
 	public void setPrintingOrder(String... headers) {
@@ -79,6 +85,12 @@ public class MetricResult {
 	}
 
 	public void addPrintingOrder(String str) {
+		for (String s : printingOrder) {
+			if (s.compareTo(str) == 0) {
+				// Don't both adding
+				return;
+			}
+		}
 		printingOrder = Arrays.copyOf(printingOrder, printingOrder.length + 1);
 		printingOrder[printingOrder.length - 1] = str;
 	}
@@ -174,17 +186,18 @@ public class MetricResult {
 		Double[] resultsCalculated = results.get(resType1);
 		Double[] resultsReal = results.get(resType2);
 		theResult = new AccuracyResults();
-		//		System.out.println("****Accuracy Calculation for "+experimentName);
-		//		System.out.println(String.format("Results Type 1: %1$s Results Type 2: %2$s. Threshold1: %3$f. Threshold2: %4$f", 
-		//				resType1, resType2, thresholdT1, thresholdT2));
+		// System.out.println("****Accuracy Calculation for "+experimentName);
+		// System.out.println(String.format("Results Type 1: %1$s Results Type 2: %2$s.
+		// Threshold1: %3$f. Threshold2: %4$f",
+		// resType1, resType2, thresholdT1, thresholdT2));
 
-		//Check null
+		// Check null
 		if (resultsCalculated == null || resultsReal == null) {
 			System.out.println("Accuracy Calc Warning: One results set is null.");
 			return -11;
 		}
 
-		//Check size
+		// Check size
 		int resultsCalculatedLength = resultsCalculated.length;
 		int resultsRealLength = resultsReal.length;
 		int maxLength = resultsCalculatedLength;
@@ -220,8 +233,8 @@ public class MetricResult {
 
 		int[] positiveHits = new int[maxLength];
 
-		//		System.out.println("max length: "+maxLength);
-		//Start matching things
+		// System.out.println("max length: "+maxLength);
+		// Start matching things
 		for (int i = window; i < maxLength; i += window) {
 			if (resultsCalculated[i] == null) {
 				System.out.println("HERE1: " + i);
@@ -230,14 +243,14 @@ public class MetricResult {
 				System.out.println("HERE2: " + i);
 			}
 
-			//Calculate gradient
-			//y is 1 (at the moment, unless we make it adaptive)
+			// Calculate gradient
+			// y is 1 (at the moment, unless we make it adaptive)
 			double x = Math.abs(resultsCalculated[i] - resultsCalculated[i - window]);
-			//			double grad = x;
+			// double grad = x;
 			double grad = gradientYSize / x;
-			//			if (grad > 1){
-			////					System.out.println("gg: "+grad+" x: "+x+" gys: "+gradientYSize);
-			//			}
+			// if (grad > 1){
+			//// System.out.println("gg: "+grad+" x: "+x+" gys: "+gradientYSize);
+			// }
 			if (grad <= thresholdT1) {
 				stepsWithSODetected.add(i);
 			} else {
@@ -246,7 +259,7 @@ public class MetricResult {
 
 		}
 
-		//See how accurate the classifying was
+		// See how accurate the classifying was
 		for (int i : stepsWithSODetected) {
 			positiveHits[i] = 1;
 			for (int j : realStepsWithSODetected) {
@@ -280,57 +293,65 @@ public class MetricResult {
 
 		if (saveToFile) {
 			String toFileString = "#Steps\tRealEvents\tDetectedEvents\n";
-			//We need to send to file the positive detections against the actual detections
+			// We need to send to file the positive detections against the actual detections
 			for (int i = 0; i < maxLength; i++) {
 				toFileString += i + "\t" + resultsReal[i] + "\t" + positiveHits[i] + "\n";
 			}
 			Utilities.writeToFile(toFileString,
-					resultsDir + resType1.replaceAll("\\s+", "") + "_" + resType2.replaceAll("\\s+", "") + ".tsv", false);
+					resultsDir + resType1.replaceAll("\\s+", "") + "_" + resType2.replaceAll("\\s+", "") + ".tsv",
+					false);
 		}
 
-		//Calculate Fowlkes-Mallows index
-		//		double arg1 = (double)theResult.getTruePositives() / ((double)theResult.getTruePositives() + theResult.getFalsePositives());
-		//		double arg2 = (double)theResult.getTruePositives() / ((double)theResult.getTruePositives() + theResult.getFalseNegatives());
-		//		double fmi = Math.sqrt(arg1 * arg2);
-		//		return fmi;
+		// Calculate Fowlkes-Mallows index
+		// double arg1 = (double)theResult.getTruePositives() /
+		// ((double)theResult.getTruePositives() + theResult.getFalsePositives());
+		// double arg2 = (double)theResult.getTruePositives() /
+		// ((double)theResult.getTruePositives() + theResult.getFalseNegatives());
+		// double fmi = Math.sqrt(arg1 * arg2);
+		// return fmi;
 
-		//		return theResult.calculateTruePositiveRatio() * 100.0;
-		//		return theResult.calculateACC() * 100.0;
-		//		return theResult.calculatePPV() * 100.0;
-		//		if (theResult.getNumberOfRealInstances() == 0){
-		//			return -1;
-		//		} else {
-		//			return ((double)(theResult.getTruePositives() - theResult.getFalsePositives())/(double)theResult.getNumberOfRealInstances())*100;
-		//		}
-		//		
+		// return theResult.calculateTruePositiveRatio() * 100.0;
+		// return theResult.calculateACC() * 100.0;
+		// return theResult.calculatePPV() * 100.0;
+		// if (theResult.getNumberOfRealInstances() == 0){
+		// return -1;
+		// } else {
+		// return ((double)(theResult.getTruePositives() -
+		// theResult.getFalsePositives())/(double)theResult.getNumberOfRealInstances())*100;
+		// }
+		//
 
-		//Used for results generated on the morning of 13/09
-		// return (double)(theResult.getTruePositives()/(double)theResult.getNumberOfRealInstances())* 100.0;
+		// Used for results generated on the morning of 13/09
+		// return
+		// (double)(theResult.getTruePositives()/(double)theResult.getNumberOfRealInstances())*
+		// 100.0;
 
 		return theResult.F1Score() * 100.0;
 
-		//Used for results generated on the evening of 13/09
-		//		double tpreal = (double)(theResult.getTruePositives()/(double)theResult.getNumberOfRealInstances());
-		//		double acc = theResult.calculateACC();
+		// Used for results generated on the evening of 13/09
+		// double tpreal =
+		// (double)(theResult.getTruePositives()/(double)theResult.getNumberOfRealInstances());
+		// double acc = theResult.calculateACC();
 
-		//		return ((tpreal+acc)/2.0)*100.0;
+		// return ((tpreal+acc)/2.0)*100.0;
 
 	}
 
 	public double accuracyCalculationForString(String resType1, String resType2, String sMatch1, String sMatch2) {
 		String[] stringResultsCalculated = stringResults.get(resType1);
 		String[] stringResultsReal = stringResults.get(resType2);
-		//		System.out.println("****String Accuracy Calculation for "+experimentName);
-		//		System.out.println(String.format("Results Type 1: %1$s Results Type 2: %2$s. Threshold1: %3$s. Threshold2: %4$s", 
-		//				resType1, resType2, sMatch1, sMatch2));
+		// System.out.println("****String Accuracy Calculation for "+experimentName);
+		// System.out.println(String.format("Results Type 1: %1$s Results Type 2: %2$s.
+		// Threshold1: %3$s. Threshold2: %4$s",
+		// resType1, resType2, sMatch1, sMatch2));
 
-		//Check null
+		// Check null
 		if (stringResultsCalculated == null || stringResultsReal == null) {
 			System.out.println("Accuracy Calc Warning: One stringResults set is null.");
 			return -11;
 		}
 
-		//Check size
+		// Check size
 		int stringResultsCalculatedLength = stringResultsCalculated.length;
 		int stringResultsRealLength = stringResultsReal.length;
 		int maxLength = stringResultsCalculatedLength;
@@ -342,8 +363,8 @@ public class MetricResult {
 		}
 
 		double hits = 0.0;
-		//		System.out.println("max length: "+maxLength);
-		//Start matching things
+		// System.out.println("max length: "+maxLength);
+		// Start matching things
 		for (int i = 0; i < maxLength; i++) {
 			if (stringResultsCalculated[i] == null) {
 				System.out.println("HERE1: " + i);
@@ -373,10 +394,10 @@ public class MetricResult {
 		return str;
 	}
 
-	//How is this going to work?
-	//Ideally, this should spew out GNUPlot compatible stuff
+	// How is this going to work?
+	// Ideally, this should spew out GNUPlot compatible stuff
 
-	//TODO: Use the printingOrder array to print in consistent and correct order
+	// TODO: Use the printingOrder array to print in consistent and correct order
 	public String resultsToString() {
 		StringBuilder sb = new StringBuilder();
 		final String TAB = "\t";
@@ -384,26 +405,25 @@ public class MetricResult {
 		Double[][] dd = new Double[resultNames.size()][];
 		String[][] ss = new String[stringResultNames.size()][];
 		int c = 0;
+
 		sb.append("#".concat("step" + TAB));
-		//Calculate max result size and print headers
+		// Calculate max result size and print headers
 		for (int i = 0; i < printingOrder.length; i++) {
 			sb.append("#".concat(printingOrder[i]).concat(TAB));
-			System.out.println(printingOrder[i]);
-			System.out.println(dd[c]);
 			dd[c] = results.get(printingOrder[i]);
 			c++;
 		}
-		//		for (String resName : resultNames){
-		//			sb.append("#".concat(resName).concat(TAB));			
-		//			dd[c] = results.get(resName);
-		//			c++;
-		//		}
+		// for (String resName : resultNames){
+		// sb.append("#".concat(resName).concat(TAB));
+		// dd[c] = results.get(resName);
+		// c++;
+		// }
 		int s = 0;
-		//		for (String resSName : stringResultNames){
-		//			sb.append("#".concat(resSName).concat(TAB));
-		//			ss[s] = stringResults.get(resSName);
-		//			s++;
-		//		}
+		// for (String resSName : stringResultNames){
+		// sb.append("#".concat(resSName).concat(TAB));
+		// ss[s] = stringResults.get(resSName);
+		// s++;
+		// }
 		sb.append(NEWLINE);
 
 		for (int i = 0; i < numberOfSteps; i++) {
@@ -413,15 +433,15 @@ public class MetricResult {
 					sb.append(dd[j][i] + "".concat(TAB));
 				}
 			}
-			//			for (int j = 0; j < printingOrder.length; j++){
-			//				if (i < ss[j].length){
-			//					sb.append(ss[j][i]+"".concat(TAB));
-			//				}
-			//			}
+			// for (int j = 0; j < printingOrder.length; j++){
+			// if (i < ss[j].length){
+			// sb.append(ss[j][i]+"".concat(TAB));
+			// }
+			// }
 			sb.append(NEWLINE);
 		}
 
-		//Printing runtime
+		// Printing runtime
 		sb.append("#runtime".concat(TAB).concat("" + runtime));
 		return sb.toString();
 	}

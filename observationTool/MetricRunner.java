@@ -82,9 +82,9 @@ public class MetricRunner {
 	static MetricResult currentResult;
 
 	public static void errLog(Object o) {
-		System.err.println("MetricRunner Warning: "+o.toString());
+		System.err.println("MetricRunner Warning: " + o.toString());
 	}
-	
+
 	public static void main(String[] args) {
 		if (args.length < 0) {
 			errLog("No args provided. Dying.");
@@ -153,7 +153,7 @@ public class MetricRunner {
 					while (!es.isTerminated()) {
 						// Busy wait
 					}
-					
+
 					// Append all the results
 					for (ArrayList<MetricResult> mr : threadResultsStore.values()) {
 						MetricResult prim = mr.get(0);
@@ -178,6 +178,8 @@ public class MetricRunner {
 					for (MetricResult r : allResults) {
 						Utilities.writeToFile(r.resultsToString(),
 								dirTimeStamp + r.getExperimentName().replaceAll("\\s+", "") + "_allMetrics.tsv", false);
+
+						System.out.println("r.resultsToString(): " + r.resultsToString());
 					}
 				}
 			});
@@ -194,7 +196,6 @@ public class MetricRunner {
 		System.exit(0);
 	}
 
-	
 	public static int[] realEventAdder(String s, int[] real) {
 		if (s.contains("-")) {
 			String[] ss = s.split("-");
@@ -213,7 +214,7 @@ public class MetricRunner {
 		}
 		return real;
 	}
-	
+
 	// This is what we want to thread
 	public static ArrayList<MetricResult> runAnalysis(Experiment e, SystemInfo thisTestSystem,
 			DataCollector_FileSystem collector) {
@@ -267,13 +268,13 @@ public class MetricRunner {
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays
-		realEvents_emergence = new int[totalNumberOfSteps+1];
+		realEvents_emergence = new int[totalNumberOfSteps + 1];
 		Arrays.fill(realEvents_emergence, 0);
-		realEvents_stability = new int[totalNumberOfSteps+1];
+		realEvents_stability = new int[totalNumberOfSteps + 1];
 		Arrays.fill(realEvents_stability, 0);
-		realEvents_criticality = new int[totalNumberOfSteps+1];
+		realEvents_criticality = new int[totalNumberOfSteps + 1];
 		Arrays.fill(realEvents_criticality, 0);
-		realEvents_adaptability = new int[totalNumberOfSteps+1];
+		realEvents_adaptability = new int[totalNumberOfSteps + 1];
 		Arrays.fill(realEvents_adaptability, 0);
 
 		// Add the real events to the current results
@@ -281,9 +282,9 @@ public class MetricRunner {
 		// currentResult.addResultType(realEventsNameSt);
 		// currentResult.addResultType(realEventsNameCr);
 		// currentResult.addResultType(realEventsNameAd);
-		
-		String realEventsFile = experimentDataLocation + REAL_EVS_LOCATION; 
-		//EM AD CR ST
+
+		String realEventsFile = experimentDataLocation + REAL_EVS_LOCATION;
+		// EM AD CR ST
 		List<String> realEv = Utilities.parseFileLineXLine(realEventsFile);
 		for (String s : realEv) {
 			String em = "";
@@ -299,13 +300,11 @@ public class MetricRunner {
 				cr = spl[2];
 			if (spl.length >= 4)
 				st = spl[3];
-			
-			
-			
+
 			if (em.length() > 0) {
 				realEvents_emergence = realEventAdder(em, realEvents_emergence);
 			}
-			if (ad.length() >0) {
+			if (ad.length() > 0) {
 				realEvents_adaptability = realEventAdder(ad, realEvents_adaptability);
 			}
 			if (cr.length() > 0) {
@@ -314,133 +313,8 @@ public class MetricRunner {
 			if (st.length() > 0) {
 				realEvents_stability = realEventAdder(st, realEvents_stability);
 			}
-			
+
 		}
-			
-//		
-//
-//		String realEventFileRoot = resultsDirRoot;
-//		String realEventEmergenceFile = experimentDataLocation + REAL_EM_LOCATION;
-//		List<String> realEm = Utilities.parseFileLineXLine(realEventEmergenceFile);
-//		for (String s : realEm) {
-//			if (s.contains("-")) {
-//				String[] ss = s.split("-");
-//				int start = Integer.parseInt(ss[0]);
-//				int fin = Integer.parseInt(ss[1]);
-//				for (int i = start; i <= fin; i++) {
-//					if (i >= realEvents_emergence.length) {
-//						break;
-//					} else {
-//						realEvents_emergence[i] = 1;
-//					}
-//				}
-//			} else {
-//				int i = Integer.parseInt(s);
-//				realEvents_emergence[i] = 1;
-//			}
-//		}
-//
-//		String realEventStabilityFile = experimentDataLocation + REAL_ST_LOCATION;
-//		List<String> realSt = Utilities.parseFileLineXLine(realEventStabilityFile);
-//		for (String s : realSt) {
-//			if (s.contains("-")) {
-//				String[] ss = s.split("-");
-//				int start = Integer.parseInt(ss[0]);
-//				int fin = Integer.parseInt(ss[1]);
-//				for (int i = start; i <= fin; i++) {
-//					if (i >= realEvents_stability.length) {
-//						break;
-//					} else {
-//						realEvents_stability[i] = 1;
-//					}
-//				}
-//			} else {
-//				int i = Integer.parseInt(s);
-//				realEvents_stability[i] = 1;
-//			}
-//		}
-//		String realEventCriticalityFile = experimentDataLocation + REAL_CR_LOCATION;
-//		List<String> realCr = Utilities.parseFileLineXLine(realEventCriticalityFile);
-//		for (String s : realCr) {
-//			if (s.contains("-")) {
-//				String[] ss = s.split("-");
-//				int start = Integer.parseInt(ss[0]);
-//				int fin = Integer.parseInt(ss[1]);
-//				for (int i = start; i <= fin; i++) {
-//					if (i >= realEvents_criticality.length) {
-//						break;
-//					} else {
-//						realEvents_criticality[i] = 1;
-//					}
-//				}
-//			} else {
-//				int i = Integer.parseInt(s);
-//				realEvents_criticality[i] = 1;
-//			}
-//		}
-//		String realEventAdaptabilityFile = experimentDataLocation + REAL_AD_LOCATION;
-//		List<String> realAd = Utilities.parseFileLineXLine(realEventAdaptabilityFile);
-//		for (String s : realAd) {
-//			if (s.contains("-")) {
-//				String[] ss = s.split("-");
-//				int start = Integer.parseInt(ss[0]);
-//				int fin = Integer.parseInt(ss[1]);
-//				for (int i = start; i <= fin; i++) {
-//					if (i >= realEvents_adaptability.length) {
-//						break;
-//					} else {
-//						realEvents_adaptability[i] = 1;
-//					}
-//				}
-//			} else {
-//				int i = Integer.parseInt(s);
-//				realEvents_adaptability[i] = 1;
-//			}
-//		}
-
-		// Import corresponding real event files
-		// This is from GoL testing
-
-		// if (systemConfiguration.compareToIgnoreCase("random") != 0) {
-		// realEventEmergenceFile = realEventFileRoot.concat(systemConfiguration +
-		// "/events_emergence.tsv"); realEventStabilityFile =
-		// realEventFileRoot.concat(systemConfiguration + "/events_stability.tsv");
-		// realEventCriticalityFile = realEventFileRoot.concat(systemConfiguration +
-		// "/events_criticality.tsv"); realEventAdaptabilityFile =
-		// realEventFileRoot.concat(systemConfiguration + "/events_adaptability.tsv"); }
-		// else { realEventEmergenceFile = realEventFileRoot .concat(systemConfiguration
-		// + "/events_emergence" + systemString + ".tsv"); realEventStabilityFile =
-		// realEventFileRoot .concat(systemConfiguration + "/events_stability" +
-		// systemString + ".tsv"); realEventCriticalityFile = realEventFileRoot
-		// .concat(systemConfiguration + "/events_criticality" + systemString + ".tsv");
-		// realEventAdaptabilityFile = realEventFileRoot .concat(systemConfiguration +
-		// "/events_adaptability" + systemString + ".tsv"); } String line = ""; try {
-		// BufferedReader br =
-		// Utilities.getFileAsBufferedReader(realEventEmergenceFile); while ((line =
-		// br.readLine()) != null) { if (line.startsWith("#")) { continue; } int
-		// eventNumber = Integer.parseInt(line); realEvents_emergence[eventNumber] = 1;
-		// currentResult.addResultAtStep(realEventsNameEm, 1, eventNumber); }
-		//
-		// line = ""; br = Utilities.getFileAsBufferedReader(realEventStabilityFile);
-		// while ((line = br.readLine()) != null) { if (line.startsWith("#")) {
-		// continue; } int eventNumber = Integer.parseInt(line);
-		//
-		// realEvents_stability[eventNumber] = 1;
-		// currentResult.addResultAtStep(realEventsNameSt, 1, eventNumber); }
-		//
-		// line = ""; br = Utilities.getFileAsBufferedReader(realEventCriticalityFile);
-		// while ((line = br.readLine()) != null) { if (line.startsWith("#")) {
-		// continue; } int eventNumber = Integer.parseInt(line);
-		//
-		// realEvents_criticality[eventNumber] = 1;
-		// currentResult.addResultAtStep(realEventsNameCr, 1, eventNumber); } line =
-		// ""; br = Utilities.getFileAsBufferedReader(realEventAdaptabilityFile); while
-		// ((line = br.readLine()) != null) { if (line.startsWith("#")) { continue; }
-		//
-		// int eventNumber = Integer.parseInt(line);
-		// realEvents_adaptability[eventNumber] = 1;
-		// currentResult.addResultAtStep(realEventsNameAd, 1, eventNumber); }
-		//
 
 		ArrayList<MetricInfo> metricsToRun = e.getMetrics();
 		ArrayList<MetricResult> metricResults = new ArrayList<MetricResult>();
@@ -491,6 +365,7 @@ public class MetricRunner {
 		es4.shutdown();
 		// Once finished add all the metricResults
 		while (!es4.isTerminated()) {
+			// Busy-wait for your LIFE!
 		}
 		for (ArrayList<MetricResult> mr : threadedResultStorage.values()) {
 			metricResults.addAll(mr);
