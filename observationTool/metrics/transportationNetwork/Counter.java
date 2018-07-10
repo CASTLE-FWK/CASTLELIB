@@ -14,9 +14,7 @@ public class Counter extends MetricBase implements MetricInterface {
 
 	private final String STATE_1 = "STATE_1";
 	private MetricResult result;
-
-	private final String DOUBLE_STRING = "Counter(Double)";
-	private final String INTEGER_STRING = "Counter(Integer)";
+	private String RESULT_STRING = "Counter(XXX)";
 
 	public Counter(MetricInfo mi) {
 		super("Counter", mi);
@@ -27,13 +25,33 @@ public class Counter extends MetricBase implements MetricInterface {
 	private int numberOfSteps = -1;
 	private DataCollector_FileSystem collector;
 	private String countingType = "";
-	boolean isDouble = false;
+
+	enum DataType {
+		INT, DOUBLE, STRING, BOOL
+	};
+
+	DataType dt;
 
 	public void setup(int nOS, String ct) {
 		this.numberOfSteps = nOS;
 		this.countingType = ct;
-		if (countingType == "double") {
-			isDouble = true;
+		RESULT_STRING = "Counter(XXX)";
+		switch (countingType) {
+		case "int":
+			dt = DataType.INT;
+			break;
+		case "double":
+			dt = DataType.DOUBLE;
+			break;
+		case "string":
+			dt = DataType.STRING;
+			break;
+		case "boolean":
+			dt = DataType.BOOL;
+			break;
+		default:
+			errLog("not valid datatype");
+			break;
 		}
 	}
 
@@ -51,46 +69,44 @@ public class Counter extends MetricBase implements MetricInterface {
 			errLog("Something ain't right. Need to investigate. Dying.");
 			return;
 		}
+		String resiString = RESULT_STRING.replace("XXX", dt.toString());
+		result.addResultType(resiString);
 
-		if (isDouble) {
-			result.addResultType(DOUBLE_STRING);
-			for (int time = 1; time < numberOfSteps; time++) {
-				ArrayList<VEntity> agents = collector.buildVAgentList(time);
-				double count = countDouble(agents);
-				result.addResultAtStep(DOUBLE_STRING, count, time);
-			}
-
-		} else {
-			result.addResultType(INTEGER_STRING);
-			for (int time = 1; time < numberOfSteps; time++) {
-				ArrayList<VEntity> agents = collector.buildVAgentList(time);
-				int count = countInt(agents);
-				result.addResultAtStep(INTEGER_STRING, count, time);
-			}
-
+		for (int time = 1; time < numberOfSteps; time++) {
+			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+			double count = doCount(agents);
+			result.addResultAtStep(resiString, count, time);
 		}
 	}
 
-	public int countInt(ArrayList<VEntity> ents) {
-		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		int counter = 0;
-		for (VEntity v : ents) {
-			if (entityIsOfType(v, mvm1)) {
-				String paramName = getAllParameterNames(v, mvm1).get(0);
-				counter += parseInt(getParameter(v, paramName));
-			}
-		}
-
-		return counter;
-	}
-
-	public double countDouble(ArrayList<VEntity> ents) {
-		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+	public double doCount(ArrayList<VEntity> ents) {
 		double counter = 0;
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 		for (VEntity v : ents) {
 			if (entityIsOfType(v, mvm1)) {
 				String paramName = getAllParameterNames(v, mvm1).get(0);
-				counter += parseDouble(getParameter(v, paramName));
+				switch (dt) {
+				case BOOL:
+					boolean b = isParameterEqualToDesiredValue(v, mvm1);
+					if (b) {
+						counter++;
+					}
+					break;
+				case DOUBLE:
+					counter += parseDouble(getParameter(v, paramName));
+					break;
+				case INT:
+					counter += parseInt(getParameter(v, paramName));
+					break;
+				case STRING:
+					boolean c = isParameterEqualToDesiredValue(v, mvm1);
+					if (c) {
+						counter++;
+					}
+					break;
+				default:
+					break;
+				}
 			}
 		}
 

@@ -69,6 +69,7 @@ public class MetricRunner {
 	static String REAL_ST_LOCATION = "/realStability.txt";
 	static String REAL_CR_LOCATION = "/realCriticality.txt";
 	static String REAL_AD_LOCATION = "/realAdaptability.txt";
+	static String REAL_EVS_LOCATION = "/realEvents.csv";
 
 	static int areaX;
 	static int areaY;
@@ -80,7 +81,15 @@ public class MetricRunner {
 	// static ArrayList<MetricResult> allResults;
 	static MetricResult currentResult;
 
+	public static void errLog(Object o) {
+		System.err.println("MetricRunner Warning: "+o.toString());
+	}
+	
 	public static void main(String[] args) {
+		if (args.length < 0) {
+			errLog("No args provided. Dying.");
+			System.exit(0);
+		}
 		String analysisToRun = args[0];
 		testing = Boolean.parseBoolean(args[1]);
 		db = "simulations"; // WRONG
@@ -144,7 +153,7 @@ public class MetricRunner {
 					while (!es.isTerminated()) {
 						// Busy wait
 					}
-
+					
 					// Append all the results
 					for (ArrayList<MetricResult> mr : threadResultsStore.values()) {
 						MetricResult prim = mr.get(0);
@@ -185,6 +194,26 @@ public class MetricRunner {
 		System.exit(0);
 	}
 
+	
+	public static int[] realEventAdder(String s, int[] real) {
+		if (s.contains("-")) {
+			String[] ss = s.split("-");
+			int start = Integer.parseInt(ss[0]);
+			int fin = Integer.parseInt(ss[1]);
+			for (int i = start; i <= fin; i++) {
+				if (i >= real.length) {
+					break;
+				} else {
+					real[i] = 1;
+				}
+			}
+		} else {
+			int i = Integer.parseInt(s);
+			real[i] = 1;
+		}
+		return real;
+	}
+	
 	// This is what we want to thread
 	public static ArrayList<MetricResult> runAnalysis(Experiment e, SystemInfo thisTestSystem,
 			DataCollector_FileSystem collector) {
@@ -238,13 +267,13 @@ public class MetricRunner {
 		theTestSystem.setNumberOfSteps(totalNumberOfSteps);
 
 		// Prep real events arrays
-		realEvents_emergence = new int[totalNumberOfSteps];
+		realEvents_emergence = new int[totalNumberOfSteps+1];
 		Arrays.fill(realEvents_emergence, 0);
-		realEvents_stability = new int[totalNumberOfSteps];
+		realEvents_stability = new int[totalNumberOfSteps+1];
 		Arrays.fill(realEvents_stability, 0);
-		realEvents_criticality = new int[totalNumberOfSteps];
+		realEvents_criticality = new int[totalNumberOfSteps+1];
 		Arrays.fill(realEvents_criticality, 0);
-		realEvents_adaptability = new int[totalNumberOfSteps];
+		realEvents_adaptability = new int[totalNumberOfSteps+1];
 		Arrays.fill(realEvents_adaptability, 0);
 
 		// Add the real events to the current results
@@ -252,85 +281,122 @@ public class MetricRunner {
 		// currentResult.addResultType(realEventsNameSt);
 		// currentResult.addResultType(realEventsNameCr);
 		// currentResult.addResultType(realEventsNameAd);
-
-		String realEventFileRoot = resultsDirRoot;
-		String realEventEmergenceFile = experimentDataLocation + REAL_EM_LOCATION;
-		List<String> realEm = Utilities.parseFileLineXLine(realEventEmergenceFile);
-		for (String s : realEm) {
-			if (s.contains("-")) {
-				String[] ss = s.split("-");
-				int start = Integer.parseInt(ss[0]);
-				int fin = Integer.parseInt(ss[1]);
-				for (int i = start; i <= fin; i++) {
-					if (i >= realEvents_emergence.length) {
-						break;
-					} else {
-						realEvents_emergence[i] = 1;
-					}
-				}
-			} else {
-				int i = Integer.parseInt(s);
-				realEvents_emergence[i] = 1;
+		
+		String realEventsFile = experimentDataLocation + REAL_EVS_LOCATION; 
+		//EM AD CR ST
+		List<String> realEv = Utilities.parseFileLineXLine(realEventsFile);
+		for (String s : realEv) {
+			String em = "";
+			String ad = "";
+			String cr = "";
+			String st = "";
+			String[] spl = s.split(",");
+			if (spl.length >= 1)
+				em = spl[0];
+			if (spl.length >= 2)
+				ad = spl[1];
+			if (spl.length >= 3)
+				cr = spl[2];
+			if (spl.length >= 4)
+				st = spl[3];
+			
+			
+			
+			if (em.length() > 0) {
+				realEvents_emergence = realEventAdder(em, realEvents_emergence);
 			}
-		}
-
-		String realEventStabilityFile = experimentDataLocation + REAL_ST_LOCATION;
-		List<String> realSt = Utilities.parseFileLineXLine(realEventStabilityFile);
-		for (String s : realSt) {
-			if (s.contains("-")) {
-				String[] ss = s.split("-");
-				int start = Integer.parseInt(ss[0]);
-				int fin = Integer.parseInt(ss[1]);
-				for (int i = start; i <= fin; i++) {
-					if (i >= realEvents_stability.length) {
-						break;
-					} else {
-						realEvents_stability[i] = 1;
-					}
-				}
-			} else {
-				int i = Integer.parseInt(s);
-				realEvents_stability[i] = 1;
+			if (ad.length() >0) {
+				realEvents_adaptability = realEventAdder(ad, realEvents_adaptability);
 			}
-		}
-		String realEventCriticalityFile = experimentDataLocation + REAL_CR_LOCATION;
-		List<String> realCr = Utilities.parseFileLineXLine(realEventCriticalityFile);
-		for (String s : realCr) {
-			if (s.contains("-")) {
-				String[] ss = s.split("-");
-				int start = Integer.parseInt(ss[0]);
-				int fin = Integer.parseInt(ss[1]);
-				for (int i = start; i <= fin; i++) {
-					if (i >= realEvents_criticality.length) {
-						break;
-					} else {
-						realEvents_criticality[i] = 1;
-					}
-				}
-			} else {
-				int i = Integer.parseInt(s);
-				realEvents_criticality[i] = 1;
+			if (cr.length() > 0) {
+				realEvents_criticality = realEventAdder(cr, realEvents_criticality);
 			}
-		}
-		String realEventAdaptabilityFile = experimentDataLocation + REAL_AD_LOCATION;
-		List<String> realAd = Utilities.parseFileLineXLine(realEventAdaptabilityFile);
-		for (String s : realAd) {
-			if (s.contains("-")) {
-				String[] ss = s.split("-");
-				int start = Integer.parseInt(ss[0]);
-				int fin = Integer.parseInt(ss[1]);
-				for (int i = start; i <= fin; i++) {
-					if (i >= realEvents_adaptability.length) {
-						break;
-					} else {
-						realEvents_adaptability[i] = 1;
-					}
-				}
-			} else {
-				int i = Integer.parseInt(s);
-				realEvents_adaptability[i] = 1;
+			if (st.length() > 0) {
+				realEvents_stability = realEventAdder(st, realEvents_stability);
 			}
+			
 		}
+			
+//		
+//
+//		String realEventFileRoot = resultsDirRoot;
+//		String realEventEmergenceFile = experimentDataLocation + REAL_EM_LOCATION;
+//		List<String> realEm = Utilities.parseFileLineXLine(realEventEmergenceFile);
+//		for (String s : realEm) {
+//			if (s.contains("-")) {
+//				String[] ss = s.split("-");
+//				int start = Integer.parseInt(ss[0]);
+//				int fin = Integer.parseInt(ss[1]);
+//				for (int i = start; i <= fin; i++) {
+//					if (i >= realEvents_emergence.length) {
+//						break;
+//					} else {
+//						realEvents_emergence[i] = 1;
+//					}
+//				}
+//			} else {
+//				int i = Integer.parseInt(s);
+//				realEvents_emergence[i] = 1;
+//			}
+//		}
+//
+//		String realEventStabilityFile = experimentDataLocation + REAL_ST_LOCATION;
+//		List<String> realSt = Utilities.parseFileLineXLine(realEventStabilityFile);
+//		for (String s : realSt) {
+//			if (s.contains("-")) {
+//				String[] ss = s.split("-");
+//				int start = Integer.parseInt(ss[0]);
+//				int fin = Integer.parseInt(ss[1]);
+//				for (int i = start; i <= fin; i++) {
+//					if (i >= realEvents_stability.length) {
+//						break;
+//					} else {
+//						realEvents_stability[i] = 1;
+//					}
+//				}
+//			} else {
+//				int i = Integer.parseInt(s);
+//				realEvents_stability[i] = 1;
+//			}
+//		}
+//		String realEventCriticalityFile = experimentDataLocation + REAL_CR_LOCATION;
+//		List<String> realCr = Utilities.parseFileLineXLine(realEventCriticalityFile);
+//		for (String s : realCr) {
+//			if (s.contains("-")) {
+//				String[] ss = s.split("-");
+//				int start = Integer.parseInt(ss[0]);
+//				int fin = Integer.parseInt(ss[1]);
+//				for (int i = start; i <= fin; i++) {
+//					if (i >= realEvents_criticality.length) {
+//						break;
+//					} else {
+//						realEvents_criticality[i] = 1;
+//					}
+//				}
+//			} else {
+//				int i = Integer.parseInt(s);
+//				realEvents_criticality[i] = 1;
+//			}
+//		}
+//		String realEventAdaptabilityFile = experimentDataLocation + REAL_AD_LOCATION;
+//		List<String> realAd = Utilities.parseFileLineXLine(realEventAdaptabilityFile);
+//		for (String s : realAd) {
+//			if (s.contains("-")) {
+//				String[] ss = s.split("-");
+//				int start = Integer.parseInt(ss[0]);
+//				int fin = Integer.parseInt(ss[1]);
+//				for (int i = start; i <= fin; i++) {
+//					if (i >= realEvents_adaptability.length) {
+//						break;
+//					} else {
+//						realEvents_adaptability[i] = 1;
+//					}
+//				}
+//			} else {
+//				int i = Integer.parseInt(s);
+//				realEvents_adaptability[i] = 1;
+//			}
+//		}
 
 		// Import corresponding real event files
 		// This is from GoL testing

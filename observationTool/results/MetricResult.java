@@ -388,6 +388,8 @@ public class MetricResult {
 		//Calculate max result size and print headers
 		for (int i = 0; i < printingOrder.length; i++) {
 			sb.append("#".concat(printingOrder[i]).concat(TAB));
+			System.out.println(printingOrder[i]);
+			System.out.println(dd[c]);
 			dd[c] = results.get(printingOrder[i]);
 			c++;
 		}

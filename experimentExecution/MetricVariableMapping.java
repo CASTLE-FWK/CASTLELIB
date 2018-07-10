@@ -75,6 +75,17 @@ public class MetricVariableMapping {
 		}
 		return (score == 0);
 	}
+	
+	public String getDesiredValueFromName(String n) {
+		ArrayList<TypeMap> tmList = getSpecificTypeMap(n);
+		for (TypeMap tm : tmList) {
+			if (tm.getTargetEntityVariableName().compareToIgnoreCase(n) == 0) {
+				return tm.getDesiredValue();
+			}
+		}
+		return null;
+	}
+	
 
 	public String typeMapsToString() {
 		String str = "typeMaps:[";

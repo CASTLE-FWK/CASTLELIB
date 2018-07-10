@@ -19,12 +19,13 @@ public class LastMinuteUtils {
 
 	public static void main(String[] args) {
 		// String s = elapsedTimes(TEST);
-		// System.out.println(s);
+		// System.out.println(s);\
+		
 
-//		String s = buildExperimentFile("/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/list.txt",
-//				"/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/metrics.json", "SocialNetwork");
-		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/fobsg/slurm/list.txt", "FoB");
-		System.out.println(s);
+//		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/ac/list.txt",
+//				"/home/lachlan/repos/repastModels/AntColony/AntColony/experiments/metrics.json", "AntColony");
+////		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/fobsg/slurm/list.txt", "FoB");
+//		System.out.println(s);
 	}
 
 	// 1: Get all elapsed times from a list of paths
@@ -55,7 +56,7 @@ public class LastMinuteUtils {
 		List<String> paths = new List<String>(Utilities.parseFileLineXLine(pathsTXT));
 		String out = "{\n" + "\"Experiment-id\": \"All\",\n" + "\"Description\": \"All\",\n" + "\"System-name\": \""
 				+ sysname + "\",\n";
-		out += "\"Test-Systems\": [\n";
+		out += "\"Test-systems\": [\n";
 		String currConfName = "NONE";
 		int count = 0;
 
