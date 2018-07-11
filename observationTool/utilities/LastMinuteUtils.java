@@ -1,6 +1,7 @@
 package observationTool.utilities;
 
 import java.io.BufferedReader;
+import java.util.HashMap;
 
 import castleComponents.objects.List;
 import observationTool.DataCollector_FileSystem;
@@ -24,8 +25,8 @@ public class LastMinuteUtils {
 
 //		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/ac/list.txt",
 //				"/home/lachlan/repos/repastModels/AntColony/AntColony/experiments/metrics.json", "AntColony");
-////		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/fobsg/slurm/list.txt", "FoB");
-//		System.out.println(s);
+		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/snsg/slurm/list.txt", "SN");
+		System.out.println(s);
 	}
 
 	// 1: Get all elapsed times from a list of paths
@@ -90,16 +91,19 @@ public class LastMinuteUtils {
 	
 	public static String pullRuntimesFromSlurmOuts(String pathsTXT, String sysname) {
 		String out = "SystemName,SystemConfig,Runtime(ms)\n";
+		HashMap<String, Double> rts = new HashMap<String, Double>();
+		HashMap<String, Integer> cnt = new HashMap<String, Integer>();
 		final String COMMA = ",";
 		final String NL = "\n";
 		List<String> paths = new List<String>(Utilities.parseFileLineXLine(pathsTXT));
 		for (String s : paths) {
+			System.out.println(s);
 			BufferedReader br = Utilities.getFileAsBufferedReader(s);
 			String line = null;
 			String infoLine = "";
 			try {
 				while ((line = br.readLine()) != null) {
-					if (line.startsWith("name=")) {
+					if (line.startsWith("name=") || line.startsWith("runtime=")) {
 						infoLine = line;
 						break;
 					}
@@ -109,12 +113,31 @@ public class LastMinuteUtils {
 			}
 			if (infoLine.length() > 0) {
 				//Parse infoLine
+				System.out.println(infoLine);
 				String[] ss = infoLine.split(",");
 				String n = ss[0].replace("name=", "");
+				
 				String rt = ss[1].replace("runtime=", "");
+				
 				String cn = ss[2].replace("config-name=","");
+				
+				if (rts.containsKey(cn)) {
+					rts.put(cn, rts.get(cn)+Double.parseDouble(rt));
+					cnt.put(cn, cnt.get(cn)+1);
+				} else {
+					rts.put(cn, Double.parseDouble(rt));
+					cnt.put(cn, 1);
+				}
+				
 				out += n+COMMA+cn+COMMA+rt+NL;
 			}
+			out += "Averages:"+NL;
+			for (String k : rts.keySet()) {
+				out += k;
+				double rrt = rts.get(k) / (double)cnt.get(k);
+				out += ","+rrt+NL;
+			}
+			
 		}
 		return out;
 	}
