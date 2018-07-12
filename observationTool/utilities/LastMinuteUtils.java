@@ -42,7 +42,7 @@ public class LastMinuteUtils {
 		return out;
 	}
 
-	static String templateString = "{\n" + "			\"System-name\": \"CONFNAME COUNT\",\n"
+	static String templateString = "{\n" + "			\"System-name\": \"CONFNAME-COUNT\",\n"
 			+ "			\"Configuration\": {\n" + "				\"Configuration-name\": \"CONFNAME\",\n"
 			+ "				\"Dimensions\": \"\"\n" + "			},\n"
 			+ "			\"System-storage-type\": \"file\",\n" + "			\"System-storage-location\": \"PATHREP\"\n"

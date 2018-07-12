@@ -74,6 +74,7 @@ public class MetricRunner {
 	static int areaX;
 	static int areaY;
 
+	static StringBuilder toTheDoc;
 	static boolean quiet = false;
 	static boolean testing = false;
 	static boolean noAccuracyCalculations = false;
@@ -102,17 +103,16 @@ public class MetricRunner {
 		JsonArray experimentFiles = experimentMeta.get("experiment-files").asArray();
 
 		ExecutorService masterES = Executors.newFixedThreadPool(experimentFiles.size());
-		
+
 		for (JsonValue jo : experimentFiles) {
 			masterES.execute(new Runnable() {
-				
 
 				@Override
 				public void run() {
 					String line = jo.asString();
 					String experimentName = "";
 					// The file now contains a list of paths to experiment JSON files
-					StringBuilder toTheDoc = new StringBuilder();
+					toTheDoc = new StringBuilder();
 
 					// Print everything out to a MetricResult object
 					ArrayList<MetricResult> allResults = new ArrayList<MetricResult>();
@@ -120,8 +120,10 @@ public class MetricRunner {
 					String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
 					toTheDoc.append(notes + "\n");
+//					toTheDoc.append(
+//							"System Name\tConfig Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
 					toTheDoc.append(
-							"System Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
+							"SystemName\tConfigName\tMetricName\tSOType\tThreshold\tF1\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActualEvents\tTruePositives\tFalsePositives\tTrueNegatives\tFalseNegatives\tWindow Size");
 					Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
 					print(exp.toString());
 					ArrayList<SystemInfo> theTestSystems = exp.getTestSystems();
@@ -130,12 +132,10 @@ public class MetricRunner {
 					double runtime = System.currentTimeMillis();
 					ExecutorService es = Executors.newFixedThreadPool(theTestSystems.size());
 					ConcurrentHashMap<String, ArrayList<MetricResult>> threadResultsStore = new ConcurrentHashMap<String, ArrayList<MetricResult>>();
-					
-					
+
 					dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_"
 							+ Utilities.generateTimeID() + "/";
-					
-					
+
 					for (int test = 0; test < theTestSystems.size(); test++) {
 						SystemInfo currTestSystem = theTestSystems.get(test);
 						String experimentDataLocation = currTestSystem.getSystemDataLocation();
@@ -144,7 +144,7 @@ public class MetricRunner {
 
 						currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
 								currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
-						
+
 						collector.restart(); // TODO how to handle this with Mongo
 						DataCollector_FileSystem newColl = new DataCollector_FileSystem(collector);
 						es.execute(new Runnable() {
@@ -176,9 +176,10 @@ public class MetricRunner {
 					runtime = System.currentTimeMillis() - runtime;
 					println("Total runtime: %1$f seconds", runtime / 1000);
 					toTheDoc.append("\n#runtime\t" + runtime);
-//					dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_"
-//							+ Utilities.generateTimeID() + "/";
-					
+					// dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "")
+					// + "_"
+					// + Utilities.generateTimeID() + "/";
+
 					// Write results to file
 					if (!testing) {
 						Utilities.writeToFile(toTheDoc.toString(),
@@ -189,7 +190,7 @@ public class MetricRunner {
 						Utilities.writeToFile(r.resultsToString(),
 								dirTimeStamp + r.getExperimentName().replaceAll("\\s+", "") + "_allMetrics.tsv", false);
 
-						System.out.println("r.resultsToString(): " + r.resultsToString());
+						// System.out.println("r.resultsToString(): " + r.resultsToString());
 					}
 				}
 			});
@@ -438,7 +439,7 @@ public class MetricRunner {
 
 		double maxThresh = scResult.calculateMax(resultsName);
 
-		calculateAccuracy(metricName, resultsName, scResult, 0, 2 * stdDev, 0.025);
+		calculateAccuracy(metricName, resultsName, scResult, 0, 2 * stdDev, 0.025, si);
 
 		return scResult;
 	}
@@ -547,7 +548,7 @@ public class MetricRunner {
 		double minThresh = chanGoLResult.calculateMean(resultsNameA) - stdDev;
 		double maxThresh = chanGoLResult.calculateMax(resultsNameA);
 
-		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, 0, 2 * stdDev, 0.025);
+		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, 0, 2 * stdDev, 0.025, si);
 		return chanGoLResult;
 
 	}
@@ -620,7 +621,7 @@ public class MetricRunner {
 		double minThresh = oTooleResult.calculateMean(resultsName) - stdDev;
 		double maxThresh = oTooleResult.calculateMax(resultsName);
 
-		calculateAccuracy("OToole14", resultsName, oTooleResult, 0, 2 * stdDev, 0.025);
+		calculateAccuracy("OToole14", resultsName, oTooleResult, 0, 2 * stdDev, 0.025, si);
 		return oTooleResult;
 	}
 
@@ -859,8 +860,8 @@ public class MetricRunner {
 		// Utilities.writeToFile(sb2.toString(),
 		// resultsDirRoot+systemName+"/msse"+initCrit+"_interQuad.tsv");
 
-		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, 0, 1, 0.025);
-		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, 0, 1, 0.025);
+		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, 0, 1, 0.025, si);
+		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, 0, 1, 0.025, si);
 		return msseResult;
 	}
 
@@ -1167,9 +1168,9 @@ public class MetricRunner {
 		println("accBR: " + accBr);
 		println("Most common feature: " + brResult.calculateStringMode(smName));
 
-		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, 0, 2, 1.0);
-		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, 0, 2, 1.0);
-		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, 0, 2, 1.0);
+		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, 0, 2, 1.0, si);
+		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, 0, 2, 1.0, si);
+		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, 0, 2, 1.0, si);
 
 		return brResult;
 
@@ -1301,8 +1302,8 @@ public class MetricRunner {
 
 		double stdDev = oscillResult.calculateSTDDev(resultsName);
 
-		calculateAccuracy("OscillationDetector", resultsName, oscillResult, stdDev, 2.0, 0.025);
-		calculateAccuracy("OscillationDetector", resultsName, oscillResult, 0, 1, 0.025);
+		calculateAccuracy("OscillationDetector", resultsName, oscillResult, stdDev, 2.0, 0.025, si);
+		calculateAccuracy("OscillationDetector", resultsName, oscillResult, 0, 1, 0.025, si);
 
 		println("Oscillations detected: %1$d with max distance: %2$d starting from %3$d with %4$d consecutive hits. Min distance: %5$d",
 				numOscillationsFound, distance, maxDistStart, consecutive, minDistance);
@@ -1419,11 +1420,11 @@ public class MetricRunner {
 			// clustersIntersecting, t);
 
 		}
-		calculateAccuracy(averageClusterStateDensityName, averageClusterStateDensityName, ttResult, 0, 50.0, 0.025);
-		calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult, 0, 50.0, 0.025);
-		calculateAccuracy(AverageAreaName, AverageAreaName, ttResult, 0, 5000.0, 5);
-		calculateAccuracy(RunningUniqueClustersName, RunningUniqueClustersName, ttResult, 0, 50.0, 0.025);
-		calculateAccuracy(ClustersIntersectingName, ClustersIntersectingName, ttResult, 0, 5000.0, 5);
+		calculateAccuracy(averageClusterStateDensityName, averageClusterStateDensityName, ttResult, 0, 50.0, 0.025, si);
+		calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult, 0, 50.0, 0.025, si);
+		calculateAccuracy(AverageAreaName, AverageAreaName, ttResult, 0, 5000.0, 5, si);
+		calculateAccuracy(RunningUniqueClustersName, RunningUniqueClustersName, ttResult, 0, 50.0, 0.025, si);
+		calculateAccuracy(ClustersIntersectingName, ClustersIntersectingName, ttResult, 0, 5000.0, 5, si);
 
 		tt.zarf();
 		Utilities.writeToFile(sb.toString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
@@ -1488,9 +1489,9 @@ public class MetricRunner {
 					+ realEvents_criticality[time] + "\n");
 		}
 		//
-		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, 0, 10.0, 0.025);
-		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, 0, 10.0, 0.025);
-		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, 0, 10.0, 0.025);
+		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, 0, 10.0, 0.025, si);
+		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, 0, 10.0, 0.025, si);
+		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, 0, 10.0, 0.025, si);
 
 		return eotResult;
 		// Utilities.writeToFile(sb.toString(),
@@ -1567,7 +1568,7 @@ public class MetricRunner {
 			adaptivityTime = 0.0;
 		}
 
-		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025);
+		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return watResult;
@@ -1726,8 +1727,8 @@ public class MetricRunner {
 			// //currentResult.addResultAtStep(uName, U, time);
 
 		}
-		calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025);
-		calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0, 0.025);
+		calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025, si);
+		calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0, 0.025, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return auResult;
@@ -1777,7 +1778,7 @@ public class MetricRunner {
 			perfsitResult.addResultAtStep(resultsName, perf, time);
 			// //currentResult.addResultAtStep(resultsName, perf, time);
 		}
-		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0, 100.0, 0.025);
+		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0, 100.0, 0.025, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return perfsitResult;
@@ -1838,7 +1839,7 @@ public class MetricRunner {
 	 * @param increment
 	 */
 	public static void calculateAccuracy(String metricName, String resultsName, MetricResult result, double lower,
-			double upper, double increment) {
+			double upper, double increment, SystemInfo si) {
 		if (!noAccuracyCalculations) {
 			double maxScoreEm = -Double.MAX_VALUE;
 			double maxScoreSt = -Double.MAX_VALUE;
@@ -1944,14 +1945,18 @@ public class MetricRunner {
 			// Send the results to a nicer place...
 			// Maybe a BIG static string builder
 			// sb.append(header);
-			sb.append(initCriteria + "\t" + emResults);
+			//Printing
+			String systemDetails = si.getSystemName()+"\t"+si.getConfigurationName();
+			
+			sb.append(systemDetails + "\t" + emResults);
+			System.out.println("systemDetails: "+initCriteria);
 			sb.append("\n");
-			sb.append(initCriteria + "\t" + stResults);
+			sb.append(systemDetails + "\t" + stResults);
 			sb.append("\n");
-			sb.append(initCriteria + "\t" + crResults);
+			sb.append(systemDetails + "\t" + crResults);
 			sb.append("\n");
-			sb.append(initCriteria + "\t" + adResults);
-			// toTheDoc.append(sb + "\n");
+			sb.append(systemDetails + "\t" + adResults);
+			toTheDoc.append(sb + "\n");
 
 			println(header);
 			println(emResults);
