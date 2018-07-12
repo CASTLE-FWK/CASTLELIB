@@ -195,8 +195,7 @@ public class DataSetSimulator {
 				} else {
 					currColor = Color.BLACK;
 				}
-				
-				
+
 			}
 		}
 

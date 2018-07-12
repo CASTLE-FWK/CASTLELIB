@@ -2,7 +2,7 @@ package visualisation;
 //
 import java.util.Scanner;
 public class VisualisationClient {
-	static double timeGap = 100;
+	static double timeGap = 0;
 	
 	final static String PULSAR = "game_of_life_20160731143812bv";
 	final static String GLIDER = "game_of_life_20160731143838pk";
@@ -27,7 +27,7 @@ public class VisualisationClient {
 		String simPath = args[0].trim();
 		
 		cycler.setTimeGap(timeGap);
-		
+		System.out.println("Visualising "+simPath);
 		dss.newSimulation(simPath);
 		dss.begin();
 		Scanner keyboard = new Scanner(System.in);

@@ -97,13 +97,12 @@ public class LastMinuteUtils {
 		final String NL = "\n";
 		List<String> paths = new List<String>(Utilities.parseFileLineXLine(pathsTXT));
 		for (String s : paths) {
-			System.out.println(s);
 			BufferedReader br = Utilities.getFileAsBufferedReader(s);
 			String line = null;
 			String infoLine = "";
 			try {
 				while ((line = br.readLine()) != null) {
-					if (line.startsWith("name=") || line.startsWith("runtime=")) {
+					if (line.startsWith("name=")) {
 						infoLine = line;
 						break;
 					}
@@ -131,13 +130,12 @@ public class LastMinuteUtils {
 				
 				out += n+COMMA+cn+COMMA+rt+NL;
 			}
-			out += "Averages:"+NL;
-			for (String k : rts.keySet()) {
-				out += k;
-				double rrt = rts.get(k) / (double)cnt.get(k);
-				out += ","+rrt+NL;
-			}
-			
+		}
+		out += "Averages:"+NL;
+		for (String k : rts.keySet()) {
+			out += k;
+			double rrt = rts.get(k) / (double)cnt.get(k);
+			out += ","+rrt+NL;
 		}
 		return out;
 	}
