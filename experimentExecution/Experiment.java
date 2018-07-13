@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 public class Experiment {
 	String experimentID;
+	String systemName;
 	ArrayList<SystemInfo> theTestSystems;
 	String description;
 	ArrayList<MetricInfo> metricsUsed;
@@ -13,12 +14,17 @@ public class Experiment {
 	HashSet<String> enabledMetrics;
 	boolean usingAllMetrics = false;
 
-	public Experiment(String experimentID, String description) {
+	public Experiment(String experimentID, String description, String sysName) {
 		metricsUsed = new ArrayList<MetricInfo>();
 		this.experimentID = experimentID;
 		this.description = description;
+		systemName = sysName;
 		theTestSystems = new ArrayList<SystemInfo>();
 		enabledMetrics = new HashSet<String>();
+	}
+	
+	public String getExperimentSystemName() {
+		return systemName;
 	}
 	
 	public void addEnabledMetric(String s) {

@@ -72,15 +72,22 @@ public class DataCollector_FileSystem {
 	public void setCollection(String fp) {
 		filePathRoot = fp;
 		filepathStepsRoot = filePathRoot + "/steps";
-		initParamFilePath = filePathRoot + "/systemInitialization" + JSON;
+		initParamFilePath = filePathRoot + "/systemInitialization.json";
 		terminationStatsFilePath = filePathRoot + "/termination-statistics" + JSON;
 	}
 
 	public HashMap<String, String> getInitialisationParameters() {
 		HashMap<String, String> ip = new HashMap<String, String>();
-//		JsonObject obj = parseFile(initParamFilePath);
-		//TODO
-		System.err.println("incomplete");
+		JsonObject obj = parseFile(initParamFilePath);
+		JsonArray arr = obj.get("initialisation-parameters").asArray();
+		for (JsonValue j : arr) {
+			JsonObject jo = j.asObject();
+			String pName = jo.getString("parameter-name", "NULL");
+			String pValue = jo.getString("parameter-value", "NULL");
+			String pType = jo.getString("parameter-type", "NULL");
+			ip.put(pName, pValue);
+		}
+		
 		return ip;
 	}
 
@@ -363,7 +370,14 @@ public class DataCollector_FileSystem {
 
 	public int countEntityType(int stepNumber, String type) {
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray ents = file.get(type).asArray();
+		JsonValue entsRaw = file.get(type);
+		if (entsRaw == null) {
+			return 0;
+		}
+		JsonArray ents = entsRaw.asArray();
+		if (ents == null) {
+			return 0;
+		}
 		return ents.size();
 	}
 

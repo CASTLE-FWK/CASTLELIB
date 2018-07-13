@@ -30,7 +30,7 @@ public class JsonParser {
 		try {
 			JsonObject object = Json.parse((new FileReader(filePath))).asObject();
 			Experiment anExperiment = new Experiment(object.get("Experiment-id").asString(),
-					object.get("Description").asString());
+					object.get("Description").asString(), object.getString("System-name", "ASYSTEM"));
 			if (!(object.get("enabled-metrics") == null)) {
 				JsonArray enabledMetrics = object.get("enabled-metrics").asArray();
 				for (int j = 0; j < enabledMetrics.size(); j++) {

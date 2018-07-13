@@ -1,10 +1,14 @@
 package experimentExecution;
 
+import java.util.HashMap;
+
 public class SystemInfo {
 	String systemName;
 	SystemConfiguration configuration;
 	String systemLocation;
 	int numberOfSteps;
+	
+	HashMap<String, String> initParams;
 	
 	boolean fromDB = true;
 
@@ -13,6 +17,21 @@ public class SystemInfo {
 		this.configuration = new SystemConfiguration(configName, configDims);
 		this.systemLocation = systemDBID;
 		fromDB = (locationType.compareToIgnoreCase("file") != 0);
+		initParams = new HashMap<String, String>();
+	}
+	
+	public void setInitParams(HashMap<String, String> ip) {
+		for (String s : ip.keySet()) {
+			initParams.put(s, ip.get(s));
+		}
+	}
+	
+	public String getParamFromName(String st) {
+		return initParams.get(st);
+	}
+	
+	public HashMap<String, String> getInitParams(){
+		return initParams;
 	}
 
 	// TrainingSystem

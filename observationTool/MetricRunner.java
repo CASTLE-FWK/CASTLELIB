@@ -79,6 +79,12 @@ public class MetricRunner {
 	static boolean testing = false;
 	static boolean noAccuracyCalculations = false;
 	static private String dirTimeStamp;
+	
+	
+	static String acWorldX = "world_XSize";
+	static String acWorldY = "world_YSize";
+	static String currWorldX;
+	static String currWorldY;
 
 	// static ArrayList<MetricResult> allResults;
 	static MetricResult currentResult;
@@ -120,8 +126,10 @@ public class MetricRunner {
 					String notes = "#Using the grad difference with a step size between 1 and 20, maximising average of F1 Score";
 
 					toTheDoc.append(notes + "\n");
-//					toTheDoc.append(
-//							"System Name\tConfig Name\tMetric Name\tSO Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
+					// toTheDoc.append(
+					// "System Name\tConfig Name\tMetric Name\tSO
+					// Type\tThreshold\tTP/Real\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual
+					// Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\n");
 					toTheDoc.append(
 							"SystemName\tConfigName\tMetricName\tSOType\tThreshold\tF1\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActualEvents\tTruePositives\tFalsePositives\tTrueNegatives\tFalseNegatives\tWindow Size");
 					Experiment exp = JsonParser.parseExperiment(experimentDirRoot.concat(line));
@@ -141,7 +149,7 @@ public class MetricRunner {
 						String experimentDataLocation = currTestSystem.getSystemDataLocation();
 						collector.setCollection(experimentDataLocation);
 						currTestSystem.setNumberOfSteps(collector.getTerminationStep());
-
+						currTestSystem.setInitParams(collector.getInitialisationParameters());
 						currentResult = new MetricResult(currTestSystem.getConfigurationString(), "AllMetrics",
 								currTestSystem.getNumberOfSteps(), currTestSystem, resultsDirRoot);
 
@@ -225,39 +233,62 @@ public class MetricRunner {
 		}
 		return real;
 	}
+	
+	public static Vector2 getWorldSize(String xSize, String ySize, HashMap<String, String> ip) {
+		int x = -1;
+		int y = -1;
+		if (ip.containsKey(xSize)) {
+			x = Integer.parseInt(ip.get(xSize));
+		}
+		if (ip.containsKey(ySize)) {
+			y = Integer.parseInt(ip.get(ySize));
+		}
+		
+		if (x == -1 || y == -1) {
+			System.err.println("getting world size went wrong");
+		}
+		return new Vector2(x,y);
+	}
 
 	// This is what we want to thread
 	public static ArrayList<MetricResult> runAnalysis(Experiment e, SystemInfo thisTestSystem,
 			DataCollector_FileSystem collector) {
 		SystemInfo theTestSystem = thisTestSystem;
 		String experimentID = e.getExperimentID();
+		String experimentSysName = e.getExperimentSystemName();
 		String experimentDataLocation = theTestSystem.getSystemDataLocation();
 		String systemName = theTestSystem.getSystemName();
 		// MetricRunner.systemName = systemName; // TODO: Think about this issue
 
 		String systemConfiguration = theTestSystem.getConfigurationName();
 		MetricRunner.initCriteria = theTestSystem.getConfigurationString();
+		
 		String systemString = theTestSystem.getConfigurationDimensions();
 
 		collector.setCollection(experimentDataLocation);
 
-		// HashMap<String, String> sysParams = collector.getInitialisationParameters();
+		HashMap<String, String> sysParams = thisTestSystem.getInitParams();
 		// areaX = 0;
 		// areaY = 0;
-		String initName = "";
-		int numberOfAgents = 0;
-		// if (sysParams.containsKey("Size (X)")) {
-		// areaX = Integer.parseInt(sysParams.get("Size (X)"));
-		// }
-		// if (sysParams.containsKey("Size (Y)")) {
-		// areaY = Integer.parseInt(sysParams.get("Size (Y)"));
-		// }
-		// if (sysParams.containsKey("initPath")) {
-		// initName = sysParams.get("initPath");
-		// }
-		// if (sysParams.containsKey("cellPopulation")) {
-		// numberOfAgents = Integer.parseInt("cellPopulation");
-		// }
+
+		// We're going to have to hardcode this for AC/FoB and ignore for SN (or do an
+		// otf calc?)
+
+		//TODO Need some sort of flag here...
+		if (experimentSysName.compareToIgnoreCase("AntColony") == 0) {
+			currWorldX = acWorldX;
+			currWorldY = acWorldY;
+		}
+		System.err.println("need remaining flags");
+		
+		
+		Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
+		areaX = (int)size.getX();
+		areaY = (int)size.getY();
+		
+		int numberOfAgents = collector.countAllEntitiesInStep(0);
+		String initName = experimentDataLocation;
+		System.exit(0);
 
 		// Print out dataset information
 		println("*******DATASET INFORMATION*******");
@@ -573,6 +604,9 @@ public class MetricRunner {
 		oTooleResult.addResultType(realEventsNameCr);
 		oTooleResult.addResultType(realEventsNameAd);
 
+		int areaX = 0;
+		int areaY = 0;
+
 		// //currentResult.addResultType(metricName);
 
 		oToole.setup(collector.buildVAgentList(0), new Vector2(areaX, areaY));
@@ -682,18 +716,11 @@ public class MetricRunner {
 			int thisAreaY = 0;
 			int thisNumberOfAgents = 0;
 			String thisInitName = "";
-			if (thisSysParams.containsKey("Size (X)")) {
-				thisAreaX = Integer.parseInt(thisSysParams.get("Size (X)"));
-			}
-			if (thisSysParams.containsKey("Size (Y)")) {
-				thisAreaY = Integer.parseInt(thisSysParams.get("Size (Y)"));
-			}
-			if (thisSysParams.containsKey("initPath")) {
-				thisInitName = thisSysParams.get("initPath");
-			}
-			if (thisSysParams.containsKey("cellPopulation")) {
-				thisNumberOfAgents = Integer.parseInt(thisSysParams.get("cellPopulation"));
-			}
+			Vector2 size = getWorldSize(currWorldX, currWorldY, thisSysParams);
+			thisAreaX = (int)size.getX();
+			thisAreaY = (int)size.getY();
+			thisNumberOfAgents = collector.countAllEntitiesInStep(0);
+			
 			double thisUnitAsPercentage = 100.0 / (double) thisNumberOfAgents;
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
 			allLifeQuads[systemCounter] = new MSSE_State[thisTotalNumberOfSteps];
@@ -894,11 +921,6 @@ public class MetricRunner {
 		brResult.addResultType(emergenceMatch);
 		brResult.addStringResultType(smName);
 
-		// //currentResult.addResultType(stableMatch);
-		// //currentResult.addResultType(criticalMatch);
-		// //currentResult.addResultType(emergenceMatch);
-		// //currentResult.addResultType(adaptabilityMatch);
-
 		// Step 1: Bring in labelled Training data sets
 		ArrayList<String> trainingSetsBR = mi.getTrainingSystemsDBIDS();
 		int sampleSize = 0;
@@ -919,18 +941,20 @@ public class MetricRunner {
 			HashMap<String, String> sysParams = collector.getInitialisationParameters();
 			String initName = "";
 			int thisNumberOfCells = 0;
-			int numberOfAgents = 0;
-			if (sysParams.containsKey("Size (X)")) {
-				thisAreaX = Integer.parseInt(sysParams.get("Size (X)"));
-			}
-			if (sysParams.containsKey("Size (Y)")) {
-				thisAreaY = Integer.parseInt(sysParams.get("Size (Y)"));
-			}
+			int thisNumberOfAgents = 0;
+
 			if (sysParams.containsKey("initPath")) {
 				thisInitName = sysParams.get("initPath");
 			}
+			System.err.println("BR_ this init name is nueeded");
+			Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
+			thisAreaX = (int)size.getX();
+			thisAreaY = (int)size.getY();
+			thisNumberOfAgents = collector.countAllEntitiesInStep(0);
 			types.add(thisInitName);
-			thisNumberOfCells = thisAreaX * thisAreaY;
+			thisNumberOfCells = thisNumberOfAgents;
+			
+			
 			// Step 2: Calculate feature likelihoods for the dataset
 			sampleSize = (int) (thisNumberOfCells * percentageToGet);
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
@@ -1038,15 +1062,12 @@ public class MetricRunner {
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
 		int numberOfCells = 0;
-		if (sysParams.containsKey("Size (X)")) {
-			areaX = Integer.parseInt(sysParams.get("Size (X)"));
-		}
-		if (sysParams.containsKey("Size (Y)")) {
-			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
-		}
-		if (sysParams.containsKey("initPath")) {
-			initName = sysParams.get("initPath");
-		}
+		
+		System.err.println("This is probably wrorrnnngggg");
+		Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
+		areaX = (int)size.getX();
+		areaY = (int)size.getY();
+		numberOfCells = collector.countAllEntitiesInStep(0);
 
 		HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
 		HashMap<Integer, Integer> feature2Hits = new HashMap<Integer, Integer>();
@@ -1351,12 +1372,6 @@ public class MetricRunner {
 		ttResult.addResultType(realEventsNameCr);
 		ttResult.addResultType(realEventsNameAd);
 
-		// currentResult.addResultType("Cluster: " + averageClusterStateDensityName);
-		// currentResult.addResultType("Cluster: " + averageAgentDensityName);
-		// currentResult.addResultType("Cluster: " + AverageAreaName);
-		// currentResult.addResultType("Cluster: " + RunningUniqueClustersName);
-		// currentResult.addResultType("Cluster: " + ClustersIntersectingName);
-
 		sb.append("#" + systemName + " Tag and Track Results\n");
 		sb.append("#step\tresult\n");
 		long runtime = System.currentTimeMillis();
@@ -1408,17 +1423,6 @@ public class MetricRunner {
 							+ MinAgentStateDensity + "\t" + MinAgentDensity + "\t" + runningClusterCount + "\t"
 							+ averageArea + "\t" + RunningUniqueClusters + "\t" + clustersIntersecting + "\n");
 
-			// //currentResult.addResultAtStep("Cluster: " + averageClusterStateDensityName,
-			// averageClusterStateDensity, t);
-			// //currentResult.addResultAtStep("Cluster: " + averageAgentDensityName,
-			// averageAgentDensity, t);
-			// //currentResult.addResultAtStep("Cluster: " + AverageAreaName, averageArea,
-			// t);
-			// //currentResult.addResultAtStep("Cluster: " + RunningUniqueClustersName,
-			// RunningUniqueClusters, t);
-			// //currentResult.addResultAtStep("Cluster: " + ClustersIntersectingName,
-			// clustersIntersecting, t);
-
 		}
 		calculateAccuracy(averageClusterStateDensityName, averageClusterStateDensityName, ttResult, 0, 50.0, 0.025, si);
 		calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult, 0, 50.0, 0.025, si);
@@ -1457,9 +1461,6 @@ public class MetricRunner {
 		eotResult.addResultType(realEventsNameCr);
 		eotResult.addResultType(realEventsNameAd);
 
-		// //currentResult.addResultType(resultsName);
-		// //currentResult.addResultType(ceName);
-		// //currentResult.addResultType(secName);
 		double runtime = System.currentTimeMillis();
 		StringBuilder sb = new StringBuilder();
 
@@ -1481,9 +1482,6 @@ public class MetricRunner {
 			eotResult.addResultAtStep(secName, shannonEntropyChange, time);
 			eotResult.addResultAtStep(ceName, conditionalEntropy, time);
 
-			// //currentResult.addResultAtStep(resultsName, shannonEntropy, time);
-			// //currentResult.addResultAtStep(secName, shannonEntropyChange, time);
-			// //currentResult.addResultAtStep(ceName, conditionalEntropy, time);
 			sb.append(time + "\t" + shannonEntropy + "\t" + shannonEntropyChange + "\t" + conditionalEntropy + "\t"
 					+ realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
@@ -1603,8 +1601,6 @@ public class MetricRunner {
 		auResult.addResultType(mttrName);
 		auResult.addResultType(mttfName);
 
-		// //currentResult.addResultType(aName);
-		// //currentResult.addResultType(uName);
 
 		int consecutiveDowntime = 2; // The shortest amount of consecutive down time
 		HashMap<String, Integer> theAgentsDowntime = new HashMap<String, Integer>();
@@ -1723,8 +1719,6 @@ public class MetricRunner {
 					+ realEvents_criticality[time] + "\n");
 			// println(time+"\t"+MTTR+"\t"+MTTF+"\t"+A+"\t"+U+"\t"+failCounter+"\t"+recoveryCounter);
 
-			// //currentResult.addResultAtStep(aName, A, time);
-			// //currentResult.addResultAtStep(uName, U, time);
 
 		}
 		calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025, si);
@@ -1945,11 +1939,11 @@ public class MetricRunner {
 			// Send the results to a nicer place...
 			// Maybe a BIG static string builder
 			// sb.append(header);
-			//Printing
-			String systemDetails = si.getSystemName()+"\t"+si.getConfigurationName();
-			
+			// Printing
+			String systemDetails = si.getSystemName() + "\t" + si.getConfigurationName();
+
 			sb.append(systemDetails + "\t" + emResults);
-			System.out.println("systemDetails: "+initCriteria);
+			System.out.println("systemDetails: " + initCriteria);
 			sb.append("\n");
 			sb.append(systemDetails + "\t" + stResults);
 			sb.append("\n");
