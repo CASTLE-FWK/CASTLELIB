@@ -224,7 +224,8 @@ public class Entity implements Runnable {
 	}
 
 	public Object getParameterValueFromString(String paramName) {
-		return parameters.get(paramName).getValue();
+		return parameters.get(paramName);
+//		return parameters.get(paramName).getValue();
 	}
 
 	public String getParameterValueFromStringAsString(String paramName) {

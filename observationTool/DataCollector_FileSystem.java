@@ -50,6 +50,16 @@ public class DataCollector_FileSystem {
 	final String AGENTID = AGENT_PRE + D_ID;
 	final String AGENTTYPE = AGENT_PRE + D_TYPE;
 
+	// Env
+	final String ENVNAME = ENV_PRE + D_NAME;
+	final String ENVID = ENV_PRE + D_ID;
+	final String ENVTYPE = ENV_PRE + D_TYPE;
+
+	// Grp
+	final String GRPNAME = GRP_PRE + D_NAME;
+	final String GRPID = GRP_PRE + D_ID;
+	final String GRPTYPE = GRP_PRE + D_TYPE;
+
 	// PARAMETERS
 	final String PARAMNAME = PARAM_PRE + D_NAME;
 	final String PARAMVAL = PARAM_PRE + D_VALUE;
@@ -62,7 +72,7 @@ public class DataCollector_FileSystem {
 		setCollection(fp);
 		totalNumberOfInteractionsInStep = new ConcurrentHashMap<Integer, Integer>();
 	}
-	
+
 	public DataCollector_FileSystem(DataCollector_FileSystem c) {
 		String fpr = c.getFilePathRoot();
 		setCollection(fpr);
@@ -87,7 +97,7 @@ public class DataCollector_FileSystem {
 			String pType = jo.getString("parameter-type", "NULL");
 			ip.put(pName, pValue);
 		}
-		
+
 		return ip;
 	}
 
@@ -150,10 +160,34 @@ public class DataCollector_FileSystem {
 		return theMap;
 	}
 
-	public HashMap<String, VEntity> buildVAgentMap(int stepNumber) {
+	private HashMap<String, VEntity> buildVEntMap(int stepNumber, String entType) {
+		String Vname = "";
+		String Vid = "";
+		String Vtype = "";
+		switch (entType) {
+		case ENVIRONMENTS:
+			Vname = ENVNAME;
+			Vid = ENVID;
+			Vtype = ENVTYPE;
+			break;
+		case GROUPS:
+			Vname = GRPNAME;
+			Vid = GRPID;
+			Vtype = GRPTYPE;
+			break;
+		case AGENTS:
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
+			break;
+		default:
+			System.err.println("invalid entity type passed. returning null");
+			return null;
+		}
+
 		HashMap<String, VEntity> vAgents = new HashMap<String, VEntity>();
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray agents = file.get(AGENTS).asArray();
+		JsonArray agents = file.get(entType).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
 			if (obj == null) {
@@ -161,14 +195,14 @@ public class DataCollector_FileSystem {
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get(AGENTNAME) == null) {
-				System.err.println("agent-name is null");
+			if (obj.get(Vname) == null) {
+				System.err.println(Vname+" is null");
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get(AGENTNAME).asString();
-			String id = obj.get(AGENTID).asString();
-			String type = obj.get(AGENTTYPE).asString();
+			String name = obj.get(Vname).asString();
+			String id = obj.get(Vid).asString();
+			String type = obj.get(Vtype).asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
@@ -180,17 +214,26 @@ public class DataCollector_FileSystem {
 				tmpVA.addParameterFromString(pName, pType, pValue);
 			}
 			vAgents.put(tmpVA.getName(), tmpVA);
-			
-			
 		}
 		return vAgents;
+	}
+
+	public HashMap<String, VEntity> buildVEnvMap(int stepNumber) {
+		return buildVEntMap(stepNumber, ENVIRONMENTS);
+	}
+
+	public HashMap<String, VEntity> buildVAgentMap(int stepNumber) {
+		return buildVEntMap(stepNumber, AGENTS);
+	}
+
+	public HashMap<String, VEntity> buildVGroupMap(int stepNumber) {
+		return buildVEntMap(stepNumber, GROUPS);
 	}
 
 	public InteractionGraph buildInteractionGraph(int stepNumber) {
 		InteractionGraph ig = new InteractionGraph();
 		HashMap<String, VEntity> agMap = buildVAgentMap(stepNumber);
-		
-		
+
 		ArrayList<Interaction> interactions = getAllInteractionsFromStep(stepNumber);
 		Iterator<Entry<String, VEntity>> it = agMap.entrySet().iterator();
 		while (it.hasNext()) {
@@ -218,9 +261,7 @@ public class DataCollector_FileSystem {
 			JsonObject obj = agents.get(i).asObject();
 			interactions.addAll(getInteractionsFromEntity(obj));
 		}
-		
-		
-		
+
 		if (file.get(GROUPS) != null) {
 			JsonArray groups = file.get(GROUPS).asArray();
 			for (int i = 0; i < groups.size(); i++) {
@@ -257,7 +298,7 @@ public class DataCollector_FileSystem {
 				counter += countInteractionsFromEntity(obj);
 			}
 		}
-		
+
 		if (file.get(GROUPS) != null) {
 			JsonArray groups = file.get(GROUPS).asArray();
 			for (int i = 0; i < groups.size(); i++) {
@@ -300,7 +341,7 @@ public class DataCollector_FileSystem {
 		JsonObject obj = parseFile(terminationStatsFilePath);
 		return obj.getInt("termination-step", -1);
 	}
-	
+
 	public long getElapsedTime() {
 		JsonObject obj = parseFile(terminationStatsFilePath);
 		JsonObject raw = (JsonObject) obj.get("elapsed-time");
@@ -314,7 +355,7 @@ public class DataCollector_FileSystem {
 	public String buildFilePath(int stepNumber) {
 		return filepathStepsRoot + "/" + STEP + stepNumber + JSON;
 	}
-	
+
 	public JsonObject parseFile(String fp) {
 		if (fp.endsWith(".gz")) {
 			return parseCompressedFile(fp);
@@ -332,11 +373,11 @@ public class DataCollector_FileSystem {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.err.println("the file path :"+fp);
+			System.err.println("the file path :" + fp);
 		}
 		return null;
 	}
-	
+
 	public JsonObject parseCompressedFile(String fp) {
 		try {
 			return Json.parse(Utilities.decompressStringFromFile(fp)).asObject();
@@ -346,7 +387,7 @@ public class DataCollector_FileSystem {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.err.println("the file path :"+fp);
+			System.err.println("the file path :" + fp);
 		}
 		return null;
 	}

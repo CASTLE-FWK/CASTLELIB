@@ -724,21 +724,12 @@ public class MetricRunner {
 
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = "";
-		int numberOfCells = 0;
 		int numberOfAgents = 0;
-		if (sysParams.containsKey("Size (X)")) {
-			areaX = Integer.parseInt(sysParams.get("Size (X)"));
-		}
-		if (sysParams.containsKey("Size (Y)")) {
-			areaY = Integer.parseInt(sysParams.get("Size (Y)"));
-		}
-		if (sysParams.containsKey("initPath")) {
-			initName = sysParams.get("initPath");
-		}
-		if (sysParams.containsKey("cellPopulation")) {
-			numberOfAgents = Integer.parseInt(sysParams.get("cellPopulation"));
-		}
-
+		Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
+		areaX = (int) size.getX();
+		areaY = (int) size.getY();
+		numberOfAgents = collector.countAllEntitiesInStep(0);
+		
 		double unitAsPercentage = 100.0 / (double) numberOfAgents;
 		// Calculate the lifeQuad and interQuad (not done yet) for this system
 		MSSE_State[] currentLifeQuads = new MSSE_State[totalNumberOfSteps];
@@ -1255,7 +1246,6 @@ public class MetricRunner {
 				numOscillationsFound, distance, maxDistStart, consecutive, minDistance);
 		println("Oscillation size: %1$d", oscillationSize);
 		return oscillResult;
-
 	}
 
 	public static MetricResult Metric_TagAndTrack(SystemInfo si, MetricInfo mi, DataCollector_FileSystem collector) {
