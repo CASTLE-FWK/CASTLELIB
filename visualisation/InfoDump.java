@@ -39,19 +39,22 @@ public class InfoDump {
 			//Get the agents we want
 			System.out.print("Step:"+i+",");
 			ArrayList<VEntity> subComms = new ArrayList<VEntity>(collector.buildVGroupMap(i).values());
+			double avgConsensus = 0;
 			for (VEntity v : subComms) {
 				//Print out the thing we want
-				String out = v.getID();
-				out += "(consensusLevel:";
+//				String out = v.getID();
+//				out += "(consensusLevel:";
 				//TODO
 				if (v.getParameterValue("concensusLevel") == null) {
-					out += 0.5;
+					avgConsensus += 0.5;
 				} else {
-					out += ((Parameter<?>)v.getParameterValue("concensusLevel")).getCurrentValue();
+					avgConsensus += Double.parseDouble(((Parameter<?>)v.getParameterValue("concensusLevel")).getCurrentValue());
 				}
-				out += ")";
-				System.out.println(out);
+//				out += ")";
+//				System.out.println(out);
 			}
+			avgConsensus = avgConsensus / subComms.size();
+			System.out.println("consensus:"+avgConsensus);
 		}
 	}
 
