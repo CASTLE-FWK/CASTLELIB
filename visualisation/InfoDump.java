@@ -45,10 +45,10 @@ public class InfoDump {
 //				String out = v.getID();
 //				out += "(consensusLevel:";
 				//TODO
-				if (v.getParameterValue("concensusLevel") == null) {
-					avgConsensus += 0.5;
+				if (v.getParameterValue("consensusLevel") == null) {
+					avgConsensus += -1.0;
 				} else {
-					avgConsensus += Double.parseDouble(((Parameter<?>)v.getParameterValue("concensusLevel")).getCurrentValue());
+					avgConsensus += Double.parseDouble(((Parameter<?>)v.getParameterValue("consensusLevel")).getCurrentValue());
 				}
 //				out += ")";
 //				System.out.println(out);
