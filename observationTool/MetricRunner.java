@@ -139,8 +139,6 @@ public class MetricRunner {
 
 					dirTimeStamp = resultsDirRoot + exp.getExperimentID().replaceAll("\\s+", "") + "_"
 							+ Utilities.generateTimeID() + "/";
-					
-					
 
 					for (int test = 0; test < theTestSystems.size(); test++) {
 						SystemInfo currTestSystem = theTestSystems.get(test);
@@ -279,7 +277,7 @@ public class MetricRunner {
 
 		int numberOfAgents = collector.countAllEntitiesInStep(0);
 		String initName = experimentDataLocation;
-//		System.exit(0);
+		// System.exit(0);
 
 		// Print out dataset information
 		println("*******DATASET INFORMATION*******");
@@ -359,7 +357,7 @@ public class MetricRunner {
 
 			if (!usingAllMetrics) {
 				if (enabledMetrics.contains(metricName)) {
-					
+
 					es4.execute(new Runnable() {
 						@Override
 						public void run() {
@@ -441,7 +439,9 @@ public class MetricRunner {
 
 		double maxThresh = scResult.calculateMax(resultsName);
 
-		calculateAccuracy(metricName, resultsName, scResult, 0, 2 * stdDev, 0.025, si);
+		// calculateAccuracy(metricName, resultsName, scResult, 0, 2 * stdDev, 0.025,
+		// si);
+		calculateAccuracy(metricName, resultsName, scResult, si);
 
 		return scResult;
 	}
@@ -542,7 +542,11 @@ public class MetricRunner {
 		double minThresh = chanGoLResult.calculateMean(resultsNameA);
 		double maxThresh = chanGoLResult.calculateMax(resultsNameA);
 
-		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, minThresh, maxThresh, (maxThresh - minThresh) / 10, si);
+		// calculateAccuracy("Chan11", resultsNameA, chanGoLResult, minThresh,
+		// maxThresh, (maxThresh - minThresh) / 10,
+		// si);
+
+		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, si);
 		return chanGoLResult;
 
 	}
@@ -560,7 +564,7 @@ public class MetricRunner {
 		String systemName = si.getSystemName();
 		OToole14Metric oToole = new OToole14Metric(maxWindowSize, windowTruncateSize, mi);
 		MetricResult oTooleResult = new MetricResult(systemName, metricName, totalNumberOfSteps, si, dirTimeStamp);
-		
+
 		oTooleResult.addResultType(realEventsNameEm);
 		oTooleResult.addResultType(realEventsNameSt);
 		oTooleResult.addResultType(realEventsNameCr);
@@ -617,7 +621,10 @@ public class MetricRunner {
 		double minThresh = oTooleResult.calculateMean(resultsName) - stdDev;
 		double maxThresh = oTooleResult.calculateMax(resultsName);
 
-		calculateAccuracy("OToole14", resultsName, oTooleResult,  minThresh, maxThresh, (maxThresh - minThresh) / 10, si);
+		// calculateAccuracy("OToole14", resultsName, oTooleResult, minThresh,
+		// maxThresh, (maxThresh - minThresh) / 10,
+		// si);
+		calculateAccuracy("OToole14", resultsName, oTooleResult, si);
 		return oTooleResult;
 	}
 
@@ -644,7 +651,7 @@ public class MetricRunner {
 		msseResult.addResultType(realEventsNameAd);
 
 		StringBuilder sb2 = new StringBuilder(sb.toString());
-		
+
 		final String STATE_1 = "STATE_1";
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
 		String resultsName = "";
@@ -697,16 +704,16 @@ public class MetricRunner {
 			for (int t = 0; t < thisTotalNumberOfSteps; t++) {
 				thisNumberOfAgents = collector.countAllEntitiesInStep(t);
 				double thisUnitAsPercentage = 100.0 / (double) thisNumberOfAgents;
-				
-				//TODO: Can we change away from grids?
+
+				// TODO: Can we change away from grids?
 				Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, thisAreaX, thisAreaY);
 				Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(thisAreaX, thisAreaY));
-				
+
 				ArrayList<VEntity> agents = collector.buildVAgentList(t);
-				
+
 				HashMap<String, ArrayList<Interaction>> interactionMap = collector.getAgentInteractionMap(t);
 				for (VEntity agt : agents) {
-//					theGrid.addCell(agt, agt.getPosition());
+					// theGrid.addCell(agt, agt.getPosition());
 					theCont.addEntity(agt, agt.getPosition());
 				}
 				thisLifeQuad.reset();
@@ -716,56 +723,58 @@ public class MetricRunner {
 
 				for (VEntity tmpAgt : agents) {
 					Vector2 vPos = tmpAgt.getPosition();
-					int i = (int)vPos.getX();
-					int j = (int)vPos.getY();
-					
+					int i = (int) vPos.getX();
+					int j = (int) vPos.getY();
+
 					int xPos = (int) Math.floor((double) i / (double) thisQuadSizeX);
 					int yPos = (int) Math.floor((double) j / (double) thisQuadSizeY);
 					int tuplePos = yPos + (xPos * numGridsX);
 					if (tuplePos >= numGridsX * numGridsY) {
 						tuplePos = numGridsX * numGridsY - 1;
 					}
-					
-					//MVM1 Target
+
+					// MVM1 Target
 					if (mvm1.isParameterEqualToDesiredValue(tmpAgt)) {
 						thisLifeQuad.setTupleAtX(tuplePos,
 								thisLifeQuad.getTupleValueAtX(tuplePos) + thisUnitAsPercentage);
 					}
-				
-					//General Interactions
+
+					// General Interactions
 					thisInterQuad.setTupleAtX(tuplePos,
 							thisInterQuad.getTupleValueAtX(tuplePos) + interactionMap.get(tmpAgt.getName()).size());
 				}
-				
-				
-				//Temp killing to test
-//				//This logic has to change
-//				for (int i = 0; i < thisAreaX; i++) {
-//					for (int j = 0; j < thisAreaY; j++) {
-//						VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
-//						int xPos = (int) Math.floor((double) i / (double) thisQuadSizeX);
-//						int yPos = (int) Math.floor((double) j / (double) thisQuadSizeY);
-//						int tuplePos = yPos + (xPos * numGridsX);
-//						if (tuplePos >= numGridsX * numGridsY) {
-//							tuplePos = numGridsX * numGridsY - 1;
-//						}
-//						
-//						//MVM1 Target
-//						if (mvm1.isParameterEqualToDesiredValue(tmpAgt)) {
-//							thisLifeQuad.setTupleAtX(tuplePos,
-//									thisLifeQuad.getTupleValueAtX(tuplePos) + thisUnitAsPercentage);
-//						}
-//						
-//						//Original
-////						if (tmpAgt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-////							thisLifeQuad.setTupleAtX(tuplePos,
-////									thisLifeQuad.getTupleValueAtX(tuplePos) + thisUnitAsPercentage);
-////						}
-//						//General Interactions
-//						thisInterQuad.setTupleAtX(tuplePos,
-//								thisInterQuad.getTupleValueAtX(tuplePos) + interactionMap.get(tmpAgt.getName()).size());
-//					}
-//				}
+
+				// Temp killing to test
+				// //This logic has to change
+				// for (int i = 0; i < thisAreaX; i++) {
+				// for (int j = 0; j < thisAreaY; j++) {
+				// VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
+				// int xPos = (int) Math.floor((double) i / (double) thisQuadSizeX);
+				// int yPos = (int) Math.floor((double) j / (double) thisQuadSizeY);
+				// int tuplePos = yPos + (xPos * numGridsX);
+				// if (tuplePos >= numGridsX * numGridsY) {
+				// tuplePos = numGridsX * numGridsY - 1;
+				// }
+				//
+				// //MVM1 Target
+				// if (mvm1.isParameterEqualToDesiredValue(tmpAgt)) {
+				// thisLifeQuad.setTupleAtX(tuplePos,
+				// thisLifeQuad.getTupleValueAtX(tuplePos) + thisUnitAsPercentage);
+				// }
+				//
+				// //Original
+				//// if
+				// (tmpAgt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+				// == 0) {
+				//// thisLifeQuad.setTupleAtX(tuplePos,
+				//// thisLifeQuad.getTupleValueAtX(tuplePos) + thisUnitAsPercentage);
+				//// }
+				// //General Interactions
+				// thisInterQuad.setTupleAtX(tuplePos,
+				// thisInterQuad.getTupleValueAtX(tuplePos) +
+				// interactionMap.get(tmpAgt.getName()).size());
+				// }
+				// }
 				allLifeQuads[systemCounter][t] = new MSSE_State(thisLifeQuad);
 				allInterQuads[systemCounter][t] = new MSSE_State(thisInterQuad);
 			}
@@ -786,14 +795,14 @@ public class MetricRunner {
 		areaX = (int) size.getX();
 		areaY = (int) size.getY();
 		numberOfAgents = collector.countAllEntitiesInStep(0);
-		
+
 		// Calculate the lifeQuad and interQuad (not done yet) for this system
 		MSSE_State[] currentLifeQuads = new MSSE_State[totalNumberOfSteps];
 		MSSE_State[] currentInterQuads = new MSSE_State[totalNumberOfSteps];
 		for (int t = 0; t < totalNumberOfSteps; t++) {
 			numberOfAgents = collector.countAllEntitiesInStep(t);
 			double unitAsPercentage = 100.0 / (double) numberOfAgents;
-			//Continuous replacement?
+			// Continuous replacement?
 			Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, areaX, areaY);
 			ArrayList<VEntity> agents = collector.buildVAgentList(t);
 			for (VEntity agt : agents) {
@@ -804,49 +813,51 @@ public class MetricRunner {
 			interQuad.reset();
 			for (VEntity tmpAgt : agents) {
 				Vector2 vPos = tmpAgt.getPosition();
-				int i = (int)vPos.getX();
-				int j = (int)vPos.getY();
-				
+				int i = (int) vPos.getX();
+				int j = (int) vPos.getY();
+
 				int xPos = (int) Math.floor((double) i / (double) quadSizeX);
 				int yPos = (int) Math.floor((double) j / (double) quadSizeY);
 				int tuplePos = yPos + (xPos * numGridsX);
 				if (tuplePos >= numGridsX * numGridsY) {
 					tuplePos = numGridsX * numGridsY - 1;
 				}
-				
-				//MVM1 Target
+
+				// MVM1 Target
 				if (mvm1.isParameterEqualToDesiredValue(tmpAgt)) {
-					lifeQuad.setTupleAtX(tuplePos,
-							lifeQuad.getTupleValueAtX(tuplePos) + unitAsPercentage);
+					lifeQuad.setTupleAtX(tuplePos, lifeQuad.getTupleValueAtX(tuplePos) + unitAsPercentage);
 				}
-			
-				//General Interactions
+
+				// General Interactions
 				interQuad.setTupleAtX(tuplePos,
 						interQuad.getTupleValueAtX(tuplePos) + interactionMap.get(tmpAgt.getName()).size());
 			}
-			
 
-			//Killint Temporarly
+			// Killint Temporarly
 			// Calculate state at time t for system blah
-//			for (int i = 0; i < areaX; i++) {
-//				for (int j = 0; j < areaY; j++) {
-//					VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
-//					int xPos = (int) Math.floor((double) i / (double) quadSizeX);
-//					int yPos = (int) Math.floor((double) j / (double) quadSizeY);
-//					int tuplePos = yPos + (xPos * numGridsX);
-//					if (tuplePos >= numGridsX * numGridsY) {
-//						tuplePos = numGridsX * numGridsY - 1;
-//					}
-//					
-//					//MVM1 Replacement
-//					if (tmpAgt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//						lifeQuad.setTupleAtX(tuplePos, lifeQuad.getTupleValueAtX(tuplePos) + unitAsPercentage);
-//					}
-//					
-//					interQuad.setTupleAtX(tuplePos,
-//							interQuad.getTupleValueAtX(tuplePos) + interactionMap.get(tmpAgt.getName()).size());
-//				}
-//			}
+			// for (int i = 0; i < areaX; i++) {
+			// for (int j = 0; j < areaY; j++) {
+			// VEntity tmpAgt = theGrid.getEntityAtXY(i, j);
+			// int xPos = (int) Math.floor((double) i / (double) quadSizeX);
+			// int yPos = (int) Math.floor((double) j / (double) quadSizeY);
+			// int tuplePos = yPos + (xPos * numGridsX);
+			// if (tuplePos >= numGridsX * numGridsY) {
+			// tuplePos = numGridsX * numGridsY - 1;
+			// }
+			//
+			// //MVM1 Replacement
+			// if
+			// (tmpAgt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+			// == 0) {
+			// lifeQuad.setTupleAtX(tuplePos, lifeQuad.getTupleValueAtX(tuplePos) +
+			// unitAsPercentage);
+			// }
+			//
+			// interQuad.setTupleAtX(tuplePos,
+			// interQuad.getTupleValueAtX(tuplePos) +
+			// interactionMap.get(tmpAgt.getName()).size());
+			// }
+			// }
 			currentLifeQuads[t] = new MSSE_State(lifeQuad);
 			currentInterQuads[t] = new MSSE_State(interQuad);
 			// Magic SE stuff is done here
@@ -903,14 +914,21 @@ public class MetricRunner {
 		sb.append("\n#runtime\t" + runtime);
 		sb2.append("\n#runtime\t" + runtime);
 		msseResult.addRuntime(runtime);
-		
+
 		double maxLQThresh = msseResult.calculateMax(lqName);
 		double maxIQThresh = msseResult.calculateMax(iqName);
 		double minIQThresh = msseResult.calculateMax(iqName);
 		double minLQThresh = msseResult.calculateMax(lqName);
 
-		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult,  minLQThresh, maxLQThresh, (maxLQThresh - minLQThresh) / 10, si);
-		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult,  minIQThresh, maxIQThresh, (maxIQThresh - minIQThresh) / 10, si);
+		// calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName,
+		// msseResult, minLQThresh, maxLQThresh,
+		// (maxLQThresh - minLQThresh) / 10, si);
+		// calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName,
+		// msseResult, minIQThresh, maxIQThresh,
+		// (maxIQThresh - minIQThresh) / 10, si);
+
+		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, si);
+		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, si);
 		return msseResult;
 	}
 
@@ -942,7 +960,7 @@ public class MetricRunner {
 		brResult.addResultType(criticalMatch);
 		brResult.addResultType(emergenceMatch);
 		brResult.addStringResultType(smName);
-		
+
 		final String STATE_1 = "STATE_1";
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
 		String resultsName = "";
@@ -994,32 +1012,35 @@ public class MetricRunner {
 				thisNumberOfAgents = collector.countAllEntitiesInStep(0);
 				HashMap<String, VEntity> previousAgents = collector.buildVAgentMap(t - 1);
 				ArrayList<VEntity> agents = collector.buildVAgentList(t);
-				
-				//Replace with continuous?
+
+				// Replace with continuous?
 				Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, thisAreaX, thisAreaY);
 				Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(thisAreaX, thisAreaY));
-				
+
 				for (VEntity agt : agents) {
-//					theGrid.addCell(agt, agt.getPosition());
+					// theGrid.addCell(agt, agt.getPosition());
 					theCont.addEntity(agt, agt.getPosition());
 				}
 				for (int i = 0; i < sampleSize; i++) {
 					VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size() - 1));
 					// Get Feature 1: # of Live Neighbours
 					int aliveNeighbours = 0;
-					
-					//Is in Continunous?
-//					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
-//							.getNeighbours((int) tmpAgent.getPosition().getX(), (int) tmpAgent.getPosition().getY(), 1);
-					ArrayList<VEntity> neighbours =  theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
-					
+
+					// Is in Continunous?
+					// ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
+					// .getNeighbours((int) tmpAgent.getPosition().getX(), (int)
+					// tmpAgent.getPosition().getY(), 1);
+					ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
+
 					for (VEntity v : neighbours) {
 						if (mvm1.isParameterEqualToDesiredValue(v)) {
 							aliveNeighbours++;
 						}
-//						if (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//							aliveNeighbours++;
-//						}
+						// if
+						// (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+						// == 0) {
+						// aliveNeighbours++;
+						// }
 					}
 					if (feature1Hits.get(aliveNeighbours) != null) {
 						feature1Hits.put(aliveNeighbours, feature1Hits.get(aliveNeighbours) + 1);
@@ -1037,10 +1058,11 @@ public class MetricRunner {
 								changed = 1;
 							}
 						}
-//						if (tmpAgent.getParameterValueFromStringAsString("Alive")
-//								.compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive")) == 0) {
-//							changed = 1;
-//						}
+						// if (tmpAgent.getParameterValueFromStringAsString("Alive")
+						// .compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive"))
+						// == 0) {
+						// changed = 1;
+						// }
 					}
 					if (feature2Hits.get(changed) != null) {
 						feature2Hits.put(changed, feature2Hits.get(changed) + 1);
@@ -1058,16 +1080,15 @@ public class MetricRunner {
 				total += feature1Hits.get(f1);
 			}
 			HashMap<Integer, Double> F1Likelihoods = new HashMap<Integer, Double>();
-			
-			
-			//9 should be replace by the number of neighbours
+
+			// 9 should be replace by the number of neighbours
 			for (int f1 = 0; f1 < 9; f1++) {
 				F1Likelihoods.put(f1, (double) feature1Hits.get(f1) / (double) total);
 			}
 			if (feature1Types.get(thisInitName) != null) {
 				HashMap<Integer, Double> old = feature1Types.get(thisInitName);
-				
-				//9 should be replace by the number of neighbours
+
+				// 9 should be replace by the number of neighbours
 				for (int f1 = 0; f1 < 9; f1++) {
 					double newVal = (F1Likelihoods.get(f1) + old.get(f1)) / 2.0;
 					F1Likelihoods.put(f1, newVal);
@@ -1116,7 +1137,7 @@ public class MetricRunner {
 		HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
 		HashMap<Integer, Integer> feature2Hits = new HashMap<Integer, Integer>();
 		HashMap<String, Double> results = new HashMap<String, Double>();
-		
+
 		for (int t = 1; t < totalNumberOfSteps; t = t + 1) {
 			sampleSize = (int) (numberOfCells * percentageToGet);
 			numberOfCells = collector.countAllEntitiesInStep(0);
@@ -1124,7 +1145,7 @@ public class MetricRunner {
 			ArrayList<VEntity> agents = collector.buildVAgentList(t);
 			Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, areaX, areaY);
 			Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(areaX, areaY));
-			
+
 			for (VEntity agt : agents) {
 				theGrid.addCell(agt, agt.getPosition());
 				theCont.addEntity(agt, agt.getPosition());
@@ -1134,16 +1155,18 @@ public class MetricRunner {
 				VEntity tmpAgent = agents.get(RandomGen.generateRandomRangeInteger(0, agents.size() - 1));
 				// Get Feature 1: # of Live Neighbours
 				int aliveNeighbours = 0;
-				//Is in Continunous?
-				ArrayList<VEntity> neighbours =  theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
-				
+				// Is in Continunous?
+				ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
+
 				for (VEntity v : neighbours) {
 					if (mvm1.isParameterEqualToDesiredValue(v)) {
 						aliveNeighbours++;
 					}
-//					if (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//						aliveNeighbours++;
-//					}
+					// if
+					// (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
+					// == 0) {
+					// aliveNeighbours++;
+					// }
 				}
 				if (feature1Hits.get(aliveNeighbours) != null) {
 					feature1Hits.put(aliveNeighbours, feature1Hits.get(aliveNeighbours) + 1);
@@ -1161,10 +1184,11 @@ public class MetricRunner {
 							changed = 1;
 						}
 					}
-//					if (tmpAgent.getParameterValueFromStringAsString("Alive")
-//							.compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive")) == 0) {
-//						changed = 1;
-//					}
+					// if (tmpAgent.getParameterValueFromStringAsString("Alive")
+					// .compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive"))
+					// == 0) {
+					// changed = 1;
+					// }
 				}
 				if (feature2Hits.get(changed) != null) {
 					feature2Hits.put(changed, feature2Hits.get(changed) + 1);
@@ -1175,7 +1199,7 @@ public class MetricRunner {
 				// Calculate per agent here
 				for (String b : types) {
 					// Feature1
-					System.err.println(feature1Types.get(b).size()+" :<<<<<  "+ aliveNeighbours);
+					System.err.println(feature1Types.get(b).size() + " :<<<<<  " + aliveNeighbours);
 					double f1 = feature1Types.get(b).get(aliveNeighbours);
 					double f2 = 0;
 					if (feature2Types.get(b).get(changed) != null)
@@ -1236,9 +1260,15 @@ public class MetricRunner {
 		println("accBR: " + accBr);
 		println("Most common feature: " + brResult.calculateStringMode(smName));
 
-		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, 0, 2, 1.0, si);
-		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, 0, 2, 1.0, si);
-		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, 0, 2, 1.0, si);
+		// calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch,
+		// brResult, 0, 2, 1.0, si);
+		// calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch,
+		// brResult, 0, 2, 1.0, si);
+		// calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch,
+		// brResult, 0, 2, 1.0, si);
+		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, si);
+		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, si);
+		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, si);
 
 		return brResult;
 
@@ -1261,7 +1291,7 @@ public class MetricRunner {
 		int oscillationSize = -1;
 		int firstOscillationStart = -1;
 		String systemName = si.getSystemName();
-		
+
 		final String STATE_1 = "STATE_1";
 		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
 		resultsName = resultsName + "{" + mvm1.toString() + "}";
@@ -1343,7 +1373,11 @@ public class MetricRunner {
 		double minThresh = oscillResult.calculateMin(resultsName);
 		double maxThresh = oscillResult.calculateMax(resultsName);
 
-		calculateAccuracy("OscillationDetector", resultsName, oscillResult, minThresh, maxThresh, (maxThresh - minThresh)/10, si);
+		// calculateAccuracy("OscillationDetector", resultsName, oscillResult,
+		// minThresh, maxThresh,
+		// (maxThresh - minThresh) / 10, si);
+
+		calculateAccuracy("OscillationDetector", resultsName, oscillResult, si);
 
 		println("Oscillations detected: %1$d with max distance: %2$d starting from %3$d with %4$d consecutive hits. Min distance: %5$d",
 				numOscillationsFound, distance, maxDistStart, consecutive, minDistance);
@@ -1438,11 +1472,22 @@ public class MetricRunner {
 							+ averageArea + "\t" + RunningUniqueClusters + "\t" + clustersIntersecting + "\n");
 
 		}
-		calculateAccuracy(averageClusterStateDensityName, averageClusterStateDensityName, ttResult, 0, 50.0, 0.025, si);
-		calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult, 0, 50.0, 0.025, si);
-		calculateAccuracy(AverageAreaName, AverageAreaName, ttResult, 0, 5000.0, 5, si);
-		calculateAccuracy(RunningUniqueClustersName, RunningUniqueClustersName, ttResult, 0, 50.0, 0.025, si);
-		calculateAccuracy(ClustersIntersectingName, ClustersIntersectingName, ttResult, 0, 5000.0, 5, si);
+		// calculateAccuracy(averageClusterStateDensityName,
+		// averageClusterStateDensityName, ttResult, 0, 50.0, 0.025, si);
+		// calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult,
+		// 0, 50.0, 0.025, si);
+		// calculateAccuracy(AverageAreaName, AverageAreaName, ttResult, 0, 5000.0, 5,
+		// si);
+		// calculateAccuracy(RunningUniqueClustersName, RunningUniqueClustersName,
+		// ttResult, 0, 50.0, 0.025, si);
+		// calculateAccuracy(ClustersIntersectingName, ClustersIntersectingName,
+		// ttResult, 0, 5000.0, 5, si);
+
+		calculateAccuracy(averageClusterStateDensityName, averageClusterStateDensityName, ttResult, si);
+		calculateAccuracy(averageAgentDensityName, averageAgentDensityName, ttResult, si);
+		calculateAccuracy(AverageAreaName, AverageAreaName, ttResult, si);
+		calculateAccuracy(RunningUniqueClustersName, RunningUniqueClustersName, ttResult, si);
+		calculateAccuracy(ClustersIntersectingName, ClustersIntersectingName, ttResult, si);
 
 		tt.zarf();
 		Utilities.writeToFile(sb.toString(), resultsDirRoot + systemName.replaceAll("\\s+", "") + "/"
@@ -1501,9 +1546,15 @@ public class MetricRunner {
 					+ realEvents_criticality[time] + "\n");
 		}
 		//
-		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, 0, 10.0, 0.025, si);
-		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, 0, 10.0, 0.025, si);
-		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, 0, 10.0, 0.025, si);
+		// calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName,
+		// eotResult, 0, 10.0, 0.025, si);
+		// calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName,
+		// eotResult, 0, 10.0, 0.025, si);
+		// calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName,
+		// eotResult, 0, 10.0, 0.025, si);
+		calculateAccuracy("Entropy Over Time: Shannon Entropy", resultsName, eotResult, si);
+		calculateAccuracy("Entropy Over Time: ShannonEntropy(StateChange)", secName, eotResult, si);
+		calculateAccuracy("Entropy Over Time: Conditional Entropy", ceName, eotResult, si);
 
 		return eotResult;
 		// Utilities.writeToFile(sb.toString(),
@@ -1577,13 +1628,13 @@ public class MetricRunner {
 			// println(time+"\t"+watScore);
 			adaptivityTime = 0.0;
 		}
-		
-		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
+
+		// calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
+		calculateAccuracy("WAT", resultsName, watResult, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return watResult;
 	}
-	
 
 	// TODO This one needs to be ported across into the SAS class but its so very
 	// nasty
@@ -1732,8 +1783,12 @@ public class MetricRunner {
 			// println(time+"\t"+MTTR+"\t"+MTTF+"\t"+A+"\t"+U+"\t"+failCounter+"\t"+recoveryCounter);
 
 		}
-		calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025, si);
-		calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0, 0.025, si);
+		// calculateAccuracy("Villegas: Availability", aName, auResult, 0, 100.0, 0.025,
+		// si);
+		// calculateAccuracy("Villegas: Unavailability", uName, auResult, 0, 100.0,
+		// 0.025, si);
+		calculateAccuracy("Villegas: Availability", aName, auResult, si);
+		calculateAccuracy("Villegas: Unavailability", uName, auResult, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return auResult;
@@ -1781,7 +1836,9 @@ public class MetricRunner {
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);
 		}
-		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0, 100.0, 0.025, si);
+		// calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, 0,
+		// 100.0, 0.025, si);
+		calculateAccuracy("Situation Perfomance", resultsName, perfsitResult, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return perfsitResult;
@@ -1828,6 +1885,13 @@ public class MetricRunner {
 
 		return ssResult;
 
+	}
+
+	public static void calculateAccuracy(String metricName, String resultsName, MetricResult result, SystemInfo si) {
+		double max = result.calculateMax(resultsName);
+		double min = result.calculateMin(resultsName);
+		double incr = (max - min) / 10;
+		calculateAccuracy(metricName, resultsName, result, min, max, incr, si);
 	}
 
 	/**
