@@ -6,7 +6,7 @@ public class AccuracyResults {
 	int truePositives = 0;
 	int falseNegatives = 0;
 	int trueNegatives = 0;
-	int totalHits = 0; //Should be a sum of the above 4 variables
+	int totalHits = 0; // Should be a sum of the above 4 variables
 	int realHits = 0;
 	int goodHits = 0;
 	int badHits = 0;
@@ -75,10 +75,16 @@ public class AccuracyResults {
 	}
 
 	public double calculateTPR() {
+		if (truePositives + falseNegatives == 0) {
+			return 0;
+		}
 		return ((double) truePositives) / ((double) truePositives + falseNegatives);
 	}
 
 	public double calculateSPC() {
+		if (trueNegatives + falsePositives == 0) {
+			return 0;
+		}
 		return ((double) trueNegatives) / ((double) trueNegatives + falsePositives);
 	}
 
@@ -110,7 +116,11 @@ public class AccuracyResults {
 	}
 
 	public double F1Score() {
-		return 2.0 * truePositives / (double) ((2.0 * truePositives) + falsePositives + falseNegatives);
+		double f1 = 2.0 * truePositives / (double) ((2.0 * truePositives) + falsePositives + falseNegatives);
+		if (f1 == Double.NaN) {
+			f1 = 0;
+		}
+		return f1;
 	}
 
 	public void setRealHits(int numRealHits) {
@@ -119,7 +129,7 @@ public class AccuracyResults {
 
 	public double calculateRealHits() {
 		if (realHits == 0) {
-			//			System.out.println("is zero");
+			// System.out.println("is zero");
 			return 0.0;
 		}
 		return (double) truePositives / (double) realHits;

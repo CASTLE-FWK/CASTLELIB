@@ -112,7 +112,7 @@ public class JsonParser {
 				JsonObject et = typeMaps.get(j).asObject();
 				String etN = et.get("entity-type").asString();
 				String etV = et.get("entity-variable").asString();
-				String etDV = et.get("variable-desired-value").asString();
+				String etDV = et.getString("variable-desired-value","null");
 				System.out.println(et);
 				String etNM = et.get("name").asString();
 				mvm.addTypeMap(etN, etV, etDV, etNM);

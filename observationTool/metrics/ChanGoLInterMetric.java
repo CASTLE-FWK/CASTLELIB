@@ -9,6 +9,7 @@ import experimentExecution.MetricVariableMapping;
 import experimentExecution.SystemInfo;
 import observationTool.DataCollector_FileSystem;
 import observationTool.MetricRunner_ED;
+import observationTool.Universals;
 import observationTool.VEntity;
 import observationTool.results.MetricResult;
 
@@ -57,7 +58,6 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		metricVariableMappings = mi.getMetricVariableMappings();
 	}
 
-
 	// What needs to happen here?
 	public void setup(ArrayList<VEntity> step_zero, int numberOfSteps) {
 		for (VEntity vagent : step_zero) {
@@ -71,11 +71,10 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 	public void calculateResults(ArrayList<VEntity> step_tm1, ArrayList<VEntity> step_t, int currentStep) {
 		// These lists should be the same size
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		
-		
+
 		if (step_tm1.size() != step_t.size()) {
-			 System.out.println("Agent lists are not the same size. Terminating metric.");
-			 return;
+			System.out.println("Agent lists are not the same size. Terminating metric.");
+			return;
 		}
 
 		// Sort to fix any issues
@@ -92,28 +91,29 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 				// agents. Terminating metric.");
 				continue;
 			}
-			
-			if (entityIsOfType(vatm1, mvm1) && entityIsOfType(vat, mvm1)) {
-				if (!compareParameters(vatm1, vat, mvm1)) {
+			if (vat.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0
+					&& vatm1.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+				int currNum = Universals.numberOfNeighbours(vat, step_t, 5);
+				int prevNum = Universals.numberOfNeighbours(vatm1, step_tm1, 5);
+				if (currNum != prevNum) {
 					cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
 					overallChanges[currentStep]++;
 					if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
 						maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
 					}
 				}
-			}
-//				
-//				
-//			if (vatm1.getParameterValueFromStringAsString("Alive")
-//					.compareTo(vat.getParameterValueFromStringAsString("Alive")) != 0) {
-//				// Increment count of agent change
-//				cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
-//				overallChanges[currentStep]++;
-//				if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
-//					maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
-//				}
-//			}
 
+			} else {
+				if (entityIsOfType(vatm1, mvm1) && entityIsOfType(vat, mvm1)) {
+					if (!compareParameters(vatm1, vat, mvm1)) {
+						cumulativeIndiv.put(vat.getID(), cumulativeIndiv.get(vat.getID()) + 1.0);
+						overallChanges[currentStep]++;
+						if (cumulativeIndiv.get(vat.getID()) > maxAtT[currentStep]) {
+							maxAtT[currentStep] = cumulativeIndiv.get(vat.getID()).intValue();
+						}
+					}
+				}
+			}
 		}
 
 		// calculate It, Yit, and Zt
@@ -130,8 +130,10 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 			} else {
 				tmp = tmp.doubleValue();
 			}
-			//Theres an issue with this array
-			errLog("currentStep: "+currentStep+", i: "+i+", result_Yit size:"+result_Yit.length);
+			// Theres an issue with this array
+			// errLog("currentStep: "+currentStep+", i: "+i+", result_Yit
+			// size:"+result_Yit.length);
+
 			result_Yit[currentStep][i] = tmp / (double) maxAtT[currentStep];
 			result_Zt += cumulativeIndiv.get(step_t.get(i).getID()).intValue();
 		}
@@ -157,13 +159,11 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		return res;
 	}
 
-
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public MetricResult getResults() {
@@ -171,10 +171,9 @@ public class ChanGoLInterMetric extends MetricBase implements MetricInterface {
 		return null;
 	}
 
-
 	@Override
 	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

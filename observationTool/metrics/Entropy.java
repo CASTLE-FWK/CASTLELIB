@@ -9,6 +9,7 @@ import castleComponents.representations.Continuous;
 import castleComponents.representations.Grid;
 import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
+import observationTool.Universals;
 import observationTool.VEntity;
 
 public class Entropy extends MetricBase {
@@ -52,7 +53,6 @@ public class Entropy extends MetricBase {
 
 	public double shannonEntropy_Neighbours(ArrayList<VEntity> agents, Vector2 gridSize, MetricParameters mp) {
 		double d = 0.0;
-		// Lets do Alive neighbours. This means we need a Grid
 		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 
@@ -62,24 +62,33 @@ public class Entropy extends MetricBase {
 		}
 		for (VEntity v : agents) {
 			if (entityIsOfType(v, mvm1)) {
-				Vector2 pos = v.getPosition();
-				ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(),
-						neighbourDist);
-				double prob = 0;
-				for (VEntity n : neighbours) {
-					if (entityIsOfType(n, mvm1)) {
-						if (isParameterEqualToDesiredValue(n, mvm1)) {
-							prob++;
+				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					int currNum = Universals.numberOfNeighbours(v, agents, neighbourDist);
+					if (currNum != 0) {
+						double prob = (double) currNum / (double) agents.size();
+						d += prob * Math.log(prob);
+					}
+				} else {
+					Vector2 pos = v.getPosition();
+					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(),
+							neighbourDist);
+					double prob = 0;
+					for (VEntity n : neighbours) {
+						if (entityIsOfType(n, mvm1)) {
+							if (isParameterEqualToDesiredValue(n, mvm1)) {
+								prob++;
+							}
 						}
 					}
-				}
-				if (neighbours.size() == 0) {
-					prob = 0;
-				} else {
-					prob = prob / (double) neighbours.size();
-				}
-				if (prob != 0) {
-					d += prob * Math.log(prob);
+
+					if (neighbours.size() == 0) {
+						prob = 0;
+					} else {
+						prob = prob / (double) neighbours.size();
+					}
+					if (prob != 0) {
+						d += prob * Math.log(prob);
+					}
 				}
 			}
 		}
@@ -87,34 +96,51 @@ public class Entropy extends MetricBase {
 		return -d;
 	}
 
-	public double shannonEntropy_Change(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents) {
+	public double shannonEntropy_Change(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents,
+			MetricParameters mp) {
 		double d = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-
+		double neighbourDist = (Double) mp.getParameterValue("se-neighbour-dist");
 		final double SEVENEIGHTHS = 7.0 / 8.0;
 		final double ONEEIGHTH = 1.0 / 8.0;
 		for (VEntity v : agents) {
 			if (entityIsOfType(v, mvm1)) {
+				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					int currNum = Universals.numberOfNeighbours(v, agents, neighbourDist);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					int prevNum = Universals.numberOfNeighbours(pv, prevAgents.values(), neighbourDist);
+					if (prevNum != currNum) {
+						if (currNum > 1)
+							d += ((currNum - 1) / currNum) * Math.log((currNum - 1) / currNum);
+					} else {
+						if (currNum > 1)
+							d += (1 / currNum) * Math.log(1 / currNum);
+					}
 
-				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
-				VEntity pv = prevAgents.get(v.getName());
-				if (pv == null) {
-//					System.out.println("Agent didnt exist...");
-					continue;
-				}
-				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
-				if (lifeState) {
-					if (!prevState) {
-						d += (SEVENEIGHTHS) * Math.log(SEVENEIGHTHS);
-					}
 				} else {
-					if (prevState) {
-						d += (ONEEIGHTH) * Math.log(ONEEIGHTH);
+
+					boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
 					}
-				}
-				if (d == Double.NaN) {
-					System.out.println(d);
+					boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
+					if (lifeState) {
+						if (!prevState) {
+							d += (SEVENEIGHTHS) * Math.log(SEVENEIGHTHS);
+						}
+					} else {
+						if (prevState) {
+							d += (ONEEIGHTH) * Math.log(ONEEIGHTH);
+						}
+					}
+					if (d == Double.NaN) {
+						System.out.println(d);
+					}
 				}
 			}
 		}
@@ -139,35 +165,50 @@ public class Entropy extends MetricBase {
 		}
 
 		for (VEntity v : agents) {
-			// boolean lifeState =
-			// v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") ==
-			// 0;
 			if (entityIsOfType(v, mvm1)) {
-				VEntity pv = prevAgents.get(v.getName());
-				if (pv == null) {
-//					System.out.println("Agent didnt exist...");
-					continue;
-				}
-				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
-				// Count alive neighbours
-				Vector2 pos = v.getPosition();
-				ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(),
-						neighbourDist);
-				double prob = 0;
-				for (VEntity n : neighbours) {
-					if (entityIsOfType(v, mvm1)) {
-						boolean neighbourState = isParameterEqualToDesiredValue(n, mvm1);
-						if (neighbourState) {
-							if (prevState) {
-								d += (2.0 / 64.0) * Math.log(ONEEIGHTH / (2.0 / 64.0));
+				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					int currNum = Universals.numberOfNeighbours(v, agents, neighbourDist);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					int prevNum = Universals.numberOfNeighbours(pv, prevAgents.values(), neighbourDist);
+					if (prevNum != currNum) {
+						if (currNum > 1)
+							d += ((currNum - 1) / currNum) * Math.log((currNum - 1) / currNum);
+					} else {
+						if (currNum > 1)
+							d += (1 / currNum) * Math.log(1 / currNum);
+					}
+
+				} else {
+
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						// System.out.println("Agent didnt exist...");
+						continue;
+					}
+					boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
+					// Count alive neighbours
+					Vector2 pos = v.getPosition();
+					ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont.getNeighborsFromVector(v.getPosition(),
+							neighbourDist);
+					double prob = 0;
+					for (VEntity n : neighbours) {
+						if (entityIsOfType(v, mvm1)) {
+							boolean neighbourState = isParameterEqualToDesiredValue(n, mvm1);
+							if (neighbourState) {
+								if (prevState) {
+									d += (2.0 / 64.0) * Math.log(ONEEIGHTH / (2.0 / 64.0));
+								} else {
+									d += (16.0 / 64.0) * Math.log(SEVENEIGHTHS / (16.0 / 64.0));
+								}
 							} else {
-								d += (16.0 / 64.0) * Math.log(SEVENEIGHTHS / (16.0 / 64.0));
-							}
-						} else {
-							if (prevState) {
-								d += (7.0 / 64.0) * Math.log(ONEEIGHTH / (7.0 / 64.0));
-							} else {
-								d += (56.0 / 64.0) * Math.log(SEVENEIGHTHS / (56.0 / 64.0));
+								if (prevState) {
+									d += (7.0 / 64.0) * Math.log(ONEEIGHTH / (7.0 / 64.0));
+								} else {
+									d += (56.0 / 64.0) * Math.log(SEVENEIGHTHS / (56.0 / 64.0));
+								}
 							}
 						}
 					}

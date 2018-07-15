@@ -50,36 +50,39 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	public ClusterTrack(MetricInfo mi) {
 		super("ClusterTrack", mi);
 		metricVariableMappings = mi.getMetricVariableMappings();
-		//		clusters = new ArrayList<Cluster>();
+		// clusters = new ArrayList<Cluster>();
 		sb = new StringBuilder();
 		prevIDs = new HashMap<String, Integer>();
 	}
 
 	public void Calculate(ArrayList<Cluster> previous, ArrayList<Cluster> current, double threshold) {
-		//Calculate likely movements
-		//		for (int i = 0; i < current.size(); i++){
-		//			System.out.println(current.get(i).getStats());
-		//		}
-		//Return a list of Clusters who persisted?
+		// Calculate likely movements
+		// for (int i = 0; i < current.size(); i++){
+		// System.out.println(current.get(i).getStats());
+		// }
+		// Return a list of Clusters who persisted?
 		ArrayList<Cluster> persistentClusters = new ArrayList<Cluster>();
 
-		//How can we examine individual clusters?
+		// How can we examine individual clusters?
 
 		for (int i = 0; i < previous.size(); i++) {
 			for (int j = 0; j < current.size(); j++) {
 				if (previous.get(i).getClusterStringID().compareToIgnoreCase(current.get(j).getClusterStringID()) == 0
 						&& current.get(j).getClusterStringID().length() > 0) {
 					persistentClusters.add(current.get(j));
-					//No what?
-					//Study the similarities of those clusters??
-					//How have they changed since the last cluster study?
-					//Do some community detection?
+					// No what?
+					// Study the similarities of those clusters??
+					// How have they changed since the last cluster study?
+					// Do some community detection?
 
-					//					System.out.println(previous.get(i).getClusterStringID());
+					// System.out.println(previous.get(i).getClusterStringID());
 				}
-				//				if (previous.get(i).getCentroid().compareDistance(current.get(j).getCentroid()) <= threshold){
-				////					System.out.println("MAGIC: previous: "+previous.get(i).getStats()+" current: "+current.get(j).getStats());
-				//				}
+				// if
+				// (previous.get(i).getCentroid().compareDistance(current.get(j).getCentroid())
+				// <= threshold){
+				//// System.out.println("MAGIC: previous: "+previous.get(i).getStats()+"
+				// current: "+current.get(j).getStats());
+				// }
 			}
 		}
 		System.out.println("Number of persistent clusters (t -> t+1): " + persistentClusters.size());
@@ -89,8 +92,8 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	}
 
 	public HashMap<String, Double> examineClusters(ArrayList<Cluster> clusters) {
-		//		double 
-		
+		// double
+
 		double averageClusterStateDensity = 0.0;
 		double averageDensity = 0.0;
 		double averageArea = 0.0;
@@ -101,7 +104,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 		for (Cluster c : clusters) {
 			if (c.getNumAgentsInCluster() > 1) {
 				counter++;
-				//				System.out.println("CSD: "+clusterStateDensity(c) +" AD: "+c.getDensity());
+				// System.out.println("CSD: "+clusterStateDensity(c) +" AD: "+c.getDensity());
 				double csd = clusterStateDensity(c);
 				averageClusterStateDensity += csd;
 				averageDensity += c.getDensity();
@@ -111,7 +114,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 
 				if (prevIDs.get(c.getShortID()) == null) {
 					prevIDs.put(c.getShortID(), 1);
-					//					System.out.println(c.getClusterStringID()+" exists already!");
+					// System.out.println(c.getClusterStringID()+" exists already!");
 				} else {
 					prevIDs.put(c.getShortID(), prevIDs.get(c.getShortID()) + 1);
 				}
@@ -126,26 +129,28 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 			averageClusterStateDensity = averageClusterStateDensity / counter;
 			averageArea = averageArea / counter;
 		}
-		
+
 		double clustersIntersecting = clusterIntersect(clusters);
-		//		System.out.println("average cluster state density: " + averageClusterStateDensity);
-		//		System.out.println("average cluster agent density: "+averageDensity);
-		//		return averageClusterStateDensity+"\t"+averageDensity+"\t"+Utilities.calculateSTDDev(csds)+"\t"+Utilities.calculateSTDDev(ads)+"\t"
-		//				+Utilities.calculateMax(csds)+"\t"+Utilities.calculateMax(ads)+"\t"+Utilities.calculateMin(csds)
-		//				+"\t"+Utilities.calculateMin(ads)+"\t"+counter+"\t"+averageArea+"\t"+prevIDs.size()+"\t"+clustersIntersecting;
+		// System.out.println("average cluster state density: " +
+		// averageClusterStateDensity);
+		// System.out.println("average cluster agent density: "+averageDensity);
+		// return
+		// averageClusterStateDensity+"\t"+averageDensity+"\t"+Utilities.calculateSTDDev(csds)+"\t"+Utilities.calculateSTDDev(ads)+"\t"
+		// +Utilities.calculateMax(csds)+"\t"+Utilities.calculateMax(ads)+"\t"+Utilities.calculateMin(csds)
+		// +"\t"+Utilities.calculateMin(ads)+"\t"+counter+"\t"+averageArea+"\t"+prevIDs.size()+"\t"+clustersIntersecting;
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-		results.put("averageClusterStateDensity"+mvm1.toString(), averageClusterStateDensity);
-		results.put("averageAgentDensity"+mvm1.toString(), averageDensity);
-		results.put("STDDEVAgentStateDensity"+mvm1.toString(), Utilities.calculateSTDDev(csds));
-		results.put("STDDEVAgentDensity"+mvm1.toString(), Utilities.calculateSTDDev(ads));
-		results.put("MaxAgentStateDensity"+mvm1.toString(), Utilities.calculateMax(csds));
-		results.put("MinAgentStateDensity"+mvm1.toString(), Utilities.calculateMin(csds));
-		results.put("MaxAgentDensity"+mvm1.toString(), Utilities.calculateMax(ads));
-		results.put("MinAgentDensity"+mvm1.toString(), Utilities.calculateMin(ads));
-		results.put("RunningClusterCount"+mvm1.toString(), counter);
-		results.put("AverageArea"+mvm1.toString(), averageArea);
-		results.put("RunningUniqueClusters"+mvm1.toString(), (double) prevIDs.size());
-		results.put("ClustersIntersecting"+mvm1.toString(), clustersIntersecting);
+		results.put("averageClusterStateDensity" + mvm1.toString(), averageClusterStateDensity);
+		results.put("averageAgentDensity" + mvm1.toString(), averageDensity);
+		results.put("STDDEVAgentStateDensity" + mvm1.toString(), Utilities.calculateSTDDev(csds));
+		results.put("STDDEVAgentDensity" + mvm1.toString(), Utilities.calculateSTDDev(ads));
+		results.put("MaxAgentStateDensity" + mvm1.toString(), Utilities.calculateMax(csds));
+		results.put("MinAgentStateDensity" + mvm1.toString(), Utilities.calculateMin(csds));
+		results.put("MaxAgentDensity" + mvm1.toString(), Utilities.calculateMax(ads));
+		results.put("MinAgentDensity" + mvm1.toString(), Utilities.calculateMin(ads));
+		results.put("RunningClusterCount" + mvm1.toString(), counter);
+		results.put("AverageArea" + mvm1.toString(), averageArea);
+		results.put("RunningUniqueClusters" + mvm1.toString(), (double) prevIDs.size());
+		results.put("ClustersIntersecting" + mvm1.toString(), clustersIntersecting);
 
 		return results;
 
@@ -162,11 +167,11 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 		double numNodes = cNodes.size();
 		for (Node n : cNodes) {
 			VEntity v = n.getVAgent();
-			//Used for the ED
-			//			boolean res = MetricRunner_ED.busyOrFull(v);
-			//			if (res){
-			//				countAlive++;
-			//			}
+			// Used for the ED
+			// boolean res = MetricRunner_ED.busyOrFull(v);
+			// if (res){
+			// countAlive++;
+			// }
 			if (entityIsOfType(v, mvm1)) {
 				if (isParameterEqualToDesiredValue(v, mvm1)) {
 					countAlive++;
@@ -215,31 +220,31 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	}
 
 	public String analyseClustersAndPrint(ArrayList<Cluster> clusters) {
-		//		System.out.println("Number of clusters: "+clusters.size());
+		// System.out.println("Number of clusters: "+clusters.size());
 		for (Cluster c : clusters) {
 			if (c.getNumAgentsInCluster() > 1) {
 				c.calculateDimensions();
 				c.calculateCentroid();
 				c.createStringID();
-				//				sb.append(c.getClusterStringID()+"\t"+c.getCentroid().toString()+"\n");
+				// sb.append(c.getClusterStringID()+"\t"+c.getCentroid().toString()+"\n");
 				if (prevIDs.get(c.getShortID()) == null) {
 					prevIDs.put(c.getShortID(), 1);
-					//					System.out.println(c.getClusterStringID()+" exists already!");
+					// System.out.println(c.getClusterStringID()+" exists already!");
 				} else {
 					prevIDs.put(c.getShortID(), prevIDs.get(c.getShortID()) + 1);
 				}
-				//				System.out.println(c.getStats());
-				//				if (c.getNumAgentsInCluster() == 205){
-				//					c.createStringID();
-				//					sb.append(c.getClusterStringID()+"\t"+c.getCentroid().toString()+"\n");					
-				//				}
+				// System.out.println(c.getStats());
+				// if (c.getNumAgentsInCluster() == 205){
+				// c.createStringID();
+				// sb.append(c.getClusterStringID()+"\t"+c.getCentroid().toString()+"\n");
+				// }
 			}
 		}
 		return printClusters(clusters);
 	}
 
 	public void zarf() {
-		//		System.out.println(sb.toString());
+		// System.out.println(sb.toString());
 		int maxCount = 0;
 		int sum = 0;
 		String maxID = "";
@@ -249,7 +254,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 				maxCount = entry.getValue();
 				maxID = entry.getKey();
 			}
-			//		    System.out.println(entry.getKey() + "/" + entry.getValue());
+			// System.out.println(entry.getKey() + "/" + entry.getValue());
 		}
 		System.out.println("Number of unique clusters (unique cluster count): " + sum);
 		System.out.println("Most frequent cluster (steps): " + maxCount);
@@ -311,19 +316,19 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 
 	}
 
-	//How many centroids? Space divided by 4,5,6,7...X?
+	// How many centroids? Space divided by 4,5,6,7...X?
 	public ArrayList<Cluster> KMeans(InteractionGraph ig, int numClusters, Vector2 totalSpace) {
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 		this.mvm1 = mvm1;
 		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 		ArrayList<Node> nodes = ig.getNodes();
-		//Random init
+		// Random init
 		clusters.clear();
 		for (int i = 0; i < numClusters; i++) {
 			Cluster cluster = new Cluster(i);
 			Vector2 newVec = new Vector2(RandomGen.generateRandomRangeDouble(0, totalSpace.getX()),
 					RandomGen.generateRandomRangeDouble(0, totalSpace.getY()));
-			//			System.out.println("newVec: "+newVec);
+			// System.out.println("newVec: "+newVec);
 			cluster.setCentroid(new Vector2(newVec));
 			clusters.add(cluster);
 		}
@@ -332,24 +337,24 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 		ArrayList<Vector2> prevCentroids = new ArrayList<Vector2>();
 		ArrayList<Vector2> newCentroids = new ArrayList<Vector2>();
 		int numSteps = 0;
-		//Do iteration
+		// Do iteration
 		while (!finished) {
 			prevCentroids.clear();
 			newCentroids.clear();
 
-			//Reset cluster lists and get previous centroids
+			// Reset cluster lists and get previous centroids
 			for (Cluster cluster : clusters) {
 				prevCentroids.add(cluster.getCentroid());
 				cluster.clear();
 			}
 
-			//Assign clusters
+			// Assign clusters
 			double max = Double.MAX_VALUE;
 			double min = max;
 			int clusterAssignment = 0;
 			double distance = 0.0;
 
-			//Assign nodes to clusters
+			// Assign nodes to clusters
 			for (Node node : nodes) {
 				min = max;
 				for (int i = 0; i < numClusters; i++) {
@@ -363,15 +368,15 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 				clusters.get(clusterAssignment).addNode(node);
 			}
 
-			//Calculate new centroids
+			// Calculate new centroids
 			for (Cluster cluster : clusters) {
 				double sumX = 0.0;
 				double sumY = 0.0;
 				ArrayList<Node> theseNodes = cluster.getNodes();
-				//				int nodeCount = theseNodes.size();
+				// int nodeCount = theseNodes.size();
 				int nodeCount = 0;
 				for (Node n : theseNodes) {
-					//MARKER 2
+					// MARKER 2
 					if (entityIsOfType(n.getVAgent(), mvm1)) {
 						if (isParameterEqualToDesiredValue(n.getVAgent(), mvm1)) {
 							Vector2 v = n.getPosition();
@@ -380,10 +385,7 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 							nodeCount++;
 						}
 					}
-					//					Vector2 v = n.getPosition();
-					//					sumX += v.getX();
-					//					sumY += v.getY();
-					//					nodeCount++;
+
 				}
 
 				if (nodeCount > 0) {
@@ -403,37 +405,39 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 			if (distance == 0) {
 				finished = true;
 			}
-			//DEBUG
+			// DEBUG
 			System.out.println("Num iterations: " + numSteps);
 			System.out.println("Centroid distance: " + distance);
 
-			//			System.out.println("Cluster density: ");
+			// System.out.println("Cluster density: ");
 			for (Cluster c : clusters) {
 				c.calculateDimensions();
 				c.createStringID();
-				//				System.out.print(c.getDensity()+", ");
+				// System.out.print(c.getDensity()+", ");
 			}
-			//			System.out.println();
+			// System.out.println();
 
 		}
 		return clusters;
 	}
+
 	public void MinCutPhase(InteractionGraph ig) {
 		//
 		double cutOfThePhase = 0.0;
-		//Get all nodes
+		// Get all nodes
 		ArrayList<Node> nodes = ig.sortNodesOnEdgeCount();
 		InteractionGraph newIG = new InteractionGraph();
 
-		//Add a random Node to newIG
+		// Add a random Node to newIG
 		int randNodeIndex = RandomGen.generateRandomRangeInteger(0, nodes.size());
 		newIG.addNode(nodes.get(randNodeIndex));
 
-		//Cut-of-the-phase: The cut-of-the-phase is the sum of the weight of all the edges connecting
-		//	to the last vertex added to A
+		// Cut-of-the-phase: The cut-of-the-phase is the sum of the weight of all the
+		// edges connecting
+		// to the last vertex added to A
 		cutOfThePhase = nodes.get(nodes.size() - 1).getTotalWeight();
 
-		//Add all nodes to newIG but merge the last two nodes
+		// Add all nodes to newIG but merge the last two nodes
 		for (int i = nodes.size() - 1; i >= 0; i++) {
 			if (i == randNodeIndex) {
 				continue;
@@ -445,9 +449,8 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public MetricResult getResults() {
@@ -458,18 +461,18 @@ public class ClusterTrack extends MetricBase implements MetricInterface {
 	@Override
 	public void setCollector(DataCollector_FileSystem dfs) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
 
 class Cluster {
 	Vector2 centroid;
-	ArrayList<Node> nodes;//should be a hashset (or should it)
+	ArrayList<Node> nodes;// should be a hashset (or should it)
 	HashSet<String> checkForDupNodes;
 	int clusterID;
 	String clusterIDString;
 
-	//Cluster information
+	// Cluster information
 	double minX;
 	double maxX;
 	double width;
@@ -567,23 +570,23 @@ class Cluster {
 
 	public void calculateDimensions() {
 		if (getNumAgentsInCluster() > 0) {
-			//X
+			// X
 			Collections.sort(nodes, Node.sortByX());
 			minX = nodes.get(0).getPosition().getX();
 			maxX = nodes.get(nodes.size() - 1).getPosition().getX();
 			width = maxX - minX;
 
-			//Y
+			// Y
 			Collections.sort(nodes, Node.sortByY());
 			minY = nodes.get(0).getPosition().getY();
 			maxY = nodes.get(nodes.size() - 1).getPosition().getY();
 			height = maxY - minY;
-			//Density
+			// Density
 			double area = width * height;
 			if (area == 0) {
 				clusterDensity = 0;
 			} else {
-				clusterDensity = (double) getNumAgentsInCluster() / area; //Assuming each agent takes up 1x1
+				clusterDensity = (double) getNumAgentsInCluster() / area; // Assuming each agent takes up 1x1
 			}
 		}
 	}
@@ -609,7 +612,7 @@ class Cluster {
 		return str;
 	}
 
-	//ID \t X \t Y \t w \t h
+	// ID \t X \t Y \t w \t h
 	public String forGNUPlot() {
 		return getShortID() + "\t" + centroid.getX() + "\t" + centroid.getY() + "\t" + width + "\t" + height;
 	}

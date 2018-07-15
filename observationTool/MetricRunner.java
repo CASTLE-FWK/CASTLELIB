@@ -1509,7 +1509,7 @@ public class MetricRunner {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
 			double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agents, new Vector2(areaX, areaY), mp);
-			double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agents, prevAgents);
+			double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agents, prevAgents, mp);
 			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
 					new Vector2(areaX, areaY), mp);
 
