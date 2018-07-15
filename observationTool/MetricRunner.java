@@ -539,10 +539,10 @@ public class MetricRunner {
 		runtime = System.currentTimeMillis() - runtime;
 		sb.append("\n#runtime\t" + runtime);
 		double stdDev = chanGoLResult.calculateSTDDev(resultsNameA);
-		double minThresh = chanGoLResult.calculateMean(resultsNameA) - stdDev;
+		double minThresh = chanGoLResult.calculateMean(resultsNameA);
 		double maxThresh = chanGoLResult.calculateMax(resultsNameA);
 
-		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, 0, 2 * stdDev, 0.025, si);
+		calculateAccuracy("Chan11", resultsNameA, chanGoLResult, minThresh, maxThresh, (maxThresh - minThresh) / 10, si);
 		return chanGoLResult;
 
 	}
@@ -617,7 +617,7 @@ public class MetricRunner {
 		double minThresh = oTooleResult.calculateMean(resultsName) - stdDev;
 		double maxThresh = oTooleResult.calculateMax(resultsName);
 
-		calculateAccuracy("OToole14", resultsName, oTooleResult, 0, 2 * stdDev, 0.025, si);
+		calculateAccuracy("OToole14", resultsName, oTooleResult,  minThresh, maxThresh, (maxThresh - minThresh) / 10, si);
 		return oTooleResult;
 	}
 
@@ -903,9 +903,14 @@ public class MetricRunner {
 		sb.append("\n#runtime\t" + runtime);
 		sb2.append("\n#runtime\t" + runtime);
 		msseResult.addRuntime(runtime);
+		
+		double maxLQThresh = msseResult.calculateMax(lqName);
+		double maxIQThresh = msseResult.calculateMax(iqName);
+		double minIQThresh = msseResult.calculateMax(iqName);
+		double minLQThresh = msseResult.calculateMax(lqName);
 
-		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult, 0, 1, 0.025, si);
-		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult, 0, 1, 0.025, si);
+		calculateAccuracy("MSSE (LQ) " + numGridsX + "x" + numGridsY, lqName, msseResult,  minLQThresh, maxLQThresh, (maxLQThresh - minLQThresh) / 10, si);
+		calculateAccuracy("MSSE (IQ) " + numGridsX + "x" + numGridsY, iqName, msseResult,  minIQThresh, maxIQThresh, (maxIQThresh - minIQThresh) / 10, si);
 		return msseResult;
 	}
 
@@ -1226,7 +1231,6 @@ public class MetricRunner {
 		}
 		runtime = System.currentTimeMillis() - runtime;
 		brResult.addRuntime(runtime);
-		// Utilities.writeToFile(brResult.resultsToString(),resultsDirRoot+systemName+"/BR"+initCrit+".tsv");
 		double accBr = brResult.accuracyCalculationForString(smName, smName, parseModelName(initName),
 				parseModelName(initName));
 		println("accBR: " + accBr);
@@ -1257,15 +1261,16 @@ public class MetricRunner {
 		int oscillationSize = -1;
 		int firstOscillationStart = -1;
 		String systemName = si.getSystemName();
+		
+		final String STATE_1 = "STATE_1";
+		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
+		resultsName = resultsName + "{" + mvm1.toString() + "}";
 		MetricResult oscillResult = new MetricResult(systemName, resultsName, totalNumberOfSteps, si, dirTimeStamp);
 
 		oscillResult.addResultType(realEventsNameEm);
 		oscillResult.addResultType(realEventsNameSt);
 		oscillResult.addResultType(realEventsNameCr);
 		oscillResult.addResultType(realEventsNameAd);
-		final String STATE_1 = "STATE_1";
-		MetricVariableMapping mvm1 = mi.getMetricVariableMappings().get(STATE_1);
-		resultsName = resultsName + "{" + mvm1.toString() + "}";
 		oscillResult.addResultType(resultsName);
 
 		double runtime = System.currentTimeMillis();
@@ -1322,17 +1327,6 @@ public class MetricRunner {
 		}
 		println("Oscillation size: %1$d", oscillationSize);
 		// Find the oscillation size
-		// BitSet start = bitsOverTime.get(maxDistStart);
-		// for (int i = maxDistStart+1; i < totalNumberOfSteps-1; i++){
-		// BitSet possible = (BitSet)bitsOverTime.get(i).clone();
-		// possible.xor(start);
-		// if (possible.length()-1 == -1){
-		//// println("i: "+i);
-		// oscillationSize = i - maxDistStart;
-		// break;
-		// }
-		// }
-		// println("Oscillation size: %1$d",oscillationSize);
 		// If we know the start and the size, we can go through that way...
 		// This is fucking cheap
 		for (int i = 0; i < totalNumberOfSteps; i++) {
@@ -1341,30 +1335,15 @@ public class MetricRunner {
 			} else {
 				oscillResult.addResultAtStep(resultsName, 0.0, i);
 			}
-			// if (i == maxDistStart){
-			// System.out.println("ddsk:" +i );
-			// oscillResult.addResultAtStep(resultsName,1.0,i);
-			// //currentResult.addResultAtStep(resultsName,1.0,i);
-			// } else if (i > maxDistStart){
-			// if ((i - maxDistStart) % oscillationSize == 0){
-			// oscillResult.addResultAtStep(resultsName,1.0,i);
-			// //currentResult.addResultAtStep(resultsName,1.0,i);
-			// } else {
-			// oscillResult.addResultAtStep(resultsName,0.0,i);
-			// //currentResult.addResultAtStep(resultsName,0.0,i);
-			// }
-			// } else {
-			// oscillResult.addResultAtStep(resultsName,0.0,i);
-			// //currentResult.addResultAtStep(resultsName,0.0,i);
-			// }
 		}
 		runtime = System.currentTimeMillis() - runtime;
 		oscillResult.addRuntime(runtime);
 
 		double stdDev = oscillResult.calculateSTDDev(resultsName);
+		double minThresh = oscillResult.calculateMin(resultsName);
+		double maxThresh = oscillResult.calculateMax(resultsName);
 
-		calculateAccuracy("OscillationDetector", resultsName, oscillResult, stdDev, 2.0, 0.025, si);
-		calculateAccuracy("OscillationDetector", resultsName, oscillResult, 0, 1, 0.025, si);
+		calculateAccuracy("OscillationDetector", resultsName, oscillResult, minThresh, maxThresh, (maxThresh - minThresh)/10, si);
 
 		println("Oscillations detected: %1$d with max distance: %2$d starting from %3$d with %4$d consecutive hits. Min distance: %5$d",
 				numOscillationsFound, distance, maxDistStart, consecutive, minDistance);
