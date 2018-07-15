@@ -91,6 +91,10 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 		//Cycle through blah
 		for (VEntity agt : theCont.getEntities()) {
 			AgentWindow agentWindow = agentWindows.get(agt.getID());
+			if (agentWindow == null) {
+				agentWindows.put(agt.getID(), new AgentWindow(agt.getID(), maxWindowSize));
+				agentWindow = agentWindows.get(agt.getID());
+			}
 
 			// Get each Agent's life state (X)
 			if (mvm1.isParameterEqualToDesiredValue(agt)) {
