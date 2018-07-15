@@ -49,6 +49,15 @@ public class EntityID {
 		return entityUID;
 	}
 	
+	public String getEntityType() {
+		return entityType;
+	}
+	
+	public String partsToString() {
+		return "EntityID [entityType=" + entityType + ", entityUID=" + entityUID + ", idnumber=" + idnumber
+				+ ", parentID=" + parentID + "]";
+	}
+	
 	public String getID(){
 		return toString();
 	}

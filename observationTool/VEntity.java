@@ -3,6 +3,7 @@ package observationTool;
 import java.util.Comparator;
 
 import castleComponents.Entity;
+import castleComponents.EntityID;
 import castleComponents.objects.Vector2;
 import stdSimLib.Parameter;
 import java.util.HashMap;
@@ -18,9 +19,13 @@ public class VEntity extends Entity {
 	String name = "";
 
 	public VEntity(String name, String type, String uid) {
+		//Split the uid up into Type and id	
 		super(type, uid);
 		this.name = name;
-		
+		String[] s = uid.split("_");
+		String parsedType = s[0];
+		int parsedID = Integer.parseInt(s[1]);
+		setEntityID(new EntityID(parsedType, parsedID));
 	}
  
 	public VEntity(VEntity v) {

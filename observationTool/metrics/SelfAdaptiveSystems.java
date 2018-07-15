@@ -11,6 +11,7 @@ import castleComponents.representations.Continuous;
 import castleComponents.representations.Grid;
 import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
+import observationTool.Universals;
 import observationTool.VEntity;
 import stdSimLib.Interaction;
 
@@ -25,26 +26,40 @@ public class SelfAdaptiveSystems extends MetricBase {
 
 	public double KaddoumWAT(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents,
 			HashMap<String, ArrayList<Interaction>> interactions, double workingTime) {
+		double WATNeighbourDist = 5;
 		double adaptivityTime = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
 
 		for (VEntity v : agents) {
 			if (entityIsOfType(v, mvm1)) {
-				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
-				VEntity pv = prevAgents.get(v.getName());
-				if (pv == null) {
-//					System.out.println("Agent didnt exist...");
-					continue;
-				}
-				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
-				if (lifeState == prevState) {
-					continue;
+				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					int currNum = Universals.numberOfNeighbours(v, agents, WATNeighbourDist);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					int prevNum = Universals.numberOfNeighbours(pv, prevAgents.values(), WATNeighbourDist);
+					// If no change, continue
+					if (prevNum == currNum)
+						continue;
+
+				} else {
+					// Default behaviour
+					boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
+					if (lifeState == prevState) {
+						continue;
+					}
 				}
 
 				ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
 				if (theAgentsInteractions == null) {
-//					System.out.println("Issue here (1)");
+					// System.out.println("Issue here (1)");
 				}
 				adaptivityTime += theAgentsInteractions.size();
 			}
@@ -62,52 +77,73 @@ public class SelfAdaptiveSystems extends MetricBase {
 
 		double neighbourDist = (Double) mp.getParameterValue("neighbour-distance");
 
-		// Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, (int)
-		// dimensions.getX(), (int) dimensions.getY());
 		Continuous<VEntity> theCont = new Continuous<VEntity>();
 		Iterator<Entry<String, VEntity>> it = prevAgents.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, VEntity> pair = (Map.Entry<String, VEntity>) it.next();
 			VEntity agt = pair.getValue();
 			theCont.addEntity(agt, agt.getPosition());
-
-			// theGrid.addCell(agt, agt.getPosition());
 		}
 
 		for (VEntity v : agents) {
 			if (entityIsOfType(v, mvm1)) {
-				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
-				VEntity pv = prevAgents.get(v.getName());
-				if (pv == null) {
-//					System.out.println("Agent didnt exist...");
-					continue;
-				}
-				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
-				if (lifeState == prevState) {
-					continue;
-				}
-				if (lifeState) {
-					if (!prevState) {
+				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					int currNum = Universals.numberOfNeighbours(v, agents, neighbourDist);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					int prevNum = Universals.numberOfNeighbours(pv, prevAgents.values(), neighbourDist);
+
+					// If no change, continue
+					if (prevNum != currNum) {
 						ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont
 								.getNeighborsFromVector(v.getPosition(), neighbourDist);
-						// ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
-						// .getNeighbours((int) v.getPosition().getX(), (int) v.getPosition().getY(),
-						// 1);
-						int lifeCount = 0;
-						for (VEntity n : neighbours) {
-							if (entityIsOfType(n, mvm1)) {
-								if (isParameterEqualToDesiredValue(n, mvm1)) {
-									lifeCount++;
-								}
+						for (VEntity vn : neighbours) {
+							int tmpCurrNum = Universals.numberOfNeighbours(vn, agents, neighbourDist);
+							VEntity pvn = prevAgents.get(vn.getName());
+							if (pvn == null) {
+								continue;
+							}
+							int tmpPrevNum = Universals.numberOfNeighbours(pvn, prevAgents.values(), neighbourDist);
+							if (tmpCurrNum != tmpPrevNum) {
+								subsitSum++;
 							}
 						}
-						subsitSum += lifeCount;
-						cMax += 8.0;
+						cMax += neighbours.size();
 					}
+
 				} else {
-					if (prevState) {
-						subsitSum += 3.0;
-						cMax += 3.0;
+					boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						// System.out.println("Agent didnt exist...");
+						continue;
+					}
+					boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
+					if (lifeState == prevState) {
+						continue;
+					}
+					if (lifeState) {
+						if (!prevState) {
+							ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont
+									.getNeighborsFromVector(v.getPosition(), neighbourDist);
+							int lifeCount = 0;
+							for (VEntity n : neighbours) {
+								if (entityIsOfType(n, mvm1)) {
+									if (isParameterEqualToDesiredValue(n, mvm1)) {
+										lifeCount++;
+									}
+								}
+							}
+							subsitSum += lifeCount;
+							cMax += neighbours.size();
+						}
+					} else {
+						if (prevState) {
+							subsitSum += 3.0;
+							cMax += 3.0;
+						}
 					}
 				}
 			}

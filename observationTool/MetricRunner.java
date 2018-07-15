@@ -82,6 +82,8 @@ public class MetricRunner {
 
 	static String acWorldX = "world_XSize";
 	static String acWorldY = "world_YSize";
+	static String fobWorldX = "skyDimX";
+	static String fobWorldY = "skyDimY";
 	static String currWorldX;
 	static String currWorldY;
 
@@ -265,6 +267,9 @@ public class MetricRunner {
 		if (experimentSysName.compareToIgnoreCase("AntColony") == 0) {
 			currWorldX = acWorldX;
 			currWorldY = acWorldY;
+		} else if (experimentSysName.compareToIgnoreCase("FlockOfBirds") == 0) {
+			currWorldX = fobWorldX;
+			currWorldY = fobWorldY;
 		}
 		System.err.println("need remaining flags");
 
@@ -701,7 +706,7 @@ public class MetricRunner {
 				
 				HashMap<String, ArrayList<Interaction>> interactionMap = collector.getAgentInteractionMap(t);
 				for (VEntity agt : agents) {
-					theGrid.addCell(agt, agt.getPosition());
+//					theGrid.addCell(agt, agt.getPosition());
 					theCont.addEntity(agt, agt.getPosition());
 				}
 				thisLifeQuad.reset();
@@ -990,7 +995,7 @@ public class MetricRunner {
 				Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(thisAreaX, thisAreaY));
 				
 				for (VEntity agt : agents) {
-					theGrid.addCell(agt, agt.getPosition());
+//					theGrid.addCell(agt, agt.getPosition());
 					theCont.addEntity(agt, agt.getPosition());
 				}
 				for (int i = 0; i < sampleSize; i++) {
@@ -1593,12 +1598,13 @@ public class MetricRunner {
 			// println(time+"\t"+watScore);
 			adaptivityTime = 0.0;
 		}
-
+		
 		calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
 		return watResult;
 	}
+	
 
 	// TODO This one needs to be ported across into the SAS class but its so very
 	// nasty

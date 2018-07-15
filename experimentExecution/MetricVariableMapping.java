@@ -36,6 +36,7 @@ public class MetricVariableMapping {
 	}
 
 	public ArrayList<TypeMap> getSpecificTypeMap(String ent) {
+//		System.err.println("stM: "+ent);
 		return entityMetaMap.get(ent);
 	}
 
@@ -48,12 +49,12 @@ public class MetricVariableMapping {
 	}
 
 	public boolean entityIsOfType(VEntity ve) {
-		return (entityTypeIsContained(ve.getType()));
+		return (entityTypeIsContained(ve.getEntityID().getEntityType()));
 	}
 
 	public boolean compareParameters(VEntity ve1, VEntity ve2) {
 		// Do we care about types matching?
-		String t = ve1.getType();
+		String t = ve1.getEntityID().getEntityType();
 		ArrayList<TypeMap> tmList = getSpecificTypeMap(t);
 		int score = 0;
 		for (TypeMap tn : tmList) {
@@ -65,7 +66,9 @@ public class MetricVariableMapping {
 	}
 
 	public boolean isParameterEqualToDesiredValue(VEntity v) {
-		String t = v.getType();
+		String t = v.getEntityID().getEntityType();
+//		System.err.println("TTT: "+t);
+//		System.exit(0);
 		ArrayList<TypeMap> tmList = getSpecificTypeMap(t);
 		int score = 0;
 		for (TypeMap tn : tmList) {
