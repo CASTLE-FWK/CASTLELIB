@@ -50,9 +50,30 @@ public class InfoDump {
 				} else {
 					avgConsensus += Double.parseDouble(((Parameter<?>)v.getParameterValue("consensusLevel")).getCurrentValue());
 				}
+				
+				
 //				out += ")";
 //				System.out.println(out);
 			}
+			
+			//code for the analysis stuff goes here
+			//EM: when a consensus is reached
+			//ST: consecutive steps at same level
+			//CR: EM -1 OR ST -1
+			//AD: ??
+			
+			String conLevel = "NONE";
+			double threshold = 0;
+			if (avgConsensus <= 0.0 + threshold) {
+				conLevel = "NONE";
+			} else if (avgConsensus >= 1.00 - threshold) {
+				conLevel = "MAJORITY";
+			} else if (avgConsensus >= 0.0 + threshold && avgConsensus <= 0.5) {
+				conLevel = "MINORITY";
+			} else if (avgConsensus > 0.5 && avgConsensus < 1.0 - threshold) {
+				conLevel = "MAJORITY";
+			}
+		
 			avgConsensus = avgConsensus / subComms.size();
 			System.out.println("consensus:"+avgConsensus);
 		}
