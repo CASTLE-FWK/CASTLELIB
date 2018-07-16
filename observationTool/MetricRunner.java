@@ -151,13 +151,15 @@ public class MetricRunner {
 
 						collector.restart(); // TODO how to handle this with Mongo
 						DataCollector_FileSystem newColl = new DataCollector_FileSystem(collector);
-						es.execute(new Runnable() {
-							@Override
-							public void run() {
-								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
-										runAnalysis(exp, currTestSystem, newColl));
-							}
-						});
+						threadResultsStore.put(currTestSystem.getSystemDataLocation(),
+								runAnalysis(exp, currTestSystem, newColl));
+//						es.execute(new Runnable() {
+//							@Override
+//							public void run() {
+//								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
+//										runAnalysis(exp, currTestSystem, newColl));
+//							}
+//						});
 					}
 					es.shutdown();
 					while (!es.isTerminated()) {
@@ -209,10 +211,11 @@ public class MetricRunner {
 	}
 
 	public static int[] realEventAdder(String s, int[] real) {
+		s = s.trim();
 		if (s.contains("-")) {
 			String[] ss = s.split("-");
-			int start = Integer.parseInt(ss[0]);
-			int fin = Integer.parseInt(ss[1]);
+			int start = Integer.parseInt(ss[0].trim());
+			int fin = Integer.parseInt(ss[1].trim());
 			for (int i = start; i <= fin; i++) {
 				if (i >= real.length) {
 					break;
@@ -221,7 +224,7 @@ public class MetricRunner {
 				}
 			}
 		} else {
-			int i = Integer.parseInt(s);
+			int i = Integer.parseInt(s.trim());
 			real[i] = 1;
 		}
 		return real;
@@ -1629,7 +1632,7 @@ public class MetricRunner {
 			adaptivityTime = 0.0;
 		}
 
-		// calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
+//		 calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
 		calculateAccuracy("WAT", resultsName, watResult, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
@@ -1890,7 +1893,7 @@ public class MetricRunner {
 	public static void calculateAccuracy(String metricName, String resultsName, MetricResult result, SystemInfo si) {
 		double max = result.calculateMax(resultsName);
 		double min = result.calculateMin(resultsName);
-		double incr = (max - min) / 10;
+		double incr = (max - min) / 20;
 		calculateAccuracy(metricName, resultsName, result, min, max, incr, si);
 	}
 
