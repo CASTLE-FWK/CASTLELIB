@@ -1984,7 +1984,7 @@ public class MetricRunner {
 			result.accuracyCalculation(resultsName, realEventsNameCr, maxDCr, 1, bestWindowCr, true);
 
 			StringBuilder sb = new StringBuilder();
-			String header = "Metric Name\tSO Type\tThreshold\tF1\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\tWindow Size";
+			String header = "Metric Name\tSO Type\tThreshold\tF1\tAccuracy\tSpecificity\tSensitivity\tPrecision\tActual Events\tTrue Positives\tFalse Positives\tTrue Negatives\tFalse Negatives\tWindow Size\n";
 			String emResults = String.format(
 					metricName
 							+ "\tEmergence\t%1$f\t%2$f\t%3$f\t%4$f\t%5$f\t%6$f\t%7$d\t%8$d\t%9$d\t%10$d\t%11$d\t%12$d",

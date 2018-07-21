@@ -62,7 +62,8 @@ public class MetricVariableMapping {
 			score += ve2.getParameterValueFromStringAsString(paramName)
 					.compareToIgnoreCase(ve1.getParameterValueFromStringAsString(paramName));
 		}
-		return (score == 0);
+		//Changed to !=
+		return (score != 0);
 	}
 
 	public boolean isParameterEqualToDesiredValue(VEntity v) {
@@ -74,9 +75,13 @@ public class MetricVariableMapping {
 		for (TypeMap tn : tmList) {
 			String parameterName = tn.getTargetEntityVariableName();
 			String desiredValue = tn.getDesiredValue();
+			if (v.getParameterValueFromStringAsString(parameterName) == null) {
+				continue;
+			}
 			score += v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue);
 		}
-		return (score == 0);
+		//Changed to !=
+		return (score != 0);
 	}
 
 	public String getDesiredValueFromName(String n) {

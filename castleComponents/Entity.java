@@ -230,8 +230,7 @@ public class Entity implements Runnable {
 
 	public String getParameterValueFromStringAsString(String paramName) {
 		if (!parameters.containsKey(paramName)) {
-			errLog("Parameter " + paramName + " was not found in the " + getType() + " entity type. " + getID());
-
+//			errLog("Parameter " + paramName + " was not found in the " + getType() + " entity type. " + getID());
 			return null;
 		}
 
