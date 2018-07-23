@@ -27,7 +27,14 @@ public class InfoDump {
 
 		// We could just look it
 		String dsid = args[0];
-		InfoDump id = new InfoDump(dsid);
+		InfoDump id;
+		ArrayList<String> paths = new ArrayList<String>(stdSimLib.utilities.Utilities.parseFileLineXLine(dsid));
+		for (String s : paths) {
+			if (s.startsWith("#"))
+				continue;
+			id = new InfoDump(s);
+		}
+		
 
 		// Get ID to return a string and then we can dump to the realEvents.csv
 		// EM AD CR ST
@@ -169,13 +176,13 @@ public class InfoDump {
 		// For EM
 		for (PropertyRange pr : emergenceRanges) {
 			critRanges.add(new PropertyRange(pr.getStart() - 1, pr.getStart() - 1));
-			critRanges.add(new PropertyRange(pr.getEnd() - 1, pr.getEnd() - 1));
+			critRanges.add(new PropertyRange(pr.getEnd() + 1, pr.getEnd() + 1));
 		}
 
 		// For ST
 		for (PropertyRange pr : stabilityRanges) {
 			critRanges.add(new PropertyRange(pr.getStart() - 1, pr.getStart() - 1));
-			critRanges.add(new PropertyRange(pr.getEnd() - 1, pr.getEnd() - 1));
+			critRanges.add(new PropertyRange(pr.getEnd() + 1, pr.getEnd() + 1));
 		}
 
 		//TEST SIZES

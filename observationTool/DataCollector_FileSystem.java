@@ -19,7 +19,7 @@ import com.eclipsesource.json.ParseException;
 import interactionGraph.Edge;
 import interactionGraph.InteractionGraph;
 import interactionGraph.Node;
-import stdSimLib.Interaction;
+import castleComponents.Interaction;
 import stdSimLib.utilities.Utilities;
 
 public class DataCollector_FileSystem {
@@ -101,11 +101,86 @@ public class DataCollector_FileSystem {
 		return ip;
 	}
 
+	public ArrayList<VEntity> buildVEnvList(int stepNumber) {
+		return buildVEntList(stepNumber, ENVIRONMENTS);
+	}
+
+	public ArrayList<VEntity> buildVGroupList(int stepNumber) {
+		return buildVEntList(stepNumber, GROUPS);
+	}
+
+	public ArrayList<VEntity> buildVEntityList(int stepNumber) {
+		ArrayList<VEntity> list = new ArrayList<VEntity>();
+		list.addAll(buildVGroupList(stepNumber));
+		list.addAll(buildVEnvList(stepNumber));
+		list.addAll(buildVAgentList(stepNumber));
+		return list;
+	}
+
 	public ArrayList<VEntity> buildVAgentList(int stepNumber) {
+		return buildVEntList(stepNumber, AGENTS);
+		// ArrayList<VEntity> vAgents = new ArrayList<VEntity>();
+		// // Open file
+		// JsonObject file = parseFile(buildFilePath(stepNumber));
+		// JsonArray agents = file.get(AGENTS).asArray();
+		// for (int i = 0; i < agents.size(); i++) {
+		// JsonObject obj = agents.get(i).asObject();
+		// if (obj == null) {
+		// System.err.println("obj is null");
+		// System.err.println("file is " + buildFilePath(stepNumber));
+		// System.exit(0);
+		// }
+		// if (obj.get(AGENTNAME) == null) {
+		// System.err.println("agent-name is null");
+		// System.err.println("file is " + buildFilePath(stepNumber));
+		// System.exit(0);
+		// }
+		// String name = obj.get(AGENTNAME).asString();
+		// String id = obj.get(AGENTID).asString();
+		// String type = obj.get(AGENTTYPE).asString();
+		// VEntity tmpVA = new VEntity(name, type, id);
+		// JsonArray params = obj.get("parameters").asArray();
+		// for (int j = 0; j < params.size(); j++) {
+		// JsonObject d = params.get(j).asObject();
+		// String pName = d.get(PARAMNAME).asString();
+		// String pType = d.get(PARAMTYPE).asString();
+		// String pValue = d.get(PARAMVAL).asString();
+		// tmpVA.addParameterFromString(pName, pType, pValue);
+		// }
+		// vAgents.add(tmpVA);
+		// }
+		// return vAgents;
+	}
+
+	private ArrayList<VEntity> buildVEntList(int stepNumber, String entType) {
+		String Vname = "";
+		String Vid = "";
+		String Vtype = "";
+		switch (entType) {
+		case ENVIRONMENTS:
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
+			break;
+		case GROUPS:
+			Vname = GRPNAME;
+			Vid = GRPID;
+			Vtype = GRPTYPE;
+			break;
+		case AGENTS:
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
+			break;
+		default:
+			System.err.println("invalid entity type passed. returning null");
+			return null;
+		}
+
 		ArrayList<VEntity> vAgents = new ArrayList<VEntity>();
 		// Open file
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray agents = file.get(AGENTS).asArray();
+		JsonArray agents = file.get(entType).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
 			if (obj == null) {
@@ -113,14 +188,14 @@ public class DataCollector_FileSystem {
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			if (obj.get(AGENTNAME) == null) {
-				System.err.println("agent-name is null");
+			if (obj.get(Vname) == null) {
+				System.err.println(Vname + " is null. 1");
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
-			String name = obj.get(AGENTNAME).asString();
-			String id = obj.get(AGENTID).asString();
-			String type = obj.get(AGENTTYPE).asString();
+			String name = obj.get(Vname).asString();
+			String id = obj.get(Vid).asString();
+			String type = obj.get(Vtype).asString();
 			VEntity tmpVA = new VEntity(name, type, id);
 			JsonArray params = obj.get("parameters").asArray();
 			for (int j = 0; j < params.size(); j++) {
@@ -132,21 +207,46 @@ public class DataCollector_FileSystem {
 			}
 			vAgents.add(tmpVA);
 		}
+
 		return vAgents;
 	}
 
-	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber) {
+	public HashMap<String, ArrayList<Interaction>> getEntInteractionMap(int stepNumber, String entType) {
+		String Vname = "";
+		String Vid = "";
+		String Vtype = "";
+		switch (entType) {
+		case ENVIRONMENTS:
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
+			break;
+		case GROUPS:
+			Vname = GRPNAME;
+			Vid = GRPID;
+			Vtype = GRPTYPE;
+			break;
+		case AGENTS:
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
+			break;
+		default:
+			System.err.println("invalid entity type passed. returning null");
+			return null;
+		}
+
 		HashMap<String, ArrayList<Interaction>> theMap = new HashMap<String, ArrayList<Interaction>>();
 		JsonObject file = parseFile(buildFilePath(stepNumber));
-		JsonArray agents = file.get(AGENTS).asArray();
+		JsonArray agents = file.get(entType).asArray();
 		for (int i = 0; i < agents.size(); i++) {
 			JsonObject obj = agents.get(i).asObject();
-			String name = obj.get(AGENTNAME).asString();
+			String name = obj.get(Vname).asString();
 			theMap.put(name, new ArrayList<Interaction>());
 			ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
 			for (Interaction inter : interactions) {
-				String from = inter.getAgentFromAsString();
-				String to = inter.getAgentToAsString();
+				String from = inter.getVentityFrom().getID();
+				String to = inter.getVentityTo().getID();
 				if (!theMap.containsKey(from)) {
 					theMap.put(from, new ArrayList<Interaction>());
 				}
@@ -158,7 +258,91 @@ public class DataCollector_FileSystem {
 			}
 		}
 		return theMap;
+
 	}
+
+	public HashMap<String, ArrayList<Interaction>> getEnvInteractionMap(int stepNumber) {
+		return getEntInteractionMap(stepNumber, ENVIRONMENTS);
+	}
+
+	public HashMap<String, ArrayList<Interaction>> getGroupInteractionMap(int stepNumber) {
+		return getEntInteractionMap(stepNumber, GROUPS);
+	}
+
+	public HashMap<String, ArrayList<Interaction>> getEntityInteractionMap(int stepNumber) {
+		HashMap<String, ArrayList<Interaction>> map = new HashMap<String, ArrayList<Interaction>>();
+		HashMap<String, ArrayList<Interaction>> ag = getAgentInteractionMap(stepNumber);
+		HashMap<String, ArrayList<Interaction>> env = getEnvInteractionMap(stepNumber);
+		HashMap<String, ArrayList<Interaction>> grp = getGroupInteractionMap(stepNumber);
+
+		for (String s : ag.keySet()) {
+			map.put(s, ag.get(s));
+		}
+		for (String s : env.keySet()) {
+			map.put(s, env.get(s));
+		}
+		for (String s : grp.keySet()) {
+			map.put(s, grp.get(s));
+		}
+
+		
+		return map;
+
+	}
+
+	public HashMap<String, ArrayList<Interaction>> getAgentInteractionMap(int stepNumber) {
+		return getEntInteractionMap(stepNumber, AGENTS);
+		// HashMap<String, ArrayList<Interaction>> theMap = new HashMap<String,
+		// ArrayList<Interaction>>();
+		// JsonObject file = parseFile(buildFilePath(stepNumber));
+		// JsonArray agents = file.get(AGENTS).asArray();
+		// for (int i = 0; i < agents.size(); i++) {
+		// JsonObject obj = agents.get(i).asObject();
+		// String name = obj.get(AGENTNAME).asString();
+		// theMap.put(name, new ArrayList<Interaction>());
+		// ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
+		// for (Interaction inter : interactions) {
+		// String from = inter.getAgentFromAsString();
+		// String to = inter.getAgentToAsString();
+		// if (!theMap.containsKey(from)) {
+		// theMap.put(from, new ArrayList<Interaction>());
+		// }
+		// if (!theMap.containsKey(to)) {
+		// theMap.put(to, new ArrayList<Interaction>());
+		// }
+		// theMap.get(from).add(inter);
+		// theMap.get(to).add(inter);
+		// }
+		// }
+		// return theMap;
+	}
+
+	// public HashMap<String, ArrayList<Interaction>> getEnvInteractionMap(int
+	// stepNumber) {
+	// HashMap<String, ArrayList<Interaction>> theMap = new HashMap<String,
+	// ArrayList<Interaction>>();
+	// JsonObject file = parseFile(buildFilePath(stepNumber));
+	// JsonArray agents = file.get(ENVIRONMENTS).asArray();
+	// for (int i = 0; i < agents.size(); i++) {
+	// JsonObject obj = agents.get(i).asObject();
+	// String name = obj.get(ENVNAME).asString();
+	// theMap.put(name, new ArrayList<Interaction>());
+	// ArrayList<Interaction> interactions = getInteractionsFromEntity(obj);
+	// for (Interaction inter : interactions) {
+	// String from = inter.getAgentFromAsString();
+	// String to = inter.getAgentToAsString();
+	// if (!theMap.containsKey(from)) {
+	// theMap.put(from, new ArrayList<Interaction>());
+	// }
+	// if (!theMap.containsKey(to)) {
+	// theMap.put(to, new ArrayList<Interaction>());
+	// }
+	// theMap.get(from).add(inter);
+	// theMap.get(to).add(inter);
+	// }
+	// }
+	// return theMap;
+	// }
 
 	private HashMap<String, VEntity> buildVEntMap(int stepNumber, String entType) {
 		String Vname = "";
@@ -166,9 +350,9 @@ public class DataCollector_FileSystem {
 		String Vtype = "";
 		switch (entType) {
 		case ENVIRONMENTS:
-			Vname = ENVNAME;
-			Vid = ENVID;
-			Vtype = ENVTYPE;
+			Vname = AGENTNAME;
+			Vid = AGENTID;
+			Vtype = AGENTTYPE;
 			break;
 		case GROUPS:
 			Vname = GRPNAME;
@@ -196,7 +380,7 @@ public class DataCollector_FileSystem {
 				System.exit(0);
 			}
 			if (obj.get(Vname) == null) {
-				System.err.println(Vname+" is null");
+				System.err.println(Vname + " is null");
 				System.err.println("file is " + buildFilePath(stepNumber));
 				System.exit(0);
 			}
@@ -216,6 +400,14 @@ public class DataCollector_FileSystem {
 			vAgents.put(tmpVA.getName(), tmpVA);
 		}
 		return vAgents;
+	}
+
+	public HashMap<String, VEntity> buildVEntityMap(int stepNumber) {
+		HashMap<String, VEntity> vEnts = new HashMap<String, VEntity>();
+		vEnts.putAll(buildVEnvMap(stepNumber));
+		vEnts.putAll(buildVAgentMap(stepNumber));
+		vEnts.putAll(buildVGroupMap(stepNumber));
+		return vEnts;
 	}
 
 	public HashMap<String, VEntity> buildVEnvMap(int stepNumber) {
@@ -243,8 +435,8 @@ public class DataCollector_FileSystem {
 		}
 
 		for (Interaction inter : interactions) {
-			Node start = ig.findNode(inter.getAgentFromAsString());
-			Node end = ig.findNode(inter.getAgentToAsString());
+			Node start = ig.findNode(inter.getEntityFrom().getID());
+			Node end = ig.findNode(inter.getEntityTo().getID());
 			if (start != null && end != null) {
 				ig.addEdge(new Edge(start, end, inter.getType(), inter.getOccurrence()));
 			}

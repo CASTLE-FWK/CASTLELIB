@@ -89,12 +89,12 @@ public class Snapshot implements java.io.Serializable{
 		metricScores.add(newMS);
 	}
 	
-	public InteractionGraph getIGRepresentation(){
-		if (igRepresentation == null){
-			igRepresentation = new InteractionGraph(this);
-		}
-		return igRepresentation;
-	}
+//	public InteractionGraph getIGRepresentation(){
+//		if (igRepresentation == null){
+//			igRepresentation = new InteractionGraph(this);
+//		}
+//		return igRepresentation;
+//	}
 	
 	public String buildMetaModel(){
 		if (metaModel == null){

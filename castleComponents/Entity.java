@@ -149,6 +149,10 @@ public class Entity implements Runnable {
 			storedInteraction.incrementOccurrence();
 		}
 	}
+	
+	public String toString() {
+		return entityID.toString()+"={"+parametersToString()+"}";
+	}
 
 	// For sending stats
 	// [o] should be a reference! (Pass by reference is the only way this is
@@ -292,7 +296,7 @@ public class Entity implements Runnable {
 		for (String s : parameters.keySet()) {
 			sb.append("\t").append(parameters.get(s)).append("\n");
 		}
-		sb.append("]\n");
+		sb.append("]");
 		return sb.toString();
 	}
 

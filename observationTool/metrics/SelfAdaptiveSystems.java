@@ -8,12 +8,11 @@ import java.util.Map.Entry;
 
 import castleComponents.objects.Vector2;
 import castleComponents.representations.Continuous;
-import castleComponents.representations.Grid;
 import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
 import observationTool.Universals;
 import observationTool.VEntity;
-import stdSimLib.Interaction;
+import castleComponents.Interaction;
 
 public class SelfAdaptiveSystems extends MetricBase {
 
@@ -30,7 +29,6 @@ public class SelfAdaptiveSystems extends MetricBase {
 		double adaptivityTime = 0.0;
 
 		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
-
 		for (VEntity v : agents) {
 			if (entityIsOfType(v, mvm1)) {
 				if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
@@ -49,6 +47,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 					boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
 					VEntity pv = prevAgents.get(v.getName());
 					if (pv == null) {
+
 						continue;
 					}
 					boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
@@ -62,8 +61,8 @@ public class SelfAdaptiveSystems extends MetricBase {
 					// System.out.println("Issue here (1)");
 				}
 				adaptivityTime += theAgentsInteractions.size();
+				System.out.println(":: " + adaptivityTime);
 			}
-
 		}
 		return (adaptivityTime / workingTime);
 	}
@@ -124,6 +123,12 @@ public class SelfAdaptiveSystems extends MetricBase {
 					if (lifeState == prevState) {
 						continue;
 					}
+					//Get agents interacted with in prevous step
+					
+					//
+					
+					
+					
 					if (lifeState) {
 						if (!prevState) {
 							ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont

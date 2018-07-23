@@ -1,13 +1,27 @@
 package interactionGraph;
 
-import stdSimLib.Interaction;
+import castleComponents.Interaction;
+import castleComponents.Interaction.InteractionType;
 
 public class Edge implements Comparable<Edge>{
 	Node start, end;
 	private double weight;
-	String type;
+	InteractionType type;
 	
 	public Edge(Node start, Node end, String type, double weight){
+		this.start = start;
+		this.end = end;
+		this.setWeight(weight);
+		this.type = InteractionType.valueOf(type);
+		this.start.addIncomingEdge(this);
+		this.end.addOutgoingEdge(this);
+		this.start.incrementOutgoingInteractions();
+		this.end.incrementOutgoingInteractions();
+		this.start.addIncomingWeight(weight);
+		this.end.addOutgoingWeight(weight);
+	}
+	
+	public Edge(Node start, Node end, InteractionType type, double weight){
 		this.start = start;
 		this.end = end;
 		this.setWeight(weight);
@@ -21,11 +35,11 @@ public class Edge implements Comparable<Edge>{
 	}
 	
 	public Edge(Interaction interaction){
-		if (interaction.getAgentFrom() == null){
+		if (interaction.getEntityFrom() == null){
 			System.out.println("INTERACTNULL");
 		}
-		start = new Node(interaction.getAgentFrom().getID(),interaction.getAgentFrom().getPosition());
-		end = new Node(interaction.getAgentTo().getID(), interaction.getAgentTo().getPosition());
+		start = new Node(interaction.getEntityFrom().getID(),interaction.getEntityFrom().getPosition());
+		end = new Node(interaction.getEntityTo().getID(), interaction.getEntityTo().getPosition());
 		weight = interaction.getOccurrence();
 		type = interaction.getType();
 	}

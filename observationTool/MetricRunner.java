@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import stdSimLib.Interaction;
+import castleComponents.Interaction;
 import stdSimLib.utilities.RandomGen;
 import stdSimLib.utilities.Utilities;
 
@@ -153,13 +153,13 @@ public class MetricRunner {
 						DataCollector_FileSystem newColl = new DataCollector_FileSystem(collector);
 						threadResultsStore.put(currTestSystem.getSystemDataLocation(),
 								runAnalysis(exp, currTestSystem, newColl));
-//						es.execute(new Runnable() {
-//							@Override
-//							public void run() {
-//								threadResultsStore.put(currTestSystem.getSystemDataLocation(),
-//										runAnalysis(exp, currTestSystem, newColl));
-//							}
-//						});
+						// es.execute(new Runnable() {
+						// @Override
+						// public void run() {
+						// threadResultsStore.put(currTestSystem.getSystemDataLocation(),
+						// runAnalysis(exp, currTestSystem, newColl));
+						// }
+						// });
 					}
 					es.shutdown();
 					while (!es.isTerminated()) {
@@ -225,7 +225,10 @@ public class MetricRunner {
 			}
 		} else {
 			int i = Integer.parseInt(s.trim());
-			real[i] = 1;
+			if (i < real.length) {
+				real[i] = 1;
+			}
+
 		}
 		return real;
 	}
@@ -1320,7 +1323,6 @@ public class MetricRunner {
 				}
 			}
 			bitsOverTime.add(bitsetCounter, bs);
-
 			oscillResult.addResultAtStep(realEventsNameEm, realEvents_emergence[time], time);
 			oscillResult.addResultAtStep(realEventsNameSt, realEvents_stability[time], time);
 			oscillResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
@@ -1372,9 +1374,9 @@ public class MetricRunner {
 		runtime = System.currentTimeMillis() - runtime;
 		oscillResult.addRuntime(runtime);
 
-		double stdDev = oscillResult.calculateSTDDev(resultsName);
-		double minThresh = oscillResult.calculateMin(resultsName);
-		double maxThresh = oscillResult.calculateMax(resultsName);
+//		double stdDev = oscillResult.calculateSTDDev(resultsName);
+//		double minThresh = oscillResult.calculateMin(resultsName);
+//		double maxThresh = oscillResult.calculateMax(resultsName);
 
 		// calculateAccuracy("OscillationDetector", resultsName, oscillResult,
 		// minThresh, maxThresh,
@@ -1533,12 +1535,16 @@ public class MetricRunner {
 			eotResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
 			eotResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
 
-			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-			double shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(agents, new Vector2(areaX, areaY), mp);
-			double shannonEntropyChange = entropyCalculator.shannonEntropy_Change(agents, prevAgents, mp);
-			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
-					new Vector2(areaX, areaY), mp);
+//			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+			HashMap<String, VEntity> agents = collector.buildVEntityMap(time);
+			HashMap<String, VEntity> prevAgents = collector.buildVEntityMap(time - 1);
+			HashMap<String, ArrayList<Interaction>> allInters = collector.getEntityInteractionMap(time);		
+			
+			double shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp, allInters);
+			double shannonEntropyChange = entropyCalculator.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+			double conditionalEntropy = 0.0;
+//			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
+//					new Vector2(areaX, areaY), mp);
 
 			eotResult.addResultAtStep(resultsName, shannonEntropy, time);
 			eotResult.addResultAtStep(secName, shannonEntropyChange, time);
@@ -1615,9 +1621,18 @@ public class MetricRunner {
 			watResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
 			watResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
 
-			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-			HashMap<String, ArrayList<Interaction>> interactions = collector.getAgentInteractionMap(time - 1);
+			
+			//If Community, get environments
+			ArrayList<VEntity> agents = collector.buildVEntityList(time);
+			HashMap<String, VEntity> prevAgents = collector.buildVEntityMap(time - 1);
+			HashMap<String, ArrayList<Interaction>> interactions = collector.getEntityInteractionMap(time - 1);
+			
+			
+//			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+//			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
+//			HashMap<String, ArrayList<Interaction>> interactions = collector.getAgentInteractionMap(time - 1);
+			
+			
 
 			// workingTime = agents.size() * 8.0;
 			workingTime = collector.countInteractionsInStep(time);
@@ -1632,7 +1647,7 @@ public class MetricRunner {
 			adaptivityTime = 0.0;
 		}
 
-//		 calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
+		// calculateAccuracy("WAT", resultsName, watResult, 0, 100.0, 0.025, si);
 		calculateAccuracy("WAT", resultsName, watResult, si);
 		// Utilities.writeToFile(sb.toString(),
 		// resultsDirRoot+systemName.replaceAll("\\s+","")+"/"+metricName.replaceAll("\\s+","")+"/"+si.getConfigurationString()+".tsv");
@@ -1976,6 +1991,9 @@ public class MetricRunner {
 			}
 			if (maxScoreEm == -Double.MAX_VALUE) {
 				maxScoreEm = -1.0;
+			}
+			if (maxScoreAd == -Double.MAX_VALUE) {
+				maxScoreAd = -1.0;
 			}
 
 			// Send the best to files

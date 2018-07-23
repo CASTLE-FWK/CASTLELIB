@@ -1,14 +1,33 @@
 package castleComponents;
 
+import observationTool.VEntity;
+
 public class Interaction implements java.io.Serializable {
 
 	private static final long serialVersionUID = -262768393273140446L;
 
 	Entity entityFrom, entityTo;
+	VEntity VentityFrom, VentityTo;
+	public VEntity getVentityFrom() {
+		return VentityFrom;
+	}
+
+	public VEntity getVentityTo() {
+		return VentityTo;
+	}
+
 	InteractionType type; // Types are defined somewhere...
 	String name;
 	int occurrence = 0;
-	String agentFromAsString, agentToAsString;
+	String entityFromAsString, entityToAsString;
+
+	public String getEntityFromAsString() {
+		return entityFromAsString;
+	}
+
+	public String getEntityToAsString() {
+		return entityToAsString;
+	}
 
 	private static final String COMMA = ",";
 
@@ -32,8 +51,11 @@ public class Interaction implements java.io.Serializable {
 	}
 
 	public Interaction(String agentFrom, String agentTo, String type) {
-		agentFromAsString = agentFrom;
-		agentToAsString = agentTo;
+		this.VentityFrom = new VEntity(agentFrom, agentFrom, agentFrom);
+		this.VentityTo = new VEntity(agentTo, agentTo, agentTo);
+
+		// entityFromAsString = agentFrom;
+		// entityToAsString = agentTo;
 		this.name = type;
 		occurrence = 1;
 	}
@@ -114,8 +136,8 @@ public class Interaction implements java.io.Serializable {
 
 		return false;
 	}
-	
-	public String getID(){
+
+	public String getID() {
 		return entityFrom.getID() + entityTo.getID() + type + name;
 	}
 }

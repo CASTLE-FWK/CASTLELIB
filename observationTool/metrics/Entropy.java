@@ -11,6 +11,7 @@ import experimentExecution.MetricInfo;
 import experimentExecution.MetricVariableMapping;
 import observationTool.Universals;
 import observationTool.VEntity;
+import castleComponents.Interaction;
 
 public class Entropy extends MetricBase {
 
@@ -80,7 +81,6 @@ public class Entropy extends MetricBase {
 							}
 						}
 					}
-
 					if (neighbours.size() == 0) {
 						prob = 0;
 					} else {
@@ -92,7 +92,6 @@ public class Entropy extends MetricBase {
 				}
 			}
 		}
-
 		return -d;
 	}
 
@@ -215,8 +214,70 @@ public class Entropy extends MetricBase {
 				}
 			}
 		}
-
 		return d;
+	}
+
+	public double shannonEntropy_NeighboursSN(HashMap<String, VEntity> agents, Vector2 gridSize, MetricParameters mp,
+			HashMap<String, ArrayList<Interaction>> inters) {
+		double d = 0.0;
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		for (VEntity v : agents.values()) {
+			if (entityIsOfType(v, mvm1)) {
+
+				double prob = 0;
+				int size = 0;
+				ArrayList<Interaction> agtInt = inters.get(v.getID());
+				for (Interaction in : agtInt) {
+					VEntity n = agents.get(in.getVentityTo().getID());
+					if (entityIsOfType(n, mvm1)) {
+						size++;
+						if (isParameterEqualToDesiredValue(n, mvm1)) {
+							prob++;
+						}
+					}
+				}
+				if (size == 0) {
+					prob = 0;
+				} else {
+					prob = prob / (double) size;
+				}
+				if (prob != 0) {
+					d += prob * Math.log(prob);
+				}
+
+			}
+		}
+		return -d;
+	}
+
+	public double shannonEntropy_ChangeSN(ArrayList<VEntity> agents, HashMap<String, VEntity> prevAgents,
+			MetricParameters mp) {
+		double d = 0.0;
+
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+		for (VEntity v : agents) {
+			if (entityIsOfType(v, mvm1)) {
+				VEntity pv = prevAgents.get(v.getName());
+				if (pv == null) {
+					continue;
+				}
+				boolean same = compareParameters(v, pv, mvm1);
+
+				if (same) {
+					d += ((double) (agents.size() - 1) / (double) agents.size())
+							* Math.log((agents.size() - 1) / (double) agents.size());
+				} else {
+					d += (1.0 / (double) agents.size()) * Math.log(1 / (double) agents.size());
+				}
+
+				if (d == Double.NaN) {
+					System.out.println(d);
+
+				}
+			}
+		}
+		return -d;
+
 	}
 
 }

@@ -36,7 +36,7 @@ public class MetricVariableMapping {
 	}
 
 	public ArrayList<TypeMap> getSpecificTypeMap(String ent) {
-//		System.err.println("stM: "+ent);
+		// System.err.println("stM: "+ent);
 		return entityMetaMap.get(ent);
 	}
 
@@ -57,31 +57,37 @@ public class MetricVariableMapping {
 		String t = ve1.getEntityID().getEntityType();
 		ArrayList<TypeMap> tmList = getSpecificTypeMap(t);
 		int score = 0;
+		boolean hit = false;
 		for (TypeMap tn : tmList) {
 			String paramName = tn.getTargetEntityVariableName();
-			score += ve2.getParameterValueFromStringAsString(paramName)
-					.compareToIgnoreCase(ve1.getParameterValueFromStringAsString(paramName));
+
+			if (ve2.getParameterValueFromStringAsString(paramName) == null
+					|| ve1.getParameterValueFromStringAsString(paramName) == null) {
+				continue;
+			}
+
+			hit = (ve2.getParameterValueFromStringAsString(paramName)
+					.compareToIgnoreCase(ve1.getParameterValueFromStringAsString(paramName)) == 0);
 		}
-		//Changed to !=
-		return (score != 0);
+		return (hit);
 	}
 
 	public boolean isParameterEqualToDesiredValue(VEntity v) {
 		String t = v.getEntityID().getEntityType();
-//		System.err.println("TTT: "+t);
-//		System.exit(0);
+		// System.err.println("TTT: "+t);
+		// System.exit(0);
 		ArrayList<TypeMap> tmList = getSpecificTypeMap(t);
 		int score = 0;
+		boolean hit = false;
 		for (TypeMap tn : tmList) {
 			String parameterName = tn.getTargetEntityVariableName();
 			String desiredValue = tn.getDesiredValue();
 			if (v.getParameterValueFromStringAsString(parameterName) == null) {
 				continue;
 			}
-			score += v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue);
+			hit = (v.getParameterValueFromStringAsString(parameterName).compareToIgnoreCase(desiredValue) == 0);
 		}
-		//Changed to !=
-		return (score != 0);
+		return hit;
 	}
 
 	public String getDesiredValueFromName(String n) {

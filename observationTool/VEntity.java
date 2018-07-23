@@ -20,10 +20,11 @@ public class VEntity extends Entity {
 
 	public VEntity(String name, String type, String uid) {
 		//Split the uid up into Type and id	
-		super(type, uid);
+		super(name, uid);
 		this.name = name;
 		String[] s = uid.split("_");
 		String parsedType = s[0];
+		super.entityType = parsedType;
 		int parsedID = Integer.parseInt(s[1]);
 		setEntityID(new EntityID(parsedType, parsedID));
 	}
@@ -57,7 +58,6 @@ public class VEntity extends Entity {
 	public Object getParameterValue(String paramName) {
 		return getParameterValueFromString(paramName);
 	}
-
 	@Override
 	public String toString() {
 		return super.toString();

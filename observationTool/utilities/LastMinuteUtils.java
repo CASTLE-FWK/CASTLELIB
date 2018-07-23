@@ -23,8 +23,8 @@ public class LastMinuteUtils {
 		// System.out.println(s);\
 		
 
-		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/fob/fob/list-phx.txt",
-				"/home/lachlan/repos/repastModels/FlockOfBirds/FlockOfBirds_Non_SG/experiments/metrics.json", "FlockOfBirds");
+		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/sn/list-m.txt",
+				"/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/metrics.json", "SocialNetwork");
 //		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/snsg/slurm/list.txt", "SN");
 		System.out.println(s);
 	}

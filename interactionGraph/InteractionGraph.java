@@ -9,7 +9,7 @@ import java.util.HashSet;
 import castleComponents.Entity;
 import castleComponents.objects.Vector2;
 import stdSimLib.Agent;
-import stdSimLib.Interaction;
+import castleComponents.Interaction;
 import stdSimLib.Snapshot;
 
 public class InteractionGraph {
@@ -23,27 +23,27 @@ public class InteractionGraph {
 	String experimentName = "";
 	String runName = "";
 
-	public InteractionGraph(Snapshot snapshot) {
-		ArrayList<Agent> agents = snapshot.getAgents();
-		ArrayList<Interaction> interactions = snapshot.getInteractions();
-		nodes = new HashSet<Node>();
-		edges = new ArrayList<Edge>();
-
-		snapshotInterval = snapshot.getSnapshotInterval();
-		currentTimeStep = snapshot.getCurrentTime();
-		experimentName = snapshot.getExperimentName();
-		runName = snapshot.getRunName();
-
-		for (Agent agent : agents) {
-			nodes.add(new Node(agent));
-		}
-		numberOfNodes = nodes.size();
-
-		for (Interaction interaction : interactions) {
-			edges.add(new Edge(interaction));
-		}
-		numberOfEdges = edges.size();
-	}
+//	public InteractionGraph(Snapshot snapshot) {
+//		ArrayList<Agent> agents = snapshot.getAgents();
+//		ArrayList<Interaction> interactions = snapshot.getInteractions();
+//		nodes = new HashSet<Node>();
+//		edges = new ArrayList<Edge>();
+//
+//		snapshotInterval = snapshot.getSnapshotInterval();
+//		currentTimeStep = snapshot.getCurrentTime();
+//		experimentName = snapshot.getExperimentName();
+//		runName = snapshot.getRunName();
+//
+//		for (Agent agent : agents) {
+//			nodes.add(new Node(agent));
+//		}
+//		numberOfNodes = nodes.size();
+//
+//		for (Interaction interaction : interactions) {
+//			edges.add(new Edge(interaction));
+//		}
+//		numberOfEdges = edges.size();
+//	}
 
 	public InteractionGraph() {
 		nodes = new HashSet<Node>();
@@ -51,19 +51,19 @@ public class InteractionGraph {
 		nodesMap = new HashMap<String, Node>();
 	}
 
-	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions) {
-		nodes = new HashSet<Node>();
-		for (Entity e : entities) {
-			addNode(new Node(e));
-		}
-		for (Interaction inter : interactions) {
-			Node start = findNode(inter.getAgentFromAsString());
-			Node end = findNode(inter.getAgentToAsString());
-			if (start != null && end != null) {
-				edges.add(new Edge(start, end, inter.getType(), inter.getOccurrence()));
-			}
-		}
-	}
+//	public InteractionGraph(ArrayList<Entity> entities, ArrayList<Interaction> interactions) {
+//		nodes = new HashSet<Node>();
+//		for (Entity e : entities) {
+//			addNode(new Node(e));
+//		}
+//		for (Interaction inter : interactions) {
+//			Node start = findNode(inter.getAgentFromAsString());
+//			Node end = findNode(inter.getAgentToAsString());
+//			if (start != null && end != null) {
+//				edges.add(new Edge(start, end, inter.getType(), inter.getOccurrence()));
+//			}
+//		}
+//	}
 
 	/* Used for HDA */
 	public void updateNodesDistance(Node nodeA, Node nodeB, double weight, double HDAStrength) {
