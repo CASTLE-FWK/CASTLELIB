@@ -1374,9 +1374,9 @@ public class MetricRunner {
 		runtime = System.currentTimeMillis() - runtime;
 		oscillResult.addRuntime(runtime);
 
-//		double stdDev = oscillResult.calculateSTDDev(resultsName);
-//		double minThresh = oscillResult.calculateMin(resultsName);
-//		double maxThresh = oscillResult.calculateMax(resultsName);
+		// double stdDev = oscillResult.calculateSTDDev(resultsName);
+		// double minThresh = oscillResult.calculateMin(resultsName);
+		// double maxThresh = oscillResult.calculateMax(resultsName);
 
 		// calculateAccuracy("OscillationDetector", resultsName, oscillResult,
 		// minThresh, maxThresh,
@@ -1535,16 +1535,19 @@ public class MetricRunner {
 			eotResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
 			eotResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
 
-//			ArrayList<VEntity> agents = collector.buildVAgentList(time);
+			// ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> agents = collector.buildVEntityMap(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVEntityMap(time - 1);
-			HashMap<String, ArrayList<Interaction>> allInters = collector.getEntityInteractionMap(time);		
-			
-			double shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp, allInters);
-			double shannonEntropyChange = entropyCalculator.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+			HashMap<String, ArrayList<Interaction>> allInters = collector.getEntityInteractionMap(time);
+
+			double shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp,
+					allInters);
+			double shannonEntropyChange = entropyCalculator
+					.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
 			double conditionalEntropy = 0.0;
-//			double conditionalEntropy = entropyCalculator.conditionalEntropy(agents, prevAgents,
-//					new Vector2(areaX, areaY), mp);
+			// double conditionalEntropy = entropyCalculator.conditionalEntropy(agents,
+			// prevAgents,
+			// new Vector2(areaX, areaY), mp);
 
 			eotResult.addResultAtStep(resultsName, shannonEntropy, time);
 			eotResult.addResultAtStep(secName, shannonEntropyChange, time);
@@ -1621,18 +1624,15 @@ public class MetricRunner {
 			watResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
 			watResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
 
-			
-			//If Community, get environments
+			// If Community, get environments
 			ArrayList<VEntity> agents = collector.buildVEntityList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVEntityMap(time - 1);
 			HashMap<String, ArrayList<Interaction>> interactions = collector.getEntityInteractionMap(time - 1);
-			
-			
-//			ArrayList<VEntity> agents = collector.buildVAgentList(time);
-//			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-//			HashMap<String, ArrayList<Interaction>> interactions = collector.getAgentInteractionMap(time - 1);
-			
-			
+
+			// ArrayList<VEntity> agents = collector.buildVAgentList(time);
+			// HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
+			// HashMap<String, ArrayList<Interaction>> interactions =
+			// collector.getAgentInteractionMap(time - 1);
 
 			// workingTime = agents.size() * 8.0;
 			workingTime = collector.countInteractionsInStep(time);
@@ -1849,7 +1849,9 @@ public class MetricRunner {
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
 
-			double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
+			// double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
+			double perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new Vector2(areaX, areaY), mp,
+					collector.getEntityInteractionMap(time));
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);

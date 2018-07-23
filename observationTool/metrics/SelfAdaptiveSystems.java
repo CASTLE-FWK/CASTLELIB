@@ -54,6 +54,11 @@ public class SelfAdaptiveSystems extends MetricBase {
 					if (lifeState == prevState) {
 						continue;
 					}
+					//
+					// boolean same = compareParameters(v, pv, mvm1);
+					// if (same) {
+					// continue;
+					// }
 				}
 
 				ArrayList<Interaction> theAgentsInteractions = interactions.get(v.getName());
@@ -123,12 +128,10 @@ public class SelfAdaptiveSystems extends MetricBase {
 					if (lifeState == prevState) {
 						continue;
 					}
-					//Get agents interacted with in prevous step
-					
+					// Get agents interacted with in prevous step
+
 					//
-					
-					
-					
+
 					if (lifeState) {
 						if (!prevState) {
 							ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theCont
@@ -153,6 +156,61 @@ public class SelfAdaptiveSystems extends MetricBase {
 				}
 			}
 
+		}
+		// System.out.println(subSitSum+" "+cMax);
+		if (Double.isInfinite(cMax) || Double.isNaN(cMax) || cMax == 0) {
+			return (1.0 - subsitSum);
+		} else {
+			return (1.0 - subsitSum / cMax);
+		}
+	}
+
+	public double PerfSit_SN(HashMap<String, VEntity> agents, HashMap<String, VEntity> prevAgents, Vector2 dimensions,
+			MetricParameters mp, HashMap<String, ArrayList<Interaction>> inters) {
+		double cMax = 0.0;
+		double subsitSum = 0.0;
+
+		MetricVariableMapping mvm1 = metricVariableMappings.get(STATE_1);
+
+		double neighbourDist = (Double) mp.getParameterValue("neighbour-distance");
+
+		for (VEntity v : agents.values()) {
+			if (entityIsOfType(v, mvm1)) {
+
+				boolean lifeState = isParameterEqualToDesiredValue(v, mvm1);
+				VEntity pv = prevAgents.get(v.getName());
+				if (pv == null) {
+					// System.out.println("Agent didnt exist...");
+					continue;
+				}
+				boolean prevState = isParameterEqualToDesiredValue(pv, mvm1);
+				if (lifeState == prevState) {
+					continue;
+				}
+				// Get agents interacted with in prevous step
+
+				//
+				boolean same = compareParameters(v, pv, mvm1);
+				int size = 0;
+				if (!same) {
+					int lifeCount = 0;
+					ArrayList<Interaction> agtInt = inters.get(v.getID());
+					for (Interaction in : agtInt) {
+						VEntity n = agents.get(in.getVentityTo().getID());
+						size++;
+						if (entityIsOfType(n, mvm1)) {
+							if (isParameterEqualToDesiredValue(n, mvm1)) {
+								lifeCount++;
+							}
+						}
+					}
+					subsitSum += lifeCount;
+					cMax += size;
+				} else {
+					subsitSum += 3.0;
+					cMax += 3.0;
+				}
+			}
 		}
 		// System.out.println(subSitSum+" "+cMax);
 		if (Double.isInfinite(cMax) || Double.isNaN(cMax) || cMax == 0) {
