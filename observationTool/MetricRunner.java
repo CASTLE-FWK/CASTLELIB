@@ -31,8 +31,6 @@ import castleComponents.Interaction;
 import stdSimLib.utilities.RandomGen;
 import stdSimLib.utilities.Utilities;
 
-import org.bson.Document;
-
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -1539,11 +1537,19 @@ public class MetricRunner {
 			HashMap<String, VEntity> agents = collector.buildVEntityMap(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVEntityMap(time - 1);
 			HashMap<String, ArrayList<Interaction>> allInters = collector.getEntityInteractionMap(time);
-
-			double shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp,
-					allInters);
-			double shannonEntropyChange = entropyCalculator
-					.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+			double shannonEntropy = 0.0;
+			double shannonEntropyChange = 0.0;
+			if (mp.getParameters().get("isSocialNetwork") != null) {
+				shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp,
+						allInters);
+				shannonEntropyChange = entropyCalculator
+						.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);	
+				
+			} else {
+				shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(collector.buildVAgentList(time), new Vector2(areaX, areaY), mp);
+				shannonEntropyChange = entropyCalculator
+						.shannonEntropy_Change(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+			}
 			double conditionalEntropy = 0.0;
 			// double conditionalEntropy = entropyCalculator.conditionalEntropy(agents,
 			// prevAgents,
@@ -1848,10 +1854,16 @@ public class MetricRunner {
 			// subsitSum = 0.0;
 			ArrayList<VEntity> agents = collector.buildVAgentList(time);
 			HashMap<String, VEntity> prevAgents = collector.buildVAgentMap(time - 1);
-
+			double perf = 0;
+			if (mp.getParameters().get("isSocialNetwork") != null) {
+				perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new Vector2(areaX, areaY), mp,
+						collector.getEntityInteractionMap(time));
+			} else {
+				perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
+			}
 			// double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
-			double perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new Vector2(areaX, areaY), mp,
-					collector.getEntityInteractionMap(time));
+//			double perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new Vector2(areaX, areaY), mp,
+//					collector.getEntityInteractionMap(time));
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);
