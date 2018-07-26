@@ -170,7 +170,7 @@ public class LiveSimulator {
 	}
 
 	public void drawAgentOnGrid(VEntity ent, EntityDisplay ec) {
-		Vector2 pos = new Vector2((String) ent.getParameterValueFromString(ec.getPositionParam()));
+		Vector2 pos = new Vector2((String) ent.getParameterValueFromStringAsString(ec.getPositionParam()));
 		Color currColor = Color.WHITE;
 		String val = ent.getParameterValueFromStringAsString(ec.getTargetParam());
 		currColor = ec.getColorOfVal(val);
