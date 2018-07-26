@@ -229,6 +229,9 @@ public class Entropy extends MetricBase {
 				ArrayList<Interaction> agtInt = inters.get(v.getID());
 				for (Interaction in : agtInt) {
 					VEntity n = agents.get(in.getVentityTo().getID());
+					if (n == null) {
+						continue;
+					}
 					if (entityIsOfType(n, mvm1)) {
 						size++;
 						if (isParameterEqualToDesiredValue(n, mvm1)) {

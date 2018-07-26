@@ -260,7 +260,7 @@ public class Grid<E> implements Representation<E> {
 
 	}
 
-	public List<E> getAll(GridPositions gp) {
+	public List<E> getAllFromGridPosition(GridPositions gp) {
 		E[] arr = getAllAsArray(gp);
 		ArrayList<E> list = new ArrayList<E>();
 		for (E e : arr) {
