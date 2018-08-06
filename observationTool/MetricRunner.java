@@ -970,6 +970,8 @@ public class MetricRunner {
 		String resultsName = "";
 		resultsName = resultsName + "{" + mvm1.toString() + "}";
 
+		int neighbourDist = 20;
+
 		// Step 1: Bring in labelled Training data sets
 		ArrayList<String> trainingSetsBR = mi.getTrainingSystemsDBIDS();
 		int sampleSize = 0;
@@ -977,7 +979,7 @@ public class MetricRunner {
 		int samplingFrequency = ((Double) mps.getParameterValue("Sampling-frequency")).intValue();
 		HashSet<String> types = new HashSet<String>();
 		HashMap<String, HashMap<Integer, Double>> feature1Types = new HashMap<String, HashMap<Integer, Double>>();
-		HashMap<String, HashMap<Integer, Double>> feature2Types = new HashMap<String, HashMap<Integer, Double>>();
+		HashMap<String, HashMap<String, Double>> feature2Types = new HashMap<String, HashMap<String, Double>>();
 		runtime = System.currentTimeMillis();
 		for (String str : trainingSetsBR) {
 			str = str.replace("+", "");
@@ -988,7 +990,6 @@ public class MetricRunner {
 			int thisAreaY = 0;
 			String thisInitName = str;
 			HashMap<String, String> sysParams = collector.getInitialisationParameters();
-			String initName = "";
 			int thisNumberOfAgents = 0;
 
 			Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
@@ -1001,19 +1002,12 @@ public class MetricRunner {
 			sampleSize = (int) (thisNumberOfAgents * percentageToGet);
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
 			HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
-			HashMap<Integer, Integer> feature2Hits = new HashMap<Integer, Integer>();
+			HashMap<String, Integer> feature2Hits = new HashMap<String, Integer>();
+			// HashMap<String, Integer> feature2BirdHits = new HashMap<String, Integer>();
 
-			// POpulate feature1hits
-			for (int p = 0; p < 9; p++) {
-				feature1Hits.put(p, 0);
-			}
-			// Populate feature2hits
-			for (int p = 0; p < 2; p++) {
-				feature2Hits.put(p, 0);
-			}
 			for (int t = 1; t < thisTotalNumberOfSteps; t = t + samplingFrequency) {
 				sampleSize = (int) (thisNumberOfAgents * percentageToGet);
-				thisNumberOfAgents = collector.countAllEntitiesInStep(0);
+				thisNumberOfAgents = collector.countAllEntitiesInStep(t);
 				HashMap<String, VEntity> previousAgents = collector.buildVAgentMap(t - 1);
 				ArrayList<VEntity> agents = collector.buildVAgentList(t);
 
@@ -1030,21 +1024,13 @@ public class MetricRunner {
 					// Get Feature 1: # of Live Neighbours
 					int aliveNeighbours = 0;
 
-					// Is in Continunous?
-					// ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
-					// .getNeighbours((int) tmpAgent.getPosition().getX(), (int)
-					// tmpAgent.getPosition().getY(), 1);
-					ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
+					ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(),
+							neighbourDist);
 
 					for (VEntity v : neighbours) {
 						if (mvm1.isParameterEqualToDesiredValue(v)) {
 							aliveNeighbours++;
 						}
-						// if
-						// (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
-						// == 0) {
-						// aliveNeighbours++;
-						// }
 					}
 					if (feature1Hits.get(aliveNeighbours) != null) {
 						feature1Hits.put(aliveNeighbours, feature1Hits.get(aliveNeighbours) + 1);
@@ -1053,25 +1039,41 @@ public class MetricRunner {
 					}
 
 					// Get Feature 2: Changed state since last hit
-					int changed = 0;
-					if (t != 0) {
+
+					// IF Bird
+					// Get velocity
+					// Convert into bin
+					// do it that way
+					if (tmpAgent.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+						// Have to calculate velocity manually
 						String tmpAgentName = tmpAgent.getName();
 						VEntity prevTmpAgent = previousAgents.get(tmpAgentName);
-						if (prevTmpAgent != null) {
-							if (mvm1.compareParameters(tmpAgent, prevTmpAgent)) {
-								changed = 1;
+						Vector2 velocity = new Vector2(tmpAgent.getPosition()).subtract(prevTmpAgent.getPosition()).getUnitVector();
+						String stringVel = velocity.toString();
+						if (feature2Hits.get(stringVel) != null) {
+							feature2Hits.put(stringVel, feature2Hits.get(stringVel) + 1);
+						} else {
+							feature2Hits.put(stringVel, 1);
+						}
+
+					} else {
+
+						// ELSE leave as changed state
+						int changed = 0;
+						if (t != 0) {
+							String tmpAgentName = tmpAgent.getName();
+							VEntity prevTmpAgent = previousAgents.get(tmpAgentName);
+							if (prevTmpAgent != null) {
+								if (mvm1.compareParameters(tmpAgent, prevTmpAgent)) {
+									changed = 1;
+								}
 							}
 						}
-						// if (tmpAgent.getParameterValueFromStringAsString("Alive")
-						// .compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive"))
-						// == 0) {
-						// changed = 1;
-						// }
-					}
-					if (feature2Hits.get(changed) != null) {
-						feature2Hits.put(changed, feature2Hits.get(changed) + 1);
-					} else {
-						feature2Hits.put(changed, 1);
+						if (feature2Hits.get("" + changed) != null) {
+							feature2Hits.put("" + changed, feature2Hits.get(changed) + 1);
+						} else {
+							feature2Hits.put("" + changed, 1);
+						}
 					}
 
 				}
@@ -1080,43 +1082,42 @@ public class MetricRunner {
 			}
 			// Calculate likelihood of Feature1
 			int total = 0;
-			for (int f1 = 0; f1 < 9; f1++) {
-				total += feature1Hits.get(f1);
+			for (int i : feature1Hits.keySet()) {
+				total += feature1Hits.get(i);
 			}
 			HashMap<Integer, Double> F1Likelihoods = new HashMap<Integer, Double>();
 
-			// 9 should be replace by the number of neighbours
-			for (int f1 = 0; f1 < 9; f1++) {
-				F1Likelihoods.put(f1, (double) feature1Hits.get(f1) / (double) total);
+			for (int i : feature1Hits.keySet()) {
+				F1Likelihoods.put(i, (double) feature1Hits.get(i) / (double) total);
 			}
 			if (feature1Types.get(thisInitName) != null) {
 				HashMap<Integer, Double> old = feature1Types.get(thisInitName);
 
-				// 9 should be replace by the number of neighbours
-				for (int f1 = 0; f1 < 9; f1++) {
-					double newVal = (F1Likelihoods.get(f1) + old.get(f1)) / 2.0;
-					F1Likelihoods.put(f1, newVal);
+				for (int i : feature1Hits.keySet()) {
+					double newVal = (F1Likelihoods.get(i) + old.get(i)) / 2.0;
+					F1Likelihoods.put(i, newVal);
 				}
+
 			} else {
 				feature1Types.put(thisInitName, F1Likelihoods);
 			}
 
 			// Calculate likelihood of Feature2
 			total = 0;
-			for (int f2 = 0; f2 < 2; f2++) {
-				if (feature2Hits.get(f2) != null)
-					total += feature2Hits.get(f2);
+			for (String i : feature2Hits.keySet()) {
+				total += feature2Hits.get(i);
 			}
-			HashMap<Integer, Double> F2Likelihoods = new HashMap<Integer, Double>();
-			for (int f2 = 0; f2 < 2; f2++) {
-				if (feature2Hits.get(f2) != null)
-					F2Likelihoods.put(f2, (double) feature2Hits.get(f2) / (double) total);
+
+			HashMap<String, Double> F2Likelihoods = new HashMap<String, Double>();
+			for (String i : feature2Hits.keySet()) {
+				F2Likelihoods.put(i, (double) feature2Hits.get(i) / (double) total);
 			}
+
 			if (feature2Types.get(thisInitName) != null) {
-				HashMap<Integer, Double> old = feature2Types.get(thisInitName);
-				for (int f2 = 0; f2 < 2; f2++) {
-					double newVal = (F2Likelihoods.get(f2) + old.get(f2)) / 2.0;
-					F2Likelihoods.put(f2, newVal);
+				HashMap<String, Double> old = feature2Types.get(thisInitName);
+				for (String i : feature2Hits.keySet()) {
+					double newVal = (F2Likelihoods.get(i) + old.get(i)) / 2.0;
+					F2Likelihoods.put(i, newVal);
 				}
 			} else {
 				feature2Types.put(thisInitName, F2Likelihoods);
@@ -1125,21 +1126,19 @@ public class MetricRunner {
 
 		// Step 4: Calculate for the current sample
 		// initCriteria = initCrit;
-		//
 		collector.setCollection(si.getSystemDataLocation());
 
 		HashMap<String, String> sysParams = collector.getInitialisationParameters();
 		String initName = si.getSystemDataLocation();
 		int numberOfCells = 0;
 
-		System.err.println("This is probably wrorrnnngggg");
 		Vector2 size = getWorldSize(currWorldX, currWorldY, sysParams);
 		areaX = (int) size.getX();
 		areaY = (int) size.getY();
 		numberOfCells = collector.countAllEntitiesInStep(0);
 
 		HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
-		HashMap<Integer, Integer> feature2Hits = new HashMap<Integer, Integer>();
+		HashMap<String, Integer> feature2Hits = new HashMap<String, Integer>();
 		HashMap<String, Double> results = new HashMap<String, Double>();
 
 		for (int t = 1; t < totalNumberOfSteps; t = t + 1) {
@@ -1147,11 +1146,11 @@ public class MetricRunner {
 			numberOfCells = collector.countAllEntitiesInStep(0);
 			HashMap<String, VEntity> previousAgents = collector.buildVAgentMap(t - 1);
 			ArrayList<VEntity> agents = collector.buildVAgentList(t);
-			Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, areaX, areaY);
+			// Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, areaX, areaY);
 			Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(areaX, areaY));
 
 			for (VEntity agt : agents) {
-				theGrid.addCell(agt, agt.getPosition());
+				// theGrid.addCell(agt, agt.getPosition());
 				theCont.addEntity(agt, agt.getPosition());
 			}
 			double runningMultip = 1.0;
@@ -1160,17 +1159,12 @@ public class MetricRunner {
 				// Get Feature 1: # of Live Neighbours
 				int aliveNeighbours = 0;
 				// Is in Continunous?
-				ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(), 1);
+				ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(tmpAgent.getPosition(), neighbourDist);
 
 				for (VEntity v : neighbours) {
 					if (mvm1.isParameterEqualToDesiredValue(v)) {
 						aliveNeighbours++;
 					}
-					// if
-					// (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true")
-					// == 0) {
-					// aliveNeighbours++;
-					// }
 				}
 				if (feature1Hits.get(aliveNeighbours) != null) {
 					feature1Hits.put(aliveNeighbours, feature1Hits.get(aliveNeighbours) + 1);
@@ -1179,35 +1173,61 @@ public class MetricRunner {
 				}
 
 				// Get Feature 2: Changed state since last hit
+				// IF Bird
+				// Get velocity
+				// Convert into bin
+				// do it that way
 				int changed = 0;
-				if (t > 0) {
+				String stringVel = null;
+				if (tmpAgent.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+					// Have to calculate velocity manually
 					String tmpAgentName = tmpAgent.getName();
 					VEntity prevTmpAgent = previousAgents.get(tmpAgentName);
-					if (prevTmpAgent != null) {
-						if (mvm1.compareParameters(tmpAgent, prevTmpAgent)) {
-							changed = 1;
+					Vector2 velocity = tmpAgent.getPosition().subtract(prevTmpAgent.getPosition()).getUnitVector();
+					stringVel = velocity.toString();
+					if (feature2Hits.get(stringVel) != null) {
+						feature2Hits.put(stringVel, feature2Hits.get(stringVel) + 1);
+					} else {
+						feature2Hits.put(stringVel, 1);
+					}
+
+				} else {
+
+					// ELSE leave as changed state
+					changed = 0;
+					if (t != 0) {
+						String tmpAgentName = tmpAgent.getName();
+						VEntity prevTmpAgent = previousAgents.get(tmpAgentName);
+						if (prevTmpAgent != null) {
+							if (mvm1.compareParameters(tmpAgent, prevTmpAgent)) {
+								changed = 1;
+							}
 						}
 					}
-					// if (tmpAgent.getParameterValueFromStringAsString("Alive")
-					// .compareToIgnoreCase(prevTmpAgent.getParameterValueFromStringAsString("Alive"))
-					// == 0) {
-					// changed = 1;
-					// }
-				}
-				if (feature2Hits.get(changed) != null) {
-					feature2Hits.put(changed, feature2Hits.get(changed) + 1);
-				} else {
-					feature2Hits.put(changed, 1);
+					if (feature2Hits.get("" + changed) != null) {
+						feature2Hits.put("" + changed, feature2Hits.get(changed) + 1);
+					} else {
+						feature2Hits.put("" + changed, 1);
+					}
 				}
 
 				// Calculate per agent here
 				for (String b : types) {
+					double f1 = 0;
+					if (feature1Types.get(b).get(aliveNeighbours) != null) {
+						f1 = feature1Types.get(b).get(aliveNeighbours);
+					}
 					// Feature1
-					System.err.println(feature1Types.get(b).size() + " :<<<<<  " + aliveNeighbours);
-					double f1 = feature1Types.get(b).get(aliveNeighbours);
+					// double f1 = feature1Types.get(b).get(aliveNeighbours);
 					double f2 = 0;
-					if (feature2Types.get(b).get(changed) != null)
-						f2 = feature2Types.get(b).get(changed);
+					if (tmpAgent.getEntityID().getEntityType().compareToIgnoreCase(Universals.BIRD) == 0) {
+						if (feature2Types.get(b).get(stringVel) != null) {
+							f2 = feature2Types.get(b).get(stringVel);
+						}
+					} else {
+						if (feature2Types.get(b).get("" + changed) != null)
+							f2 = feature2Types.get(b).get("" + changed);
+					}
 
 					double res = f1 * f2;
 					if (results.get(b) != null) {
@@ -1264,18 +1284,11 @@ public class MetricRunner {
 		println("accBR: " + accBr);
 		println("Most common feature: " + brResult.calculateStringMode(smName));
 
-		// calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch,
-		// brResult, 0, 2, 1.0, si);
-		// calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch,
-		// brResult, 0, 2, 1.0, si);
-		// calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch,
-		// brResult, 0, 2, 1.0, si);
 		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, si);
 		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, si);
 		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, si);
 
 		return brResult;
-
 	}
 
 	public static MetricResult Metric_OscillatorDetect(SystemInfo si, MetricInfo mi,
@@ -1543,12 +1556,13 @@ public class MetricRunner {
 				shannonEntropy = entropyCalculator.shannonEntropy_NeighboursSN(agents, new Vector2(areaX, areaY), mp,
 						allInters);
 				shannonEntropyChange = entropyCalculator
-						.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);	
-				
+						.shannonEntropy_ChangeSN(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+
 			} else {
-				shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(collector.buildVAgentList(time), new Vector2(areaX, areaY), mp);
-				shannonEntropyChange = entropyCalculator
-						.shannonEntropy_Change(new ArrayList<VEntity>(agents.values()), prevAgents, mp);
+				shannonEntropy = entropyCalculator.shannonEntropy_Neighbours(collector.buildVAgentList(time),
+						new Vector2(areaX, areaY), mp);
+				shannonEntropyChange = entropyCalculator.shannonEntropy_Change(new ArrayList<VEntity>(agents.values()),
+						prevAgents, mp);
 			}
 			double conditionalEntropy = 0.0;
 			// double conditionalEntropy = entropyCalculator.conditionalEntropy(agents,
@@ -1862,8 +1876,9 @@ public class MetricRunner {
 				perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
 			}
 			// double perf = sas.PerfSit(agents, prevAgents, new Vector2(areaX, areaY), mp);
-//			double perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new Vector2(areaX, areaY), mp,
-//					collector.getEntityInteractionMap(time));
+			// double perf = sas.PerfSit_SN(collector.buildVEntityMap(time), prevAgents, new
+			// Vector2(areaX, areaY), mp,
+			// collector.getEntityInteractionMap(time));
 			sb.append(time + "\t" + perf + "\t" + realEvents_emergence[time] + "\t" + realEvents_stability[time] + "\t"
 					+ realEvents_criticality[time] + "\n");
 			perfsitResult.addResultAtStep(resultsName, perf, time);

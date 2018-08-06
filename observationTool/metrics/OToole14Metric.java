@@ -73,7 +73,6 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 		theGrid = new Grid<VEntity>(VEntity.class, (int) dimensions.getX(), (int) dimensions.getY());
 		theCont = new Continuous<VEntity>(new Vector2(dimensions));
 		for (VEntity agt : agents) {
-//			theGrid.addCell(agt, agt.getPosition());
 			theCont.addEntity(agt, agt.getPosition());
 			agentWindows.put(agt.getID(), new AgentWindow(agt.getID(), maxWindowSize));
 		}
@@ -81,7 +80,6 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 		tDist = new TDistribution(numberOfAgents - 2);
 	}
 
-	// OIASHDKUASd
 	public void run(ArrayList<VEntity> agents, int currentStep) {
 		for (VEntity agt : agents) {
 //			theGrid.addCell(agt, agt.getPosition());
@@ -100,17 +98,11 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 			if (mvm1.isParameterEqualToDesiredValue(agt)) {
 				agentWindow.addX(1, currentWindowSize);
 			}
-//			if (agt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//				agentWindow.addX(1, currentWindowSize);
-//			}
 
 			// Get each Agent's count of neighbour life states (Y)
-			ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(agt.getPosition(), 1);
+			ArrayList<VEntity> neighbours = theCont.getNeighborsFromVector(agt.getPosition(), 15);
 			int neighbourCount = 0;
 			for (VEntity v : neighbours) {
-//				if (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//					neighbourCount++;
-//				}
 				if (mvm1.isParameterEqualToDesiredValue(v)) {
 					agentWindow.addX(1, currentWindowSize);
 				}
@@ -118,31 +110,6 @@ public class OToole14Metric extends MetricBase implements MetricInterface {
 			agentWindow.addY(neighbourCount, currentWindowSize);
 		}
 		
-//		// Cycle through Grid
-//		VEntity[][] rawGrid = theGrid.getGrid();
-//		for (VEntity xGrid[] : rawGrid) {
-//			for (VEntity agt : xGrid) {
-//				AgentWindow agentWindow = agentWindows.get(agt.getID());
-//
-//				// Get each Agent's life state (X)
-//				if (agt.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//					agentWindow.addX(1, currentWindowSize);
-//				}
-//
-//				// Get each Agent's count of neighbour life states (Y)
-//				ArrayList<VEntity> neighbours = (ArrayList<VEntity>) theGrid
-//						.getNeighbours((int) agt.getPosition().getX(), (int) agt.getPosition().getY(), 1);
-//				int neighbourCount = 0;
-//				for (VEntity v : neighbours) {
-//					if (v.getParameterValueFromStringAsString("Alive").compareToIgnoreCase("true") == 0) {
-//						neighbourCount++;
-//					}
-//				}
-//				agentWindow.addY(neighbourCount, currentWindowSize);
-//
-//			}
-//		}
-
 		// Add one to window size counter
 		currentWindowSize++;
 		if (currentWindowSize == maxWindowSize) {

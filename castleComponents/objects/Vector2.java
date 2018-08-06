@@ -104,8 +104,6 @@ public class Vector2 implements java.io.Serializable {
 	}
 
 	public Vector2 subtract(Vector2 v) {
-		// double xm = this.x - v.getX();
-		// double xy = this.y - v.getY();
 		this.x -= v.getX();
 		this.y -= v.getY();
 		return this;

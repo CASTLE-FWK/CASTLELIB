@@ -180,6 +180,37 @@ public class Entropy extends MetricBase {
 							d += (1 / currNum) * Math.log(1 / currNum);
 					}
 
+				} else if (v.getEntityID().getEntityType().compareToIgnoreCase(Universals.ANT) == 0) {
+					VEntity pv = prevAgents.get(v.getName());
+					if (pv == null) {
+						continue;
+					}
+					boolean curr_onPheromone = Boolean
+							.parseBoolean(v.getParameterValueFromStringAsString("onPheromone"));
+					boolean curr_hasFood = Boolean.parseBoolean(v.getParameterValueFromStringAsString("hasFood"));
+					boolean prev_onPheromone = Boolean
+							.parseBoolean(pv.getParameterValueFromStringAsString("onPheromone"));
+					boolean prev_hasFood = Boolean.parseBoolean(pv.getParameterValueFromStringAsString("hasFood"));
+
+					if (curr_hasFood) {
+						if (prev_onPheromone) {
+							//What would this be. Either find food or find another pheromone, so 50%
+							d += (0.5 * Math.log(1/agents.size() / 0.5)); 
+						} else {
+							//Chance of randomly finding food. Number of food sources in the world
+							d += (0.3 * Math.log(0.3));
+						}
+					} else {
+						if (prev_onPheromone) {
+							//Chance of not having food and being on a pheromone.
+							//Same as finding food randomly
+							d += (0.3 * Math.log(0.3));
+						} else {
+							//Chance of not having food and not being on a pheromone? 1 - above
+							d += (0.6 * Math.log(0.6));
+						}
+					}
+
 				} else {
 
 					VEntity pv = prevAgents.get(v.getName());
