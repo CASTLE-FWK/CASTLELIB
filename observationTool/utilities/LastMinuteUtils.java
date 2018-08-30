@@ -21,11 +21,14 @@ public class LastMinuteUtils {
 	public static void main(String[] args) {
 		// String s = elapsedTimes(TEST);
 		// System.out.println(s);\
-		
 
-		String s = buildExperimentFile("/home/lachlan/repos/repastModels/runtime/output/sn/list-m.txt",
-				"/home/lachlan/repos/repastModels/SocialNetwork/SocialNetwork_SG/experiments/metrics.json", "SocialNetwork");
-//		String s = pullRuntimesFromSlurmOuts("/home/lachlan/repos/repastModels/sgrun/snsg/slurm/list.txt", "SN");
+		String s = buildExperimentFile(
+				"/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/phxlists/auto50.txt",
+				"/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/metrics-human.json",
+				"TransportationNetwork");
+		// String s = pullRuntimesFromSlurmOuts(
+		// "/home/lachlan/repos/TransportNetwork/TransportNetwork/experiments/runtimes/slurm/baselineReal.txt",
+		// "TN");
 		System.out.println(s);
 	}
 
@@ -87,8 +90,7 @@ public class LastMinuteUtils {
 		}
 		return out;
 	}
-	
-	
+
 	public static String pullRuntimesFromSlurmOuts(String pathsTXT, String sysname) {
 		String out = "SystemName,SystemConfig,Runtime(ms)\n";
 		HashMap<String, Double> rts = new HashMap<String, Double>();
@@ -102,7 +104,7 @@ public class LastMinuteUtils {
 			String infoLine = "";
 			try {
 				while ((line = br.readLine()) != null) {
-					if (line.startsWith("name=")) {
+					if (line.startsWith("runtime=")) {
 						infoLine = line;
 						break;
 					}
@@ -111,33 +113,35 @@ public class LastMinuteUtils {
 				e.printStackTrace();
 			}
 			if (infoLine.length() > 0) {
-				//Parse infoLine
+				// Parse infoLine
 				System.out.println(infoLine);
 				String[] ss = infoLine.split(",");
-				String n = ss[0].replace("name=", "");
-				
-				String rt = ss[1].replace("runtime=", "");
-				
-				String cn = ss[2].replace("config-name=","");
-				
+				String n = ss[1].replace("name=", "");
+
+				String rt = ss[0].replace("runtime=", "");
+
+				String cn = ss[2].replace("config-name=", "");
+				if (cn.startsWith("writing")) {
+					cn = n;
+				}
+
 				if (rts.containsKey(cn)) {
-					rts.put(cn, rts.get(cn)+Double.parseDouble(rt));
-					cnt.put(cn, cnt.get(cn)+1);
+					rts.put(cn, rts.get(cn) + Double.parseDouble(rt));
+					cnt.put(cn, cnt.get(cn) + 1);
 				} else {
 					rts.put(cn, Double.parseDouble(rt));
 					cnt.put(cn, 1);
 				}
-				
-				out += n+COMMA+cn+COMMA+rt+NL;
+
+				out += n + COMMA + cn + COMMA + rt + NL;
 			}
 		}
-		out += "Averages:"+NL;
+		out += "Averages:" + NL;
 		for (String k : rts.keySet()) {
 			out += k;
-			double rrt = rts.get(k) / (double)cnt.get(k);
-			out += ","+rrt+NL;
+			double rrt = rts.get(k) / (double) cnt.get(k);
+			out += "," + rrt + NL;
 		}
 		return out;
 	}
-
 }

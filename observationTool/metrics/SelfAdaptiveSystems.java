@@ -66,7 +66,7 @@ public class SelfAdaptiveSystems extends MetricBase {
 					// System.out.println("Issue here (1)");
 				}
 				adaptivityTime += theAgentsInteractions.size();
-				System.out.println(":: " + adaptivityTime);
+//				System.out.println(":: " + adaptivityTime);
 			}
 		}
 		return (adaptivityTime / workingTime);

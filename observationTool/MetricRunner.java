@@ -7,6 +7,7 @@ import observationTool.metrics.Entropy;
 import observationTool.metrics.MSSE_State;
 import observationTool.metrics.MetricParameters;
 import observationTool.metrics.OToole14Metric;
+import observationTool.metrics.SNMetric;
 import observationTool.metrics.SelfAdaptiveSystems;
 import observationTool.metrics.SimpleStatistic;
 import observationTool.metrics.SystemComplexity;
@@ -75,7 +76,7 @@ public class MetricRunner {
 	static StringBuilder toTheDoc;
 	static boolean quiet = false;
 	static boolean testing = false;
-	static boolean noAccuracyCalculations = false;
+	static boolean noAccuracyCalculations = true;
 	static private String dirTimeStamp;
 
 	static String acWorldX = "world_XSize";
@@ -95,6 +96,9 @@ public class MetricRunner {
 		if (args.length < 0) {
 			errLog("No args provided. Dying.");
 			System.exit(0);
+		}
+		if (noAccuracyCalculations) {
+			System.err.println("Warning: Accuracy calculations not being performed");
 		}
 		String analysisToRun = args[0];
 		testing = Boolean.parseBoolean(args[1]);
@@ -315,6 +319,8 @@ public class MetricRunner {
 		String realEventsFile = experimentDataLocation + REAL_EVS_LOCATION;
 		// Order: EM AD CR ST
 		List<String> realEv = Utilities.parseFileLineXLine(realEventsFile);
+//		List<String> realEv = Utilities.parseFileLineXLine("fart");
+//		System.out.println("oaisjdoiasjd");
 		for (String s : realEv) {
 			String em = "";
 			String ad = "";
@@ -1003,7 +1009,6 @@ public class MetricRunner {
 			int thisTotalNumberOfSteps = collector.getTerminationStep();
 			HashMap<Integer, Integer> feature1Hits = new HashMap<Integer, Integer>();
 			HashMap<String, Integer> feature2Hits = new HashMap<String, Integer>();
-			// HashMap<String, Integer> feature2BirdHits = new HashMap<String, Integer>();
 
 			for (int t = 1; t < thisTotalNumberOfSteps; t = t + samplingFrequency) {
 				sampleSize = (int) (thisNumberOfAgents * percentageToGet);
@@ -1012,11 +1017,9 @@ public class MetricRunner {
 				ArrayList<VEntity> agents = collector.buildVAgentList(t);
 
 				// Replace with continuous?
-				Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, thisAreaX, thisAreaY);
 				Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(thisAreaX, thisAreaY));
 
 				for (VEntity agt : agents) {
-					// theGrid.addCell(agt, agt.getPosition());
 					theCont.addEntity(agt, agt.getPosition());
 				}
 				for (int i = 0; i < sampleSize; i++) {
@@ -1143,10 +1146,9 @@ public class MetricRunner {
 
 		for (int t = 1; t < totalNumberOfSteps; t = t + 1) {
 			sampleSize = (int) (numberOfCells * percentageToGet);
-			numberOfCells = collector.countAllEntitiesInStep(0);
+			numberOfCells = collector.countAllEntitiesInStep(t);
 			HashMap<String, VEntity> previousAgents = collector.buildVAgentMap(t - 1);
 			ArrayList<VEntity> agents = collector.buildVAgentList(t);
-			// Grid<VEntity> theGrid = new Grid<VEntity>(VEntity.class, areaX, areaY);
 			Continuous<VEntity> theCont = new Continuous<VEntity>(new Vector2(areaX, areaY));
 
 			for (VEntity agt : agents) {
@@ -1228,12 +1230,17 @@ public class MetricRunner {
 						if (feature2Types.get(b).get("" + changed) != null)
 							f2 = feature2Types.get(b).get("" + changed);
 					}
-
-					double res = f1 * f2;
+					
+					double INFLATE = 1000;
+					double res = f1 * (f2 * INFLATE);
+//					System.out.println("f1: "+f1+"   f2: "+f2);
+//					System.out.println("res: "+res);
 					if (results.get(b) != null) {
-						results.put(b, results.get(b) * res);
+						if (res > 0)
+							results.put(b, results.get(b) * res);
 					} else {
-						results.put(b, res);
+						if (res > 0)
+							results.put(b, res);
 					}
 				}
 			}
@@ -1247,14 +1254,23 @@ public class MetricRunner {
 				}
 				results.put(b, 1.0);
 			}
+			//get max
+//			if (max > 0) {
+////				System.out.println("()JASD()JASD()J");
+//			}
+//			
+			
+			
 			String maxName = parseModelName(typeMax);
+//			System.out.println(typeMax +":::"+ maxName);
 			String thisName = parseModelName(initName);
 			int correct = 0;
 			if (maxName.compareTo(thisName) == 0) {
 				correct = 1;
 			}
-			String stableFile = "Stable";
-			String criticalFile = "Critical";
+			String stableFile = "Stability";
+			String criticalFile = "Criticality";
+			String emergenceFile = "Emergence";
 			if (maxName.startsWith(stableFile)) {
 				brResult.addResultAtStep(stableMatch, 1, t);
 				brResult.addResultAtStep(criticalMatch, 0, t);
@@ -1263,7 +1279,7 @@ public class MetricRunner {
 				brResult.addResultAtStep(stableMatch, 0, t);
 				brResult.addResultAtStep(criticalMatch, 1, t);
 				brResult.addResultAtStep(emergenceMatch, 0, t);
-			} else {
+			} else if (maxName.startsWith(emergenceFile)){
 				brResult.addResultAtStep(stableMatch, 0, t);
 				brResult.addResultAtStep(criticalMatch, 0, t);
 				brResult.addResultAtStep(emergenceMatch, 1, t);
@@ -1287,6 +1303,7 @@ public class MetricRunner {
 		calculateAccuracy("Limited Bandwidth Recognition: Emergence", emergenceMatch, brResult, si);
 		calculateAccuracy("Limited Bandwidth Recognition: Stability", stableMatch, brResult, si);
 		calculateAccuracy("Limited Bandwidth Recognition: Critical", criticalMatch, brResult, si);
+//		calculateAccuracy("Limited Bandwidth Recognition: Standard", MLSPname, brResult, si);
 
 		return brResult;
 	}
@@ -1933,10 +1950,41 @@ public class MetricRunner {
 		return ssResult;
 
 	}
+	
+	public static MetricResult Metric_SN_AvgSent(MetricInfo mi, SystemInfo si, MetricParameters mp,
+			DataCollector_FileSystem collector) {
+		int totalNumberOfSteps = si.getNumberOfSteps();
+		String systemName = si.getSystemName();
+		SNMetric snMetric = new SNMetric(mi);
+		announce(snMetric.getMetricName());
+		MetricResult snResult = new MetricResult(systemName, snMetric.getMetricName(), totalNumberOfSteps, si,
+				resultsDirRoot);
+		String resultsName = "AverageSentiment";
+		snResult.addResultType(realEventsNameEm);
+		snResult.addResultType(realEventsNameSt);
+		snResult.addResultType(realEventsNameCr);
+		snResult.addResultType(realEventsNameAd);
+		snResult.addResultType(resultsName);
+
+
+		for (int time = 1; time < totalNumberOfSteps; time++) {
+			snResult.addResultAtStep(realEventsNameEm, realEvents_emergence[time], time);
+			snResult.addResultAtStep(realEventsNameSt, realEvents_stability[time], time);
+			snResult.addResultAtStep(realEventsNameCr, realEvents_criticality[time], time);
+			snResult.addResultAtStep(realEventsNameAd, realEvents_adaptability[time], time);
+			ArrayList<VEntity> ag = collector.buildVAgentList(time);
+			snResult.addResultAtStep(resultsName, snMetric.calculateAverageSentiment(ag, mp), time);
+		}
+
+		return snResult;
+
+	}
 
 	public static void calculateAccuracy(String metricName, String resultsName, MetricResult result, SystemInfo si) {
 		double max = result.calculateMax(resultsName);
 		double min = result.calculateMin(resultsName);
+		System.out.println("max: "+max);
+		System.out.println("min: "+min);
 		double incr = (max - min) / 20;
 		calculateAccuracy(metricName, resultsName, result, min, max, incr, si);
 	}
@@ -1971,7 +2019,7 @@ public class MetricRunner {
 			AccuracyResults bestSt = new AccuracyResults();
 			AccuracyResults bestCr = new AccuracyResults();
 			AccuracyResults bestAd = new AccuracyResults();
-
+			System.out.println("upper: "+upper);
 			print("Calculating accuracy for %1$s for %2$s with threshold range set between %3$f & %4$f with an increment of %5$f",
 					metricName, resultsName, lower, upper, increment);
 			// Note: Set window to 1 for the original tests
@@ -2137,6 +2185,10 @@ public class MetricRunner {
 			ArrayList<MetricParameters> mpset_ss = mi.getMetricParameters();
 			MetricParameters mpss = mpset_ss.get(0);
 			return new ArrayList<MetricResult>(Arrays.asList(Metric_SimpleStatistics(mi, testSystem, mpss, collector)));
+		case "SN_AvgSent":
+			ArrayList<MetricParameters> mpset_sn_as = mi.getMetricParameters();
+			MetricParameters mpsnas = mpset_sn_as.get(0);
+			return new ArrayList<MetricResult>(Arrays.asList(Metric_SimpleStatistics(mi, testSystem, mpsnas, collector)));
 		default:
 			println("Metric name (%1$s) unknown: ", metricName);
 			return null;
